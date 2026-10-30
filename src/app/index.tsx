@@ -51,11 +51,14 @@ function HomeScreen() {
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Celebrate ONLY after the log card confirmed the record was persisted.
+  // The timer lives in a ref: clearing `logged` re-runs this effect and must not cancel it.
+  const celebrateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!logged || !focused) return;
     const { eventId, type } = logged;
     clearLogged();
-    const t = setTimeout(() => {
+    if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
+    celebrateTimer.current = setTimeout(() => {
       motion.celebrate();
       fire('confetti', [CARE[type].color, '#FFC83D', colors.brand, '#FF6B9A']);
       successFeedback();
@@ -63,9 +66,14 @@ function HomeScreen() {
     setSnack({ eventId, type });
     if (snackTimer.current) clearTimeout(snackTimer.current);
     snackTimer.current = setTimeout(() => setSnack(null), 6000);
-    return () => clearTimeout(t);
   }, [logged, focused, clearLogged, motion, fire]);
 
+  useEffect(
+    () => () => {
+      if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
+    },
+    [],
+  );
   useEffect(() => () => void (snackTimer.current && clearTimeout(snackTimer.current)), []);
 
   const undo = useCallback(async () => {
