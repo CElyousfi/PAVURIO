@@ -23,6 +23,9 @@ export type PetRigProps = {
   rug?: { bands: CareType[]; planned: number };
   bursts?: Burst[];
   accessibilityLabel?: string;
+  /** dog only: play a pre-rendered clip ('celebrate' | 'eat' | 'drink'); nonce restarts it */
+  clip?: { name: 'celebrate' | 'eat' | 'drink'; nonce: number } | null;
+  onClipEnd?: () => void;
 };
 
 const origin = (x: number, y: number) => `${((x / VB_W) * 100).toFixed(2)}% ${((y / VB_H) * 100).toFixed(2)}%`;

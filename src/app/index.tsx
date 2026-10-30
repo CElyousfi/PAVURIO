@@ -48,6 +48,7 @@ function HomeScreen() {
   const motion = usePetMotion({ active: focused, reduceMotion });
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
+  const [clip, setClip] = useState<{ name: 'celebrate' | 'eat' | 'drink'; nonce: number } | null>(null);
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Celebrate ONLY after the log card confirmed the record was persisted.
@@ -59,14 +60,23 @@ function HomeScreen() {
     clearLogged();
     if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
     celebrateTimer.current = setTimeout(() => {
-      motion.celebrate();
-      fire('confetti', [CARE[type].color, '#FFC83D', colors.brand, '#FF6B9A']);
+      const confetti = () => fire('confetti', [CARE[type].color, '#FFC83D', colors.brand, '#FF6B9A']);
+      if (pet?.species === 'dog' && !reduceMotion) {
+        // pre-rendered clips: eating for meals, drinking for water, a happy jump otherwise
+        const name = type === 'meal' ? 'eat' : type === 'water' ? 'drink' : 'celebrate';
+        setClip({ name, nonce: Date.now() });
+        if (name === 'celebrate') setTimeout(confetti, 450);
+        else fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']);
+      } else {
+        motion.celebrate();
+        confetti();
+      }
       successFeedback();
     }, 380);
     setSnack({ eventId, type });
     if (snackTimer.current) clearTimeout(snackTimer.current);
     snackTimer.current = setTimeout(() => setSnack(null), 6000);
-  }, [logged, focused, clearLogged, motion, fire]);
+  }, [logged, focused, clearLogged, motion, fire, pet?.species, reduceMotion]);
 
   useEffect(
     () => () => {
@@ -124,6 +134,8 @@ function HomeScreen() {
             }}
             rug={{ bands: progress.bands, planned: progress.planned }}
             bursts={bursts}
+            clip={clip}
+            onClipEnd={() => setClip(null)}
             accessibilityLabel={`${pet.name}, ${Math.round(progress.ratio * 100)} percent colored in today`}
           />
           {isEmptyDay ? (

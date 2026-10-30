@@ -12,6 +12,7 @@ import Svg, { ClipPath, Defs, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { DOG_IMG, DOG_MANIFEST, DogImgKey } from './dogAssets';
 import type { PetRigProps } from './PetRig';
 import { BurstLayer } from './Burst';
+import { ClipPlayer } from './ClipPlayer';
 import { CARE, CareType } from '../domain/care';
 
 const M = DOG_MANIFEST;
@@ -38,7 +39,10 @@ export function RasterDogRig({
   rug,
   bursts,
   accessibilityLabel,
+  clip,
+  onClipEnd,
 }: PetRigProps) {
+  const playing = !!clip;
   const w = size;
   const k = size / CW;
   const h = CH * k;
@@ -103,6 +107,7 @@ export function RasterDogRig({
         onStartShouldSetResponder: () => true,
         onMoveShouldSetResponder: () => true,
         onResponderGrant: (e: GestureResponderEvent) => {
+          if (playing) onClipEnd?.(); // a touch skips the clip
           const { locationX, locationY } = e.nativeEvent;
           start.current = { x: locationX, y: locationY, t: Date.now() };
           motion?.lookAt(locationX / w, locationY / h);
@@ -139,7 +144,7 @@ export function RasterDogRig({
       </FillClip>
     </>
   );
-  const layerView = (o: string, style: object | null, children: React.ReactNode) => (
+  const layerView = (o: string, style: object | null | (object | null)[], children: React.ReactNode) => (
     <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { transformOrigin: o }, style]}>
       {children}
     </Animated.View>
@@ -159,7 +164,17 @@ export function RasterDogRig({
       {...handlers}
     >
       {rug ? <Rug bands={rug.bands} planned={rug.planned} w={w} h={h} /> : <Shadow w={w} h={h} />}
-      {layerView(origin('body'), rootStyle, (
+      {clip ? (
+        <ClipPlayer
+          key={clip.nonce}
+          name={clip.name}
+          palette={pal}
+          bandana={band}
+          geo={{ k, top: M.art.top, paws: M.art.paws, cx: M.pivots.neck[0] }}
+          onEnd={() => onClipEnd?.()}
+        />
+      ) : null}
+      {layerView(origin('body'), [rootStyle, playing ? styles.hidden : null], (
         <>
           {layerView(origin('tail'), tailStyle, fillable('tail'))}
           {layerView(origin('body'), bodyStyle, (
@@ -246,4 +261,5 @@ function Rug({ bands, planned, w, h }: { bands: CareType[]; planned: number; w: 
 const styles = StyleSheet.create({
   clip: { position: 'absolute', left: 0, right: 0, bottom: 0, overflow: 'hidden' },
   full: { position: 'absolute', left: 0, right: 0 },
+  hidden: { opacity: 0 },
 });

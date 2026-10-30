@@ -1,5 +1,26 @@
 # Art status
 
+## Dog animation clips (30 Oct 2026)
+
+Three generated videos (`gpt-dog/videos/`) are now real in-app animations:
+
+| Clip | Plays when | Frames | Notes |
+|---|---|---|---|
+| eat | Meal saved | 74 @ 10 fps | bowl stays orange for every coat |
+| drink | Water saved | 70 @ 10 fps | |
+| celebrate | Any other care saved | 37 @ 10 fps | 3.45–7.4 s cut out: the video turns the ears into bunny ears there |
+
+`tools/art/clips.py` removes the painted checkerboard background, Gemini's checker patches inside the dog and the gray
+ground line, recolors frames for all 4 coats (props like bowls are protected) and writes bandana-color overlays.
+It packs frames into 24-frame WebP sprite sheets (≤3000×2000 px) so a phone only decodes one sheet at a time.
+`src/animation/ClipPlayer.tsx` plays them, lined up with the layered rig on the paw line, head height and head center.
+Clips are skipped when Reduce motion is on, and a touch skips a clip.
+
+**For the next videos:** a flat solid background (pure white or pure green, not a checkerboard); the dog filling about 70% of
+the frame height (these clips use only about 330 px of a 720 px frame); a square or portrait 1080 px video; and an unchanged
+character for the whole video.
+
+
 ## Dog v2 (30 Oct 2026): the real GPT art is in the app
 
 The in-app dog is now **the approved GPT master itself** (`gpt-dog/source/master_b.png`, 1274 px), not a code drawing.
