@@ -7,8 +7,9 @@ import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, resolveAccessory, resolvePalette } from '../domain/appearance';
 import type { PetMotion } from './usePetMotion';
 import { BurstLayer, Burst } from './Burst';
+import { RasterDogRig } from './RasterDogRig';
 
-type Props = {
+export type PetRigProps = {
   species: Species;
   appearance: Appearance;
   /** width in px; height is derived from the art aspect ratio */
@@ -26,7 +27,7 @@ type Props = {
 
 const origin = (x: number, y: number) => `${((x / VB_W) * 100).toFixed(2)}% ${((y / VB_H) * 100).toFixed(2)}%`;
 
-export function PetRig({
+function VectorPetRig({
   species,
   appearance,
   size,
@@ -37,7 +38,7 @@ export function PetRig({
   rug,
   bursts,
   accessibilityLabel,
-}: Props) {
+}: PetRigProps) {
   const art = ART[species];
   const w = size;
   const h = (size * VB_H) / VB_W;
@@ -267,3 +268,8 @@ const styles = StyleSheet.create({
   clip: { position: 'absolute', left: 0, right: 0, bottom: 0, overflow: 'hidden' },
   bottomAnchored: { position: 'absolute', left: 0, bottom: 0 },
 });
+
+/** Dog uses the approved GPT artwork (layered raster rig); cat uses the vector rig until its art arrives. */
+export function PetRig(props: PetRigProps) {
+  return props.species === 'dog' ? <RasterDogRig {...props} /> : <VectorPetRig {...props} />;
+}

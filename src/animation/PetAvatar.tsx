@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
+import { Image } from 'react-native';
 import Svg, { G } from 'react-native-svg';
+import { DOG_IMG, DogImgKey } from './dogAssets';
 import { ART, colorPaint } from './art';
 import { Species } from '../domain/care';
 import { Appearance, resolveAccessory, resolvePalette } from '../domain/appearance';
@@ -7,10 +9,14 @@ import { Appearance, resolveAccessory, resolvePalette } from '../domain/appearan
 /** Static head-only portrait used in small places (quick-add row, pet switcher, widgets later). */
 export function PetAvatar({ species, appearance, size }: { species: Species; appearance: Appearance; size: number }) {
   const art = ART[species];
+  const dogKey = `avatar_${appearance.paletteId}` as DogImgKey;
   const p = useMemo(
     () => colorPaint(resolvePalette(species, appearance.paletteId), resolveAccessory(appearance.accessoryId)),
     [species, appearance.paletteId, appearance.accessoryId],
   );
+  if (species === 'dog') {
+    return <Image source={DOG_IMG[dogKey] ?? DOG_IMG.avatar_honey} style={{ width: size, height: size }} fadeDuration={0} />;
+  }
   return (
     <Svg width={size} height={size} viewBox="30 22 240 240">
       <G>
