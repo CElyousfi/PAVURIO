@@ -4,12 +4,13 @@ Then regenerate src/animation/dogClips.ts if chunk counts change."""
 import cv2, numpy as np, json, os, sys, math, subprocess
 from PIL import Image
 OUT=sys.argv[1]; os.makedirs(OUT,exist_ok=True)
-FPS=10
-# Source videos and the time ranges (seconds) to keep. Celebrate skips 3.45–7.4 s where the
+FPS=12
+# Source videos and the time ranges (seconds) to keep. Celebrate skips 3.25–7.45 s where the
 # generated video morphs the ears into bunny ears.
 V='docs/art/gpt-dog/videos'
 CLIPS={
- 'celebrate':(f'{V}/celebrate.mp4',[(1.2,3.45),(7.4,8.75)]),
+ 'idle':(f'{V}/celebrate.mp4',[(8.7,9.95)]),
+ 'celebrate':(f'{V}/celebrate.mp4',[(1.2,3.25),(7.45,8.75)]),
  'eat':(f'{V}/eat.mp4',[(1.3,8.6)]),
  'drink':(f'{V}/drink.mp4',[(1.3,8.3)]),
 }
@@ -105,8 +106,8 @@ for name,(path,segs) in CLIPS.items():
         d=np.abs(frame.astype(np.int16)-med).sum(2)
         return propbox & medA & (d<40)
     PROPS=[is_prop(f) for f in fr]
-    n=len(fr); PER=24; COLS=6; ROWS=4
-    sc=min(1.0, 3000/(COLS*fw), 2000/(ROWS*fh))
+    n=len(fr); PER=12; COLS=4; ROWS=3
+    sc=min(1.0, 2000/(COLS*fw), 1500/(ROWS*fh))
     tw,th=int(fw*sc),int(fh*sc)
     ref={k:(v*sc) for k,v in ref.items()}
     chunks=math.ceil(n/PER); sizes={}
@@ -126,7 +127,19 @@ for name,(path,segs) in CLIPS.items():
             p=f'{OUT}/{name}_{tag}_{ci}.webp'; Image.fromarray(S).save(p,'WEBP',quality=78,method=4)
             sizes[tag]=sizes.get(tag,0)+os.path.getsize(p)//1024
     for pal in ['honey','cocoa','snow','midnight']: sheet(lambda x,p=pal: recolor(x,p), pal)
+    sheet(sketch,'sketch')
     for bnd,t in BAND.items(): sheet(lambda x:x, f'band_{bnd}', lambda rgb,A,t=t: band_overlay(rgb,A,t))
-    manifest[name]={'frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
+    manifest[name]={'loop':name=='idle','pingpong':name=='idle','frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
     print(name,n,'frames',tw,'x',th,'chunks',chunks,sizes,flush=True)
 json.dump(manifest,open(f'{OUT}/clips.json','w'),indent=1)
+
+# --- regenerate the TypeScript asset map
+tags=['honey','cocoa','snow','midnight','sketch','band_coral','band_leaf','band_sun','band_berry']
+L=["/* Generated from tools/art/clips.py output (assets/pets/dog/clips). Do not edit by hand. */","import clips from '../../assets/pets/dog/clips/clips.json';","","export const DOG_CLIPS = clips;","export type DogClipName = keyof typeof clips;","export type DogClipSheets = Record<string, number[]>;","","export const DOG_CLIP_IMG: Record<DogClipName, DogClipSheets> = {"]
+for name,c in manifest.items():
+    L.append(f"  {name}: {{")
+    for t in tags:
+        L.append(f"    {t}: [" + ', '.join(f"require('../../assets/pets/dog/clips/{name}_{t}_{i}.webp')" for i in range(c['chunks'])) + "],")
+    L.append("  },")
+L.append("};\n")
+open('src/animation/dogClips.ts','w').write('\n'.join(L))

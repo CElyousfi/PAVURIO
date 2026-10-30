@@ -1,5 +1,23 @@
 # Art status
 
+## Dog = generated video only (30 Oct 2026, evening)
+
+All hand-made dog motion was removed. The dog is now played **only** from the generated videos:
+
+| Clip | Source | Plays when |
+|---|---|---|
+| idle (loop, played forward then back) | celebrate.mp4 8.7–9.95 s, sitting and panting | always |
+| eat | eat.mp4 | Meal saved |
+| drink | drink.mp4 | Water saved |
+| celebrate | celebrate.mp4 1.2–3.25 s + 7.45–8.75 s | any other care, or a tap on the pet |
+
+`src/animation/DogStage.tsx` timing: clock-based (frames are skipped, never slowed), 140 ms crossfade into an action and
+220 ms back to idle, and an action only starts once its first sheets are decoded. A new action interrupts the current one
+cleanly, and leaving the screen ends it. The color-in fill and coat/bandana colors apply to every clip.
+Check: 270 high-rate captures across idle → eat → drink → celebrate → idle showed no blank or misplaced frame.
+The cat stays still until its videos arrive (the hand-made cat motion is switched off).
+
+
 ## Dog animation clips (30 Oct 2026)
 
 Three generated videos (`gpt-dog/videos/`) are now real in-app animations:

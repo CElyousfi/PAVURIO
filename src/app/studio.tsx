@@ -68,6 +68,8 @@ export default function Studio() {
               appearance={appearance}
               size={Math.min(W * 0.7, height * 0.36, 300)}
               motion={motion}
+              active={focused}
+              reduceMotion={reduceMotion}
               interactive
               onTap={() => {
                 petFeedback();

@@ -1,10 +1,28 @@
 {
- "celebrate": {
-  "frames": 37,
-  "fps": 10,
-  "per": 24,
-  "cols": 6,
+ "idle": {
+  "loop": true,
+  "pingpong": true,
+  "frames": 15,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
   "chunks": 2,
+  "fw": 498,
+  "fh": 500,
+  "ref": {
+   "bottom": 499.16107382550337,
+   "top": 5.033557046979865,
+   "cx": 201.42248891223673
+  }
+ },
+ "celebrate": {
+  "loop": false,
+  "pingpong": false,
+  "frames": 41,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
+  "chunks": 4,
   "fw": 497,
   "fh": 500,
   "ref": {
@@ -14,31 +32,35 @@
   }
  },
  "eat": {
-  "frames": 74,
-  "fps": 10,
-  "per": 24,
-  "cols": 6,
-  "chunks": 4,
+  "loop": false,
+  "pingpong": false,
+  "frames": 88,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
+  "chunks": 8,
   "fw": 500,
-  "fh": 429,
+  "fh": 422,
   "ref": {
-   "bottom": 423.4417344173442,
-   "top": 20.32520325203252,
-   "cx": 229.54853944746736
+   "bottom": 416.66666666666663,
+   "top": 20.0,
+   "cx": 225.87576281630788
   }
  },
  "drink": {
-  "frames": 70,
-  "fps": 10,
-  "per": 24,
-  "cols": 6,
-  "chunks": 3,
+  "loop": false,
+  "pingpong": false,
+  "frames": 84,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
+  "chunks": 7,
   "fw": 499,
-  "fh": 439,
+  "fh": 445,
   "ref": {
-   "bottom": 434.13597733711043,
-   "top": 9.915014164305948,
-   "cx": 238.1438974144775
+   "bottom": 440.37356321839076,
+   "top": 10.057471264367816,
+   "cx": 241.56550513594988
   }
  }
 }

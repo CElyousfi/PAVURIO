@@ -65,8 +65,8 @@ function HomeScreen() {
         // pre-rendered clips: eating for meals, drinking for water, a happy jump otherwise
         const name = type === 'meal' ? 'eat' : type === 'water' ? 'drink' : 'celebrate';
         setClip({ name, nonce: Date.now() });
-        if (name === 'celebrate') setTimeout(confetti, 450);
-        else fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']);
+        if (name === 'celebrate') setTimeout(confetti, 600);
+        else setTimeout(() => fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']), 400);
       } else {
         motion.celebrate();
         confetti();
@@ -136,6 +136,8 @@ function HomeScreen() {
             bursts={bursts}
             clip={clip}
             onClipEnd={() => setClip(null)}
+            active={focused}
+            reduceMotion={reduceMotion}
             accessibilityLabel={`${pet.name}, ${Math.round(progress.ratio * 100)} percent colored in today`}
           />
           {isEmptyDay ? (

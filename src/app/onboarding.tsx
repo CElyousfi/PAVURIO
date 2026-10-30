@@ -115,7 +115,7 @@ export default function Onboarding() {
             <T style={styles.sub}>Log the care you give. Watch them color in.</T>
           </View>
           <View style={styles.hero}>
-            <PetRig species="dog" appearance={defaultAppearance('dog')} size={petSize} progress={demoFill} motion={motion} interactive />
+            <PetRig species="dog" appearance={defaultAppearance('dog')} size={petSize} progress={demoFill} motion={motion} reduceMotion={reduceMotion} interactive />
           </View>
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
             <Pill label="GET STARTED" onPress={() => go('species')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="get-started" />
@@ -155,7 +155,7 @@ export default function Onboarding() {
             What's their name?
           </T>
           <View style={styles.hero}>
-            <PetRig species={species} appearance={appearance} size={petSize * 0.78} motion={motion} interactive />
+            <PetRig species={species} appearance={appearance} size={petSize * 0.78} motion={motion} reduceMotion={reduceMotion} interactive />
           </View>
           <TextInput
             value={name}
@@ -186,7 +186,7 @@ export default function Onboarding() {
             Make {displayName} look like {displayName}
           </T>
           <View style={styles.hero}>
-            <PetRig species={species} appearance={appearance} size={petSize * 0.8} motion={motion} interactive />
+            <PetRig species={species} appearance={appearance} size={petSize * 0.8} motion={motion} reduceMotion={reduceMotion} interactive />
           </View>
           <LookPicker species={species} appearance={appearance} onChange={setAppearance} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>

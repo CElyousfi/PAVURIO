@@ -7,7 +7,7 @@ import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, resolveAccessory, resolvePalette } from '../domain/appearance';
 import type { PetMotion } from './usePetMotion';
 import { BurstLayer, Burst } from './Burst';
-import { RasterDogRig } from './RasterDogRig';
+import { DogStage } from './DogStage';
 
 export type PetRigProps = {
   species: Species;
@@ -23,9 +23,12 @@ export type PetRigProps = {
   rug?: { bands: CareType[]; planned: number };
   bursts?: Burst[];
   accessibilityLabel?: string;
-  /** dog only: play a pre-rendered clip ('celebrate' | 'eat' | 'drink'); nonce restarts it */
+  /** dog only: play a generated clip once ('celebrate' | 'eat' | 'drink'); nonce restarts it */
   clip?: { name: 'celebrate' | 'eat' | 'drink'; nonce: number } | null;
   onClipEnd?: () => void;
+  /** pause looping animation (e.g. screen not focused) */
+  active?: boolean;
+  reduceMotion?: boolean;
 };
 
 const origin = (x: number, y: number) => `${((x / VB_W) * 100).toFixed(2)}% ${((y / VB_H) * 100).toFixed(2)}%`;
@@ -272,7 +275,8 @@ const styles = StyleSheet.create({
   bottomAnchored: { position: 'absolute', left: 0, bottom: 0 },
 });
 
-/** Dog uses the approved GPT artwork (layered raster rig); cat uses the vector rig until its art arrives. */
+/** The dog is played from the approved generated videos; the cat keeps the vector rig until its videos arrive. */
 export function PetRig(props: PetRigProps) {
-  return props.species === 'dog' ? <RasterDogRig {...props} /> : <VectorPetRig {...props} />;
+  // Only generated animation is used: the cat stays still (no hand-made motion) until its videos arrive.
+  return props.species === 'dog' ? <DogStage {...props} /> : <VectorPetRig {...props} motion={undefined} />;
 }
