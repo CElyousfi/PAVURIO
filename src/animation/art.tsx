@@ -83,22 +83,15 @@ export type SpeciesArt = {
 
 const mirror = (children: React.ReactNode) => <G transform={`translate(${VB_W} 0) scale(-1 1)`}>{children}</G>;
 
-// ------------------------------------------------------------------ DOG
-
-const dogEar = (p: Paint) => (
-  <G>
-    <Path d="M92 74 C58 66 34 104 38 150 C40 176 64 184 77 162 C88 142 98 112 106 88 Z" fill={p.patch} />
-    <Path d="M80 92 C62 98 54 124 56 146 C58 158 66 160 71 150 C78 134 84 114 88 98 Z" fill={p.shade} opacity={0.35} />
-  </G>
-);
+// ------------------------------------------------------------------ shared face bits
 
 const eyePair = (p: Paint, cxL: number, cxR: number, cy: number, rx: number, ry: number) => (
   <G>
     {[cxL, cxR].map((cx) => (
       <G key={cx}>
         <Ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={p.ink} />
-        <Circle cx={cx + rx * 0.35} cy={cy - ry * 0.38} r={rx * 0.38} fill={p.white} />
-        <Circle cx={cx - rx * 0.32} cy={cy + ry * 0.35} r={rx * 0.17} fill={p.white} opacity={0.9} />
+        <Circle cx={cx + rx * 0.32} cy={cy - ry * 0.36} r={rx * 0.36} fill={p.white} />
+        <Circle cx={cx - rx * 0.3} cy={cy + ry * 0.38} r={rx * 0.15} fill={p.white} opacity={0.85} />
       </G>
     ))}
   </G>
@@ -119,29 +112,44 @@ const happyPair = (p: Paint, cxL: number, cxR: number, cy: number, w: number) =>
   </G>
 );
 
+// ------------------------------------------------------------------ DOG
+// Matches the approved GPT board (docs/art/gpt-board-v1.png): cream face with orange eye
+// patches and a cream blaze to the crown, curly orange tuft, long orange ears hanging from
+// the top of the head, tongue out, cream body with orange patches, fluffy tail on the left.
+
+const dogEar = (p: Paint) => (
+  <G>
+    <Path d="M104 62 C72 50 42 72 36 118 C30 164 40 204 64 210 C86 214 96 186 99 154 C102 122 112 86 104 62 Z" fill={p.patch} />
+    <Path d="M84 84 C64 92 54 124 54 156 C54 178 62 190 70 186 C80 170 84 140 88 108 Z" fill={p.shade} opacity={0.45} />
+  </G>
+);
+
+const dogEyePatch = (p: Paint) => (
+  <Path d="M72 118 C68 82 94 60 126 58 C136 72 138 94 134 114 C130 134 114 146 94 146 C82 144 74 134 72 118 Z" fill={p.patch} />
+);
+
 export const DOG: SpeciesArt = {
-  pivots: { tail: [204, 262], neck: [150, 196], earL: [96, 82], earR: [204, 82], eyes: [150, 128] },
+  pivots: { tail: [102, 290], neck: [150, 196], earL: [98, 70], earR: [202, 70], eyes: [150, 124] },
   earsBehindHead: false,
   tail: (p) => (
     <G>
-      <Path d="M196 268 C236 262 262 236 262 198 C262 182 248 176 239 188 C240 218 224 240 192 248 Z" fill={p.coat} />
-      <Path d="M262 198 C262 182 248 176 239 188 C240 196 240 204 238 210 C248 210 258 206 262 198 Z" fill={p.patch} />
+      <Path d="M104 294 C72 300 44 288 38 262 C34 240 50 226 64 234 C66 218 86 214 92 230 C104 242 108 268 104 294 Z" fill={p.coat} />
+      <Circle cx={58} cy={258} r={11} fill={p.light} opacity={0.75} />
+      <Circle cx={76} cy={240} r={8} fill={p.light} opacity={0.6} />
     </G>
   ),
   body: (p) => (
     <G>
-      {/* back legs / haunches */}
       <Ellipse cx={96} cy={286} rx={30} ry={26} fill={p.coat} />
       <Ellipse cx={204} cy={286} rx={30} ry={26} fill={p.coat} />
-      <Ellipse cx={210} cy={280} rx={17} ry={15} fill={p.patch} opacity={0.9} />
-      {/* torso */}
       <Path d="M94 306 C84 254 104 196 150 194 C196 196 216 254 206 306 Q150 320 94 306 Z" fill={p.coat} />
+      {/* orange patches */}
+      <Path d="M92 300 C80 268 90 230 112 214 C120 240 118 276 108 304 Z" fill={p.patch} opacity={0.9} />
+      <Ellipse cx={206} cy={252} rx={14} ry={20} fill={p.patch} opacity={0.75} />
       {/* chest */}
-      <Path d="M120 214 C132 204 168 204 180 214 C188 250 176 288 150 296 C124 288 112 250 120 214 Z" fill={p.light} />
-      {/* front legs */}
+      <Path d="M118 212 C132 202 168 202 182 212 C190 250 178 290 150 298 C122 290 110 250 118 212 Z" fill={p.light} />
       <Rect x={120} y={236} width={24} height={74} rx={12} fill={p.light} />
       <Rect x={156} y={236} width={24} height={74} rx={12} fill={p.light} />
-      {/* paws */}
       <Ellipse cx={84} cy={308} rx={20} ry={9} fill={p.light} />
       <Ellipse cx={216} cy={308} rx={20} ry={9} fill={p.light} />
       <Ellipse cx={132} cy={309} rx={17} ry={9} fill={p.light} />
@@ -166,27 +174,27 @@ export const DOG: SpeciesArt = {
   earR: (p) => mirror(dogEar(p)),
   head: (p) => (
     <G>
-      <Ellipse cx={88} cy={142} rx={28} ry={26} fill={p.coat} />
-      <Ellipse cx={212} cy={142} rx={28} ry={26} fill={p.coat} />
-      <Ellipse cx={150} cy={122} rx={86} ry={74} fill={p.coat} />
-      {/* cap with central blaze */}
-      <Path
-        d="M66 120 C64 74 104 48 150 48 C196 48 236 74 234 120 C214 104 192 98 170 106 C164 92 136 92 130 106 C108 98 86 104 66 120 Z"
-        fill={p.patch}
-      />
-      <Path d="M140 50 Q150 30 162 48 Q154 44 148 54 Z" fill={p.patch} />
+      <Ellipse cx={92} cy={150} rx={26} ry={24} fill={p.light} />
+      <Ellipse cx={208} cy={150} rx={26} ry={24} fill={p.light} />
+      <Ellipse cx={150} cy={124} rx={84} ry={74} fill={p.light} />
+      {dogEyePatch(p)}
+      {mirror(dogEyePatch(p))}
+      {/* curly tuft */}
+      <Path d="M126 62 C122 46 136 36 148 44 C154 30 176 34 172 52 C182 50 186 62 176 68 C160 60 140 60 126 62 Z" fill={p.patch} />
       {/* muzzle */}
-      <Ellipse cx={150} cy={152} rx={42} ry={31} fill={p.light} />
+      <Ellipse cx={150} cy={152} rx={40} ry={29} fill={p.white} opacity={0.75} />
     </G>
   ),
   face: (p) => (
     <G>
-      <Ellipse cx={98} cy={158} rx={13} ry={8} fill={p.blush} opacity={0.45} />
-      <Ellipse cx={202} cy={158} rx={13} ry={8} fill={p.blush} opacity={0.45} />
-      <Path d="M139 138 Q150 132 161 138 Q161 148 150 151 Q139 148 139 138 Z" fill={p.ink} />
-      <Ellipse cx={146} cy={138} rx={4} ry={2.2} fill={p.white} opacity={0.6} />
+      <Ellipse cx={100} cy={158} rx={12} ry={7} fill={p.blush} opacity={0.35} />
+      <Ellipse cx={200} cy={158} rx={12} ry={7} fill={p.blush} opacity={0.35} />
+      {/* small tongue always out (approved master) */}
+      <Path d="M143 157 Q142 171 150 172 Q158 171 157 157 Z" fill="#FB8781" />
+      <Ellipse cx={150} cy={140} rx={13} ry={9} fill={p.ink} />
+      <Ellipse cx={146} cy={137} rx={4.5} ry={2.4} fill={p.white} opacity={0.6} />
       <Path
-        d="M150 151 L150 157 M135 156 Q143 166 150 157 Q157 166 165 156"
+        d="M150 149 L150 155 M132 152 Q141 162 150 155 Q159 162 168 152"
         stroke={p.ink}
         strokeWidth={3.2}
         strokeLinecap="round"
@@ -195,43 +203,35 @@ export const DOG: SpeciesArt = {
       />
     </G>
   ),
-  eyes: (p) => eyePair(p, 116, 184, 126, 11.5, 13.5),
-  happyEyes: (p) => happyPair(p, 116, 184, 126, 12),
-  tongue: (p) => (
+  eyes: (p) => eyePair(p, 118, 182, 122, 10.5, 12.5),
+  happyEyes: (p) => happyPair(p, 118, 182, 122, 11),
+  tongue: () => (
     <G>
-      <Path d="M142 159 Q141 180 150 181 Q159 180 158 159 Z" fill="#FF7A93" />
-      <Path d="M150 162 L150 174" stroke="#E2546F" strokeWidth={2} strokeLinecap="round" />
+      <Path d="M141 156 Q140 184 150 185 Q160 184 159 156 Z" fill="#FB8781" />
+      <Path d="M150 160 L150 176" stroke="#E2656A" strokeWidth={2} strokeLinecap="round" />
     </G>
   ),
 };
 
 // ------------------------------------------------------------------ CAT
+// Matches the approved GPT board: gray tabby head with forehead stripes either side of a
+// white blaze that widens into a big white muzzle, pink inner ears, dark whiskers, coral
+// collar with gold bell, gray body with white bib and paws, curled tail on the left.
 
 const catEar = (p: Paint) => (
   <G>
-    <Path d="M70 100 L80 36 Q84 26 94 32 L130 72 Z" fill={p.coat} />
-    <Path d="M84 88 L89 48 L114 74 Z" fill={p.pink} />
+    <Path d="M68 104 L78 36 Q82 26 92 32 L132 72 Z" fill={p.coat} />
+    <Path d="M82 92 L87 48 L116 76 Z" fill={p.pink} />
   </G>
 );
 
 export const CAT: SpeciesArt = {
-  pivots: { tail: [198, 292], neck: [150, 198], earL: [100, 82], earR: [200, 82], eyes: [150, 132] },
+  pivots: { tail: [110, 300], neck: [150, 198], earL: [100, 80], earR: [200, 80], eyes: [150, 130] },
   earsBehindHead: true,
   tail: (p) => (
     <G>
-      <Path
-        d="M196 296 C246 296 270 262 262 214 C258 192 268 176 282 182"
-        stroke={p.coat}
-        strokeWidth={24}
-        strokeLinecap="round"
-        fill="none"
-      />
-      <Path
-        d="M246 286 L258 274 M262 256 L274 252 M262 232 L276 232 M262 210 L274 206"
-        stroke={p.patch}
-        strokeWidth={7}
-        strokeLinecap="round"
-      />
+      <Path d="M112 302 C74 308 46 296 42 270 C40 250 56 238 72 246" stroke={p.coat} strokeWidth={30} strokeLinecap="round" fill="none" />
+      <Path d="M70 300 L66 286 M50 286 L58 276 M44 262 L58 262" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
     </G>
   ),
   body: (p) => (
@@ -239,8 +239,8 @@ export const CAT: SpeciesArt = {
       <Ellipse cx={100} cy={288} rx={28} ry={24} fill={p.coat} />
       <Ellipse cx={200} cy={288} rx={28} ry={24} fill={p.coat} />
       <Path d="M98 306 C90 252 108 198 150 196 C192 198 210 252 202 306 Q150 318 98 306 Z" fill={p.coat} />
-      <Path d="M104 248 L116 252 M102 266 L116 268 M196 248 L184 252 M198 266 L184 268" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
-      <Path d="M124 212 C136 204 164 204 176 212 C182 252 170 290 150 296 C130 290 118 252 124 212 Z" fill={p.light} />
+      <Path d="M104 246 L116 250 M102 264 L116 266 M196 246 L184 250 M198 264 L184 266" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
+      <Path d="M120 208 C134 200 166 200 180 208 C188 252 174 294 150 300 C126 294 112 252 120 208 Z" fill={p.light} />
       <Rect x={122} y={238} width={22} height={72} rx={11} fill={p.light} />
       <Rect x={156} y={238} width={22} height={72} rx={11} fill={p.light} />
       <Ellipse cx={88} cy={308} rx={18} ry={8} fill={p.light} />
@@ -262,43 +262,44 @@ export const CAT: SpeciesArt = {
   earR: (p) => mirror(catEar(p)),
   head: (p) => (
     <G>
-      <Path d="M58 150 L44 158 L62 162 L52 172 L74 168 Z" fill={p.coat} />
-      <Path d="M242 150 L256 158 L238 162 L248 172 L226 168 Z" fill={p.coat} />
-      <Ellipse cx={150} cy={130} rx={92} ry={70} fill={p.light} />
-      {/* tabby cap with inverted V down to the nose */}
+      <Path d="M60 148 L44 156 L62 162 L52 172 L76 168 Z" fill={p.coat} />
+      <Path d="M240 148 L256 156 L238 162 L248 172 L224 168 Z" fill={p.coat} />
+      <Ellipse cx={150} cy={130} rx={92} ry={70} fill={p.coat} />
+      {/* white blaze widening into the muzzle */}
       <Path
-        d="M58 136 C56 86 100 60 150 60 C200 60 244 86 242 136 C224 128 196 120 176 124 L150 152 L124 124 C104 120 76 128 58 136 Z"
-        fill={p.coat}
+        d="M150 80 C158 80 162 98 166 112 C192 118 222 134 226 162 C220 188 186 200 150 200 C114 200 80 188 74 162 C78 134 108 118 134 112 C138 98 142 80 150 80 Z"
+        fill={p.light}
       />
-      <Path d="M150 64 L150 86 M131 68 L135 86 M169 68 L165 86" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
-      <Path d="M62 112 L80 116 M238 112 L220 116" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
+      <Path d="M126 70 L130 92 M108 78 L116 96 M174 70 L170 92 M192 78 L184 96" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
+      <Path d="M64 118 L82 122 M236 118 L218 122" stroke={p.patch} strokeWidth={6} strokeLinecap="round" />
     </G>
   ),
   face: (p) => (
     <G>
-      <Ellipse cx={100} cy={160} rx={13} ry={8} fill={p.blush} opacity={0.45} />
-      <Ellipse cx={200} cy={160} rx={13} ry={8} fill={p.blush} opacity={0.45} />
-      <Path d="M142 148 L158 148 L150 157 Z" fill="#FF8AA2" strokeLinejoin="round" />
+      <Ellipse cx={104} cy={160} rx={12} ry={7} fill={p.blush} opacity={0.35} />
+      <Ellipse cx={196} cy={160} rx={12} ry={7} fill={p.blush} opacity={0.35} />
+      <Path d="M143 146 L157 146 L150 155 Z" fill="#F67475" strokeLinejoin="round" />
       <Path
-        d="M150 157 L150 161 M139 161 Q145 168 150 161 Q155 168 161 161"
+        d="M150 155 L150 159 M139 159 Q145 166 150 159 Q155 166 161 159"
         stroke={p.ink}
         strokeWidth={2.8}
         strokeLinecap="round"
         fill="none"
       />
       <Path
-        d="M118 156 L80 150 M118 163 L82 168 M182 156 L220 150 M182 163 L218 168"
-        stroke="#C5C9D1"
+        d="M112 156 L64 148 M112 164 L66 172 M188 156 L236 148 M188 164 L234 172"
+        stroke={p.ink}
         strokeWidth={2.2}
         strokeLinecap="round"
+        opacity={0.85}
       />
     </G>
   ),
-  eyes: (p) => eyePair(p, 118, 182, 132, 10.5, 12.5),
-  happyEyes: (p) => happyPair(p, 118, 182, 132, 11),
+  eyes: (p) => eyePair(p, 118, 182, 130, 10.5, 12.5),
+  happyEyes: (p) => happyPair(p, 118, 182, 130, 12),
   tongue: () => (
     <G>
-      <Ellipse cx={150} cy={166} rx={6.5} ry={5.5} fill="#FF7A93" />
+      <Ellipse cx={150} cy={165} rx={6.5} ry={5.5} fill="#FB8781" />
     </G>
   ),
 };

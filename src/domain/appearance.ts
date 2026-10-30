@@ -22,13 +22,13 @@ export type Appearance = { paletteId: string; accessoryId: string };
 
 export const PALETTES: Record<Species, Palette[]> = {
   dog: [
-    { id: 'honey', name: 'Honey', coat: '#FCD997', patch: '#F5A23A', light: '#FFF6E6', pink: '#FF8FA3', shade: '#EDB866' },
-    { id: 'cocoa', name: 'Cocoa', coat: '#D9A777', patch: '#8A5634', light: '#FBEBDD', pink: '#FF8FA3', shade: '#B9845A' },
-    { id: 'snow', name: 'Snow', coat: '#F4F1EC', patch: '#C9C2B8', light: '#FFFFFF', pink: '#FF9DB0', shade: '#DCD5CB' },
-    { id: 'midnight', name: 'Midnight', coat: '#5B5F6E', patch: '#33363F', light: '#F3F1EE', pink: '#FF8FA3', shade: '#474A56' },
+    { id: 'honey', name: 'Honey', coat: '#FBD49B', patch: '#FDA33B', light: '#FFF0D9', pink: '#FB8781', shade: '#E8892A' },
+    { id: 'cocoa', name: 'Cocoa', coat: '#DDB089', patch: '#8A5634', light: '#FBEBDD', pink: '#FB8781', shade: '#6E4227' },
+    { id: 'snow', name: 'Snow', coat: '#F4F1EC', patch: '#D3C8B8', light: '#FFFFFF', pink: '#FB8781', shade: '#B9AD9C' },
+    { id: 'midnight', name: 'Midnight', coat: '#5B5F6E', patch: '#33363F', light: '#F3F1EE', pink: '#FB8781', shade: '#1F2128' },
   ],
   cat: [
-    { id: 'tabby', name: 'Tabby', coat: '#9EA2AE', patch: '#5E6270', light: '#FBFAF8', pink: '#FF9BB0', shade: '#7F8391' },
+    { id: 'tabby', name: 'Tabby', coat: '#9A929E', patch: '#665A6D', light: '#FBF3E2', pink: '#F9A3AE', shade: '#7E7586' },
     { id: 'ginger', name: 'Ginger', coat: '#FFB765', patch: '#E8822D', light: '#FFF7EC', pink: '#FF9BB0', shade: '#F29C48' },
     { id: 'tuxedo', name: 'Tuxedo', coat: '#3B3E48', patch: '#24262D', light: '#FAFAFA', pink: '#FF9BB0', shade: '#30333B' },
     { id: 'cream', name: 'Cream', coat: '#F3DFC4', patch: '#D8B88F', light: '#FFFBF5', pink: '#FF9BB0', shade: '#E4CAA6' },
