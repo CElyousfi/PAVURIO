@@ -23,9 +23,9 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 
 | Done | Item | Owner | Path |
 |---|---|---|---|
-| [x] | Cat master, full body, sitting, front | ChatGPT | `docs/art/gpt-cat/source/master.png` |
-| [x] | Cat video start frames (see brief §5) | ChatGPT | `docs/art/gpt-cat/start-frames/*.png` |
-| [x] | Cat avatar (wired) | ChatGPT | `assets/art/cat/avatar.png` |
+| [ ] | Cat master, full body, sitting, front | ChatGPT | `docs/art/gpt-cat/source/master.png` |
+| [ ] | Cat video start frames (see brief §5) | ChatGPT | `docs/art/gpt-cat/start-frames/*.png` |
+| [ ] | Cat avatar (wired) | ChatGPT | `assets/art/cat/avatar.png` |
 | [ ] | Clips: idle, celebrate, eat, drink, play, groom (lick paw), litter | Gemini → Claude | `docs/art/gpt-cat/videos/*.mp4` |
 
 ## Static illustrations wired into the app (brief §3)
@@ -44,3 +44,5 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 | [ ] | Accessories (neckwear, hats, glasses, outfits) | ChatGPT |
 | [ ] | Empty states: Records, Moments; reminders permission; paywall hero | ChatGPT |
 | [ ] | Future species masters: rabbit, hamster, bird, turtle | ChatGPT |
+
+> Cat artwork review required: the original batch assets were not a style match. See `docs/art/gpt-cat/reference/style-correction.jpg` and `docs/art/gpt-cat/reference/CLAUDE_HANDOFF.md`. Do not mark cat tasks complete until a high-resolution, visually approved standalone master, matched frames and avatar replace the draft assets.
