@@ -33,7 +33,19 @@ function Glyph({ icon, color, size }: { icon: BadgeDef['icon']; color: string; s
 /** Achievement medal: GPT art when provided, otherwise a ring in the badge colour around its icon. */
 export function Medal({ def, size, locked }: { def: BadgeDef; size: number; locked?: boolean }) {
   const art = ART.badges[def.key];
-  if (art) return <Image source={art} style={{ width: size, height: size, opacity: locked ? 0.35 : 1 }} accessibilityIgnoresInvertColors />;
+  if (art)
+    return (
+      <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+        <Image source={art} style={{ width: size, height: size, opacity: locked ? 0.28 : 1 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        {locked ? (
+          <View style={{ position: 'absolute', width: size * 0.34, height: size * 0.34, borderRadius: size * 0.17, backgroundColor: '#FFFFFFE6', alignItems: 'center', justifyContent: 'center' }}>
+            <Svg width={size * 0.18} height={size * 0.18} viewBox="0 0 24 24">
+              <Path d="M7 11V8a5 5 0 0 1 10 0v3M5.5 11h13v9.5h-13z" stroke="#9AA1AE" strokeWidth={2.6} fill="none" strokeLinejoin="round" />
+            </Svg>
+          </View>
+        ) : null}
+      </View>
+    );
   const color = locked ? '#C5CAD3' : def.color;
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: locked ? '#F1F2F4' : `${color}22`, alignItems: 'center', justifyContent: 'center', borderWidth: size * 0.06, borderColor: color }}>

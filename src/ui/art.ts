@@ -42,11 +42,41 @@ export const ART = {
     remindersHero: require('../../assets/art/scenes/duo.webp') as Img,
     /** crowned Honey & Tabby scene card (batch 01 #10, EDSR 4x) — paywall hero */
     paywallHero: require('../../assets/art/scenes/premium.webp') as Img,
-    /** assets/art/ui/streak_flame.png — friendly flame/paw mascot for streaks, 512×512 transparent */
-    streak: null as Img,
+    /** streak flame (PR #4 atlas B, EDSR 4x) */
+    streak: require('../../assets/art/icons/flame.webp') as Img,
   },
-  /** assets/art/badges/<key>.png — 512×512 transparent medals; missing = built-in medal */
-  badges: {} as Record<string, Img>,
+  /** rosette medals from PR #4 atlas B (EDSR 4x, tools/art/atlas_icons.py); missing = built-in medal */
+  badges: {
+    first_log: require('../../assets/art/badges/rosette_paw.webp'),
+    streak3: require('../../assets/art/badges/rosette_star.webp'),
+    streak7: require('../../assets/art/badges/rosette_flame.webp'),
+    streak30: require('../../assets/art/badges/rosette_crown.webp'),
+    logs50: require('../../assets/art/badges/rosette_heart.webp'),
+    logs250: require('../../assets/art/badges/rosette_moon.webp'),
+    routine: require('../../assets/art/badges/rosette_calendar.webp'),
+    record: require('../../assets/art/badges/rosette_plus.webp'),
+    moment: require('../../assets/art/badges/rosette_camera.webp'),
+    weight: require('../../assets/art/badges/rosette_leaf.webp'),
+    walker: require('../../assets/art/badges/rosette_paw_brown.webp'),
+    challenge1: require('../../assets/art/badges/rosette_trophy.webp'),
+    challenge3: require('../../assets/art/badges/rosette_trophy_purple.webp'),
+    family: require('../../assets/art/badges/rosette_heart_teal.webp'),
+  } as Record<string, Img>,
+  /** object icons from PR #4 (no characters): paywall perks, empty and error states */
+  icons: {
+    gift: require('../../assets/art/icons/gift.webp'),
+    gem: require('../../assets/art/icons/gem.webp'),
+    infinity: require('../../assets/art/icons/infinity.webp'),
+    shield: require('../../assets/art/icons/shield.webp'),
+    offline: require('../../assets/art/icons/offline.webp'),
+    error: require('../../assets/art/icons/error.webp'),
+    noReminders: require('../../assets/art/icons/no_reminders.webp'),
+    paw: require('../../assets/art/icons/ui_paw.webp'),
+    trophy: require('../../assets/art/icons/ui_trophy.webp'),
+    chart: require('../../assets/art/icons/ui_chart.webp'),
+    heart: require('../../assets/art/icons/ui_heart.webp'),
+    calendar: require('../../assets/art/icons/ui_calendar.webp'),
+  },
   /**
    * Scene cards (rounded, coloured backgrounds) cut from ChatGPT's illustration sheets and upscaled 4x
    * (tools/art/scenes.py). Audit + screen mapping: docs/art/ILLUSTRATION_AUDIT_01_02.md.

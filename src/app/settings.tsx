@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { Alert, Image, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plan } from '../domain/progress';
 import { countAllEvents, exportAll, exportCareCsv, getSetting as getSettingRaw, resetAll, setPlan, setSetting as setSettingRaw } from '../data/repo';
 import * as StoreReview from 'expo-store-review';
 import { LEGAL } from '../config/links';
+import { ART } from '../ui/art';
 import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, getPermission, requestPermission } from '../native/notifications';
@@ -177,6 +178,7 @@ export default function Settings() {
 
           <Label style={styles.section}>Pavurio Pro</Label>
           <Pressable accessibilityRole="button" accessibilityLabel="Pavurio Pro" onPress={() => router.push('/paywall')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+            {ART.icons.gem ? <Image source={ART.icons.gem} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="xbold" style={{ fontSize: 17 }}>
                 {pro ? t('Pro is active') : t('More pets & monthly stories')}
@@ -201,14 +203,15 @@ export default function Settings() {
           <Label style={styles.section}>{t('Help & feedback')}</Label>
           <View style={[styles.card, softShadow, { paddingVertical: 4 }]}>
             {[
-              { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate },
-              { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp },
-              { label: t('Achievements'), body: t('Badges, streaks and challenges'), go: () => router.push('/achievements') },
-              { label: t('Contact support'), body: LEGAL.support, go: () => Linking.openURL(`mailto:${LEGAL.support}?subject=Pavurio`) },
-              { label: t('Privacy policy'), body: t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy) },
-              { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms) },
+              { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate, icon: ART.icons.heart },
+              { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp, icon: ART.icons.gift },
+              { label: t('Achievements'), body: t('Badges, streaks and challenges'), go: () => router.push('/achievements'), icon: ART.icons.trophy },
+              { label: t('Contact support'), body: LEGAL.support, go: () => Linking.openURL(`mailto:${LEGAL.support}?subject=Pavurio`), icon: ART.icons.paw },
+              { label: t('Privacy policy'), body: t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.icons.shield },
+              { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms), icon: ART.icons.calendar },
             ].map((r, i) => (
               <Pressable key={r.label} accessibilityRole="button" accessibilityLabel={r.label} onPress={r.go} style={[styles.linkRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.line }]}>
+                {r.icon ? <Image source={r.icon} style={{ width: 30, height: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 16 }}>
                     {r.label}
