@@ -217,6 +217,7 @@ export default function Account() {
     ]);
     if (v !== 'go') return;
     let r = await cloudState.deleteAccount();
+    if (r.kind === 'cancelled') return;
     if (r.kind === 'reauth' && user) {
       const m: Method = user.providers.includes('apple') ? 'apple' : user.providers.includes('google') ? 'google' : 'email';
       if (m === 'email' && !password) {

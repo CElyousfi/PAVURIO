@@ -32,9 +32,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       '@react-native-firebase/app',
       '@react-native-firebase/auth',
       '@react-native-firebase/crashlytics',
+      '@react-native-firebase/app-check',
       '@react-native-google-signin/google-signin',
-      // Firebase Apple SDK 13+ ships through Swift Package Manager, which needs dynamic frameworks
-      ['expo-build-properties', { ios: { useFrameworks: 'dynamic' } }],
+      // Firebase Apple SDK 13+ ships through Swift Package Manager, which needs dynamic frameworks.
+      // Firebase Android BoM 35 (firebase-auth 25) is built with Kotlin 2.4; RN's default 2.2 can't read it.
+      ['expo-build-properties', { ios: { useFrameworks: 'dynamic' }, android: { kotlinVersion: '2.3.21' } }],
     );
   }
   return {
@@ -44,6 +46,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...config.ios,
       usesAppleSignIn: true,
       ...(firebase ? { googleServicesFile: IOS_FILE } : {}),
+      // App Check on iOS uses App Attest (falls back to DeviceCheck on older phones)
+      ...(firebase ? { entitlements: { ...(config.ios?.entitlements ?? {}), 'com.apple.developer.devicecheck.appattest-environment': 'production' } } : {}),
     },
     android: {
       ...config.android,

@@ -16,7 +16,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { HttpsError, onCall, type CallableRequest } from 'firebase-functions/v2/https';
-import { defineSecret, defineString } from 'firebase-functions/params';
+import { defineBoolean, defineSecret, defineString } from 'firebase-functions/params';
 import * as logger from 'firebase-functions/logger';
 import { CODE_TTL_MS, type CodeRecord, checkCode, codeEmail, hashCode, isEmail, keyOf, newCode, normalizeEmail, sendAllowed } from './logic';
 
@@ -26,9 +26,12 @@ setGlobalOptions({ region: 'europe-west1', maxInstances: 10 });
 const RESEND_API_KEY = defineSecret('RESEND_API_KEY');
 const MAIL_FROM = defineString('MAIL_FROM', { default: 'Pavurio <hello@pavurio.app>' });
 const RESEND_SEGMENT_ID = defineString('RESEND_SEGMENT_ID', { default: '' });
+/** reject calls without a valid App Check token. Turn on (functions/.env) once store builds are out. */
+const ENFORCE_APP_CHECK = defineBoolean('ENFORCE_APP_CHECK', { default: false });
 
 const db = () => getFirestore();
-const opts = { secrets: [RESEND_API_KEY] };
+const opts = { secrets: [RESEND_API_KEY], enforceAppCheck: ENFORCE_APP_CHECK };
+const plain = { enforceAppCheck: ENFORCE_APP_CHECK };
 
 function uidOf(req: CallableRequest): string {
   if (!req.auth) throw new HttpsError('unauthenticated', 'Sign in first.');
@@ -111,7 +114,7 @@ export const sendEmailCode = onCall(opts, async (req) => {
   return { sent: true, email };
 });
 
-export const verifyEmailCode = onCall(async (req) => {
+export const verifyEmailCode = onCall(plain, async (req) => {
   const uid = uidOf(req);
   const user = await getAuth().getUser(uid);
   const email = normalizeEmail(user.email);
@@ -139,7 +142,7 @@ export const sendResetCode = onCall(opts, async (req) => {
   return { sent: true };
 });
 
-export const resetPassword = onCall(async (req) => {
+export const resetPassword = onCall(plain, async (req) => {
   const email = normalizeEmail(req.data?.email);
   const password = typeof req.data?.password === 'string' ? req.data.password : '';
   if (!isEmail(email)) throw new HttpsError('invalid-argument', 'That email address doesn’t look right.');

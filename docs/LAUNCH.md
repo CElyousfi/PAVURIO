@@ -1,6 +1,43 @@
-# Pavurio — launch checklist (what only the owner can do)
+# Pavurio — launch checklist
 
-The code is ready. These steps need your accounts. Each one says what to send back to Claude, if anything.
+## Production status (31 Oct 2026)
+
+| Area | Status |
+|---|---|
+| App code (EN/FR, dog + cat v2, engagement, paywall, reminders) | ✅ on `main` |
+| Firebase project `pavurio` (Blaze), iOS + Android apps, config files | ✅ committed in `firebase/` |
+| Accounts (guest, email + 6-digit code, Google, Apple), cloud backup, Crashlytics | ✅ code. Confirm on a device (§7 of the master plan) |
+| Apple token revocation on account deletion (App Store rule 5.1.1(v)) | ✅ code |
+| App Check (Play Integrity / App Attest) | ✅ code. Enforcement **off** until store builds ship. Then set `ENFORCE_APP_CHECK=true` in `functions/.env` and redeploy |
+| Over-the-air JS updates (`eas update --channel production`) | ✅ expo-updates wired to the EAS project |
+| Android build with Firebase BoM 35 (Kotlin 2.3.21) | ✅ |
+| EAS project linked (`theroadroller`, f0a29bcf…) | ✅ |
+| **Email domain in Resend** | ❌ Only `mail.syndicup.pro` exists. The codes need a Pavurio domain, `MAIL_FROM` set to it, and the functions redeployed |
+| **RevenueCat keys + store products** | ❌ Waiting on the owner. Without them the paywall can't sell |
+| Play App Signing SHA-1/256 in Firebase | ⏳ After the first Play upload. Then re-download `google-services.json` |
+| GitHub Pages (privacy / terms / support / deletion) | ⏳ Check it's live at https://celyousfi.github.io/PAVURIO/ |
+| Art: `records` scene with the cat v2 | ⏳ ChatGPT |
+| Cat clips batch 2 (drink, play, groom, litter, hello, sleep, idle2) | ⏳ Gemini |
+
+### Release commands
+
+```
+npx eas-cli build --profile production -p all          # store builds (build numbers auto-increment)
+npx eas-cli submit -p ios && npx eas-cli submit -p android
+npx eas-cli update --channel production -m "…"          # JS-only hotfix to installed apps
+```
+
+### When the store builds are live
+
+1. Add the Play App Signing SHA keys in Firebase, re-download `google-services.json`, and rebuild.
+2. Register App Check apps in the Firebase console:
+   - App Attest (iOS, Team ID).
+   - Play Integrity (Android, SHA-256).
+3. Set `ENFORCE_APP_CHECK=true` and run `npx firebase-tools deploy --only functions`.
+
+---
+
+## Setup reference (done by Claude Code on 31 Oct; kept for reference)
 
 ## 1. Website (1 minute)
 
