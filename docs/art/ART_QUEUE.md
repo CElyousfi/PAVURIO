@@ -23,17 +23,17 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 
 | Done | Item | Owner | Path |
 |---|---|---|---|
-| [ ] | Cat master, full body, sitting, front | ChatGPT | `docs/art/gpt-cat/source/master.png` |
-| [ ] | Cat video start frames (see brief §5) | ChatGPT | `docs/art/gpt-cat/start-frames/*.png` |
-| [ ] | Cat avatar (wired) | ChatGPT | `assets/art/cat/avatar.png` |
+| [x] | Cat master, full body, sitting, front | ChatGPT | `docs/art/gpt-cat/source/master.png` |
+| [x] | Cat video start frames (see brief §5) | ChatGPT | `docs/art/gpt-cat/start-frames/*.png` |
+| [x] | Cat avatar (wired) | ChatGPT | `assets/art/cat/avatar.png` |
 | [ ] | Clips: idle, celebrate, eat, drink, play, groom (lick paw), litter | Gemini → Claude | `docs/art/gpt-cat/videos/*.mp4` |
 
 ## Static illustrations wired into the app (brief §3)
 
 | Done | Item | Owner |
 |---|---|---|
-| [ ] | Care objects ×10 (meal ×3 states, water ×3 states, walk, play, grooming, litter) | ChatGPT |
-| [ ] | Welcome badge, empty-day picture, plan header | ChatGPT |
+| [x] | Care objects ×10 (meal ×3 states, water ×3 states, walk, play, grooming, litter) | ChatGPT |
+| [x] | Welcome badge, empty-day picture, plan header | ChatGPT |
 
 ## Later features (brief §6; not wired yet)
 

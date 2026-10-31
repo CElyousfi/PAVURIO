@@ -11,29 +11,29 @@ type Img = number | null;
 export const ART = {
   care: {
     /** assets/art/care/meal_empty.png, meal_half.png, meal_full.png — 1024×1024 transparent */
-    meal: { empty: null as Img, half: null as Img, full: null as Img },
+    meal: { empty: require('../../assets/art/care/meal_empty.png'), half: require('../../assets/art/care/meal_half.png'), full: require('../../assets/art/care/meal_full.png') },
     /** assets/art/care/water_low.png, water_half.png, water_full.png */
-    water: { empty: null as Img, half: null as Img, full: null as Img },
+    water: { empty: require('../../assets/art/care/water_low.png'), half: require('../../assets/art/care/water_half.png'), full: require('../../assets/art/care/water_full.png') },
     /** assets/art/care/walk.png */
-    walk: null as Img,
+    walk: require('../../assets/art/care/walk.png'),
     /** assets/art/care/play.png */
-    play: null as Img,
+    play: require('../../assets/art/care/play.png'),
     /** assets/art/care/grooming.png */
-    grooming: null as Img,
+    grooming: require('../../assets/art/care/grooming.png'),
     /** assets/art/care/litter.png */
-    litter: null as Img,
+    litter: require('../../assets/art/care/litter.png'),
   },
   ui: {
     /** assets/art/ui/welcome_badge.png — small icon above the welcome headline, 512×512 transparent */
-    welcomeBadge: null as Img,
+    welcomeBadge: require('../../assets/art/ui/welcome_badge.png'),
     /** assets/art/ui/empty_day.png — pet next to an empty bowl, hopeful and happy, 1024×1024 transparent */
-    emptyDay: null as Img,
+    emptyDay: require('../../assets/art/ui/empty_day.png'),
     /** assets/art/ui/plan_header.png — dog and cat looking at a checklist, 1536×1024 transparent */
-    planHeader: null as Img,
+    planHeader: require('../../assets/art/ui/plan_header.png'),
   },
   cat: {
     /** assets/art/cat/avatar.png — cat head bust for small avatars, 512×512 transparent */
-    avatar: null as Img,
+    avatar: require('../../assets/art/cat/avatar.png'),
   },
 };
 
