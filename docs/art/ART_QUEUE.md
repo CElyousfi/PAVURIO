@@ -26,7 +26,7 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 | [x] | Cat master, full body, sitting, front (from ChatGPT's cat sheet, EDSR 4× upscale) | ChatGPT → Claude | `docs/art/gpt-cat/source/master.png` |
 | [x] | Cat video start frames idle/eat/drink/play/litter (same framing as the dog videos) | Claude | `docs/art/gpt-cat/start-frames/*.png` |
 | [x] | Cat in app: 4 coats + sketch + collar colors + avatars | Claude | `assets/pets/cat/` |
-| [x] | Clips batch 1: idle, celebrate, eat (31 Oct) — in app for all 4 coats + 5 collars. **Note:** Gemini drew its own cat (slimmer, eyelashes, white paws), not the Tabby start frame; accepted by the owner. Static cat art (avatars, scenes) still shows the original Tabby | Gemini → Claude | `docs/art/gpt-cat/videos/{idle,celebrate,eat}.mp4` → `assets/pets/cat/clips/` |
+| [x] | Clips batch 1: idle, celebrate, eat (31 Oct) — in app for all 4 coats + 5 collars. **Note:** Gemini drew its own cat (slimmer, eyelashes, white paws), not the Tabby start frame; **adopted by the owner as the official cat (v2)**; avatars done; ChatGPT redraws of scenes and badges listed in `docs/art/CAT_V2_REDRAW.md` | Gemini → Claude | `docs/art/gpt-cat/videos/{idle,celebrate,eat}.mp4` → `assets/pets/cat/clips/` |
 | [ ] | Clips batch 2: drink, play, groom (lick paw), litter, then hello, sleep, idle2 — **use the same cat as batch 1** (attach a frame of `idle.mp4` as the start image). Until then these cares play `celebrate` | Gemini → Claude | `docs/art/gpt-cat/videos/*.mp4`, prompts in `docs/art/gpt-cat/GEMINI_PROMPTS.md` |
 
 ## Static illustrations wired into the app (brief §3)
@@ -43,7 +43,7 @@ Reviewed in `docs/art/ILLUSTRATION_AUDIT_01_02.md`: 15 scenes in the app (4× up
 
 ## Batch 2 — engagement & paywall (slots already wired in `src/ui/art.ts`; the app shows a fallback until each file lands)
 
-Style for all: the approved Pavurio dog (`docs/art/gpt-dog/source/master_b.png`) and cat (`docs/art/gpt-cat/source/master.png`) exactly — same proportions, line, palette (honey dog with teal bandana, grey tabby cat with red collar), soft cel shading, **transparent PNG, no text, no frame, no drop shadow box**. Make them with image generation, never by drawing shapes in code.
+Style for all: the approved Pavurio dog (`docs/art/gpt-dog/source/master_b.png`) and cat (**v2**: `docs/art/gpt-cat/source/v2/master_tabby.png`) exactly — same proportions, line, palette (honey dog with teal bandana, slim grey tabby cat with white muzzle/chest/paws and a red collar with a gold bell), soft cel shading, **transparent PNG, no text, no frame, no drop shadow box**. Make them with image generation, never by drawing shapes in code.
 
 | Done | Item | Path | Spec |
 |---|---|---|---|
