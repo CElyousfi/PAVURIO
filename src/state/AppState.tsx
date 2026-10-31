@@ -11,6 +11,7 @@ import { listSchedules, marksBetween } from '../data/careRepo';
 import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
 import { configureNotifications, syncReminders } from '../native/notifications';
 import { isPro } from '../native/purchases';
+import { setMotionReduced } from '../ui/motion';
 import { Lang, deviceLanguage, setLang } from '../i18n';
 
 export type WeightUnit = 'kg' | 'lb';
@@ -74,6 +75,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSettings({ haptics, reduceMotion, weightUnit: weightUnit === 'lb' ? 'lb' : 'kg' });
     setHapticsEnabled(haptics);
     setProState((await repo.getSetting(db, 'proCache')) === '1');
+    if (!(await repo.getSetting(db, 'firstOpenAt'))) await repo.setSetting(db, 'firstOpenAt', String(Date.now()));
     const storedLang = await repo.getSetting(db, 'lang');
     const l: Lang = storedLang === 'fr' || storedLang === 'en' ? storedLang : deviceLanguage();
     setLang(l);
@@ -117,6 +119,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     [db],
   );
+
+  useEffect(() => {
+    setMotionReduced(settings.reduceMotion || !!osReduce);
+  }, [settings.reduceMotion, osReduce]);
 
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 

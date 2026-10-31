@@ -44,12 +44,13 @@ export default function PetsTab() {
         subtitle={pets.length === 1 ? t('Your family') : t('{n} in the family', { n: pets.length })}
         right={<CircleButton icon="plus" label={t('Add a pet')} onPress={addPet} size={50} />} />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 12 }} showsVerticalScrollIndicator={false}>
-        {pets.map((p) => {
+        {pets.map((p, pi) => {
           const active = p.id === pet?.id;
           const age = ageLabel(p.birthDate);
           return (
             <Card
               key={p.id}
+              enter={pi}
               onPress={async () => {
                 if (!active) {
                   await switchPet(p.id);

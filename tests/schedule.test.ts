@@ -144,7 +144,7 @@ describe('care & records repositories (v2 schema)', () => {
     await createMemory(db, { petId: pet.id, title: 'First beach day', date: '2026-08-12', kind: 'milestone' });
     expect(await listMemories(db, pet.id)).toHaveLength(1);
     const json = JSON.parse(await exportAll(db));
-    expect(json.schema).toBe(2);
+    expect(json.schema).toBe(3);
     expect(json.records).toHaveLength(1);
     expect(json.memories).toHaveLength(1);
     await deleteRecord(db, rid);

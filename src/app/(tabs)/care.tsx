@@ -14,6 +14,7 @@ import { Card, EmptyState, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong 
 import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
 import { tapFeedback } from '../../native/haptics';
+import { Enter } from '../../ui/motion';
 import { formatWeight, toUnit } from '../../features/weight';
 import { t, tn } from '../../i18n';
 import { monthNamesShort, weekdayNamesShort } from '../../i18n/dates';
@@ -177,8 +178,10 @@ export default function CareTab() {
               <Icon name="chevR" size={18} color={colors.faint} />
             </Pressable>
           ))}
-          {occ.map((o) => (
-            <OccurrenceRow key={o.key} o={o} db={db} species={pet.species} bump={bump} />
+          {occ.map((o, oi) => (
+            <Enter key={o.key} index={oi}>
+              <OccurrenceRow o={o} db={db} species={pet.species} bump={bump} />
+            </Enter>
           ))}
           <Pressable accessibilityRole="button" accessibilityLabel={t('Open care log for this day')} onPress={() => router.push({ pathname: '/day', params: { day } })} style={styles.logLink}>
             <T weight="xbold" style={{ color: colors.brand, fontSize: 14 }}>

@@ -10,6 +10,7 @@ import { dayKeyOf, parseDayKey } from '../../domain/time';
 import { useApp } from '../../state/AppState';
 import { EmptyState, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, T } from '../../ui/primitives';
+import { Enter } from '../../ui/motion';
 import { colors } from '../../ui/theme';
 import { t, tn } from '../../i18n';
 
@@ -109,8 +110,9 @@ export default function MomentsTab() {
               action={t('ADD A MOMENT')} onAction={() => router.push('/memory')} />
           ) : (
             <View style={styles.grid}>
-              {items.map((m) => (
-                <Pressable key={m.id} accessibilityRole="button" accessibilityLabel={`${m.title}, ${formatDateLong(m.date)}`} onPress={() => router.push({ pathname: '/memory', params: { id: m.id } })} style={[styles.tile, { width: tile, height: tile * 1.25 }]}>
+              {items.map((m, mi) => (
+                <Enter key={m.id} index={mi}>
+                <Pressable accessibilityRole="button" accessibilityLabel={`${m.title}, ${formatDateLong(m.date)}`} onPress={() => router.push({ pathname: '/memory', params: { id: m.id } })} style={[styles.tile, { width: tile, height: tile * 1.25 }]}>
                   {m.photoUri ? (
                     <Image source={{ uri: m.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                   ) : (
@@ -126,6 +128,7 @@ export default function MomentsTab() {
                     <T style={{ color: '#FFFFFFD0', fontSize: 11 }}>{formatDateLong(m.date)}</T>
                   </View>
                 </Pressable>
+                </Enter>
               ))}
             </View>
           )}

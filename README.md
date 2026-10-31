@@ -10,14 +10,17 @@ Its design comes from [Waterllama](https://refero.design/apps/274), studied thro
 
 | Area | What it does |
 |---|---|
-| **Home** | `done/planned` number, the pet colouring in, banded care rug, quick-add row, a **Next up** card with Done / Skip / Snooze, Undo after every log; each care plays its own dog clip |
+| **Onboarding** | animated 3-frame welcome with language switch, units sheet, species/name/look/special days/plan, an interactive **first care** (the pet colours in and celebrates), **Smart Reminders** primer with a live notification preview, then the trial paywall |
+| **Home** | `done/planned` count-up, the pet colouring in, quick-add row, **Next up** (Done / Skip / Snooze), Undo; scroll down for the **feed**: streak with week dots, upcoming visit, challenges, swipeable care tips, weekly story, achievements, Pro card |
+| **Engagement** | streaks, 7 challenges (progress from real logs, completion celebration), 14 badges with a collection screen, full-screen celebrations with confetti, a rating prompt at happy moments |
+| **Summary** | animated ring, Days / Weeks / Months stacked charts by care type (weeks/months are Pro), calendar with dots |
 | **Log card** | amount control, presets, time chips, note; a log ticks the matching scheduled time (±3 h) |
 | **Care tab** | week strip + month calendar with dots, day agenda, **routines** (times, weekdays, start/end, reminders, pause), **appointments** with reminders, **weight** log + chart (kg/lb), **walk timer** that survives closing the app |
-| **Reminders** | local notifications for the next 4 days, re-planned after every change; tapping one opens the right log card; nothing is ever marked done automatically |
+| **Reminders** | local notifications for the next 4 days with friendly per-care wording and **Done / Snooze** action buttons, an evening nudge that protects the streak (only while the day is unfinished), a trial-ending reminder; nothing is ever marked done automatically |
 | **Records tab** | vaccines, vet visits, medication, allergies, other; next-due list; photo/PDF attachments stored in the app; a shareable care summary for the vet or a sitter |
 | **Moments tab** | photo memories and milestones, birthday / adoption countdowns, **weekly and monthly stories** built only from logged data (9:16 player, share or save a slide, privacy sheet) |
 | **Pets tab** | several pets, switch, add, edit, archive/restore, delete |
-| **Pro** | RevenueCat (more pets, monthly stories). Without store keys the paywall says it isn't available; reminders, records and exports are always free |
+| **Pro** | conversion paywall (yearly with free trial / monthly / lifetime, honest saving %, trial timeline, what-you-get rows, animated CTA, restore + legal, success celebration) through RevenueCat. Pro = more pets, all challenges and tips, long-range stats, monthly stories. Reminders, records and exports are always free |
 | **Settings** | daily plan, haptics, reduce motion, reminders status, units, **English / Français**, CSV + JSON export, erase |
 
 ## Stack

@@ -3,7 +3,10 @@
  * English source strings are the keys; `t()` returns the French text when the app is in French and
  * the string is translated, otherwise the English. `{name}`-style placeholders are filled from `vars`.
  */
-import { FR } from './fr';
+import { FR as FR1 } from './fr';
+import { FR2 } from './fr2';
+
+const FR: Record<string, string> = { ...FR1, ...FR2 };
 
 export type Lang = 'en' | 'fr';
 let current: Lang = 'en';

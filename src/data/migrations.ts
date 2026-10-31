@@ -138,6 +138,19 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX IF NOT EXISTS idx_memories_pet_date ON memories (pet_id, date);
   `,
+  // v3 — challenges the owner opted into
+  `
+  CREATE TABLE IF NOT EXISTS challenge_runs (
+    id TEXT PRIMARY KEY NOT NULL,
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    key TEXT NOT NULL,
+    start_day TEXT NOT NULL,
+    completed_at INTEGER,
+    abandoned_at INTEGER,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_challenge_runs_pet ON challenge_runs (pet_id, created_at);
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

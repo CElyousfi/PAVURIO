@@ -14,27 +14,56 @@ import type { Db } from '../data/db';
 import { AppProvider, useApp } from '../state/AppState';
 import { colors } from '../ui/theme';
 import { onReminderTap } from '../native/notifications';
-import { isCareType } from '../domain/care';
+import { EngagementProvider } from '../state/Engagement';
+import { CelebrationHost } from '../features/CelebrationHost';
+import { careAllowedFor, isCareType } from '../domain/care';
+import { logCare } from '../data/repo';
+import { setMark } from '../data/careRepo';
+import { confirmOccurrence } from '../features/careLink';
 import { dayKeyOf } from '../domain/time';
 
 /** A tapped reminder opens the right place: the care's log card (linked to its occurrence) or the visit. */
 function ReminderRouter() {
-  const { pet, pets, switchPet } = useApp();
-  const ref = React.useRef({ pet, pets, switchPet });
-  ref.current = { pet, pets, switchPet };
+  const app = useApp();
+  const ref = React.useRef(app);
+  ref.current = app;
   useEffect(
     () =>
-      onReminderTap(async (t) => {
-        const { pet: cur, pets: all, switchPet: sw } = ref.current;
-        if (t.petId && t.petId !== cur?.id && all.some((p) => p.id === t.petId)) await sw(t.petId);
-        if (t.kind === 'appointment') {
-          router.push({ pathname: '/appointment', params: { id: t.key.replace(/^appt:/, '') } });
+      onReminderTap(async (n) => {
+        const { pet: cur, pets: all, switchPet: sw, db, schedules, bump, signalLogged } = ref.current;
+        if (n.petId && n.petId !== cur?.id && all.some((p) => p.id === n.petId)) await sw(n.petId);
+        const species = all.find((p) => p.id === (n.petId ?? cur?.id))?.species ?? cur?.species;
+        if (n.action === 'snooze' && n.kind === 'care') {
+          await setMark(db, n.scheduleId, n.key, 'snoozed', { snoozeUntil: Date.now() + 30 * 60_000 });
+          bump();
           return;
         }
-        if (t.type && isCareType(t.type)) {
-          router.push({ pathname: '/log/[type]', params: { type: t.type, day: dayKeyOf(new Date()), scheduleId: t.scheduleId, occ: t.key } });
-        } else {
+        if (n.action === 'done' && n.kind === 'care') {
+          // the owner confirmed it from the notification: record it (idempotent per occurrence)
+          if (n.type && isCareType(n.type) && species && careAllowedFor(species, n.type) && n.petId) {
+            try {
+              const saved = await logCare(db, { petId: n.petId, type: n.type, occurredAt: Date.now(), mutationId: `notif:${n.key}` });
+              await confirmOccurrence(db, schedules, saved, { scheduleId: n.scheduleId, key: n.key });
+              bump();
+              router.navigate('/');
+              signalLogged({ eventId: saved.id, type: n.type });
+            } catch (e) {
+              console.warn('[pavurio] could not log from notification', e);
+            }
+          } else {
+            await setMark(db, n.scheduleId, n.key, 'done');
+            bump();
+          }
+          return;
+        }
+        if (n.kind === 'appointment') {
+          router.push({ pathname: '/appointment', params: { id: n.key.replace(/^appt:/, '') } });
+        } else if (n.kind === 'care' && n.type && isCareType(n.type)) {
+          router.push({ pathname: '/log/[type]', params: { type: n.type, day: dayKeyOf(new Date()), scheduleId: n.scheduleId, occ: n.key } });
+        } else if (n.kind === 'care') {
           router.navigate('/care');
+        } else {
+          router.navigate('/');
         }
       }),
     [],
@@ -51,7 +80,9 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <SQLiteProvider databaseName="pavurio.db" onInit={(db) => migrate(db as unknown as Db)}>
         <AppProvider>
-          <Gate />
+          <EngagementProvider>
+            <Gate />
+          </EngagementProvider>
         </AppProvider>
       </SQLiteProvider>
     </SafeAreaProvider>
@@ -73,6 +104,7 @@ function Gate() {
   return (
     <React.Fragment key={language}>
       <ReminderRouter />
+      <CelebrationHost />
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas } }}>
         <Stack.Screen name="(tabs)" />
@@ -88,8 +120,12 @@ function Gate() {
         <Stack.Screen name="record" options={{ presentation: 'modal' }} />
         <Stack.Screen name="memory" options={{ presentation: 'modal' }} />
         <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="pet" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="challenge" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom' }} />
       </Stack>
     </React.Fragment>
   );

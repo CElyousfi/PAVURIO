@@ -9,7 +9,51 @@ import { t } from '../i18n';
 export const ENTITLEMENT = 'pro';
 export const FREE_PET_LIMIT = 1;
 
-export type Plan = { id: string; title: string; price: string; period: string; packageRef: unknown };
+export type Plan = {
+  id: string;
+  title: string;
+  /** formatted by the store, e.g. "€29.99" */
+  price: string;
+  priceValue: number;
+  /** 'year' | 'month' | 'week' | 'once' | '' */
+  period: string;
+  /** monthly equivalent from the store, formatted (yearly plans) */
+  perMonth: string | null;
+  /** free-trial length in days from the store's intro offer, or 0 */
+  trialDays: number;
+  packageRef: unknown;
+  /** true for display-only plans when the store isn't connected */
+  preview?: boolean;
+};
+
+const UNIT_DAYS: Record<string, number> = { DAY: 1, WEEK: 7, MONTH: 30, YEAR: 365, D: 1, W: 7, M: 30, Y: 365 };
+
+function trialDaysOf(product: any): number {
+  const intro = product?.introPrice;
+  if (intro && intro.price === 0) return (intro.periodNumberOfUnits ?? 0) * (UNIT_DAYS[intro.periodUnit] ?? 0) * Math.max(1, intro.cycles ?? 1);
+  const free = product?.defaultOption?.freePhase?.billingPeriod;
+  if (free) return (free.value ?? 0) * (UNIT_DAYS[free.unit] ?? 0);
+  return 0;
+}
+
+/**
+ * Shown when no store is connected (web, or a build without keys), so the paywall can be designed and
+ * reviewed. Clearly marked as previews and can't be bought.
+ */
+export const PREVIEW_PLANS: Plan[] = [
+  { id: 'preview_annual', title: 'Yearly', price: '€29.99', priceValue: 29.99, period: 'year', perMonth: '€2.50', trialDays: 7, packageRef: null, preview: true },
+  { id: 'preview_monthly', title: 'Monthly', price: '€4.99', priceValue: 4.99, period: 'month', perMonth: null, trialDays: 0, packageRef: null, preview: true },
+  { id: 'preview_lifetime', title: 'Lifetime', price: '€59.99', priceValue: 59.99, period: 'once', perMonth: null, trialDays: 0, packageRef: null, preview: true },
+];
+
+/** Honest saving of the yearly plan versus paying monthly for 12 months (null when it can't be computed). */
+export function yearlySaving(plans: Plan[]): number | null {
+  const y = plans.find((p) => p.period === 'year');
+  const m = plans.find((p) => p.period === 'month');
+  if (!y || !m || m.priceValue <= 0) return null;
+  const pct = Math.round((1 - y.priceValue / (m.priceValue * 12)) * 100);
+  return pct >= 5 ? pct : null;
+}
 export type StoreState = { configured: boolean; reason?: string };
 
 type RC = typeof import('react-native-purchases').default;
@@ -56,7 +100,10 @@ export async function loadPlans(): Promise<Plan[]> {
     id: p.identifier,
     title: p.product.title,
     price: p.product.priceString,
-    period: p.packageType === 'ANNUAL' ? 'year' : p.packageType === 'MONTHLY' ? 'month' : p.packageType === 'LIFETIME' ? 'once' : '',
+    priceValue: p.product.price,
+    period: p.packageType === 'ANNUAL' ? 'year' : p.packageType === 'MONTHLY' ? 'month' : p.packageType === 'WEEKLY' ? 'week' : p.packageType === 'LIFETIME' ? 'once' : '',
+    perMonth: p.packageType === 'ANNUAL' ? (p.product as { pricePerMonthString?: string | null }).pricePerMonthString ?? null : null,
+    trialDays: trialDaysOf(p.product),
     packageRef: p,
   }));
 }

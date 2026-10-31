@@ -38,7 +38,19 @@ export const ART = {
     emptyDay: null as Img,
     /** assets/art/ui/plan_header.png — dog and cat looking at a checklist, 1536×1024 transparent */
     planHeader: null as Img,
+    /** assets/art/ui/reminders_hero.png — the pet jumping happily under a sample notification, 1200×1200 transparent */
+    remindersHero: null as Img,
+    /** assets/art/ui/paywall_hero.png — dog and cat together, celebratory, 1536×1024 transparent */
+    paywallHero: null as Img,
+    /** assets/art/ui/streak_flame.png — friendly flame/paw mascot for streaks, 512×512 transparent */
+    streak: null as Img,
   },
+  /** assets/art/badges/<key>.png — 512×512 transparent medals; null = built-in medal */
+  badges: {} as Record<string, Img>,
+  /** assets/art/challenges/<key>.png — 1024×1024 transparent, pet doing the activity; null = care icon */
+  challenges: {} as Record<string, Img>,
+  /** assets/art/tips/<id>.png — 1024×1024 transparent; null = care icon */
+  tips: {} as Record<string, Img>,
 };
 
 export type CareArtType = keyof typeof ART.care;

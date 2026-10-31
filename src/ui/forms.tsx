@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CircleButton, Icon, Label, Pill, T } from './primitives';
 import { colors, font, radius, softShadow } from './theme';
 import { tapFeedback } from '../native/haptics';
+import { Bouncy, Enter } from './motion';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { lang, t } from '../i18n';
 import { capitalize, formatHM, monthNames, monthNamesShort, uses24h, weekdayInitials } from '../i18n/dates';
@@ -72,21 +73,15 @@ export function Chip({ label, on, onPress, color = colors.ink, tint = colors.lin
   );
 }
 
-export function Card({ children, style, onPress, accessibilityLabel }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; onPress?: () => void; accessibilityLabel?: string }) {
-  if (!onPress) return <View style={[styles.card, softShadow, style]}>{children}</View>;
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      onPress={() => {
-        tapFeedback();
-        onPress();
-      }}
-      style={({ pressed }) => [styles.card, softShadow, style, { transform: [{ scale: pressed ? 0.985 : 1 }] }]}
-    >
+export function Card({ children, style, onPress, accessibilityLabel, enter }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; onPress?: () => void; accessibilityLabel?: string; enter?: number }) {
+  const body = !onPress ? (
+    <View style={[styles.card, softShadow, style]}>{children}</View>
+  ) : (
+    <Bouncy accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} scaleTo={0.975} style={[styles.card, softShadow, style]}>
       {children}
-    </Pressable>
+    </Bouncy>
   );
+  return enter == null ? body : <Enter index={enter}>{body}</Enter>;
 }
 
 export function EmptyState({ title, body, action, onAction, art }: { title: string; body: string; action?: string; onAction?: () => void; art?: React.ReactNode }) {

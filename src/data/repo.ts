@@ -425,10 +425,11 @@ export async function exportAll(db: Db): Promise<string> {
   const records = await q('SELECT * FROM records ORDER BY date');
   const attachments = await q('SELECT * FROM attachments');
   const memories = await q('SELECT * FROM memories ORDER BY date');
+  const challengeRuns = await q('SELECT * FROM challenge_runs ORDER BY created_at');
   return JSON.stringify(
     {
       app: 'pavurio',
-      schema: 2,
+      schema: 3,
       exportedAt: new Date().toISOString(),
       pets,
       plans,
@@ -440,6 +441,7 @@ export async function exportAll(db: Db): Promise<string> {
       records,
       attachments,
       memories,
+      challengeRuns,
     },
     null,
     2,
@@ -469,7 +471,7 @@ export async function exportCareCsv(db: Db): Promise<string> {
 
 export async function resetAll(db: Db): Promise<void> {
   await db.withTransactionAsync(async () => {
-    for (const tbl of ['schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memories']) {
+    for (const tbl of ['challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memories']) {
       await db.runAsync(`DELETE FROM ${tbl}`, []);
     }
     await db.runAsync('DELETE FROM care_events', []);

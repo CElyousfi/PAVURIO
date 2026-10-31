@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { motionReduced } from '../../ui/motion';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router/js-tabs';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
@@ -57,6 +59,24 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
   );
 }
 
+/** Pill that grows in behind the active icon, and a little hop when a tab is selected. */
+function TabBubble({ focused, children }: { focused: boolean; children: React.ReactNode }) {
+  const on = useSharedValue(focused ? 1 : 0);
+  const hop = useSharedValue(0);
+  useEffect(() => {
+    on.value = withSpring(focused ? 1 : 0, { damping: 14, stiffness: 180 });
+    if (focused && !motionReduced()) hop.value = withSequence(withTiming(-5, { duration: 120 }), withSpring(0, { damping: 6, stiffness: 260 }));
+  }, [focused, on, hop]);
+  const bg = useAnimatedStyle(() => ({ opacity: on.value, transform: [{ scaleX: 0.5 + on.value * 0.5 }] }));
+  const icon = useAnimatedStyle(() => ({ transform: [{ translateY: hop.value }, { scale: 1 + on.value * 0.06 }] }));
+  return (
+    <View style={styles.iconWrap}>
+      <Animated.View style={[StyleSheet.absoluteFill, styles.iconOn, { borderRadius: 16 }, bg]} />
+      <Animated.View style={icon}>{children}</Animated.View>
+    </View>
+  );
+}
+
 function TabBar({ state, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   return (
@@ -80,9 +100,9 @@ function TabBar({ state, navigateToTab }: BottomTabBarProps) {
             }}
             style={styles.item}
           >
-            <View style={[styles.iconWrap, focused && styles.iconOn]}>
+            <TabBubble focused={focused}>
               <TabIcon name={name} color={color} />
-            </View>
+            </TabBubble>
             <T weight={focused ? 'black' : 'xbold'} style={[styles.label, { color }]}>
               {LABELS[name]()}
             </T>

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { PetRig, PetClipName } from '../../animation/PetRig';
 import { useBursts } from '../../animation/Burst';
@@ -19,6 +19,8 @@ import { CareIcon } from '../../ui/CareIcon';
 import { colors, font, radius, softShadow } from '../../ui/theme';
 import { petFeedback, successFeedback, tapFeedback } from '../../native/haptics';
 import { t } from '../../i18n';
+import { CountUp, Ring } from '../../ui/motion';
+import { HomeFeed } from '../../features/HomeFeed';
 
 export default function Home() {
   const { pet, ready } = useApp();
@@ -54,6 +56,9 @@ function HomeScreen() {
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [vh, setVh] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const scroller = useRef<React.ComponentRef<typeof ScrollView>>(null);
 
   // Celebrate ONLY after the log card confirmed the record was persisted.
   // The timer lives in a ref: clearing `logged` re-runs this effect and must not cancel it.
@@ -113,20 +118,27 @@ function HomeScreen() {
   const big = progress.planned > 0 ? `${progress.done}/${progress.planned}` : String(events.length);
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
-      <View style={[styles.col, { width: W }]}>
-        <View style={styles.topRow}>
-          <CircleButton label={t("Today, {pct} percent colored in. Open today's care", { pct: Math.round(progress.ratio * 100) })} onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })} size={54}>
-            <DayRing ratio={progress.ratio} day={new Date().getDate()} />
-          </CircleButton>
-          <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} />
-        </View>
+    <View style={styles.root}>
+      <ScrollView
+        ref={scroller}
+        onLayout={(e) => setVh(e.nativeEvent.layout.height)}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ alignItems: 'center' }}
+        scrollEventThrottle={16}
+        onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 40)}
+      >
+      <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 64 }]}>
 
         <View style={styles.header}>
           <Label style={{ marginBottom: 2 }}>{t("{name}'s day", { name: pet.name })}</Label>
-          <T weight="black" style={styles.big} accessibilityRole="header">
-            {big}
-          </T>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={big}>
+            <CountUp value={progress.planned > 0 ? progress.done : events.length} style={styles.big} />
+            {progress.planned > 0 ? (
+              <T weight="black" style={styles.big}>
+                /{progress.planned}
+              </T>
+            ) : null}
+          </View>
           <T style={styles.subtitle}>{progressSentence(progress)}</T>
         </View>
 
@@ -231,6 +243,30 @@ function HomeScreen() {
           )}
         </View>
       </View>
+      <HomeFeed width={W} />
+      </ScrollView>
+
+      {scrolled ? <Animated.View entering={FadeIn.duration(180)} exiting={FadeOut.duration(150)} pointerEvents="none" style={[styles.headerBg, { height: insets.top + 70 }]} /> : null}
+      <View pointerEvents="box-none" style={[styles.topRow, styles.floating, { top: insets.top + 6, width: W }]}>
+        <CircleButton label={t("Today, {pct} percent colored in. Open your summary", { pct: Math.round(progress.ratio * 100) })} onPress={() => router.push('/summary')} size={54}>
+          <Ring size={54} stroke={4} value={progress.ratio}>
+            <T weight="black" style={{ fontSize: 18, color: colors.brand }}>
+              {new Date().getDate()}
+            </T>
+          </Ring>
+        </CircleButton>
+        {scrolled ? (
+          <Animated.View entering={FadeInDown.duration(200)} exiting={FadeOutDown.duration(150)}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('Back to {name}', { name: pet.name })} onPress={() => scroller.current?.scrollTo({ y: 0, animated: true })} style={styles.backPill}>
+              <PetAvatar species={pet.species} appearance={pet.appearance} size={30} />
+              <T weight="black" style={{ fontSize: 15 }}>
+                {big}
+              </T>
+            </Pressable>
+          </Animated.View>
+        ) : null}
+        <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} />
+      </View>
 
       {snack ? (
         <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: 14 }]}>
@@ -327,7 +363,10 @@ function DayRing({ ratio, day }: { ratio: number; day: number }) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas, alignItems: 'center' },
   col: { flex: 1 },
-  topRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 4 },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 4 },
+  floating: { position: 'absolute', alignSelf: 'center' },
+  headerBg: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.96)', borderBottomWidth: 1, borderBottomColor: colors.line },
+  backPill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 6, paddingRight: 14, height: 42, borderRadius: 21, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: colors.line },
   header: { alignItems: 'center', marginTop: -6 },
   big: { fontSize: 64, lineHeight: 72, color: colors.brand, letterSpacing: -1 },
   subtitle: { fontSize: 17, color: colors.muted, marginTop: -2 },

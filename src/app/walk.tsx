@@ -7,6 +7,7 @@ import { getSetting, logCare, setSetting, ValidationError } from '../data/repo';
 import { newId } from '../domain/ids';
 import { careAllowedFor } from '../domain/care';
 import { confirmOccurrence } from '../features/careLink';
+import { bumpCounter } from '../data/engageRepo';
 import { useApp } from '../state/AppState';
 import { ScreenHeader } from '../ui/forms';
 import { Label, Pill, SoftPill, T } from '../ui/primitives';
@@ -109,6 +110,7 @@ export default function WalkTimer() {
       const saved = await logCare(db, { petId: pet.id, type: 'walk', occurredAt: timer.startedAt, amount: minutes, note: null, mutationId: mutationId.current });
       await confirmOccurrence(db, schedules, saved).catch(() => null);
       await persist(null);
+      await bumpCounter(db, `walksTimed:${pet.id}`);
       bump();
       signalLogged({ eventId: saved.id, type: 'walk' });
       router.dismissTo('/');

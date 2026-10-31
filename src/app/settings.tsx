@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plan } from '../domain/progress';
-import { countAllEvents, exportAll, exportCareCsv, resetAll, setPlan } from '../data/repo';
+import { countAllEvents, exportAll, exportCareCsv, getSetting as getSettingRaw, resetAll, setPlan, setSetting as setSettingRaw } from '../data/repo';
+import * as StoreReview from 'expo-store-review';
+import { LEGAL } from '../config/links';
+import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, getPermission, requestPermission } from '../native/notifications';
 import { Chip } from '../ui/forms';
@@ -18,9 +21,22 @@ import { t, tn } from '../i18n';
 export default function Settings() {
   const { pet, pets, plan, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
   const [perm, setPerm] = useState<PermissionState>('undetermined');
+  const [nudge, setNudge] = useState(true);
+  const [nudgeTime, setNudgeTime] = useState('19:30');
   useEffect(() => {
     void getPermission().then(setPerm);
-  }, []);
+    void getSettingRaw(db, 'eveningNudge').then((v) => setNudge(v !== '0'));
+    void getSettingRaw(db, 'eveningNudgeTime').then((v) => v && setNudgeTime(v));
+  }, [db]);
+  const rate = async () => {
+    if (await StoreReview.hasAction()) await StoreReview.requestReview();
+    else {
+      const url = StoreReview.storeUrl();
+      if (url) Linking.openURL(url);
+    }
+  };
+  const shareApp = () =>
+    Share.share({ message: t('I keep track of my pet’s care with Pavurio — the pet colours in as you log meals, walks and more. 🐾') + (StoreReview.storeUrl() ? `\n${StoreReview.storeUrl()}` : '') });
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -111,6 +127,33 @@ export default function Settings() {
             </T>
             {perm === 'undetermined' ? <SoftPill label={t('Turn on reminders')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={async () => setPerm(await requestPermission())} /> : null}
             {perm === 'denied' && Platform.OS !== 'web' ? <SoftPill label={t('Open phone settings')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings()} /> : null}
+            <View style={styles.sep} />
+            <ToggleRow
+              label={t('Evening nudge')}
+              hint={t('A reminder in the evening only if today’s plan isn’t coloured in yet — it also protects your streak.')}
+              value={nudge}
+              onChange={async (v) => {
+                setNudge(v);
+                await setSettingRaw(db, 'eveningNudge', v ? '1' : '0');
+                bump();
+              }}
+            />
+            {nudge ? (
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                {['18:30', '19:30', '20:30', '21:30'].map((tm) => (
+                  <Chip
+                    key={tm}
+                    label={formatHM(Number(tm.slice(0, 2)), Number(tm.slice(3)))}
+                    on={nudgeTime === tm}
+                    onPress={async () => {
+                      setNudgeTime(tm);
+                      await setSettingRaw(db, 'eveningNudgeTime', tm);
+                      bump();
+                    }}
+                  />
+                ))}
+              </View>
+            ) : null}
           </View>
 
           <Label style={styles.section}>{t('Units & language')}</Label>
@@ -155,6 +198,28 @@ export default function Settings() {
             </View>
           </View>
 
+          <Label style={styles.section}>{t('Help & feedback')}</Label>
+          <View style={[styles.card, softShadow, { paddingVertical: 4 }]}>
+            {[
+              { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate },
+              { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp },
+              { label: t('Achievements'), body: t('Badges, streaks and challenges'), go: () => router.push('/achievements') },
+              { label: t('Contact support'), body: LEGAL.support, go: () => Linking.openURL(`mailto:${LEGAL.support}?subject=Pavurio`) },
+              { label: t('Privacy policy'), body: t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy) },
+              { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms) },
+            ].map((r, i) => (
+              <Pressable key={r.label} accessibilityRole="button" accessibilityLabel={r.label} onPress={r.go} style={[styles.linkRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.line }]}>
+                <View style={{ flex: 1 }}>
+                  <T weight="xbold" style={{ fontSize: 16 }}>
+                    {r.label}
+                  </T>
+                  <T style={{ color: colors.muted, fontSize: 13 }}>{r.body}</T>
+                </View>
+                <Icon name="chevR" size={18} color={colors.faint} />
+              </Pressable>
+            ))}
+          </View>
+
           <Label style={styles.section}>{t('About')}</Label>
           <T style={{ color: colors.muted, lineHeight: 21 }}>
             {t("Pavurio helps you keep track of the care you give. It does not give medical advice or judge your pet's health — your progress is simply how much of your own plan you logged today.")}
@@ -185,5 +250,6 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   section: { marginTop: 26, marginBottom: 10 },
   card: { backgroundColor: colors.white, borderRadius: 22, padding: 16 },
+  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
   sep: { height: 1, backgroundColor: colors.line, marginVertical: 12 },
 });

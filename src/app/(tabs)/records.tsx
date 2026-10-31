@@ -95,11 +95,11 @@ export default function RecordsTab() {
           />
         ) : (
           <View style={{ gap: 10 }}>
-            {shown.map((r) => {
+            {shown.map((r, ri) => {
               const k = recordKind(r.kind);
               const thumb = r.attachments.find((a) => a.mime?.startsWith('image/'));
               return (
-                <Card key={r.id} onPress={() => router.push({ pathname: '/record', params: { id: r.id } })} accessibilityLabel={`${k.label}: ${r.title}`} style={styles.rec}>
+                <Card key={r.id} enter={ri} onPress={() => router.push({ pathname: '/record', params: { id: r.id } })} accessibilityLabel={`${k.label}: ${r.title}`} style={styles.rec}>
                   <View style={[styles.kindBadge, { backgroundColor: k.tint }]}>
                     <KindGlyph kind={r.kind} color={k.color} />
                   </View>
