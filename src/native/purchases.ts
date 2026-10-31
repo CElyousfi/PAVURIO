@@ -127,3 +127,15 @@ export async function restore(): Promise<boolean> {
   const info = await c.restorePurchases();
   return !!info.entitlements.active[ENTITLEMENT];
 }
+
+/** Ties purchases to the Pavurio account so Pro follows the owner to a new phone. */
+export async function identify(uid: string | null): Promise<void> {
+  const c = await client();
+  if (!c) return;
+  try {
+    if (uid) await c.logIn(uid);
+    else if (!(await c.isAnonymous())) await c.logOut();
+  } catch (e) {
+    console.warn('[pavurio] purchases identify failed', e);
+  }
+}

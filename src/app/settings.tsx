@@ -11,16 +11,17 @@ import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, getPermission, requestPermission } from '../native/notifications';
 import { Chip } from '../ui/forms';
-import { Icon } from '../ui/primitives';
 import { useApp } from '../state/AppState';
+import { useCloud } from '../state/Cloud';
 import { PlanEditor } from '../features/PetEditors';
-import { CircleButton, Label, Pill, SoftPill, T } from '../ui/primitives';
+import { CircleButton, Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 
 export default function Settings() {
   const { pet, pets, plan, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
+  const cloudState = useCloud();
   const [perm, setPerm] = useState<PermissionState>('undetermined');
   const [nudge, setNudge] = useState(true);
   const [nudgeTime, setNudgeTime] = useState('19:30');
@@ -72,7 +73,6 @@ export default function Settings() {
       router.replace('/onboarding');
     };
     if (Platform.OS === 'web') {
-      // eslint-disable-next-line no-alert
       if (window.confirm(tn(pets.length, 'Erase all {n} pet and every record from this device? This cannot be undone.', 'Erase all {n} pets and every record from this device? This cannot be undone.'))) run();
       return;
     }
@@ -93,6 +93,24 @@ export default function Settings() {
             </T>
             <View style={{ width: 52 }} />
           </View>
+
+          {cloudState.enabled ? (
+            <>
+              <Label style={styles.section}>{t('Account')}</Label>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('Account')} onPress={() => router.push('/account')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="account-row">
+                {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+                <View style={{ flex: 1 }}>
+                  <T weight="xbold" style={{ fontSize: 17 }}>
+                    {cloudState.user && !cloudState.user.anonymous ? t('Signed in · backed up') : t('Save your account')}
+                  </T>
+                  <T style={{ color: colors.muted, fontSize: 13 }}>
+                    {cloudState.user && !cloudState.user.anonymous ? (cloudState.user.email ?? t('Backup, sign out, delete account')) : t('Keep your pets safe if you change phones')}
+                  </T>
+                </View>
+                <Icon name="chevR" size={18} color={colors.faint} />
+              </Pressable>
+            </>
+          ) : null}
 
           <Label style={styles.section}>{t("{name}'s daily plan", { name: pet.name })}</Label>
           <PlanEditor species={pet.species} plan={draft} onChange={setDraft} />
@@ -191,7 +209,9 @@ export default function Settings() {
           <Label style={styles.section}>{t('Your data')}</Label>
           <View style={[styles.card, softShadow]}>
             <T style={{ color: colors.inkSoft }}>
-              {tn(total, '{n} care record for {name}, stored on this device. Nothing is uploaded.', '{n} care records for {name}, stored on this device. Nothing is uploaded.', { name: pet.name })}
+              {cloudState.enabled
+                ? tn(total, '{n} care record for {name}, stored on this phone and backed up to your account.', '{n} care records for {name}, stored on this phone and backed up to your account.', { name: pet.name })
+                : tn(total, '{n} care record for {name}, stored on this device. Nothing is uploaded.', '{n} care records for {name}, stored on this device. Nothing is uploaded.', { name: pet.name })}
             </T>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
               <SoftPill label={t('Care log (CSV)')} onPress={doCsv} small />
@@ -206,8 +226,9 @@ export default function Settings() {
               { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate, icon: ART.icons.heart },
               { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp, icon: ART.icons.gift },
               { label: t('Achievements'), body: t('Badges, streaks and challenges'), go: () => router.push('/achievements'), icon: ART.icons.trophy },
+              { label: t('Help center'), body: t('Restoring, subscriptions, reminders'), go: () => Linking.openURL(LEGAL.help), icon: ART.icons.paw },
               { label: t('Contact support'), body: LEGAL.support, go: () => Linking.openURL(`mailto:${LEGAL.support}?subject=Pavurio`), icon: ART.icons.paw },
-              { label: t('Privacy policy'), body: t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.icons.shield },
+              { label: t('Privacy policy'), body: cloudState.enabled ? t('What we keep and why') : t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.icons.shield },
               { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms), icon: ART.icons.calendar },
             ].map((r, i) => (
               <Pressable key={r.label} accessibilityRole="button" accessibilityLabel={r.label} onPress={r.go} style={[styles.linkRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.line }]}>

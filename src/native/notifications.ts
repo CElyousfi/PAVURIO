@@ -11,8 +11,7 @@ import { listAllSchedules, marksBetween, upcomingAppointments } from '../data/ca
 import { planReminders } from '../domain/schedule';
 import { computeStreak, groupByDay } from '../domain/streak';
 import { computeProgress } from '../domain/progress';
-import { parseDayKey } from '../domain/time';
-import { addDays, dayKeyOf } from '../domain/time';
+import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { t } from '../i18n';
 
 const SUPPORTED = Platform.OS === 'ios' || Platform.OS === 'android';

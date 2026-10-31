@@ -37,7 +37,6 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.pavurio.app",
-      "versionCode": 1,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.SCHEDULE_EXACT_ALARM",
@@ -104,10 +103,13 @@
       "fr": "./locales/fr.json"
     },
     "extra": {
-      "eas": {}
+      "eas": {
+        "projectId": "f0a29bcf-cf86-4afc-af43-1884388bbda9"
+      }
     },
     "runtimeVersion": {
       "policy": "appVersion"
-    }
+    },
+    "owner": "theroadroller"
   }
 }

@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { PetRig, PetClipName } from '../animation/PetRig';
+import { cloud } from '../cloud/firebase';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, defaultAppearance } from '../domain/appearance';
@@ -45,7 +46,7 @@ export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
-  const { db, reload, bump, reduceMotion, language, setLanguage, setWeightUnit, settings } = useApp();
+  const { db, reload, bump, reduceMotion, language, setLanguage, setWeightUnit, settings, pets } = useApp();
   const params = useLocalSearchParams<{ add?: string }>();
   const adding = params.add === '1';
   const [step, setStep] = useState<Step>(adding ? 'species' : 'welcome');
@@ -64,6 +65,11 @@ export default function Onboarding() {
   const [firstLogged, setFirstLogged] = useState<CareType | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
   const [confetti, setConfetti] = useState<number | null>(null);
+
+  // a backup restored in the background (same account after a reinstall): straight to Home
+  useEffect(() => {
+    if (!adding && !created && step === 'welcome' && pets.length > 0) router.replace('/');
+  }, [adding, created, step, pets.length]);
 
   const go = (s: Step) => {
     setError(null);
@@ -540,6 +546,13 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
         </Bouncy>
         <Pill label={t('GET STARTED')} onPress={onStart} style={{ flex: 1 }} testID="get-started" />
       </View>
+      {cloud.enabled() ? (
+        <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/account', params: { mode: 'signin' } })} style={{ alignSelf: 'center', paddingBottom: bottomInset + 10, marginTop: -8 }} testID="have-account">
+          <T weight="xbold" style={{ color: colors.brand }}>
+            {t('I already have an account')}
+          </T>
+        </Pressable>
+      ) : null}
     </Animated.View>
   );
 }

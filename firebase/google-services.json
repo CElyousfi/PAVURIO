@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "832599148664",
+    "project_id": "pavurio",
+    "storage_bucket": "pavurio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832599148664:android:684b24e89598079a00c58d",
+        "android_client_info": {
+          "package_name": "com.pavurio.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "832599148664-74e6sjlk2drh82ljhdn6asuui0ajmsal.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pavurio.app",
+            "certificate_hash": "5794d853e9bad6f21a30e5be4a80c9cd21734b68"
+          }
+        },
+        {
+          "client_id": "832599148664-vtfv04g5spk17cgie5f5rqek3tijg3i5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBk1401VSr0nxtQrV9b6s3mc0ioPMEMVU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "832599148664-vtfv04g5spk17cgie5f5rqek3tijg3i5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "832599148664-qp6rg51gus3ulf57t6aekdm6uimlriki.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pavurio.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

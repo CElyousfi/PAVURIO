@@ -10,7 +10,7 @@ import { describeDays, formatTime24to12 } from '../../domain/schedule';
 import { addDays, dayKeyOf, dayRange, formatClock, parseDayKey } from '../../domain/time';
 import { KindIcon, OccurrenceRow, kindMeta } from '../../features/routines';
 import { useApp, useOccurrences } from '../../state/AppState';
-import { Card, EmptyState, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../../ui/forms';
+import { Card, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
 import { tapFeedback } from '../../native/haptics';
