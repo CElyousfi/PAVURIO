@@ -17,6 +17,8 @@ import { Bouncy, ConfettiRain, Enter, Float, PopIn, Pulse, Shimmer } from '../ui
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 import { LEGAL } from '../config/links';
+import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
 
 type Reason = 'onboarding' | 'pets' | 'story' | 'challenge' | 'tip' | 'stats' | 'settings' | 'feed';
 
@@ -166,12 +168,20 @@ export default function Paywall() {
           {/* hero */}
           <View style={styles.hero}>
             <View style={styles.glow} />
-            <Float style={[styles.av, { left: cw / 2 - 128, transform: [{ rotate: '-8deg' }] }]} period={2600}>
-              <PetAvatar species="cat" appearance={defaultAppearance('cat')} size={100} />
-            </Float>
-            <Float style={[styles.av, { left: cw / 2 + 8, top: 2, transform: [{ rotate: '7deg' }] }]} period={3100} amount={8}>
-              <PetAvatar species="dog" appearance={pet?.species === 'dog' ? pet.appearance : defaultAppearance('dog')} size={100} />
-            </Float>
+            {ART.ui.paywallHero ? (
+              <Float style={{ position: 'absolute', alignSelf: 'center', top: 0 }} period={2800} amount={6}>
+                <Scene source={ART.ui.paywallHero} width={142} height={178} border={5} tilt={-4} />
+              </Float>
+            ) : (
+              <>
+                <Float style={[styles.av, { left: cw / 2 - 128, transform: [{ rotate: '-8deg' }] }]} period={2600}>
+                  <PetAvatar species="cat" appearance={defaultAppearance('cat')} size={100} />
+                </Float>
+                <Float style={[styles.av, { left: cw / 2 + 8, top: 2, transform: [{ rotate: '7deg' }] }]} period={3100} amount={8}>
+                  <PetAvatar species="dog" appearance={pet?.species === 'dog' ? pet.appearance : defaultAppearance('dog')} size={100} />
+                </Float>
+              </>
+            )}
             <PopIn delay={350} style={styles.proBadge}>
               <T weight="black" style={{ color: '#FFFFFF', fontSize: 13, letterSpacing: 2 }}>
                 PRO
@@ -402,10 +412,10 @@ export default function Paywall() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
   top: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 18, height: 48, zIndex: 2 },
-  hero: { height: 150, marginTop: -6 },
+  hero: { height: ART.ui.paywallHero ? 196 : 150, marginTop: -6 },
   glow: { position: 'absolute', alignSelf: 'center', top: 10, width: 230, height: 130, borderRadius: 80, backgroundColor: colors.brandSoft },
   av: { position: 'absolute', top: 14, width: 120, height: 120, borderRadius: 36, backgroundColor: '#FFF4E3', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderWidth: 4, borderColor: '#FFFFFF' },
-  proBadge: { position: 'absolute', alignSelf: 'center', bottom: 0, backgroundColor: colors.ink, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 14 },
+  proBadge: { position: 'absolute', alignSelf: 'center', bottom: -4, backgroundColor: colors.ink, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 14 },
   kicker: { color: '#E58A00', fontSize: 15, textAlign: 'center', marginTop: 10 },
   h1: { fontSize: 29, lineHeight: 35, textAlign: 'center', marginTop: 4 },
   h2: { fontSize: 21, textAlign: 'center' },

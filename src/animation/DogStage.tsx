@@ -18,7 +18,7 @@ import { DOG_ANCHOR, DOG_CLIPS, DOG_CLIP_IMG, DogClipName } from './dogClips';
 import { BurstLayer } from './Burst';
 import type { PetRigProps } from './PetRig';
 
-export type ActionName = Exclude<DogClipName, 'idle'>;
+export type ActionName = Exclude<DogClipName, 'idle' | 'sleep'>;
 
 /** Stage proportions (relative to the stage width). */
 const ASPECT = 1.05;
@@ -208,7 +208,10 @@ export function DogStage({
   onClipEnd,
   active = true,
   reduceMotion = false,
+  rest = false,
+  ambient = false,
 }: PetRigProps) {
+  const base: DogClipName = rest ? 'sleep' : 'idle';
   const geo = useMemo(() => ({ w: size, h: size * ASPECT }), [size]);
   const palette = PALETTES.includes(appearance.paletteId) ? appearance.paletteId : 'honey';
   const bandana = BANDANAS.includes(appearance.accessoryId) ? appearance.accessoryId : 'teal';
@@ -283,7 +286,14 @@ export function DogStage({
   }, [action, actionReady, onActionReady]);
 
   const idleRunning = active && !reduceMotion && !(action && actionReady);
-  const idleFrame = useFrameClock('idle', idleRunning);
+  const idleFrame = useFrameClock(base, idleRunning);
+
+  // ambient variety: now and then look around / wag (daytime, only while nothing else plays)
+  useEffect(() => {
+    if (!ambient || rest || !active || reduceMotion || action) return;
+    const timer = setTimeout(() => start('idle2', Date.now()), 14_000 + Math.random() * 12_000);
+    return () => clearTimeout(timer);
+  }, [ambient, rest, active, reduceMotion, action, start]);
   const actionFrame = useFrameClock(action?.name ?? 'celebrate', !!action && actionReady && active, finish);
 
   const idleStyle = useAnimatedStyle(() => ({ opacity: 1 - mix.value }));
@@ -301,7 +311,7 @@ export function DogStage({
           const moved = Math.hypot(e.nativeEvent.locationX - startRef.current.x, e.nativeEvent.locationY - startRef.current.y);
           if (moved > 14 || Date.now() - startRef.current.t > 450) return;
           onTap?.();
-          if (!action && !reduceMotion) start('celebrate', Date.now());
+          if (!action && !reduceMotion) start(rest ? 'hello' : 'celebrate', Date.now());
         },
       }
     : {};
@@ -321,7 +331,7 @@ export function DogStage({
         <Shadow geo={geo} />
       )}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, idleStyle]}>
-        <ClipView name="idle" frame={idleFrame} palette={palette} bandana={bandana} fill={fill} geo={geo} />
+        <ClipView key={base} name={base} frame={idleFrame} palette={palette} bandana={bandana} fill={fill} geo={geo} />
       </Animated.View>
       {action ? (
         <Animated.View key={action.nonce} pointerEvents="none" style={[StyleSheet.absoluteFill, actionStyle]}>

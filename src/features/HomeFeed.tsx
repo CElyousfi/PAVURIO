@@ -17,6 +17,7 @@ import { useEngagement } from '../state/Engagement';
 import { Medal } from './Medal';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
 import { Bouncy, Enter, Pulse } from '../ui/motion';
 import { Icon, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
@@ -189,7 +190,7 @@ export function HomeFeed({ width }: { width: number }) {
                 <View style={{ flex: 1 }} />
                 <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   {locked ? <LockChip /> : <T weight="black" style={{ color: tip.color, fontSize: 13 }}>{t('Read · 3 cards')}</T>}
-                  {ART.tips[tip.id] ? <Image source={ART.tips[tip.id]!} style={{ width: 70, height: 70 }} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={64} />}
+                  {ART.tips[tip.id] ? <Scene source={ART.tips[tip.id]!} width={78} height={86} border={3} tilt={4} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={64} />}
                 </View>
               </Bouncy>
             );
@@ -242,9 +243,13 @@ export function HomeFeed({ width }: { width: number }) {
                 </T>
                 <T style={{ color: colors.inkSoft, fontSize: 14, lineHeight: 20, marginTop: 6 }}>{t('Every challenge and tip, more pets, monthly stories and the full history. Free trial included when available.')}</T>
               </View>
-              <View style={styles.proAv}>
-                <PetAvatar species={pet.species} appearance={pet.appearance} size={76} />
-              </View>
+              {ART.scenes.premium ? (
+                <Scene source={ART.scenes.premium} width={86} height={112} border={3} tilt={5} style={{ marginLeft: 10 }} />
+              ) : (
+                <View style={styles.proAv}>
+                  <PetAvatar species={pet.species} appearance={pet.appearance} size={76} />
+                </View>
+              )}
             </View>
             <Bouncy onPress={() => router.push({ pathname: '/paywall', params: { reason: 'feed' } })} style={styles.proBtn} accessibilityRole="button" testID="feed-pro">
               <T weight="black" style={{ color: '#FFFFFF', fontSize: 17 }}>
@@ -290,9 +295,13 @@ export function ChallengeCard({ def, width, locked, done }: { def: ChallengeDef;
         <View style={{ flex: 1 }} />
         {locked ? <LockChip /> : done ? <T weight="black" style={{ color: '#FFFFFF', fontSize: 13 }}>✓ {t('Completed')}</T> : <T weight="black" style={{ color: '#FFFFFF', fontSize: 13 }}>{t('Start →')}</T>}
       </View>
-      <View style={styles.chArt}>
-        {ART.challenges[def.key] ? <Image source={ART.challenges[def.key]!} style={{ width: 110, height: 110 }} /> : <CareIcon type={def.rule.kind === 'care' ? def.rule.type : 'meal'} size={92} />}
-      </View>
+      {ART.challenges[def.key] ? (
+        <Scene source={ART.challenges[def.key]!} width={104} height={128} border={4} tilt={6} style={styles.chScene} />
+      ) : (
+        <View style={styles.chArt}>
+          <CareIcon type={def.rule.kind === 'care' ? def.rule.type : 'meal'} size={92} />
+        </View>
+      )}
     </Bouncy>
   );
 }
@@ -329,6 +338,7 @@ const styles = StyleSheet.create({
   visit: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#FFFFFF', borderRadius: 24, padding: 14, marginTop: 12 },
   visitDate: { width: 52, height: 56, borderRadius: 16, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
   chCard: { height: 170, borderRadius: 28, padding: 18, overflow: 'hidden' },
+  chScene: { position: 'absolute', right: 12, top: 22 },
   chArt: { position: 'absolute', right: -6, bottom: -6, width: 120, height: 120, borderRadius: 60, backgroundColor: '#FFFFFF33', alignItems: 'center', justifyContent: 'center' },
   active: { borderRadius: 24, padding: 14, marginBottom: 10 },
   dots: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },

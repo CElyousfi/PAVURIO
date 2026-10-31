@@ -16,7 +16,12 @@ CLIPS={
  'walk':(f'{V}/walk.mp4',[(0.3,5.2)]),
  'play':(f'{V}/play.mp4',[(1.0,9.0)]),
  'groom':(f'{V}/groom.mp4',[(1.5,8.6)]),
+ # batch 2 (31 Oct): wave hello at app open, night-time doze (bubble breathes in/out), idle variety
+ 'hello':(f'{V}/hello.mp4',[(1.4,8.3)]),
+ 'sleep':(f'{V}/sleep.mp4',[(0.0,1.4)]),  # before the snot bubble (its translucent inside keys out as a hole)
+ 'idle2':(f'{V}/idle2.mp4',[(0.0,2.2)]),
 }
+LOOPS={'idle','sleep'}
 def frames(path,segs):
     out=[]
     for a,b in segs:
@@ -81,7 +86,13 @@ def band_overlay(rgb,alpha,t):
     m=cv2.GaussianBlur(teal.astype(np.float32),(0,0),0.7)
     return o, (np.minimum(m,alpha/255)*255).astype(np.uint8)
 manifest={}
+# ONLY=name1,name2 re-renders just those clips and keeps the others from the existing manifest
+ONLY=set(filter(None,os.environ.get('ONLY','').split(',')))
+if ONLY:
+    old=json.load(open(f'{OUT}/clips.json'))
 for name,(path,segs) in CLIPS.items():
+    if ONLY and name not in ONLY:
+        manifest[name]=old[name]; continue
     fr=frames(path,segs); al=[key(f) for f in fr]
     U=np.zeros_like(al[0],bool)
     for a in al: U|=a>10
@@ -136,7 +147,7 @@ for name,(path,segs) in CLIPS.items():
     for pal in ['honey','cocoa','snow','midnight']: sheet(lambda x,p=pal: recolor(x,p), pal)
     sheet(sketch,'sketch')
     for bnd,t in BAND.items(): sheet(lambda x:x, f'band_{bnd}', lambda rgb,A,t=t: band_overlay(rgb,A,t))
-    manifest[name]={'origin':[int(x0),int(y0)],'sc':float(sc),'native':{'cx':float(x0+ref['cx']/sc),'bottom':float(y0+ref['bottom']/sc),'height':float((ref['bottom']-ref['top'])/sc)},'loop':name=='idle','pingpong':name=='idle','frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
+    manifest[name]={'origin':[int(x0),int(y0)],'sc':float(sc),'native':{'cx':float(x0+ref['cx']/sc),'bottom':float(y0+ref['bottom']/sc),'height':float((ref['bottom']-ref['top'])/sc)},'loop':name in LOOPS,'pingpong':name in LOOPS,'frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
     print(name,n,'frames',tw,'x',th,'chunks',chunks,sizes,flush=True)
 # all videos share Gemini's framing (bandana width 221–229 px in each), so one anchor fits all:
 # the sitting idle dog defines where the paws and the head centre are and how tall the dog is.

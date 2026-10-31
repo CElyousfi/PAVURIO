@@ -5,7 +5,7 @@ import type { Burst } from './Burst';
 import { DogStage } from './DogStage';
 import { CatStage } from './CatStage';
 
-export type PetClipName = 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom';
+export type PetClipName = 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom' | 'hello' | 'idle2';
 
 export type PetRigProps = {
   species: Species;
@@ -27,6 +27,10 @@ export type PetRigProps = {
   /** pause looping animation, e.g. when the screen isn't focused */
   active?: boolean;
   reduceMotion?: boolean;
+  /** night: the dog dozes (sleep loop) instead of sitting idle; a tap wakes it with a wave */
+  rest?: boolean;
+  /** occasionally play idle variations (look around, tail wag) while nothing else happens */
+  ambient?: boolean;
 };
 
 /**

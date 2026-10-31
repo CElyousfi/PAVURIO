@@ -10,6 +10,7 @@ import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
 import { confirmAsync } from '../ui/confirm';
 import { Bar, Bouncy, Float, PopIn } from '../ui/motion';
 import { CircleButton, T } from '../ui/primitives';
@@ -50,8 +51,8 @@ export default function ChallengeScreen() {
         <View style={styles.hero}>
           <Float amount={8}>
             <PopIn>
-              <View style={styles.art}>
-                {ART.challenges[def.key] ? <Image source={ART.challenges[def.key]!} style={{ width: 200, height: 200 }} /> : <CareIcon type={def.rule.kind === 'care' ? def.rule.type : 'meal'} size={170} />}
+              <View style={[styles.art, ART.challenges[def.key] ? { backgroundColor: 'transparent' } : null]}>
+                {ART.challenges[def.key] ? <Scene source={ART.challenges[def.key]!} width={190} height={240} border={6} tilt={-3} /> : <CareIcon type={def.rule.kind === 'care' ? def.rule.type : 'meal'} size={170} />}
               </View>
             </PopIn>
           </Float>
@@ -116,7 +117,7 @@ export default function ChallengeScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   top: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 18, position: 'absolute', top: 0, left: 0, right: 0, zIndex: 3 },
-  hero: { height: 300, alignItems: 'center', justifyContent: 'center', paddingTop: 50 },
+  hero: { height: 320, alignItems: 'center', justifyContent: 'center', paddingTop: 50 },
   art: { width: 220, height: 220, borderRadius: 110, backgroundColor: '#FFFFFF33', alignItems: 'center', justifyContent: 'center' },
   sheet: { backgroundColor: '#FFFFFF', borderRadius: 34, marginHorizontal: 12, padding: 24, maxWidth: 560, alignSelf: 'center', width: '94%' },
   title: { fontSize: 30, lineHeight: 35, marginTop: 6 },

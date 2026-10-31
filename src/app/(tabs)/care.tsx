@@ -15,6 +15,8 @@ import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
 import { tapFeedback } from '../../native/haptics';
 import { Enter } from '../../ui/motion';
+import { ART } from '../../ui/art';
+import { Scene } from '../../ui/Scene';
 import { formatWeight, toUnit } from '../../features/weight';
 import { t, tn } from '../../i18n';
 import { monthNamesShort, weekdayNamesShort } from '../../i18n/dates';
@@ -240,7 +242,10 @@ export default function CareTab() {
           <SectionHead title={t('Upcoming visits')} action={t('Add')} onAction={() => router.push('/appointment')} />
           {upcoming.length === 0 ? (
             <Card onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
-              <T style={{ color: colors.muted, lineHeight: 20 }}>{t('Vet, groomer or sitter — add a visit and get reminded the day before.')}</T>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                {ART.scenes.appointments ? <Scene source={ART.scenes.appointments} width={78} height={66} radius={16} /> : null}
+                <T style={{ color: colors.muted, lineHeight: 20, flex: 1 }}>{t('Vet, groomer or sitter — add a visit and get reminded the day before.')}</T>
+              </View>
             </Card>
           ) : (
             <Card style={{ paddingVertical: 6 }}>
@@ -288,7 +293,10 @@ export default function CareTab() {
                 <Spark values={weights.slice(-10).map((w) => toUnit(w, settings.weightUnit))} />
               </View>
             ) : (
-              <T style={{ color: colors.muted, lineHeight: 20 }}>{t("Track {name}'s weight over time. Your vet will love the chart.", { name: pet.name })}</T>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                {ART.scenes.weigh ? <Scene source={ART.scenes.weigh} width={78} height={66} radius={16} /> : null}
+                <T style={{ color: colors.muted, lineHeight: 20, flex: 1 }}>{t("Track {name}'s weight over time. Your vet will love the chart.", { name: pet.name })}</T>
+              </View>
             )}
           </Card>
         </View>

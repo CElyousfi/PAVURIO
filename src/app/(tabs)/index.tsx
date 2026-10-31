@@ -29,6 +29,18 @@ export default function Home() {
   return <HomeScreen />;
 }
 
+let helloPlayed = false;
+const isNight = (d = new Date()) => d.getHours() >= 22 || d.getHours() < 6;
+
+function useNight() {
+  const [night, setNight] = useState(isNight);
+  useEffect(() => {
+    const timer = setInterval(() => setNight(isNight()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  return night;
+}
+
 function useTodayKey() {
   const [key, setKey] = useState(() => dayKeyOf(new Date()));
   useEffect(() => {
@@ -55,6 +67,14 @@ function HomeScreen() {
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
+  const night = useNight();
+  // a wave the first time Home is opened in this session (not at night, not over a celebration)
+  useEffect(() => {
+    if (helloPlayed || !focused || reduceMotion || night || pet?.species !== 'dog') return;
+    helloPlayed = true;
+    const timer = setTimeout(() => setClip((c) => c ?? { name: 'hello', nonce: Date.now() }), 700);
+    return () => clearTimeout(timer);
+  }, [focused, reduceMotion, night, pet?.species]);
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [vh, setVh] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -160,6 +180,8 @@ function HomeScreen() {
             onClipEnd={() => setClip(null)}
             active={focused}
             reduceMotion={reduceMotion}
+            rest={night}
+            ambient
             accessibilityLabel={t('{name}, {pct} percent colored in today', { name: pet.name, pct: Math.round(progress.ratio * 100) })}
           />
           {isEmptyDay ? (

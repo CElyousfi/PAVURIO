@@ -11,6 +11,8 @@ import { useApp } from '../../state/AppState';
 import { Card, Chip, EmptyState, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, Icon, T } from '../../ui/primitives';
 import { KindGlyph } from '../../features/RecordGlyph';
+import { ART } from '../../ui/art';
+import { Scene } from '../../ui/Scene';
 import { colors } from '../../ui/theme';
 import { t, tn } from '../../i18n';
 
@@ -90,6 +92,7 @@ export default function RecordsTab() {
                 ? t("Vaccines, vet visits, medication and allergies — with photos of the paperwork. Share a summary with {name}'s vet or sitter in one tap.", { name: pet.name })
                 : t('Add a record of this kind with the + button.')
             }
+            art={records.length === 0 && ART.scenes.records ? <Scene source={ART.scenes.records} width={150} height={186} border={5} tilt={-3} style={{ marginBottom: 8 }} /> : undefined}
             action={records.length === 0 ? t('ADD FIRST RECORD') : undefined}
             onAction={() => router.push('/record')}
           />

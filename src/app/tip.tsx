@@ -7,6 +7,7 @@ import { TIPS, tipText } from '../content/tips';
 import { TIP_ICON } from '../features/HomeFeed';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
 import { Bouncy, Float } from '../ui/motion';
 import { CircleButton, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
@@ -51,7 +52,7 @@ export default function TipReader() {
           </T>
         </View>
         <Float style={{ alignItems: 'center', marginVertical: 18 }} amount={7}>
-          {ART.tips[tip.id] ? <Image source={ART.tips[tip.id]!} style={{ width: 180, height: 180 }} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={150} />}
+          {ART.tips[tip.id] ? <Scene source={ART.tips[tip.id]!} width={170} height={200} border={5} tilt={2} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={150} />}
         </Float>
         <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={onScroll} onScroll={onScroll} scrollEventThrottle={32} style={{ flexGrow: 0 }}>
           {tip.slides.map((s, i) => (

@@ -9,6 +9,8 @@ import { useEngagement } from '../state/Engagement';
 import { useApp } from '../state/AppState';
 import { Medal } from './Medal';
 import { CareIcon } from '../ui/CareIcon';
+import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
 import { Bouncy, ConfettiRain, PopIn } from '../ui/motion';
 import { T } from '../ui/primitives';
 import { colors } from '../ui/theme';
@@ -54,9 +56,13 @@ export function CelebrationHost() {
             {badge ? (
               <Medal def={badge} size={150} />
             ) : ch ? (
-              <View style={[styles.chArt, { backgroundColor: ch.tint }]}>
-                <CareIcon type={ch.rule.kind === 'care' ? ch.rule.type : 'meal'} size={110} />
-              </View>
+              ART.challenges[ch.key] ? (
+                <Scene source={ART.challenges[ch.key]!} width={140} height={172} border={5} tilt={-4} />
+              ) : (
+                <View style={[styles.chArt, { backgroundColor: ch.tint }]}>
+                  <CareIcon type={ch.rule.kind === 'care' ? ch.rule.type : 'meal'} size={110} />
+                </View>
+              )
             ) : null}
           </PopIn>
           <T weight="black" style={styles.title}>

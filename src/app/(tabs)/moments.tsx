@@ -11,6 +11,8 @@ import { useApp } from '../../state/AppState';
 import { EmptyState, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, T } from '../../ui/primitives';
 import { Enter } from '../../ui/motion';
+import { ART } from '../../ui/art';
+import { Scene } from '../../ui/Scene';
 import { colors } from '../../ui/theme';
 import { t, tn } from '../../i18n';
 
@@ -107,6 +109,7 @@ export default function MomentsTab() {
             <EmptyState
               title={t('Your first moment')}
               body={t("First bath, a new trick, a lazy Sunday — add a photo and it shows up in {name}'s stories.", { name: pet.name })}
+              art={ART.scenes.moments ? <Scene source={ART.scenes.moments} width={150} height={186} border={5} tilt={3} style={{ marginBottom: 8 }} /> : undefined}
               action={t('ADD A MOMENT')} onAction={() => router.push('/memory')} />
           ) : (
             <View style={styles.grid}>
