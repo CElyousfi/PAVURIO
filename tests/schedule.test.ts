@@ -1,3 +1,4 @@
+import { buildStory, storyWindow } from '../src/domain/stories';
 import { describe, expect, it } from 'vitest';
 import {
   Schedule,
@@ -167,7 +168,6 @@ describe('care & records repositories (v2 schema)', () => {
   });
 });
 
-import { buildStory, storyWindow } from '../src/domain/stories';
 
 describe('stories', () => {
   const at = (day: string, h = 9) => {

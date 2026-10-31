@@ -35,3 +35,19 @@ export function formatHM(h: number, m: number): string {
 
 /** Capitalize the first letter (French month/weekday names are lowercase mid-sentence). */
 export const capitalize = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+/** "just now", "5 min ago", "today at 8:05 AM", "3 Nov" — for “backed up …” labels. */
+export function formatRelative(ms: number, now = Date.now()): string {
+  const fr = lang() === 'fr';
+  const diff = Math.max(0, now - ms);
+  if (diff < 60_000) return fr ? "à l'instant" : 'just now';
+  if (diff < 3_600_000) {
+    const n = Math.round(diff / 60_000);
+    return fr ? `il y a ${n} min` : `${n} min ago`;
+  }
+  const d = new Date(ms);
+  const today = new Date(now);
+  const hm = formatHM(d.getHours(), d.getMinutes());
+  if (d.toDateString() === today.toDateString()) return fr ? `aujourd'hui à ${hm}` : `today at ${hm}`;
+  return fr ? `le ${d.getDate()} ${monthNamesShort()[d.getMonth()]}` : `on ${d.getDate()} ${monthNamesShort()[d.getMonth()]}`;
+}

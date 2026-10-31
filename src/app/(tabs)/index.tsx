@@ -3,7 +3,6 @@ import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 're
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown } from 'react-native-reanimated';
-import Svg, { Circle } from 'react-native-svg';
 import { PetRig, PetClipName } from '../../animation/PetRig';
 import { catClip } from '../../animation/CatStage';
 import { useBursts } from '../../animation/Burst';
@@ -356,32 +355,6 @@ function RowItem({
         {label.toUpperCase()}
       </T>
     </Pressable>
-  );
-}
-
-function DayRing({ ratio, day }: { ratio: number; day: number }) {
-  const r = 22;
-  const c = 2 * Math.PI * r;
-  return (
-    <View style={{ width: 54, height: 54, alignItems: 'center', justifyContent: 'center' }}>
-      <Svg width={54} height={54} style={StyleSheet.absoluteFill}>
-        <Circle cx={27} cy={27} r={r} stroke={colors.line} strokeWidth={4} fill="none" />
-        <Circle
-          cx={27}
-          cy={27}
-          r={r}
-          stroke={colors.brand}
-          strokeWidth={4}
-          fill="none"
-          strokeDasharray={`${c * Math.max(0.001, ratio)} ${c}`}
-          strokeLinecap="round"
-          transform="rotate(-90 27 27)"
-        />
-      </Svg>
-      <T weight="black" style={{ fontSize: 18, color: colors.brand }}>
-        {day}
-      </T>
-    </View>
   );
 }
 

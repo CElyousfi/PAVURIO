@@ -14,6 +14,7 @@ import { addDays, dayKeyOf, formatClock, parseDayKey } from '../domain/time';
 import { weekdayInitials } from '../i18n/dates';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
+import { useCloud } from '../state/Cloud';
 import { Medal } from './Medal';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
@@ -58,6 +59,7 @@ function Section({ title, action, onAction, children }: { title: string; action?
 
 export function HomeFeed({ width }: { width: number }) {
   const { pet, pro, db, plan, version } = useApp();
+  const cloudState = useCloud();
   const { streak, byDay, challenges, earned, completedChallengeKeys } = useEngagement();
   const [visits, setVisits] = useState<Appointment[]>([]);
   useEffect(() => {
@@ -232,6 +234,22 @@ export function HomeFeed({ width }: { width: number }) {
         </Bouncy>
       </Section>
 
+      {/* account: guests are backed up, but only a saved account survives a new phone */}
+      {cloudState.enabled && cloudState.user?.anonymous ? (
+        <Enter index={7}>
+          <Pressable onPress={() => router.push('/account')} style={[styles.save, softShadow]} accessibilityRole="button" testID="feed-save-account">
+            {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 54, height: 54 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+            <View style={{ flex: 1 }}>
+              <T weight="black" style={{ fontSize: 17 }}>
+                {t('Keep {name} safe', { name: pet.name })}
+              </T>
+              <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18, marginTop: 2 }}>{t('Save your account to get your pets back on a new phone.')}</T>
+            </View>
+            <Icon name="chevR" size={18} color={colors.faint} />
+          </Pressable>
+        </Enter>
+      ) : null}
+
       {/* pro */}
       {!pro ? (
         <Enter index={8}>
@@ -331,6 +349,7 @@ function ActiveChallenge({ def, done, target, days }: { def: ChallengeDef; done:
 }
 
 const styles = StyleSheet.create({
+  save: { marginTop: 26, backgroundColor: colors.white, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   sectionHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   streak: { backgroundColor: '#FFF6EC', borderRadius: 28, padding: 18, marginTop: 6 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, paddingHorizontal: 4 },

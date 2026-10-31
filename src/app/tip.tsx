@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Share, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, ScrollView, Share, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn } from 'react-native-reanimated';

@@ -15,6 +15,8 @@ import { Nunito_900Black } from '@expo-google-fonts/nunito/900Black';
 import { migrate } from '../data/migrations';
 import type { Db } from '../data/db';
 import { AppProvider, useApp } from '../state/AppState';
+import { CloudProvider } from '../state/Cloud';
+import { cloud } from '../cloud/firebase';
 import { colors } from '../ui/theme';
 import { onReminderTap } from '../native/notifications';
 import { EngagementProvider } from '../state/Engagement';
@@ -83,9 +85,11 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <SQLiteProvider databaseName="pavurio.db" onInit={(db) => migrate(db as unknown as Db)}>
         <AppProvider>
-          <EngagementProvider>
-            <Gate />
-          </EngagementProvider>
+          <CloudProvider>
+            <EngagementProvider>
+              <Gate />
+            </EngagementProvider>
+          </CloudProvider>
         </AppProvider>
       </SQLiteProvider>
     </SafeAreaProvider>
@@ -116,6 +120,7 @@ function Gate() {
         <Stack.Screen name="day" options={{ presentation: 'modal' }} />
         <Stack.Screen name="studio" options={{ presentation: 'modal' }} />
         <Stack.Screen name="settings" />
+        <Stack.Screen name="account" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="schedule" options={{ presentation: 'modal' }} />
         <Stack.Screen name="appointment" options={{ presentation: 'modal' }} />
         <Stack.Screen name="weight" options={{ presentation: 'modal' }} />
@@ -135,7 +140,8 @@ function Gate() {
 }
 
 /** Shown by expo-router if a screen crashes: friendly art, nothing technical, a way back. */
-export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useEffect(() => cloud.crash.record(error, 'screen crashed'), [error]);
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
       {ART.icons.error ? <Image source={ART.icons.error} style={{ width: 170, height: 130 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}

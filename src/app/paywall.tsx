@@ -14,7 +14,7 @@ import { useApp } from '../state/AppState';
 import { CircleButton, Icon, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
 import { Bouncy, ConfettiRain, Enter, Float, PopIn, Pulse, Shimmer } from '../ui/motion';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { errorFeedback, successFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 import { LEGAL } from '../config/links';
 import { ART } from '../ui/art';
