@@ -155,7 +155,7 @@ Pavurio vous aide à suivre les soins que vous donnez. L'app ne donne pas d'avis
 
 | Data type | Collected | Linked to the user | Used for tracking | Purpose |
 |---|---|---|---|---|
-| Contact Info → **Email Address** | Yes (only if they save an account with email or Google, or Apple without hiding it) | Yes | No | App Functionality |
+| Contact Info → **Email Address** | Yes (when they save an account; email+password addresses are confirmed with a code) | Yes | No | App Functionality; Developer’s Advertising or Marketing (newsletter, only with opt-in) |
 | Identifiers → **User ID** | Yes | Yes | No | App Functionality |
 | User Content → **Other User Content** (pet care data in the backup) | Yes | Yes | No | App Functionality |
 | Purchases → **Purchase History** | Yes | Yes | No | App Functionality |
@@ -169,7 +169,7 @@ Answer **not collected** for everything else, including Photos or Videos (photos
 
 ```
 No login is required: the app creates a guest account automatically, so you can use every feature straight away.
-Sign in with Apple, Google and email are optional (Settings → Account) and only used to back up and restore data.
+Sign in with Google, Apple and email are optional (Settings → Account) and only used to back up and restore data. Email accounts are confirmed with a 6-digit code sent by email.
 Account deletion: Settings → Account → Delete account (deletes the account, the cloud backup and local data).
 Pavurio Pro: yearly subscription with a 7-day free trial, a monthly subscription, and a one-time lifetime purchase (non-consumable). Restore purchases is on the Pro screen.
 Notifications are local reminders for routines the user creates.
@@ -238,7 +238,7 @@ L'abonnement se renouvelle automatiquement sauf résiliation. Gérez-le ou rési
 
 | Category → type | Collected | Optional? | Purposes |
 |---|---|---|---|
-| Personal info → **Email address** | Yes | Optional (only if the user saves an account) | Account management, App functionality |
+| Personal info → **Email address** | Yes | Optional (only if the user saves an account) | Account management, App functionality, Developer communications (newsletter, opt-in) |
 | Personal info → **User IDs** | Yes | Required | Account management, App functionality |
 | App activity → **Other user-generated content** (pet care data backup) | Yes | Required | App functionality |
 | Financial info → **Purchase history** | Yes | Optional (only buyers) | App functionality |

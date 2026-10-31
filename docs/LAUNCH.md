@@ -8,7 +8,7 @@ The code is ready. These steps need your accounts. Each one says what to send ba
 2. Under **Source**, choose **Deploy from a branch**, then branch `gh-pages`, folder `/ (root)`, and click **Save**.
 3. Within a minute, https://celyousfi.github.io/PAVURIO/ is live. The privacy, terms, support and account-deletion pages are in English and French. The app already links to them.
 
-## 2. Firebase: accounts, backup and crash reports (free Spark plan, about 15 minutes)
+## 2. Firebase: accounts, email codes, backup and crash reports (about 25 minutes)
 
 1. Go to https://console.firebase.google.com → **Add project** → name it `Pavurio`. You can turn Google Analytics off: the app doesn't use it.
 
@@ -35,7 +35,29 @@ The code is ready. These steps need your accounts. Each one says what to send ba
 
 6. **Send both files to Claude.** Or put them in the repo's `firebase/` folder. Accounts, backup and Crashlytics switch on automatically in the next build.
 
-**What stays free on Spark:**
+7. **Switch to the Blaze plan.** The 6-digit email codes need it.
+   - In the Firebase console, open **Upgrade** → **Blaze (pay as you go)** and add a card.
+   - Set a **budget alert** (for example €5) so you're warned before anything is charged.
+   - At Pavurio's size the cost is **€0**: Cloud Functions include 2 million free calls per month.
+
+8. **Resend, which sends the code emails.**
+   - In https://resend.com, add and verify a domain for Pavurio, such as `pavurio.app` or `mail.pavurio.app`. That means adding the DNS records Resend shows you.
+   - Your Resend account currently has only `mail.syndicup.pro`. Don't send Pavurio emails from it: people won't recognise the sender and the emails may land in spam.
+   - Create an **API key** with sending access.
+   - Optional: create a segment called "Pavurio newsletter". People who tick the newsletter box are added to it.
+   - The free Resend plan covers 3,000 emails a month (100 a day).
+
+9. **Deploy the functions.** Claude can do this once you're logged in, or you can run:
+   ```
+   cd functions && npm install
+   cp .env.example .env        # set MAIL_FROM="Pavurio <hello@your-domain>" and RESEND_SEGMENT_ID
+   npx firebase-tools login
+   npx firebase-tools use --add                     # pick the Pavurio project
+   npx firebase-tools functions:secrets:set RESEND_API_KEY
+   npx firebase-tools deploy --only functions,firestore:rules
+   ```
+
+**What stays free:**
 - Authentication.
 - Firestore: 1 GiB of storage, 50k reads and 20k writes per day. That's enough for thousands of users, because a backup is a few documents.
 - Crashlytics.

@@ -16,7 +16,8 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 **Votre compte (Firebase Authentication).**
 
 - Chaque installation reçoit automatiquement un identifiant aléatoire, pour que vos données soient sauvegardées dès le début.
-- Si vous enregistrez votre compte, nous conservons aussi **l'adresse e-mail** de l'identifiant choisi : Se connecter avec Apple, Google, ou e-mail et mot de passe.
+- Si vous enregistrez votre compte, nous conservons aussi **l'adresse e-mail** de l'identifiant choisi : Google, Se connecter avec Apple, ou e-mail et mot de passe.
+- Une adresse utilisée avec un mot de passe est confirmée par un code à 6 chiffres envoyé par e-mail. Le code n'est conservé que sous forme chiffrée (hachée) et expire au bout de 10 minutes. La réinitialisation du mot de passe fonctionne de la même façon.
 - Avec Apple, vous pouvez masquer votre e-mail ; Apple nous transmet alors une adresse relais privée.
 - Nous ne demandons pas votre nom.
 
@@ -31,6 +32,12 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 - Pavurio Pro s'achète via l'App Store ou Google Play ; nous ne voyons jamais vos moyens de paiement.
 - Pour savoir si Pro est actif, nous utilisons **RevenueCat**, qui reçoit votre identifiant aléatoire et vos reçus d'achat.
 
+**E-mails de notre part.**
+
+- Nous envoyons les e-mails liés au compte : codes de connexion et de réinitialisation.
+- Nous envoyons des conseils et nouveautés **seulement si vous cochez la case** à la création du compte. Chaque newsletter contient un lien de désinscription en un clic.
+- Les e-mails sont envoyés via **Resend**, qui reçoit votre adresse et le message.
+
 **Notifications.** Les rappels sont programmés sur votre téléphone ; aucun contenu ne nous est envoyé.
 
 ## Ce que Pavurio ne fait pas
@@ -44,7 +51,8 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 
 | Service | Finalité | Données |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Crashlytics) | compte, sauvegarde, rapports de plantage | identifiant, e-mail de connexion, copie de sauvegarde, rapports de plantage |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics) | compte, codes e-mail, sauvegarde, rapports de plantage | identifiant, e-mail de connexion, choix newsletter, copie de sauvegarde, rapports de plantage |
+| Resend | envoi des codes et, si vous l'acceptez, de la newsletter | adresse e-mail, contenu du message |
 | RevenueCat | vérification de Pavurio Pro | identifiant, reçus d'achat |
 | Apple / Google | connexion, paiements, distribution | selon leurs propres politiques |
 

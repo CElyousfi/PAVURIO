@@ -1,5 +1,6 @@
 rules_version = '2';
 // Pavurio: each owner can only read and write their own backup.
+// Email codes and profiles are written by Cloud Functions only.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{uid} {
@@ -9,5 +10,11 @@ service cloud.firestore {
           && (request.resource == null || request.resource.data.data.size() <= 450000);
       }
     }
+    match /profiles/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /emailCodes/{doc} { allow read, write: if false; }
+    match /resetCodes/{doc} { allow read, write: if false; }
   }
 }

@@ -11,7 +11,6 @@ export const cloud: CloudApi = {
   withApple: noop,
   withGoogle: noop,
   withEmail: noop,
-  resetPassword: async () => {},
   signOut: async () => {},
   deleteAccount: noop,
   readMeta: async () => null,
@@ -19,5 +18,12 @@ export const cloud: CloudApi = {
     throw new Error('unavailable');
   },
   download: async () => [],
+  refresh: async () => null,
+  unlinkEmail: async () => {},
+  sendCode: async () => ({ kind: 'error', message: 'unavailable' }),
+  verifyCode: async () => ({ kind: 'error', message: 'unavailable' }),
+  sendResetCode: async () => ({ kind: 'error', message: 'unavailable' }),
+  resetPasswordWithCode: async () => ({ kind: 'error', message: 'unavailable' }),
+  setMarketing: async () => {},
   crash: { setUser: () => {}, record: () => {}, log: () => {}, setEnabled: () => {} },
 };

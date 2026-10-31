@@ -16,6 +16,7 @@
     "node_modules",
     "dist",
     "tests",
-    "app.config.ts"
+    "app.config.ts",
+    "functions"
   ]
 }

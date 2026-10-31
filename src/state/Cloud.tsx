@@ -31,13 +31,22 @@ type Cloud = {
   backupNow: () => Promise<boolean>;
   /** link a sign-in method to this (guest) account */
   save: (m: Method, email?: string, password?: string) => Promise<AuthResult>;
-  /** switch to an existing account; `replaceLocal` restores its backup over this phone's data */
-  signIn: (m: Method, opts: { email?: string; password?: string; replaceLocal: boolean }) => Promise<AuthResult & { restored?: boolean }>;
+  /** switch to an existing account; `replaceLocal` restores its backup over this phone's data.
+   *  An email account that isn't verified yet comes back with `needsCode`: nothing is restored or
+   *  backed up until `verifyCode` succeeds. */
+  signIn: (m: Method, opts: { email?: string; password?: string; replaceLocal: boolean }) => Promise<AuthResult & { restored?: boolean; needsCode?: boolean }>;
+  sendCode: (lang: string) => Promise<Awaited<ReturnType<typeof cloud.sendCode>>>;
+  /** confirms the 6-digit code; then restores (pending sign-in) or backs up (new account) */
+  verifyCode: (code: string, marketing: boolean) => Promise<{ kind: 'ok'; restored: boolean } | { kind: 'error'; message: string; retryIn?: number }>;
+  /** gave up on the code step: drop the unverified email from this account */
+  cancelEmail: () => Promise<void>;
+  sendResetCode: (email: string, lang: string) => Promise<Awaited<ReturnType<typeof cloud.sendResetCode>>>;
+  resetPasswordWithCode: (email: string, code: string, password: string) => Promise<Awaited<ReturnType<typeof cloud.resetPasswordWithCode>>>;
+  setMarketing: (optIn: boolean, source: string) => Promise<void>;
   /** does the signed-in account have a backup with pets? */
   cloudPets: () => Promise<number>;
   signOut: () => Promise<void>;
   deleteAccount: (reauth?: { m: Method; email?: string; password?: string }) => Promise<AuthResult>;
-  resetPassword: (email: string) => Promise<void>;
 };
 
 const Ctx = createContext<Cloud | null>(null);
@@ -54,6 +63,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
   const paused = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const uidRef = useRef<string | null>(null);
+  const pendingRestore = useRef(false); // signed in with an unverified email: restore after the code
   useEffect(() => {
     uidRef.current = user?.uid ?? null;
   }, [user?.uid]);
@@ -196,17 +206,58 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
           setUser(r.user);
           uidRef.current = r.user.uid;
           checked.current = r.user.uid;
+          if (!r.user.verified) {
+            // hold every sync until the email is confirmed
+            pendingRestore.current = opts.replaceLocal;
+            return { ...r, needsCode: true, restored: false };
+          }
           let restored = false;
           if (opts.replaceLocal) restored = await pull(r.user.uid);
           paused.current = false;
           if (!restored) await backupNow(); // a new account, or keeping this phone's data
           return { ...r, restored };
         } finally {
-          paused.current = false;
+          paused.current = pendingRestore.current || !!cloud.current()?.providers.includes('password') && !cloud.current()?.verified;
         }
       }),
     [run, auth, pull, backupNow],
   );
+
+  const sendCode = useCallback((lang: string) => cloud.sendCode(lang), []);
+
+  const verifyCode = useCallback(
+    (code: string, marketing: boolean) =>
+      run(async () => {
+        // '' = the server already marked the email verified: only refresh and finish
+        const r = code === '' ? ({ kind: 'ok' } as const) : await cloud.verifyCode(code, marketing);
+        if (r.kind !== 'ok') return r;
+        const u = await cloud.refresh();
+        if (u) setUser(u);
+        let restored = false;
+        if (pendingRestore.current && u) {
+          pendingRestore.current = false;
+          restored = await pull(u.uid);
+        }
+        paused.current = false;
+        if (!restored) await backupNow();
+        return { kind: 'ok' as const, restored };
+      }),
+    [run, pull, backupNow],
+  );
+
+  const cancelEmail = useCallback(async () => {
+    pendingRestore.current = false;
+    const u = cloud.current();
+    if (u && !u.verified && u.providers.length === 1 && u.providers[0] === 'password' && !u.anonymous) {
+      // a fresh sign-in to an unverified account: leave it and go back to this phone's guest
+      await cloud.signOut();
+      await cloud.ensureGuest();
+    } else {
+      await cloud.unlinkEmail();
+    }
+    setUser(await cloud.refresh());
+    paused.current = false;
+  }, []);
 
   const cloudPets = useCallback(async () => {
     const uid = uidRef.current;
@@ -289,9 +340,14 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       cloudPets,
       signOut,
       deleteAccount,
-      resetPassword: (email) => cloud.resetPassword(email),
+      sendCode,
+      verifyCode,
+      cancelEmail,
+      sendResetCode: (email, lang) => cloud.sendResetCode(email, lang),
+      resetPasswordWithCode: (email, code, password) => cloud.resetPasswordWithCode(email, code, password),
+      setMarketing: (optIn, source) => cloud.setMarketing(optIn, source),
     }),
-    [enabled, user, appleAvailable, lastBackupAt, busy, crashReports, setCrashReports, run, backupNow, save, signIn, cloudPets, signOut, deleteAccount],
+    [enabled, user, appleAvailable, lastBackupAt, busy, crashReports, setCrashReports, run, backupNow, save, signIn, cloudPets, signOut, deleteAccount, sendCode, verifyCode, cancelEmail],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

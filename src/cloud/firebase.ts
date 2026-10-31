@@ -17,6 +17,7 @@ import { t } from '../i18n';
 type AuthMod = typeof import('@react-native-firebase/auth');
 type FsMod = typeof import('@react-native-firebase/firestore');
 type CrashMod = typeof import('@react-native-firebase/crashlytics');
+type FnMod = typeof import('@react-native-firebase/functions');
 
 const ENABLED = Platform.OS !== 'web' && (Constants.expoConfig?.extra as { firebase?: boolean } | undefined)?.firebase === true;
 const WEB_CLIENT_ID = (Constants.expoConfig?.extra as { googleWebClientId?: string } | undefined)?.googleWebClientId;
@@ -25,18 +26,54 @@ const WEB_CLIENT_ID = (Constants.expoConfig?.extra as { googleWebClientId?: stri
 let A: AuthMod | null = null;
 let F: FsMod | null = null;
 let C: CrashMod | null = null;
+let FN: FnMod | null = null;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const auth = () => (A ??= require('@react-native-firebase/auth') as AuthMod);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = () => (F ??= require('@react-native-firebase/firestore') as FsMod);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const crashMod = () => (C ??= require('@react-native-firebase/crashlytics') as CrashMod);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fnMod = () => (FN ??= require('@react-native-firebase/functions') as FnMod);
 
-function toUser(u: { uid: string; isAnonymous: boolean; email: string | null; providerData: { providerId: string }[] } | null): CloudUser | null {
+/** Cloud Functions live in europe-west1 (functions/src/index.ts) */
+async function call<T>(name: string, data: unknown): Promise<T> {
+  const f = fnMod();
+  const r = await f.httpsCallable<unknown, T>(f.getFunctions(undefined, 'europe-west1'), name)(data);
+  return r.data;
+}
+/** messages thrown by functions/src/index.ts, translated here */
+const serverMessages = (): Record<string, string> => ({
+  'Sign in first.': t('Sign in first.'),
+  'This account has no email yet.': t('This account has no email yet.'),
+  'The email could not be sent. Try again in a moment.': t('The email could not be sent. Try again in a moment.'),
+  'Please wait before asking for another code.': t('Please wait before asking for another code.'),
+  'That code isn’t right. Check the email and try again.': t('That code isn’t right. Check the email and try again.'),
+  'That code has expired. Ask for a new one.': t('That code has expired. Ask for a new one.'),
+  'Too many tries. Ask for a new code.': t('Too many tries. Ask for a new code.'),
+  'Ask for a code first.': t('Ask for a code first.'),
+  'That email address doesn’t look right.': t('That email address doesn’t look right.'),
+  'Use at least 6 characters for the password.': t('Use at least 6 characters for the password.'),
+});
+/** server errors carry a readable message (and retryIn when rate-limited) */
+function callFailure(e: unknown): { kind: 'error'; message: string; retryIn?: number } {
+  const err = e as { code?: string; message?: string; details?: { retryIn?: number | string } | null };
+  const c = String(err?.code ?? '');
+  const retryIn = err?.details?.retryIn != null ? Number(err.details.retryIn) : undefined;
+  if (c.includes('unavailable') && !err.message) return { kind: 'error', message: t('No connection. Check your internet and try again.') };
+  if (c.includes('internal') || !err?.message) {
+    cloud.crash.record(e, `functions:${c}`);
+    return { kind: 'error', message: t('Something went wrong. Please try again.') };
+  }
+  return { kind: 'error', message: serverMessages()[err.message] ?? err.message, retryIn };
+}
+
+function toUser(u: { uid: string; isAnonymous: boolean; email: string | null; emailVerified: boolean; providerData: { providerId: string }[] } | null): CloudUser | null {
   if (!u) return null;
   const ids: Record<string, Provider> = { 'apple.com': 'apple', 'google.com': 'google', password: 'password' };
   const providers = u.providerData.map((p) => ids[p.providerId]).filter((p): p is Provider => !!p);
-  return { uid: u.uid, anonymous: u.isAnonymous, email: u.email, providers: u.isAnonymous ? ['anonymous'] : providers };
+  const verified = !u.isAnonymous && (u.emailVerified || providers.includes('google') || providers.includes('apple'));
+  return { uid: u.uid, anonymous: u.isAnonymous, email: u.email, providers: u.isAnonymous ? ['anonymous'] : providers, verified };
 }
 
 function code(e: unknown): string {
@@ -186,11 +223,6 @@ export const cloud: CloudApi = {
     }
   },
 
-  async resetPassword(email) {
-    if (!ENABLED) return;
-    await auth().sendPasswordResetEmail(auth().getAuth(), email.trim());
-  },
-
   async signOut() {
     if (!ENABLED) return;
     try {
@@ -265,6 +297,64 @@ export const cloud: CloudApi = {
       out.push(d.data);
     }
     return out;
+  },
+
+  async refresh() {
+    if (!ENABLED) return null;
+    const u = auth().getAuth().currentUser;
+    if (!u) return null;
+    await u.reload();
+    await u.getIdToken(true);
+    return toUser(auth().getAuth().currentUser);
+  },
+
+  async unlinkEmail() {
+    const u = auth().getAuth().currentUser;
+    if (u && u.providerData.some((p) => p.providerId === 'password')) await auth().unlink(u, 'password');
+  },
+
+  async sendCode(lang) {
+    try {
+      const r = await call<{ sent?: boolean; verified?: boolean; email?: string }>('sendEmailCode', { lang });
+      return r.verified ? { kind: 'verified' } : { kind: 'sent', email: r.email ?? '' };
+    } catch (e) {
+      return callFailure(e);
+    }
+  },
+
+  async verifyCode(code, marketing) {
+    try {
+      await call('verifyEmailCode', { code, marketing });
+      return { kind: 'ok' };
+    } catch (e) {
+      return callFailure(e);
+    }
+  },
+
+  async sendResetCode(email, lang) {
+    try {
+      await call('sendResetCode', { email: email.trim(), lang });
+      return { kind: 'sent' };
+    } catch (e) {
+      return callFailure(e);
+    }
+  },
+
+  async resetPasswordWithCode(email, code, password) {
+    try {
+      await call('resetPassword', { email: email.trim(), code, password });
+      return { kind: 'ok' };
+    } catch (e) {
+      return callFailure(e);
+    }
+  },
+
+  async setMarketing(optIn, source) {
+    try {
+      await call('setMarketing', { optIn, source });
+    } catch (e) {
+      cloud.crash.record(e, 'functions:setMarketing');
+    }
   },
 
   crash: {

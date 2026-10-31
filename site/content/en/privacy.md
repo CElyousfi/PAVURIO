@@ -16,7 +16,8 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 **Your account (Firebase Authentication).**
 
 - Every installation gets a random account ID automatically, so your data is backed up from the start.
-- If you choose to save your account, we also store the **email address** of the sign-in you pick: Sign in with Apple, Google or email and password.
+- If you choose to save your account, we also store the **email address** of the sign-in you pick: Google, Sign in with Apple, or email and password.
+- Email addresses used with a password are confirmed with a 6-digit code that we email to you. The code is stored only in scrambled (hashed) form and expires after 10 minutes. Password resets work the same way.
 - With Sign in with Apple you can hide your email; Apple then gives us a private relay address.
 - We don't ask for your name.
 
@@ -31,6 +32,12 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 - Pavurio Pro is bought through the App Store or Google Play; we never see your payment details.
 - To know whether Pro is active, we use **RevenueCat**, which receives your random account ID and your purchase receipts.
 
+**Emails from us.**
+
+- We send account emails: sign-in codes and password-reset codes.
+- We send tips and news **only if you tick the box** when you create your account. You can unsubscribe from any newsletter with one click.
+- Emails are sent through **Resend**, which receives your email address and the message.
+
 **Notifications.** Reminders are scheduled on your phone; no reminder content is sent to us.
 
 ## What Pavurio does not do
@@ -44,7 +51,8 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 
 | Service | Purpose | Data |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Crashlytics) | account, backup, crash reports | account ID, sign-in email, backup copy, crash reports |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics) | account, email codes, backup, crash reports | account ID, sign-in email, newsletter choice, backup copy, crash reports |
+| Resend | sending code emails and, if you opt in, the newsletter | email address, message content |
 | RevenueCat | checking Pavurio Pro | account ID, purchase receipts |
 | Apple / Google | sign-in, payments, app distribution | as described in their own policies |
 
