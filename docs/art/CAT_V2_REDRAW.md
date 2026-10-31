@@ -29,3 +29,7 @@ Deliver as before: high-resolution PNG sheets or single images on a PR. Claude r
 - `records`, `water`, `weigh`, `walk` scenes (the concept tiles are cat-only, or Honey wears a red harness with a bell)
 - badges `family`, `moment`, `streak3`, `streak7` (concept tiles have text and other shapes: keep the existing medal design and swap the cat)
 - `vaccine`, `vet`: not shown in the app today; low priority
+
+## Status (31 Oct, night)
+Now also v2 (ChatGPT single images, `docs/art/cat-v2/`): scenes water, weigh, walk; badges family, moment, streak3, streak7.
+**Only `records` is still v1** (Records empty state). vaccine and vet are unused in the app.
