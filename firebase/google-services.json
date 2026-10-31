@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "832599148664-74e6sjlk2drh82ljhdn6asuui0ajmsal.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pavurio.app",
+            "certificate_hash": "5794d853e9bad6f21a30e5be4a80c9cd21734b68"
+          }
+        },
+        {
           "client_id": "832599148664-vtfv04g5spk17cgie5f5rqek3tijg3i5.apps.googleusercontent.com",
           "client_type": 3
         }
