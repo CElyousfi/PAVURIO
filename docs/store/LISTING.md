@@ -179,8 +179,8 @@ Notifications are local reminders for routines the user creates.
 
 | Product ID | Type | Suggested price | Notes |
 |---|---|---|---|
-| `pavurio_pro_yearly` | Auto-renewable subscription, group "Pavurio Pro" | €29.99 / $29.99 | Introductory offer: 7-day free trial |
-| `pavurio_pro_monthly` | Auto-renewable subscription, same group | €4.99 / $4.99 | |
+| `pavurio_pro_yearly` | Auto-renewable subscription, group "Pavurio Pro" | €29.99 / $29.99 | Introductory offer: 7-day free trial. On Play: base plan ID `yearly` + a 7-day free-trial offer |
+| `pavurio_pro_monthly` | Auto-renewable subscription, same group | €4.99 / $4.99 | On Play: base plan ID `monthly` |
 | `pavurio_pro_lifetime` | Non-consumable | €59.99 / $59.99 | |
 
 In RevenueCat:

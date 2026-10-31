@@ -13,7 +13,9 @@
 | Android build with Firebase BoM 35 (Kotlin 2.3.21) | ✅ |
 | EAS project linked (`theroadroller`, f0a29bcf…) | ✅ |
 | **Email domain in Resend** | ❌ Only `mail.syndicup.pro` exists. The codes need a Pavurio domain, `MAIL_FROM` set to it, and the functions redeployed |
-| **RevenueCat keys + store products** | ❌ Waiting on the owner. Without them the paywall can't sell |
+| RevenueCat project **Pavurio** (`proj97e73396`): iOS + Android apps, entitlement `pro`, offering `default` (Annual, Monthly, Lifetime), 6 products | ✅ Public SDK keys are in `eas.json` |
+| **RevenueCat ↔ stores credentials** | ❌ App Store Connect: In-App Purchase key (.p8) + App Store Connect API key. Google Play: service account JSON. Add them in RevenueCat → each app's settings |
+| **The 3 products in the stores** | ❌ App Store Connect: subscription group "Pavurio Pro" with `pavurio_pro_yearly` (7-day free trial) and `pavurio_pro_monthly`, plus non-consumable `pavurio_pro_lifetime`. Play: subscriptions `pavurio_pro_yearly` (base plan `yearly`, free trial offer) and `pavurio_pro_monthly` (base plan `monthly`), plus one-time product `pavurio_pro_lifetime` |
 | Play App Signing SHA-1/256 in Firebase | ⏳ After the first Play upload. Then re-download `google-services.json` |
 | GitHub Pages (privacy / terms / support / deletion) | ⏳ Check it's live at https://celyousfi.github.io/PAVURIO/ |
 | Art: `records` scene with the cat v2 | ⏳ ChatGPT |
