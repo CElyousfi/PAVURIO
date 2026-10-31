@@ -21,3 +21,11 @@ On 31 Oct the owner approved Gemini's cat (from the first cat videos) as **the**
 | litter scene (still pending) | the cat proudly next to a clean litter tray with a scoop, **v2 cat** |
 
 Deliver as before: high-resolution PNG sheets or single images on a PR. Claude reviews against the v2 reference and integrates.
+
+## Status (31 Oct, evening)
+**In the app (v2 cat):** appointments, bath, bed, brushing, duo, meals, medication, moments, night, play (ChatGPT's individual redraws, `docs/art/cat-v2/scenes/`, built with `tools/art/cat_v2_scenes.py`); premium, trophy, litter (cut from concept sheet tiles and upscaled 4× with EDSR, a bit softer: replace when single images exist). Litter is now wired to the litter7 challenge and the litter tip.
+
+**Still v1 cat — needed as single full-size images with BOTH pets (they are shown to dog and cat owners alike):**
+- `records`, `water`, `weigh`, `walk` scenes (the concept tiles are cat-only, or Honey wears a red harness with a bell)
+- badges `family`, `moment`, `streak3`, `streak7` (concept tiles have text and other shapes: keep the existing medal design and swap the cat)
+- `vaccine`, `vet`: not shown in the app today; low priority
