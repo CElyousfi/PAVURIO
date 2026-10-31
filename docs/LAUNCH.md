@@ -12,7 +12,7 @@
 | Over-the-air JS updates (`eas update --channel production`) | ✅ expo-updates wired to the EAS project |
 | Android build with Firebase BoM 35 (Kotlin 2.3.21) | ✅ |
 | EAS project linked (`theroadroller`, f0a29bcf…) | ✅ |
-| **Email domain in Resend** | ❌ Only `mail.syndicup.pro` exists. The codes need a Pavurio domain, `MAIL_FROM` set to it, and the functions redeployed |
+| Email domain **pavurio.com** (Hostinger) | ✅ Verified in Resend: DKIM, SPF, return-path, plus DMARC `p=none`. Segment "Pavurio newsletter" created. **Redeploy the functions** with `MAIL_FROM="Pavurio <hello@pavurio.com>"` and `RESEND_SEGMENT_ID` from `functions/.env.example` |
 | RevenueCat project **Pavurio** (`proj97e73396`): iOS + Android apps, entitlement `pro`, offering `default` (Annual, Monthly, Lifetime), 6 products | ✅ Public SDK keys are in `eas.json` |
 | **RevenueCat ↔ stores credentials** | ❌ App Store Connect: In-App Purchase key (.p8) + App Store Connect API key. Google Play: service account JSON. Add them in RevenueCat → each app's settings |
 | **The 3 products in the stores** | ❌ App Store Connect: subscription group "Pavurio Pro" with `pavurio_pro_yearly` (7-day free trial) and `pavurio_pro_monthly`, plus non-consumable `pavurio_pro_lifetime`. Play: subscriptions `pavurio_pro_yearly` (base plan `yearly`, free trial offer) and `pavurio_pro_monthly` (base plan `monthly`), plus one-time product `pavurio_pro_lifetime` |

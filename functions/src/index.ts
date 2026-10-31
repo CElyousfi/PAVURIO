@@ -24,7 +24,7 @@ initializeApp();
 setGlobalOptions({ region: 'europe-west1', maxInstances: 10 });
 
 const RESEND_API_KEY = defineSecret('RESEND_API_KEY');
-const MAIL_FROM = defineString('MAIL_FROM', { default: 'Pavurio <hello@pavurio.app>' });
+const MAIL_FROM = defineString('MAIL_FROM', { default: 'Pavurio <hello@pavurio.com>' });
 const RESEND_SEGMENT_ID = defineString('RESEND_SEGMENT_ID', { default: '' });
 /** reject calls without a valid App Check token. Turn on (functions/.env) once store builds are out. */
 const ENFORCE_APP_CHECK = defineBoolean('ENFORCE_APP_CHECK', { default: false });
