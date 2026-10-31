@@ -18,6 +18,7 @@ type AuthMod = typeof import('@react-native-firebase/auth');
 type FsMod = typeof import('@react-native-firebase/firestore');
 type CrashMod = typeof import('@react-native-firebase/crashlytics');
 type FnMod = typeof import('@react-native-firebase/functions');
+type AcMod = typeof import('@react-native-firebase/app-check');
 
 const ENABLED = Platform.OS !== 'web' && (Constants.expoConfig?.extra as { firebase?: boolean } | undefined)?.firebase === true;
 const WEB_CLIENT_ID = (Constants.expoConfig?.extra as { googleWebClientId?: string } | undefined)?.googleWebClientId;
@@ -36,8 +37,34 @@ const crashMod = () => (C ??= require('@react-native-firebase/crashlytics') as C
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const fnMod = () => (FN ??= require('@react-native-firebase/functions') as FnMod);
 
+/**
+ * App Check proves requests come from the real Pavurio app (Play Integrity / App Attest), so the
+ * email-code functions can't be scripted. Store builds use the real providers; dev and preview
+ * builds (EXPO_PUBLIC_APPCHECK_DEBUG=1) use the debug provider: register the debug token printed in
+ * the device log under Firebase console → App Check → Manage debug tokens.
+ */
+let appCheckStarted = false;
+function startAppCheck() {
+  if (!ENABLED || appCheckStarted) return;
+  appCheckStarted = true;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ac = require('@react-native-firebase/app-check') as AcMod;
+    const debug = __DEV__ || process.env.EXPO_PUBLIC_APPCHECK_DEBUG === '1';
+    const provider = new ac.ReactNativeFirebaseAppCheckProvider();
+    provider.configure({
+      android: { provider: debug ? 'debug' : 'playIntegrity' },
+      apple: { provider: debug ? 'debug' : 'appAttestWithDeviceCheckFallback' },
+    });
+    void ac.initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
+  } catch (e) {
+    cloud.crash.record(e, 'appcheck:init');
+  }
+}
+
 /** Cloud Functions live in europe-west1 (functions/src/index.ts) */
 async function call<T>(name: string, data: unknown): Promise<T> {
+  startAppCheck();
   const f = fnMod();
   const r = await f.httpsCallable<unknown, T>(f.getFunctions(undefined, 'europe-west1'), name)(data);
   return r.data;
@@ -158,6 +185,7 @@ export const cloud: CloudApi = {
 
   async ensureGuest() {
     if (!ENABLED) return null;
+    startAppCheck();
     const inst = auth().getAuth();
     if (inst.currentUser) return toUser(inst.currentUser);
     try {
@@ -239,6 +267,18 @@ export const cloud: CloudApi = {
     const u = inst.currentUser;
     if (!u) return { kind: 'error', message: t('Something went wrong. Please try again.') };
     try {
+      // Apple requires apps to revoke Sign in with Apple tokens when the account is deleted.
+      // A fresh Apple sign-in gives the authorization code to revoke and re-authenticates in the same step.
+      if (Platform.OS === 'ios' && u.providerData.some((p) => p.providerId === 'apple.com')) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const Apple = require('expo-apple-authentication') as typeof import('expo-apple-authentication');
+        const raw = Crypto.randomUUID();
+        const hashed = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, raw);
+        const r = await Apple.signInAsync({ requestedScopes: [], nonce: hashed });
+        if (!r.identityToken || !r.authorizationCode) return { kind: 'error', message: t('Something went wrong. Please try again.') };
+        await auth().reauthenticateWithCredential(u, auth().AppleAuthProvider.credential(r.identityToken, raw));
+        await auth().revokeToken(inst, r.authorizationCode);
+      }
       const f = fs();
       const docs = await f.getDocs(backupCol(u.uid));
       const batch = f.writeBatch(f.getFirestore());

@@ -110,6 +110,11 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "owner": "theroadroller"
+    "owner": "theroadroller",
+    "updates": {
+      "url": "https://u.expo.dev/f0a29bcf-cf86-4afc-af43-1884388bbda9",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }
