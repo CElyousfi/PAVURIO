@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
@@ -12,6 +12,7 @@ import { ValidationError, createPet, defaultPlan } from '../data/repo';
 import { useApp } from '../state/AppState';
 import { CircleButton, Pill, T } from '../ui/primitives';
 import { LookPicker, PlanEditor } from '../features/PetEditors';
+import { ART } from '../ui/art';
 import { CareIcon } from '../ui/CareIcon';
 import { colors, font, shadow } from '../ui/theme';
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
@@ -107,7 +108,7 @@ export default function Onboarding() {
         <Animated.View key="welcome" entering={FadeIn} exiting={FadeOut} style={[styles.page, { width: W }]}>
           <View style={styles.center}>
             <View style={styles.badge}>
-              <CareIcon type="meal" size={44} />
+              {ART.ui.welcomeBadge != null ? <Image source={ART.ui.welcomeBadge} style={{ width: 52, height: 52 }} /> : <CareIcon type="meal" size={44} />}
             </View>
             <T weight="black" style={styles.h1}>
               A little world for all{'\n'}their big moments
@@ -200,6 +201,7 @@ export default function Onboarding() {
           <T weight="black" style={styles.h2}>
             {displayName}'s daily plan
           </T>
+          {ART.ui.planHeader != null ? <Image source={ART.ui.planHeader} style={{ width: 240, height: 160, marginTop: 6 }} resizeMode="contain" /> : null}
           <T style={styles.sub}>You decide what a good day looks like. Each thing you log colors in a bit more of {displayName}.</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
             <PlanEditor species={species} plan={plan} onChange={setPlan} />

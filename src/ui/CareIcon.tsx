@@ -1,4 +1,6 @@
 import React from 'react';
+import { Image, View } from 'react-native';
+import { ART } from './art';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { CARE, CareType } from '../domain/care';
 
@@ -6,9 +8,31 @@ import { CARE, CareType } from '../domain/care';
  * Original flat care illustrations. `level` (0..1) lets the log card react to the amount:
  * kibble mound grows, water rises, a time ring fills for minute-based care.
  */
+function artFor(type: CareType, level: number): number | null {
+  const entry = ART.care[type];
+  if (entry == null) return null;
+  if (typeof entry === 'number') return entry;
+  const pick = level < 0.34 ? entry.empty : level < 0.67 ? entry.half : entry.full;
+  return pick ?? entry.full ?? entry.half ?? entry.empty;
+}
+
 export function CareIcon({ type, size, level = 0.7, ring = false }: { type: CareType; size: number; level?: number; ring?: boolean }) {
   const c = CARE[type].color;
   const l = Math.max(0, Math.min(1, level));
+  const art = artFor(type, l);
+  if (art != null) {
+    // real illustration from the art registry (src/ui/art.ts)
+    return (
+      <View style={{ width: size, height: size }}>
+        {ring ? (
+          <Svg width={size} height={size} viewBox="0 0 100 100" style={{ position: 'absolute' }}>
+            <TimeRing color={c} level={l} />
+          </Svg>
+        ) : null}
+        <Image source={art} style={{ position: 'absolute', left: size * 0.1, top: size * 0.1, width: size * 0.8, height: size * 0.8 }} fadeDuration={0} />
+      </View>
+    );
+  }
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
       {ring ? <TimeRing color={c} level={l} /> : null}

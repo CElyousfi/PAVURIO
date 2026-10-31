@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -9,6 +9,7 @@ import { progressSentence } from '../domain/progress';
 import { addDays, dayKeyOf, formatClock, formatDayTitle, isToday } from '../domain/time';
 import { useApp, useDay } from '../state/AppState';
 import { CareIcon } from '../ui/CareIcon';
+import { ART } from '../ui/art';
 import { CircleButton, Label, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
@@ -69,6 +70,7 @@ export default function DayDetail() {
           <View style={styles.list}>
             {!loading && events.length === 0 ? (
               <View style={styles.empty}>
+                {ART.ui.emptyDay != null ? <Image source={ART.ui.emptyDay} style={{ width: 150, height: 150, marginBottom: 6 }} /> : null}
                 <T weight="xbold" style={{ fontSize: 17, color: colors.inkSoft }}>
                   Nothing logged {today ? 'yet today' : 'on this day'}
                 </T>
