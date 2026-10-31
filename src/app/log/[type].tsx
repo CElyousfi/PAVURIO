@@ -13,28 +13,29 @@ import { CareIcon } from '../../ui/CareIcon';
 import { CircleButton, Icon, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
 import { errorFeedback, tapFeedback } from '../../native/haptics';
+import { t } from '../../i18n';
 
 type TimeOption = { label: string; at: number };
 
 function timeOptions(dayKey: string, now: Date): TimeOption[] {
   if (isToday(dayKey, now)) {
-    const t = now.getTime();
+    const ms = now.getTime();
     return [
-      { label: 'Now', at: t },
-      { label: '15 min ago', at: t - 15 * 60_000 },
-      { label: '30 min ago', at: t - 30 * 60_000 },
-      { label: '1 h ago', at: t - 60 * 60_000 },
-      { label: '2 h ago', at: t - 120 * 60_000 },
+      { label: t('Now'), at: ms },
+      { label: t('15 min ago'), at: ms - 15 * 60_000 },
+      { label: t('30 min ago'), at: ms - 30 * 60_000 },
+      { label: t('1 h ago'), at: ms - 60 * 60_000 },
+      { label: t('2 h ago'), at: ms - 120 * 60_000 },
     ].filter((o) => dayKeyOf(new Date(o.at)) === dayKey);
   }
   const d = parseDayKey(dayKey);
   const at = (h: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, 0).getTime();
   return [
-    { label: 'Morning', at: at(8) },
-    { label: 'Noon', at: at(12) },
-    { label: 'Afternoon', at: at(16) },
-    { label: 'Evening', at: at(19) },
-    { label: 'Night', at: at(22) },
+    { label: t('Morning'), at: at(8) },
+    { label: t('Noon'), at: at(12) },
+    { label: t('Afternoon'), at: at(16) },
+    { label: t('Evening'), at: at(19) },
+    { label: t('Night'), at: at(22) },
   ];
 }
 
@@ -53,7 +54,7 @@ export default function LogCard() {
 
   const [amount, setAmount] = useState<number>(spec?.default ?? 0);
   const [occurredAt, setOccurredAt] = useState<number>(() => defaultOccurredAt(dayKey));
-  const [timeLabel, setTimeLabel] = useState<string>(isToday(dayKey) ? 'Now' : 'Noon');
+  const [timeLabel, setTimeLabel] = useState<string>(isToday(dayKey) ? t('Now') : t('Noon'));
   const [note, setNote] = useState('');
   const [showNote, setShowNote] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -94,9 +95,9 @@ export default function LogCard() {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 40, alignItems: 'center' }]}>
         <T weight="black" style={{ fontSize: 22 }}>
-          This care type isn't available.
+          {t("This care type isn't available.")}
         </T>
-        <Pill label="BACK" onPress={() => router.back()} style={{ marginTop: 20 }} />
+        <Pill label={t('BACK')} onPress={() => router.back()} style={{ marginTop: 20 }} />
       </View>
     );
   }
@@ -130,7 +131,7 @@ export default function LogCard() {
       signalLogged({ eventId: saved.id, type });
       router.back();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Could not save. Your entry was not recorded — please try again.');
+      setError(e instanceof ValidationError ? e.message : t('Could not save. Your entry was not recorded — please try again.'));
       errorFeedback();
       setSaving(false);
     }
@@ -157,10 +158,10 @@ export default function LogCard() {
                 {pet.name} · {formatDayTitle(dayKey)}
               </T>
             </View>
-            <CircleButton icon="close" label="Close without saving" onPress={() => router.back()} />
+            <CircleButton icon="close" label={t('Close without saving')} onPress={() => router.back()} />
           </View>
 
-          <T style={styles.hint}>{editing ? `Edit ${tpl.label.toLowerCase()}` : tpl.hint}</T>
+          <T style={styles.hint}>{editing ? t('Edit {label}', { label: tpl.label.toLowerCase() }) : tpl.hint}</T>
 
           <View style={[styles.objectWrap, { height: objSize + 10 }]}>
             <Animated.View style={objStyle}>
@@ -168,10 +169,10 @@ export default function LogCard() {
             </Animated.View>
             {spec ? (
               <View style={[styles.stepper, { backgroundColor: tpl.tint, top: objSize * 0.6 - 46, right: objSize * 0.02 }]}>
-                <Pressable accessibilityRole="button" accessibilityLabel={`More, add ${spec.step} ${spec.unit}`} onPress={() => nudge(1)} hitSlop={8} style={styles.stepHit} testID="amount-up">
+                <Pressable accessibilityRole="button" accessibilityLabel={t('More, add {n} {unit}', { n: spec.step, unit: spec.unit })} onPress={() => nudge(1)} hitSlop={8} style={styles.stepHit} testID="amount-up">
                   <Icon name="up" size={26} />
                 </Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel={`Less, remove ${spec.step} ${spec.unit}`} onPress={() => nudge(-1)} hitSlop={8} style={styles.stepHit} testID="amount-down">
+                <Pressable accessibilityRole="button" accessibilityLabel={t('Less, remove {n} {unit}', { n: spec.step, unit: spec.unit })} onPress={() => nudge(-1)} hitSlop={8} style={styles.stepHit} testID="amount-down">
                   <Icon name="down" size={26} />
                 </Pressable>
               </View>
@@ -195,7 +196,7 @@ export default function LogCard() {
             </>
           ) : (
             <T weight="black" style={[styles.amount, { fontSize: 34 }]}>
-              Litter box cleaned
+              {t('Litter box cleaned')}
             </T>
           )}
 
@@ -214,18 +215,18 @@ export default function LogCard() {
               />
             ))}
           </View>
-          <T style={styles.when}>at {formatClock(occurredAt)}</T>
+          <T style={styles.when}>{t('at {time}', { time: formatClock(occurredAt) })}</T>
 
           {showNote ? (
             <TextInput
               value={note}
               onChangeText={setNote}
-              placeholder="Add a note (optional)"
+              placeholder={t('Add a note (optional)')}
               placeholderTextColor={colors.faint}
               style={styles.note}
               maxLength={500}
               multiline
-              accessibilityLabel="Note"
+              accessibilityLabel={t('Note')}
             />
           ) : null}
 
@@ -237,7 +238,7 @@ export default function LogCard() {
 
           <View style={styles.ctaRow}>
             <Pill
-              label={editing ? 'SAVE CHANGES' : tpl.cta}
+              label={editing ? t('SAVE CHANGES') : tpl.cta}
               color={tpl.color}
               onPress={save}
               loading={saving}
@@ -246,14 +247,14 @@ export default function LogCard() {
             />
             <CircleButton
               icon="more"
-              label={showNote ? 'Hide note' : 'Add a note'}
+              label={showNote ? t('Hide note') : t('Add a note')}
               onPress={() => setShowNote((s) => !s)}
               size={56}
               style={{ backgroundColor: tpl.tint }}
             />
           </View>
           {editing ? (
-            <SoftPill label="Delete this entry" color={colors.danger} tint={colors.dangerSoft} onPress={remove} style={{ alignSelf: 'center', marginTop: 16 }} />
+            <SoftPill label={t('Delete this entry')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} style={{ alignSelf: 'center', marginTop: 16 }} />
           ) : null}
         </View>
       </ScrollView>

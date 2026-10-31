@@ -3,6 +3,9 @@
  * "days" in the device's local timezone using calendar arithmetic (never +24h),
  * so DST transitions produce 23h / 25h days correctly.
  */
+import { t } from '../i18n/core';
+import { capitalize, formatHM, monthNamesShort, weekdayNames } from '../i18n/dates';
+
 export type DayRange = { start: number; end: number; key: string };
 
 export function dayKeyOf(d: Date): string {
@@ -35,29 +38,26 @@ export function isToday(key: string, now: Date = new Date()): boolean {
 
 export function formatClock(ms: number): string {
   const d = new Date(ms);
-  let h = d.getHours();
-  const m = String(d.getMinutes()).padStart(2, '0');
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return `${h}:${m} ${ampm}`;
+  return formatHM(d.getHours(), d.getMinutes());
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 export function formatDayTitle(key: string, now: Date = new Date()): string {
-  if (isToday(key, now)) return 'Today';
-  if (addDays(key, 1) === dayKeyOf(now)) return 'Yesterday';
+  if (isToday(key, now)) return t('Today');
+  if (addDays(key, 1) === dayKeyOf(now)) return t('Yesterday');
   const d = parseDayKey(key);
-  return `${WEEKDAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  return t('{weekday}, {month} {day}', {
+    weekday: capitalize(weekdayNames()[d.getDay()]),
+    month: monthNamesShort()[d.getMonth()],
+    day: d.getDate(),
+  });
 }
 
 export function greeting(now: Date = new Date()): string {
   const h = now.getHours();
-  if (h < 5) return 'Good night';
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
+  if (h < 5) return t('Good night');
+  if (h < 12) return t('Good morning');
+  if (h < 18) return t('Good afternoon');
+  return t('Good evening');
 }
 
 /**

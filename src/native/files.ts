@@ -9,13 +9,14 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { newId } from '../domain/ids';
+import { t } from '../i18n';
 
 export type PickedFile = { uri: string; mime: string | null; name: string | null };
 const WEB_MAX_BYTES = 6 * 1024 * 1024;
 
 async function toDataUrl(uri: string): Promise<string> {
   const blob = await (await fetch(uri)).blob();
-  if (blob.size > WEB_MAX_BYTES) throw new Error('That file is larger than 6 MB.');
+  if (blob.size > WEB_MAX_BYTES) throw new Error(t('That file is larger than 6 MB.'));
   return await new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(String(r.result));
@@ -55,7 +56,7 @@ export function removeStoredFile(uri: string) {
 export async function pickPhoto(from: 'library' | 'camera' = 'library'): Promise<PickedFile | null> {
   if (from === 'camera') {
     const p = await ImagePicker.requestCameraPermissionsAsync();
-    if (!p.granted) throw new Error('Camera access is off for Pavurio. You can turn it on in Settings.');
+    if (!p.granted) throw new Error(t('Camera access is off for Pavurio. You can turn it on in Settings.'));
   }
   const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.85, allowsEditing: false, exif: false };
   const res = from === 'camera' ? await ImagePicker.launchCameraAsync(opts) : await ImagePicker.launchImageLibraryAsync(opts);
@@ -81,7 +82,7 @@ export async function openFile(f: { uri: string; mime: string | null; name: stri
     }
     return;
   }
-  if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(f.uri, { mimeType: f.mime ?? undefined, dialogTitle: f.name ?? 'Attachment' });
+  if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(f.uri, { mimeType: f.mime ?? undefined, dialogTitle: f.name ?? t('Attachment') });
 }
 
 /** Shares plain text as a file (summary, CSV); falls back to a download on web. */

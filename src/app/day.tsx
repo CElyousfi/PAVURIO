@@ -13,6 +13,7 @@ import { ART } from '../ui/art';
 import { CircleButton, Label, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 export default function DayDetail() {
   const params = useLocalSearchParams<{ day?: string }>();
@@ -33,19 +34,19 @@ export default function DayDetail() {
         <View style={{ width: W, paddingHorizontal: 20 }}>
           <View style={styles.topRow}>
             <View style={styles.nav}>
-              <CircleButton icon="chevL" label="Previous day" onPress={() => setDayKey((k) => addDays(k, -1))} size={44} />
+              <CircleButton icon="chevL" label={t('Previous day')} onPress={() => setDayKey((k) => addDays(k, -1))} size={44} />
               <T weight="black" style={styles.dayTitle} accessibilityRole="header">
                 {formatDayTitle(dayKey)}
               </T>
               <CircleButton
                 icon="chevR"
-                label="Next day"
+                label={t('Next day')}
                 onPress={() => !today && setDayKey((k) => addDays(k, 1))}
                 size={44}
                 style={{ opacity: today ? 0.3 : 1 }}
               />
             </View>
-            <CircleButton icon="close" label="Close" onPress={() => router.back()} />
+            <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} />
           </View>
 
           <Animated.View key={dayKey} entering={FadeIn.duration(250)} style={{ alignItems: 'center' }}>
@@ -62,7 +63,7 @@ export default function DayDetail() {
             <T style={styles.sub}>{progressSentence(progress)}</T>
             {events.length > progress.done ? (
               <T weight="xbold" style={styles.extra}>
-                {events.length} logged in total
+                {t('{n} logged in total', { n: events.length })}
               </T>
             ) : null}
           </Animated.View>
@@ -72,10 +73,10 @@ export default function DayDetail() {
               <View style={styles.empty}>
                 {ART.ui.emptyDay != null ? <Image source={ART.ui.emptyDay} style={{ width: 150, height: 150, marginBottom: 6 }} /> : null}
                 <T weight="xbold" style={{ fontSize: 17, color: colors.inkSoft }}>
-                  Nothing logged {today ? 'yet today' : 'on this day'}
+                  {today ? t('Nothing logged yet today') : t('Nothing logged on this day')}
                 </T>
                 <T style={{ color: colors.muted, marginTop: 4, textAlign: 'center' }}>
-                  Missed something? Add it below with the time it happened.
+                  {t('Missed something? Add it below with the time it happened.')}
                 </T>
               </View>
             ) : null}
@@ -83,7 +84,7 @@ export default function DayDetail() {
               <Animated.View key={e.id} entering={FadeInDown.delay(i * 40)}>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel={`${CARE[e.type].label}, ${formatAmount(e.type, e.amount)}, at ${formatClock(e.occurredAt)}. Edit`}
+                  accessibilityLabel={t('{label}, {amount}, at {time}. Edit', { label: CARE[e.type].label, amount: formatAmount(e.type, e.amount), time: formatClock(e.occurredAt) })}
                   onPress={() => {
                     tapFeedback();
                     router.push({ pathname: '/log/[type]', params: { type: e.type, eventId: e.id } });
@@ -114,27 +115,27 @@ export default function DayDetail() {
           </View>
 
           <View style={{ alignItems: 'center', gap: 12, marginTop: 10 }}>
-            {events.length > 0 ? <Label>Tap an entry to edit or delete it</Label> : null}
+            {events.length > 0 ? <Label>{t('Tap an entry to edit or delete it')}</Label> : null}
             {picking ? (
               <Animated.View entering={FadeInDown} style={styles.picker}>
-                {SPECIES_CARE[pet.species].map((t) => (
+                {SPECIES_CARE[pet.species].map((ct) => (
                   <Pressable
-                    key={t}
+                    key={ct}
                     accessibilityRole="button"
-                    accessibilityLabel={`Add missed ${CARE[t].label}`}
+                    accessibilityLabel={t('Add missed {label}', { label: CARE[ct].label })}
                     onPress={() => {
                       setPicking(false);
-                      router.push({ pathname: '/log/[type]', params: { type: t, day: dayKey } });
+                      router.push({ pathname: '/log/[type]', params: { type: ct, day: dayKey } });
                     }}
                     style={styles.pickItem}
                   >
-                    <CareIcon type={t} size={44} />
-                    <Label style={{ fontSize: 10, marginTop: 2 }}>{CARE[t].label}</Label>
+                    <CareIcon type={ct} size={44} />
+                    <Label style={{ fontSize: 10, marginTop: 2 }}>{CARE[ct].label}</Label>
                   </Pressable>
                 ))}
               </Animated.View>
             ) : (
-              <SoftPill label="Add a missed entry" onPress={() => setPicking(true)} />
+              <SoftPill label={t('Add a missed entry')} onPress={() => setPicking(true)} />
             )}
           </View>
         </View>

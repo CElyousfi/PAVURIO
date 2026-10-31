@@ -10,6 +10,7 @@ import { Card, TabTitle } from '../../ui/forms';
 import { CircleButton, Icon, SoftPill, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
 import { successFeedback } from '../../native/haptics';
+import { t, tn } from '../../i18n';
 
 function ageLabel(birth: string | null): string | null {
   if (!birth) return null;
@@ -18,9 +19,9 @@ function ageLabel(birth: string | null): string | null {
   let months = (now.getFullYear() - y) * 12 + (now.getMonth() - (m - 1));
   if (now.getDate() < d) months -= 1;
   if (months < 0) return null;
-  if (months < 1) return 'Under a month';
-  if (months < 24) return `${months} month${months === 1 ? '' : 's'}`;
-  return `${Math.floor(months / 12)} years`;
+  if (months < 1) return t('Under a month');
+  if (months < 24) return tn(months, '{n} month', '{n} months');
+  return t('{n} years', { n: Math.floor(months / 12) });
 }
 
 export default function PetsTab() {
@@ -38,7 +39,10 @@ export default function PetsTab() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
-      <TabTitle title="Pets" subtitle={pets.length === 1 ? 'Your family' : `${pets.length} in the family`} right={<CircleButton icon="plus" label="Add a pet" onPress={addPet} size={50} />} />
+      <TabTitle
+        title={t('Pets')}
+        subtitle={pets.length === 1 ? t('Your family') : t('{n} in the family', { n: pets.length })}
+        right={<CircleButton icon="plus" label={t('Add a pet')} onPress={addPet} size={50} />} />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 12 }} showsVerticalScrollIndicator={false}>
         {pets.map((p) => {
           const active = p.id === pet?.id;
@@ -53,7 +57,7 @@ export default function PetsTab() {
                 }
                 router.navigate('/');
               }}
-              accessibilityLabel={active ? `${p.name}, active. Open Home` : `Switch to ${p.name}`}
+              accessibilityLabel={active ? t('{name}, active. Open Home', { name: p.name }) : t('Switch to {name}', { name: p.name })}
               style={[styles.pet, active && { borderColor: colors.brand }]}
             >
               <View style={styles.av}>
@@ -64,26 +68,26 @@ export default function PetsTab() {
                   {p.name}
                 </T>
                 <T style={{ color: colors.muted, fontSize: 14 }}>
-                  {p.species === 'dog' ? 'Dog' : 'Cat'}
+                  {p.species === 'dog' ? t('Dog') : t('Cat')}
                   {age ? ` · ${age}` : ''}
                 </T>
                 {active ? (
                   <T weight="black" style={{ color: colors.brand, fontSize: 12, letterSpacing: 1, marginTop: 2 }}>
-                    ON HOME NOW
+                    {t('ON HOME NOW')}
                   </T>
                 ) : null}
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${p.name}`} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: p.name })} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
                 <Icon name="more" size={20} color={colors.inkSoft} />
               </Pressable>
             </Card>
           );
         })}
 
-        <Pressable accessibilityRole="button" accessibilityLabel="Add a pet" onPress={addPet} style={styles.add}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('Add a pet')} onPress={addPet} style={styles.add}>
           <Icon name="plus" size={20} color={colors.brand} />
           <T weight="black" style={{ color: colors.brand, fontSize: 16 }}>
-            Add a pet
+            {t('Add a pet')}
           </T>
           {!pro && pets.length >= FREE_PET_LIMIT ? (
             <View style={styles.proTag}>
@@ -97,9 +101,9 @@ export default function PetsTab() {
         {archived.length ? (
           <View style={{ marginTop: 14, gap: 8 }}>
             <T weight="black" style={{ fontSize: 17 }}>
-              Archived
+              {t('Archived')}
             </T>
-            <T style={{ color: colors.muted, fontSize: 13, marginTop: -4 }}>Their history is kept. Bring them back any time.</T>
+            <T style={{ color: colors.muted, fontSize: 13, marginTop: -4 }}>{t('Their history is kept. Bring them back any time.')}</T>
             {archived.map((p) => (
               <View key={p.id} style={styles.arch}>
                 <PetAvatar species={p.species} appearance={p.appearance} size={40} />
@@ -107,7 +111,7 @@ export default function PetsTab() {
                   {p.name}
                 </T>
                 <SoftPill
-                  label="Restore"
+                  label={t('Restore')}
                   small
                   onPress={async () => {
                     if (!pro && pets.length >= FREE_PET_LIMIT) return router.push({ pathname: '/paywall', params: { reason: 'pets' } });
@@ -120,15 +124,18 @@ export default function PetsTab() {
           </View>
         ) : null}
 
-        <Card onPress={() => router.push('/settings')} accessibilityLabel="Open settings" style={[styles.pet, { marginTop: 16 }]}>
+        <Card onPress={() => router.push('/settings')} accessibilityLabel={t('Open settings')} style={[styles.pet, { marginTop: 16 }]}>
           <View style={[styles.av, { backgroundColor: colors.line, width: 48, height: 48 }]}>
             <Icon name="menu" size={22} color={colors.inkSoft} />
           </View>
           <View style={{ flex: 1 }}>
             <T weight="black" style={{ fontSize: 16 }}>
-              Settings
+              {t('Settings')}
             </T>
-            <T style={{ color: colors.muted, fontSize: 13 }}>Plan, units, language, export{pro ? ' · Pro' : ''}</T>
+            <T style={{ color: colors.muted, fontSize: 13 }}>
+              {t('Plan, units, language, export')}
+              {pro ? ' · Pro' : ''}
+            </T>
           </View>
           <Icon name="chevR" size={18} color={colors.faint} />
         </Card>

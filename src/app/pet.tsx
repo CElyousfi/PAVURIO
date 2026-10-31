@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { PetAvatar } from '../animation/PetAvatar';
-import { Pet, ValidationError, archivePet, deletePet, getPet, petFileUris, updatePet } from '../data/repo';
+import { Pet, ValidationError, archivePet, deletePet, getPet, listPets, petFileUris, updatePet } from '../data/repo';
 import { removeStoredFile } from '../native/files';
 import { dayKeyOf } from '../domain/time';
 import { useApp } from '../state/AppState';
@@ -11,6 +11,7 @@ import { DateField, Field, ModalScreen } from '../ui/forms';
 import { Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, successFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 export default function PetEditor() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -46,16 +47,19 @@ export default function PetEditor() {
       bump();
       router.back();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Could not save.');
+      setError(e instanceof ValidationError ? e.message : t('Could not save.'));
       errorFeedback();
       setSaving(false);
     }
   };
 
   const leave = async () => {
+    const left = await listPets(db);
     await reload();
     bump();
-    router.dismissTo('/pets');
+    // no pets left: start over with onboarding instead of an empty app
+    if (left.length === 0) router.replace('/onboarding');
+    else router.dismissTo('/pets');
   };
 
   return (
@@ -63,14 +67,14 @@ export default function PetEditor() {
       title={p.name}
       onClose={() => router.back()}
       error={error}
-      footer={<Pill label="SAVE" onPress={save} loading={saving} testID="save-pet" />}
+      footer={<Pill label={t('SAVE')} onPress={save} loading={saving} testID="save-pet" />}
     >
       <View style={{ alignItems: 'center', gap: 10 }}>
         <View style={{ width: 120, height: 120, borderRadius: 40, backgroundColor: '#FFF4E3', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
           <PetAvatar species={p.species} appearance={p.appearance} size={110} />
         </View>
         <SoftPill
-          label="Change look"
+          label={t('Change look')}
           small
           onPress={async () => {
             if (active?.id !== p.id) await switchPet(p.id);
@@ -78,39 +82,39 @@ export default function PetEditor() {
           }}
         />
       </View>
-      <Field label="Name" value={name} onChangeText={setName} maxLength={40} />
+      <Field label={t('Name')} value={name} onChangeText={setName} maxLength={40} />
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <View style={{ flex: 1 }}>
-          <DateField label="Birthday" value={birth} onChange={setBirth} allowClear maxDay={today} placeholder="Unknown" />
+          <DateField label={t('Birthday')} value={birth} onChange={setBirth} allowClear maxDay={today} placeholder={t('Unknown')} />
         </View>
         <View style={{ flex: 1 }}>
-          <DateField label="Adoption day" value={adopt} onChange={setAdopt} allowClear maxDay={today} placeholder="Unknown" />
+          <DateField label={t('Adoption day')} value={adopt} onChange={setAdopt} allowClear maxDay={today} placeholder={t('Unknown')} />
         </View>
       </View>
 
       <View style={{ marginTop: 18, gap: 10, padding: 14, borderRadius: 20, backgroundColor: colors.canvasWarm }}>
         <T weight="black" style={{ fontSize: 16 }}>
-          Archive or delete
+          {t('Archive or delete')}
         </T>
         <T style={{ color: colors.muted, fontSize: 14, lineHeight: 19 }}>
-          Archiving hides {p.name} and stops reminders but keeps every record. Deleting removes {p.name} and all care, records and moments from this device for good.
+          {t('Archiving hides {name} and stops reminders but keeps every record. Deleting removes {name} and all care, records and moments from this device for good.', { name: p.name })}
         </T>
         <SoftPill
-          label={`Archive ${p.name}`}
+          label={t('Archive {name}', { name: p.name })}
           color={colors.inkSoft}
           tint={colors.line}
           onPress={async () => {
-            if (!(await confirmAsync(`Archive ${p.name}?`, 'You can restore them from the Pets tab.', 'Archive'))) return;
+            if (!(await confirmAsync(t('Archive {name}?', { name: p.name }), t('You can restore them from the Pets tab.'), t('Archive')))) return;
             await archivePet(db, p.id);
             await leave();
           }}
         />
         <SoftPill
-          label={`Delete ${p.name} permanently`}
+          label={t('Delete {name} permanently', { name: p.name })}
           color={colors.danger}
           tint={colors.dangerSoft}
           onPress={async () => {
-            if (!(await confirmAsync(`Delete ${p.name} forever?`, 'All care logs, routines, records, photos and moments for this pet are erased. This cannot be undone.'))) return;
+            if (!(await confirmAsync(t('Delete {name} forever?', { name: p.name }), t('All care logs, routines, records, photos and moments for this pet are erased. This cannot be undone.')))) return;
             const files = await petFileUris(db, p.id);
             await deletePet(db, p.id);
             files.forEach(removeStoredFile);

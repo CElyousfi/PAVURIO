@@ -18,6 +18,7 @@ import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { CareIcon } from '../../ui/CareIcon';
 import { colors, font, radius, softShadow } from '../../ui/theme';
 import { petFeedback, successFeedback, tapFeedback } from '../../native/haptics';
+import { t } from '../../i18n';
 
 export default function Home() {
   const { pet, ready } = useApp();
@@ -29,11 +30,11 @@ export default function Home() {
 function useTodayKey() {
   const [key, setKey] = useState(() => dayKeyOf(new Date()));
   useEffect(() => {
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       const k = dayKeyOf(new Date());
       setKey((prev) => (prev === k ? prev : k));
     }, 30_000);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, []);
   return key;
 }
@@ -115,14 +116,14 @@ function HomeScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
       <View style={[styles.col, { width: W }]}>
         <View style={styles.topRow}>
-          <CircleButton label={`Today, ${Math.round(progress.ratio * 100)} percent colored in. Open today's care`} onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })} size={54}>
+          <CircleButton label={t("Today, {pct} percent colored in. Open today's care", { pct: Math.round(progress.ratio * 100) })} onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })} size={54}>
             <DayRing ratio={progress.ratio} day={new Date().getDate()} />
           </CircleButton>
-          <CircleButton icon="menu" label="Settings" onPress={() => router.push('/settings')} size={54} />
+          <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} />
         </View>
 
         <View style={styles.header}>
-          <Label style={{ marginBottom: 2 }}>{pet.name}'s day</Label>
+          <Label style={{ marginBottom: 2 }}>{t("{name}'s day", { name: pet.name })}</Label>
           <T weight="black" style={styles.big} accessibilityRole="header">
             {big}
           </T>
@@ -147,12 +148,12 @@ function HomeScreen() {
             onClipEnd={() => setClip(null)}
             active={focused}
             reduceMotion={reduceMotion}
-            accessibilityLabel={`${pet.name}, ${Math.round(progress.ratio * 100)} percent colored in today`}
+            accessibilityLabel={t('{name}, {pct} percent colored in today', { name: pet.name, pct: Math.round(progress.ratio * 100) })}
           />
           {isEmptyDay ? (
             <Animated.View entering={FadeInDown.delay(400)} style={styles.hint} pointerEvents="none">
               <T weight="xbold" style={styles.hintText}>
-                Tap a care below to color {pet.name} in
+                {t('Tap a care below to color {name} in', { name: pet.name })}
               </T>
             </Animated.View>
           ) : null}
@@ -162,23 +163,23 @@ function HomeScreen() {
           <RowItem
             label={pet.name}
             onPress={() => router.push('/studio')}
-            accessibilityLabel={`Open ${pet.name}'s look`}
+            accessibilityLabel={t("Open {name}'s look", { name: pet.name })}
             icon={
               <View style={styles.avatarBubble}>
                 <PetAvatar species={pet.species} appearance={pet.appearance} size={58} />
               </View>
             }
           />
-          {row.map((t) => (
+          {row.map((ct) => (
             <RowItem
-              key={t}
-              label={CARE[t].label}
-              color={CARE[t].color}
-              count={progress.counts[t] ?? 0}
-              onPress={() => router.push({ pathname: '/log/[type]', params: { type: t, day: todayKey } })}
-              accessibilityLabel={`Log ${CARE[t].label}`}
-              icon={<CareIcon type={t} size={62} />}
-              testID={`quick-${t}`}
+              key={ct}
+              label={CARE[ct].label}
+              color={CARE[ct].color}
+              count={progress.counts[ct] ?? 0}
+              onPress={() => router.push({ pathname: '/log/[type]', params: { type: ct, day: todayKey } })}
+              accessibilityLabel={t('Log {label}', { label: CARE[ct].label })}
+              icon={<CareIcon type={ct} size={62} />}
+              testID={`quick-${ct}`}
             />
           ))}
         </View>
@@ -187,10 +188,10 @@ function HomeScreen() {
           {next ? (
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: -2 }}>
-                <Label style={{ flex: 1 }}>Next up</Label>
-                <Pressable accessibilityRole="button" accessibilityLabel="Open care schedule" onPress={() => router.navigate('/care')} hitSlop={8}>
+                <Label style={{ flex: 1 }}>{t('Next up')}</Label>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('Open care schedule')} onPress={() => router.navigate('/care')} hitSlop={8}>
                   <T weight="xbold" style={styles.peekLink}>
-                    {openCount > 1 ? `${openCount - 1} more today` : 'Schedule'}
+                    {openCount > 1 ? t('{n} more today', { n: openCount - 1 }) : t('Schedule')}
                   </T>
                 </Pressable>
               </View>
@@ -199,7 +200,7 @@ function HomeScreen() {
           ) : (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Open today's care timeline"
+              accessibilityLabel={t("Open today's care timeline")}
               onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })}
               style={styles.peekRow}
             >
@@ -214,16 +215,16 @@ function HomeScreen() {
                   </T>
                   <View style={{ flex: 1 }} />
                   <T weight="xbold" style={styles.peekLink}>
-                    {events.length} today
+                    {t('{n} today', { n: events.length })}
                   </T>
                 </>
               ) : (
                 <>
                   <T weight="xbold" style={[styles.peekTitle, { color: colors.brand }]}>
-                    Today's care
+                    {t("Today's care")}
                   </T>
                   <View style={{ flex: 1 }} />
-                  <T style={styles.peekMeta}>{occ.length ? 'All done for today' : 'Nothing logged yet'}</T>
+                  <T style={styles.peekMeta}>{occ.length ? t('All done for today') : t('Nothing logged yet')}</T>
                 </>
               )}
             </Pressable>
@@ -234,11 +235,11 @@ function HomeScreen() {
       {snack ? (
         <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: 14 }]}>
           <T weight="xbold" style={styles.snackText}>
-            {CARE[snack.type].label} saved
+            {t('{label} saved', { label: CARE[snack.type].label })}
           </T>
-          <Pressable accessibilityRole="button" accessibilityLabel="Undo" onPress={undo} hitSlop={10} testID="undo">
+          <Pressable accessibilityRole="button" accessibilityLabel={t('Undo')} onPress={undo} hitSlop={10} testID="undo">
             <T weight="black" style={styles.snackUndo}>
-              UNDO
+              {t('UNDO')}
             </T>
           </Pressable>
         </Animated.View>
@@ -290,7 +291,7 @@ function RowItem({
           </View>
         ) : null}
       </View>
-      <T weight="black" style={styles.itemLabel} numberOfLines={1}>
+      <T weight="black" style={styles.itemLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
         {label.toUpperCase()}
       </T>
     </Pressable>

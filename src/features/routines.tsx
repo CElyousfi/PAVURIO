@@ -12,19 +12,31 @@ import { CareIcon } from '../ui/CareIcon';
 import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { successFeedback, tapFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 export const EXTRA_KINDS = {
-  medication: { label: 'Medication', color: '#E5484D' },
-  custom: { label: 'Other', color: '#64748B' },
-} as const;
+  medication: {
+    get label() {
+      return t('Medication');
+    },
+    color: '#E5484D',
+  },
+  custom: {
+    get label() {
+      return t('Other');
+    },
+    color: '#64748B',
+  },
+};
 
 export function kindMeta(type: string): { label: string; color: string } {
   if (isCareType(type)) return { label: CARE[type].label, color: CARE[type].color };
-  return EXTRA_KINDS[type as keyof typeof EXTRA_KINDS] ?? EXTRA_KINDS.custom;
+  const k = EXTRA_KINDS[type as keyof typeof EXTRA_KINDS] ?? EXTRA_KINDS.custom;
+  return { label: k.label, color: k.color };
 }
 
 export function routineKindsFor(species: Species): string[] {
-  return [...(Object.keys(CARE) as CareType[]).filter((t) => careAllowedFor(species, t)), 'medication', 'custom'];
+  return [...(Object.keys(CARE) as CareType[]).filter((c) => careAllowedFor(species, c)), 'medication', 'custom'];
 }
 
 export function KindIcon({ type, size }: { type: string; size: number }) {
@@ -49,13 +61,13 @@ export function KindIcon({ type, size }: { type: string; size: number }) {
   );
 }
 
-const STATUS_LABEL: Record<Occurrence['status'], string> = {
-  upcoming: 'Upcoming',
-  due: 'Due now',
-  overdue: 'Overdue',
-  done: 'Done',
-  skipped: 'Skipped',
-  snoozed: 'Snoozed',
+const STATUS_LABEL: Record<Occurrence['status'], () => string> = {
+  upcoming: () => t('Upcoming'),
+  due: () => t('Due now'),
+  overdue: () => t('Overdue'),
+  done: () => t('Done'),
+  skipped: () => t('Skipped'),
+  snoozed: () => t('Snoozed'),
 };
 const STATUS_COLOR: Record<Occurrence['status'], string> = {
   upcoming: colors.muted,
@@ -111,10 +123,10 @@ export function OccurrenceRow({
   const future = o.at > Date.now() + 60 * 60_000;
   const when =
     o.status === 'snoozed' && o.snoozeUntil
-      ? `Snoozed to ${formatTime24to12(`${new Date(o.snoozeUntil).getHours()}:${String(new Date(o.snoozeUntil).getMinutes()).padStart(2, '0')}`)}`
+      ? t('Snoozed to {time}', { time: formatTime24to12(`${new Date(o.snoozeUntil).getHours()}:${String(new Date(o.snoozeUntil).getMinutes()).padStart(2, '0')}`) })
       : formatTime24to12(o.time);
   return (
-    <View style={[styles.row, closed && { opacity: 0.62 }]} accessibilityLabel={`${o.title}, ${when}, ${STATUS_LABEL[o.status]}`}>
+    <View style={[styles.row, closed && { opacity: 0.62 }]} accessibilityLabel={`${o.title}, ${when}, ${STATUS_LABEL[o.status]()}`}>
       <KindIcon type={o.type} size={compact ? 40 : 44} />
       <View style={{ flex: 1 }}>
         <T weight="black" style={[styles.title, closed && o.status === 'skipped' && { textDecorationLine: 'line-through' }]} numberOfLines={1}>
@@ -124,33 +136,33 @@ export function OccurrenceRow({
           <T style={styles.meta}>{when}</T>
           <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[o.status] }]} />
           <T weight="xbold" style={[styles.meta, { color: STATUS_COLOR[o.status] }]}>
-            {STATUS_LABEL[o.status]}
+            {STATUS_LABEL[o.status]()}
           </T>
         </View>
       </View>
       {closed ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={`Reopen ${o.title}`} onPress={() => reopenOccurrence(db, o, bump)} style={styles.ghost} hitSlop={6}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('Reopen {title}', { title: o.title })} onPress={() => reopenOccurrence(db, o, bump)} style={styles.ghost} hitSlop={6}>
           <T weight="black" style={styles.ghostText}>
-            REOPEN
+            {t('REOPEN')}
           </T>
         </Pressable>
       ) : (
         <View style={{ flexDirection: 'row', gap: 6 }}>
           {!future ? (
-            <Pressable accessibilityRole="button" accessibilityLabel={`Snooze ${o.title} 30 minutes`} onPress={() => snoozeOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('Snooze {title} 30 minutes', { title: o.title })} onPress={() => snoozeOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
               <Svg width={20} height={20} viewBox="0 0 24 24">
                 <Circle cx={12} cy={13} r={7.5} stroke={colors.inkSoft} strokeWidth={2.2} fill="none" />
                 <Path d="M12 9.5V13l2.3 1.6M4.5 5.5 7 3.5M19.5 5.5 17 3.5" stroke={colors.inkSoft} strokeWidth={2.2} strokeLinecap="round" fill="none" />
               </Svg>
             </Pressable>
           ) : null}
-          <Pressable accessibilityRole="button" accessibilityLabel={`Skip ${o.title}`} onPress={() => skipOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('Skip {title}', { title: o.title })} onPress={() => skipOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
             <Icon name="close" size={18} color={colors.inkSoft} />
           </Pressable>
           {!future ? (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Mark ${o.title} done`}
+              accessibilityLabel={t('Mark {title} done', { title: o.title })}
               onPress={() => completeOccurrence(db, species, o, bump)}
               style={[styles.round, { backgroundColor: kindMeta(o.type).color }]}
               hitSlop={4}

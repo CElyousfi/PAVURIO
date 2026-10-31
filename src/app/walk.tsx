@@ -13,6 +13,7 @@ import { Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, tapFeedback } from '../native/haptics';
 import { confirmAsync } from '../ui/confirm';
+import { t } from '../i18n';
 
 /** Persisted so a walk keeps timing if the app is closed or the phone locks. */
 type TimerState = { startedAt: number; pausedAt: number | null; pausedMs: number };
@@ -34,7 +35,7 @@ export default function WalkTimer() {
   const { pet, db, bump, schedules, signalLogged, reduceMotion } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const [t, setT] = useState<TimerState | null>(null);
+  const [timer, setT] = useState<TimerState | null>(null);
   const [now, setNow] = useState(Date.now());
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -53,7 +54,7 @@ export default function WalkTimer() {
     });
   }, [db]);
 
-  const running = !!t && t.pausedAt == null;
+  const running = !!timer && timer.pausedAt == null;
   useEffect(() => {
     if (!running) return;
     const i = setInterval(() => setNow(Date.now()), 500);
@@ -77,14 +78,14 @@ export default function WalkTimer() {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 40, alignItems: 'center' }]}>
         <T weight="black" style={{ fontSize: 20 }}>
-          Walks are for dogs.
+          {t('Walks are for dogs.')}
         </T>
-        <Pill label="BACK" onPress={() => router.back()} style={{ marginTop: 20 }} />
+        <Pill label={t('BACK')} onPress={() => router.back()} style={{ marginTop: 20 }} />
       </View>
     );
   }
 
-  const ms = elapsed(t, now);
+  const ms = elapsed(timer, now);
   const start = () => {
     tapFeedback();
     mutationId.current = newId();
@@ -92,27 +93,27 @@ export default function WalkTimer() {
   };
   const pause = () => {
     tapFeedback();
-    if (!t) return;
-    void persist(t.pausedAt == null ? { ...t, pausedAt: Date.now() } : { ...t, pausedMs: t.pausedMs + (Date.now() - t.pausedAt), pausedAt: null });
+    if (!timer) return;
+    void persist(timer.pausedAt == null ? { ...timer, pausedAt: Date.now() } : { ...timer, pausedMs: timer.pausedMs + (Date.now() - timer.pausedAt), pausedAt: null });
   };
   const discard = async () => {
-    if (!(await confirmAsync('Discard this walk?', 'Nothing will be saved.', 'Discard'))) return;
+    if (!(await confirmAsync(t('Discard this walk?'), t('Nothing will be saved.'), t('Discard')))) return;
     await persist(null);
   };
   const finish = async () => {
-    if (!t || saving) return;
+    if (!timer || saving) return;
     setSaving(true);
     setError(null);
     try {
       const minutes = Math.max(1, Math.round(ms / 60_000));
-      const saved = await logCare(db, { petId: pet.id, type: 'walk', occurredAt: t.startedAt, amount: minutes, note: null, mutationId: mutationId.current });
+      const saved = await logCare(db, { petId: pet.id, type: 'walk', occurredAt: timer.startedAt, amount: minutes, note: null, mutationId: mutationId.current });
       await confirmOccurrence(db, schedules, saved).catch(() => null);
       await persist(null);
       bump();
       signalLogged({ eventId: saved.id, type: 'walk' });
       router.dismissTo('/');
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Could not save the walk. Please try again.');
+      setError(e instanceof ValidationError ? e.message : t('Could not save the walk. Please try again.'));
       errorFeedback();
       setSaving(false);
     }
@@ -122,10 +123,10 @@ export default function WalkTimer() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }]}>
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
-        <ScreenHeader title="Walk" onClose={() => router.back()} />
+        <ScreenHeader title={t('Walk')} onClose={() => router.back()} />
         <View style={{ alignItems: 'center', marginTop: 10 }}>
-          <Label>{!t ? 'Ready when you are' : running ? `Walking with ${pet.name}` : 'Paused'}</Label>
-          <T weight="black" style={styles.clock} accessibilityRole="timer" accessibilityLabel={`Elapsed ${clock(ms)}`}>
+          <Label>{!timer ? t('Ready when you are') : running ? t('Walking with {name}', { name: pet.name }) : t('Paused')}</Label>
+          <T weight="black" style={styles.clock} accessibilityRole="timer" accessibilityLabel={t('Elapsed {time}', { time: clock(ms) })}>
             {clock(ms)}
           </T>
         </View>
@@ -148,18 +149,18 @@ export default function WalkTimer() {
               {error}
             </T>
           ) : null}
-          {!t ? (
-            <Pill label="START WALK" color="#58C322" onPress={start} testID="walk-start" />
+          {!timer ? (
+            <Pill label={t('START WALK')} color="#58C322" onPress={start} testID="walk-start" />
           ) : (
             <>
-              <Pill label={`FINISH · ${Math.max(1, Math.round(ms / 60_000))} MIN`} color="#58C322" onPress={finish} loading={saving} testID="walk-finish" />
+              <Pill label={t('FINISH · {n} MIN', { n: Math.max(1, Math.round(ms / 60_000)) })} color="#58C322" onPress={finish} loading={saving} testID="walk-finish" />
               <View style={{ flexDirection: 'row', gap: 10 }}>
-                <SoftPill label={running ? 'Pause' : 'Resume'} color="#3E8E17" tint="#E6F7DA" onPress={pause} style={{ flex: 1 }} />
-                <SoftPill label="Discard" color={colors.danger} tint={colors.dangerSoft} onPress={discard} style={{ flex: 1 }} />
+                <SoftPill label={running ? t('Pause') : t('Resume')} color="#3E8E17" tint="#E6F7DA" onPress={pause} style={{ flex: 1 }} />
+                <SoftPill label={t('Discard')} color={colors.danger} tint={colors.dangerSoft} onPress={discard} style={{ flex: 1 }} />
               </View>
             </>
           )}
-          <T style={{ color: colors.muted, textAlign: 'center', fontSize: 13 }}>The timer keeps going if you close the app.</T>
+          <T style={{ color: colors.muted, textAlign: 'center', fontSize: 13 }}>{t('The timer keeps going if you close the app.')}</T>
         </View>
       </View>
     </View>

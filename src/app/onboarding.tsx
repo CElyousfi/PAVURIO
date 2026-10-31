@@ -20,15 +20,16 @@ import { requestPermission } from '../native/notifications';
 import { DateField, TimeField, Toggle } from '../ui/forms';
 import { dayKeyOf } from '../domain/time';
 import { KindIcon } from '../features/routines';
+import { t } from '../i18n';
 
 type Suggestion = { key: string; type: string; title: string; times: string[]; on: boolean };
 function suggestions(species: Species, plan: Plan): Suggestion[] {
   const out: Suggestion[] = [];
   const meals = plan.meal ?? 0;
-  if (meals > 0) out.push({ key: 'meal', type: 'meal', title: meals === 1 ? 'Dinner' : 'Meals', times: meals === 1 ? ['18:00'] : meals === 2 ? ['08:00', '18:00'] : ['08:00', '13:00', '18:00'], on: true });
-  if (species === 'dog' && (plan.walk ?? 0) > 0) out.push({ key: 'walk', type: 'walk', title: 'Walk', times: (plan.walk ?? 0) >= 2 ? ['07:30', '18:30'] : ['18:30'], on: true });
-  if (species === 'cat' && (plan.litter ?? 0) > 0) out.push({ key: 'litter', type: 'litter', title: 'Scoop the litter', times: ['09:00'], on: true });
-  out.push({ key: 'medication', type: 'medication', title: 'Medication', times: ['20:00'], on: false });
+  if (meals > 0) out.push({ key: 'meal', type: 'meal', title: meals === 1 ? t('Dinner') : t('Meals'), times: meals === 1 ? ['18:00'] : meals === 2 ? ['08:00', '18:00'] : ['08:00', '13:00', '18:00'], on: true });
+  if (species === 'dog' && (plan.walk ?? 0) > 0) out.push({ key: 'walk', type: 'walk', title: t('Walk'), times: (plan.walk ?? 0) >= 2 ? ['07:30', '18:30'] : ['18:30'], on: true });
+  if (species === 'cat' && (plan.litter ?? 0) > 0) out.push({ key: 'litter', type: 'litter', title: t('Scoop the litter'), times: ['09:00'], on: true });
+  out.push({ key: 'medication', type: 'medication', title: t('Medication'), times: ['20:00'], on: false });
   return out;
 }
 
@@ -62,11 +63,11 @@ export default function Onboarding() {
     }
     const seq = [0.15, 0.45, 0.75, 1, 1, 0.15];
     let i = 0;
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       i = (i + 1) % seq.length;
       setDemoFill(seq[i]);
     }, 1300);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [step, reduceMotion]);
 
   const go = (s: Step) => {
@@ -90,7 +91,7 @@ export default function Onboarding() {
   const submitName = () => {
     const n = name.trim();
     if (!n) {
-      setError('Please give them a name.');
+      setError(t('Please give them a name.'));
       errorFeedback();
       return;
     }
@@ -111,19 +112,19 @@ export default function Onboarding() {
       if (adding) router.dismissTo('/');
       else router.replace('/');
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Something went wrong while saving. Please try again.');
+      setError(e instanceof ValidationError ? e.message : t('Something went wrong while saving. Please try again.'));
       errorFeedback();
       setSaving(false);
     }
   };
 
   const petSize = Math.min(W * 0.72, 330);
-  const displayName = name.trim() || (species === 'dog' ? 'your dog' : 'your cat');
+  const displayName = name.trim() || (species === 'dog' ? t('your dog') : t('your cat'));
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={[styles.topRow, { width: W }]}>
-        {step !== 'welcome' ? <CircleButton icon="back" label="Back" onPress={back} size={46} /> : <View style={{ width: 46 }} />}
+        {step !== 'welcome' ? <CircleButton icon="back" label={t('Back')} onPress={back} size={46} /> : <View style={{ width: 46 }} />}
         {step !== 'welcome' ? <Dots index={ORDER.indexOf(step) - 1} total={ORDER.length - 1} /> : null}
         <View style={{ width: 46 }} />
       </View>
@@ -135,15 +136,15 @@ export default function Onboarding() {
               {ART.ui.welcomeBadge != null ? <Image source={ART.ui.welcomeBadge} style={{ width: 52, height: 52 }} /> : <CareIcon type="meal" size={44} />}
             </View>
             <T weight="black" style={styles.h1}>
-              A little world for all{'\n'}their big moments
+              {t('A little world for all\ntheir big moments')}
             </T>
-            <T style={styles.sub}>Log the care you give. Watch them color in.</T>
+            <T style={styles.sub}>{t('Log the care you give. Watch them color in.')}</T>
           </View>
           <View style={styles.hero}>
             <PetRig species="dog" appearance={defaultAppearance('dog')} size={petSize} progress={demoFill} reduceMotion={reduceMotion} interactive />
           </View>
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label="GET STARTED" onPress={() => go('species')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="get-started" />
+            <Pill label={t('GET STARTED')} onPress={() => go('species')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="get-started" />
           </View>
         </Animated.View>
       )}
@@ -151,22 +152,22 @@ export default function Onboarding() {
       {step === 'species' && (
         <Animated.View key="species" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            Who are we caring for?
+            {t('Who are we caring for?')}
           </T>
-          <T style={styles.sub}>Pavurio starts with dogs and cats. More friends later.</T>
+          <T style={styles.sub}>{t('Pavurio starts with dogs and cats. More friends later.')}</T>
           <View style={styles.speciesRow}>
             {(['dog', 'cat'] as Species[]).map((s) => (
               <Pressable
                 key={s}
                 accessibilityRole="button"
-                accessibilityLabel={s === 'dog' ? 'Dog' : 'Cat'}
+                accessibilityLabel={s === 'dog' ? t('Dog') : t('Cat')}
                 onPress={() => chooseSpecies(s)}
                 style={({ pressed }) => [styles.speciesCard, shadow, { transform: [{ scale: pressed ? 0.97 : 1 }] }]}
                 testID={`species-${s}`}
               >
                 <PetRig species={s} appearance={defaultAppearance(s)} size={Math.min(150, W * 0.36)} />
                 <T weight="black" style={styles.speciesLabel}>
-                  {s === 'dog' ? 'DOG' : 'CAT'}
+                  {s === 'dog' ? t('DOG') : t('CAT')}
                 </T>
               </Pressable>
             ))}
@@ -177,15 +178,15 @@ export default function Onboarding() {
       {step === 'name' && (
         <Animated.View key="name" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            What's their name?
+            {t("What's their name?")}
           </T>
           <View style={styles.hero}>
             <PetRig species={species} appearance={appearance} size={petSize * 0.78} reduceMotion={reduceMotion} interactive />
           </View>
           <TextInput
             value={name}
-            onChangeText={(t) => {
-              setName(t);
+            onChangeText={(v) => {
+              setName(v);
               if (error) setError(null);
             }}
             placeholder={species === 'dog' ? 'Biscuit' : 'Mochi'}
@@ -195,12 +196,12 @@ export default function Onboarding() {
             autoFocus={Platform.OS !== 'web'}
             returnKeyType="next"
             onSubmitEditing={submitName}
-            accessibilityLabel="Pet name"
+            accessibilityLabel={t('Pet name')}
             testID="name-input"
           />
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label="NEXT" onPress={submitName} disabled={!name.trim()} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="name-next" />
+            <Pill label={t('NEXT')} onPress={submitName} disabled={!name.trim()} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="name-next" />
           </View>
         </Animated.View>
       )}
@@ -208,14 +209,14 @@ export default function Onboarding() {
       {step === 'look' && (
         <Animated.View key="look" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            Make {displayName} look like {displayName}
+            {t('Make {name} look like {name}', { name: displayName })}
           </T>
           <View style={styles.hero}>
             <PetRig species={species} appearance={appearance} size={petSize * 0.8} reduceMotion={reduceMotion} interactive />
           </View>
           <LookPicker species={species} appearance={appearance} onChange={setAppearance} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label="LOOKS RIGHT" onPress={() => go('dates')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
+            <Pill label={t('LOOKS RIGHT')} onPress={() => go('dates')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
           </View>
         </Animated.View>
       )}
@@ -223,17 +224,17 @@ export default function Onboarding() {
       {step === 'plan' && (
         <Animated.View key="plan" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            {displayName}'s daily plan
+            {t("{name}'s daily plan", { name: displayName })}
           </T>
           {ART.ui.planHeader != null ? <Image source={ART.ui.planHeader} style={{ width: 240, height: 160, marginTop: 6 }} resizeMode="contain" /> : null}
-          <T style={styles.sub}>You decide what a good day looks like. Each thing you log colors in a bit more of {displayName}.</T>
+          <T style={styles.sub}>{t('You decide what a good day looks like. Each thing you log colors in a bit more of {name}.', { name: displayName })}</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
             <PlanEditor species={species} plan={plan} onChange={setPlan} />
           </ScrollView>
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
             <Pill
-              label="NEXT"
+              label={t('NEXT')}
               onPress={() => {
                 setRoutines(suggestions(species, plan));
                 go('reminders');
@@ -247,18 +248,18 @@ export default function Onboarding() {
       {step === 'dates' && (
         <Animated.View key="dates" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            Special days
+            {t('Special days')}
           </T>
-          <T style={styles.sub}>Optional. We'll celebrate {displayName}'s birthday and your anniversary together.</T>
+          <T style={styles.sub}>{t("Optional. We'll celebrate {name}'s birthday and your anniversary together.", { name: displayName })}</T>
           <View style={{ alignSelf: 'stretch', paddingHorizontal: 24, gap: 16, marginTop: 24 }}>
-            <DateField label="Birthday" value={birthDate} onChange={setBirthDate} allowClear maxDay={dayKeyOf(new Date())} placeholder="Not sure? Skip it" />
-            <DateField label="Adoption day" value={adoptionDate} onChange={setAdoptionDate} allowClear maxDay={dayKeyOf(new Date())} placeholder="When they came home" />
+            <DateField label={t('Birthday')} value={birthDate} onChange={setBirthDate} allowClear maxDay={dayKeyOf(new Date())} placeholder={t('Not sure? Skip it')} />
+            <DateField label={t('Adoption day')} value={adoptionDate} onChange={setAdoptionDate} allowClear maxDay={dayKeyOf(new Date())} placeholder={t('When they came home')} />
           </View>
           <View style={styles.hero}>
             <PetRig species={species} appearance={appearance} size={petSize * 0.6} reduceMotion={reduceMotion} />
           </View>
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label={birthDate || adoptionDate ? 'NEXT' : 'SKIP FOR NOW'} onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="dates-next" />
+            <Pill label={birthDate || adoptionDate ? t('NEXT') : t('SKIP FOR NOW')} onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="dates-next" />
           </View>
         </Animated.View>
       )}
@@ -266,9 +267,9 @@ export default function Onboarding() {
       {step === 'reminders' && (
         <Animated.View key="reminders" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            Gentle reminders
+            {t('Gentle reminders')}
           </T>
-          <T style={styles.sub}>A nudge at the times you choose. Nothing is ever ticked off for you — you log it when it's done.</T>
+          <T style={styles.sub}>{t("A nudge at the times you choose. Nothing is ever ticked off for you — you log it when it's done.")}</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 16, gap: 12 }}>
             {routines.map((r, i) => (
               <View key={r.key} style={styles.routine}>
@@ -280,9 +281,9 @@ export default function Onboarding() {
                 </View>
                 {r.on ? (
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
-                    {r.times.map((t, ti) => (
+                    {r.times.map((tm, ti) => (
                       <View key={ti} style={{ flex: 1 }}>
-                        <TimeField label="" value={t} onChange={(v) => setRoutines(routines.map((x, j) => (j === i ? { ...x, times: x.times.map((y, k) => (k === ti ? v : y)) } : x)))} />
+                        <TimeField label="" value={tm} onChange={(v) => setRoutines(routines.map((x, j) => (j === i ? { ...x, times: x.times.map((y, k) => (k === ti ? v : y)) } : x)))} />
                       </View>
                     ))}
                   </View>
@@ -292,7 +293,7 @@ export default function Onboarding() {
           </ScrollView>
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18, gap: 8 }]}>
-            <Pill label={routines.some((r) => r.on) ? "LET'S GO" : 'NO REMINDERS · FINISH'} onPress={finish} loading={saving} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="finish" />
+            <Pill label={routines.some((r) => r.on) ? t("LET'S GO") : t('NO REMINDERS · FINISH')} onPress={finish} loading={saving} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="finish" />
           </View>
         </Animated.View>
       )}
@@ -302,7 +303,7 @@ export default function Onboarding() {
 
 function Dots({ index, total }: { index: number; total: number }) {
   return (
-    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={`Step ${index + 1} of ${total}`}>
+    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={t('Step {n} of {total}', { n: index + 1, total })}>
       {Array.from({ length: total }).map((_, i) => (
         <View key={i} style={{ width: i === index ? 22 : 8, height: 8, borderRadius: 4, backgroundColor: i <= index ? colors.ink : colors.line }} />
       ))}

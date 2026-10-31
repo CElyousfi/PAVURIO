@@ -6,24 +6,26 @@ import { CircleButton, Icon, Label, Pill, T } from './primitives';
 import { colors, font, radius, softShadow } from './theme';
 import { tapFeedback } from '../native/haptics';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
+import { lang, t } from '../i18n';
+import { capitalize, formatHM, monthNames, monthNamesShort, uses24h, weekdayInitials } from '../i18n/dates';
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
+/** "Oct 31, 2026" in English, "31 oct. 2026" in French. */
 export function formatDateLong(key: string | null | undefined): string {
   if (!key) return '—';
   const d = parseDayKey(key);
-  return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  const mon = monthNamesShort()[d.getMonth()];
+  if (lang() === 'fr') return `${d.getDate()} ${mon} ${d.getFullYear()}`;
+  return `${mon} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
 export function ScreenHeader({ title, onClose, onBack, right }: { title: string; onClose?: () => void; onBack?: () => void; right?: React.ReactNode }) {
   return (
     <View style={styles.header}>
-      {onBack ? <CircleButton icon="back" label="Back" onPress={onBack} size={46} /> : <View style={{ width: 46 }} />}
+      {onBack ? <CircleButton icon="back" label={t('Back')} onPress={onBack} size={46} /> : <View style={{ width: 46 }} />}
       <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1}>
         {title}
       </T>
-      {onClose ? <CircleButton icon="close" label="Close" onPress={onClose} size={46} /> : right ?? <View style={{ width: 46 }} />}
+      {onClose ? <CircleButton icon="close" label={t('Close')} onPress={onClose} size={46} /> : right ?? <View style={{ width: 46 }} />}
     </View>
   );
 }
@@ -105,14 +107,14 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close" />
+      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel={t('Close')} />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
         <View style={styles.sheetHandle} />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
           <T weight="black" style={{ fontSize: 20, flex: 1 }}>
             {title}
           </T>
-          <CircleButton icon="close" label="Close" onPress={onClose} size={40} />
+          <CircleButton icon="close" label={t('Close')} onPress={onClose} size={40} />
         </View>
         {children}
       </View>
@@ -149,7 +151,7 @@ export function MonthGrid({
   return (
     <View>
       <View style={styles.weekRow}>
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+        {weekdayInitials().map((d, i) => (
           <T key={i} weight="black" style={styles.weekHead}>
             {d}
           </T>
@@ -199,11 +201,11 @@ export function MonthNav({ month, onChange }: { month: string; onChange: (m: str
   const shift = (delta: number) => onChange(dayKeyOf(new Date(d.getFullYear(), d.getMonth() + delta, 1)));
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-      <CircleButton icon="chevL" label="Previous month" onPress={() => shift(-1)} size={40} />
+      <CircleButton icon="chevL" label={t('Previous month')} onPress={() => shift(-1)} size={40} />
       <T weight="black" style={{ fontSize: 18 }}>
-        {MONTHS[d.getMonth()]} {d.getFullYear()}
+        {capitalize(monthNames()[d.getMonth()])} {d.getFullYear()}
       </T>
-      <CircleButton icon="chevR" label="Next month" onPress={() => shift(1)} size={40} />
+      <CircleButton icon="chevR" label={t('Next month')} onPress={() => shift(1)} size={40} />
     </View>
   );
 }
@@ -214,7 +216,7 @@ export function DateField({
   onChange,
   allowClear,
   maxDay,
-  placeholder = 'Choose a date',
+  placeholder,
 }: {
   label: string;
   value: string | null;
@@ -230,7 +232,7 @@ export function DateField({
       <Label>{label}</Label>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${label}: ${value ? formatDateLong(value) : 'not set'}`}
+        accessibilityLabel={t('{label}: {value}', { label, value: value ? formatDateLong(value) : t('not set') })}
         onPress={() => {
           setMonth(value ?? dayKeyOf(new Date()));
           setOpen(true);
@@ -238,7 +240,7 @@ export function DateField({
         style={[styles.input, { flexDirection: 'row', alignItems: 'center' }]}
       >
         <T weight="bold" style={{ flex: 1, fontSize: 17, color: value ? colors.ink : colors.faint }}>
-          {value ? formatDateLong(value) : placeholder}
+          {value ? formatDateLong(value) : placeholder ?? t('Choose a date')}
         </T>
         <Icon name="chevR" size={18} color={colors.muted} />
       </Pressable>
@@ -254,9 +256,9 @@ export function DateField({
           }}
         />
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-          <Chip label="Today" on={false} onPress={() => (onChange(dayKeyOf(new Date())), setOpen(false))} />
-          {!maxDay ? <Chip label="In 1 year" on={false} onPress={() => (onChange(addDays(dayKeyOf(new Date()), 365)), setOpen(false))} /> : null}
-          {allowClear && value ? <Chip label="Clear" on={false} onPress={() => (onChange(null), setOpen(false))} /> : null}
+          <Chip label={t('Today')} on={false} onPress={() => (onChange(dayKeyOf(new Date())), setOpen(false))} />
+          {!maxDay ? <Chip label={t('In 1 year')} on={false} onPress={() => (onChange(addDays(dayKeyOf(new Date()), 365)), setOpen(false))} /> : null}
+          {allowClear && value ? <Chip label={t('Clear')} on={false} onPress={() => (onChange(null), setOpen(false))} /> : null}
         </View>
       </Sheet>
     </View>
@@ -269,10 +271,8 @@ export function TimeField({ label, value, onChange }: { label: string; value: st
   const [open, setOpen] = useState(false);
   const [h, m] = value.split(':').map(Number);
   const set = (hh: number, mm: number) => onChange(`${String((hh + 24) % 24).padStart(2, '0')}:${String((mm + 60) % 60).padStart(2, '0')}`);
-  const pretty = useMemo(() => {
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${ampm}`;
-  }, [h, m]);
+  const pretty = useMemo(() => formatHM(h, m), [h, m]);
+  const h24 = uses24h();
   return (
     <View style={{ gap: 6 }}>
       {label ? <Label>{label}</Label> : null}
@@ -282,44 +282,47 @@ export function TimeField({ label, value, onChange }: { label: string; value: st
         </T>
         <Icon name="chevR" size={18} color={colors.muted} />
       </Pressable>
-      <Sheet visible={open} onClose={() => setOpen(false)} title={label || 'Time'}>
+      <Sheet visible={open} onClose={() => setOpen(false)} title={label || t('Time')}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 18, marginVertical: 8 }}>
-          <Spinner label="Hour" value={h % 12 || 12} onUp={() => set(h + 1, m)} onDown={() => set(h - 1, m)} />
+          <Spinner label={t('Hour')} value={h24 ? h : h % 12 || 12} onUp={() => set(h + 1, m)} onDown={() => set(h - 1, m)} />
           <T weight="black" style={{ fontSize: 40 }}>
             :
           </T>
-          <Spinner label="Minutes" value={String(m).padStart(2, '0')} onUp={() => set(h + (m >= 55 ? 1 : 0), m + 5 - (m % 5))} onDown={() => set(h - (m < 5 ? 1 : 0), m - (m % 5 || 5))} />
-          <View style={{ gap: 8 }}>
-            <Chip label="AM" on={h < 12} onPress={() => h >= 12 && set(h - 12, m)} />
-            <Chip label="PM" on={h >= 12} onPress={() => h < 12 && set(h + 12, m)} />
-          </View>
+          <Spinner label={t('Minutes')} value={String(m).padStart(2, '0')} onUp={() => set(h + (m >= 55 ? 1 : 0), m + 5 - (m % 5))} onDown={() => set(h - (m < 5 ? 1 : 0), m - (m % 5 || 5))} />
+          {h24 ? null : (
+            <View style={{ gap: 8 }}>
+              <Chip label="AM" on={h < 12} onPress={() => h >= 12 && set(h - 12, m)} />
+              <Chip label="PM" on={h >= 12} onPress={() => h < 12 && set(h + 12, m)} />
+            </View>
+          )}
         </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10, justifyContent: 'center' }}>
-          {['07:00', '08:00', '12:00', '18:00', '20:00'].map((t) => (
-            <Chip key={t} label={formatShort(t)} on={value === t} onPress={() => onChange(t)} />
+          {['07:00', '08:00', '12:00', '18:00', '20:00'].map((tm) => (
+            <Chip key={tm} label={formatShort(tm)} on={value === tm} onPress={() => onChange(tm)} />
           ))}
         </View>
-        <Pill label="DONE" onPress={() => setOpen(false)} style={{ marginTop: 16 }} />
+        <Pill label={t('DONE')} onPress={() => setOpen(false)} style={{ marginTop: 16 }} />
       </Sheet>
     </View>
   );
 }
 
-function formatShort(t: string) {
-  const [h, m] = t.split(':').map(Number);
+function formatShort(time: string) {
+  const [h, m] = time.split(':').map(Number);
+  if (uses24h()) return `${h}h${m ? String(m).padStart(2, '0') : ''}`;
   return `${h % 12 || 12}${m ? `:${String(m).padStart(2, '0')}` : ''} ${h >= 12 ? 'PM' : 'AM'}`;
 }
 
 function Spinner({ label, value, onUp, onDown }: { label: string; value: string | number; onUp: () => void; onDown: () => void }) {
   return (
     <View style={{ alignItems: 'center', gap: 4 }}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${label} up`} onPress={() => (tapFeedback(), onUp())} style={styles.spinBtn} hitSlop={6}>
+      <Pressable accessibilityRole="button" accessibilityLabel={t('{label} up', { label })} onPress={() => (tapFeedback(), onUp())} style={styles.spinBtn} hitSlop={6}>
         <Icon name="up" />
       </Pressable>
       <T weight="black" style={{ fontSize: 40, minWidth: 64, textAlign: 'center' }}>
         {value}
       </T>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${label} down`} onPress={() => (tapFeedback(), onDown())} style={styles.spinBtn} hitSlop={6}>
+      <Pressable accessibilityRole="button" accessibilityLabel={t('{label} down', { label })} onPress={() => (tapFeedback(), onDown())} style={styles.spinBtn} hitSlop={6}>
         <Icon name="down" />
       </Pressable>
     </View>

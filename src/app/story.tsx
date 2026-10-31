@@ -9,7 +9,7 @@ import { PetAvatar } from '../animation/PetAvatar';
 import { listAppointments, listMeasurements } from '../data/careRepo';
 import { listMemories } from '../data/recordsRepo';
 import { listEventsBetween } from '../data/repo';
-import { CARE } from '../domain/care';
+import { CARE, CareType } from '../domain/care';
 import { StoryInput, StoryRange, StorySlide, buildStory, storyWindow } from '../domain/stories';
 import { dayKeyOf } from '../domain/time';
 import { toUnit } from '../features/weight';
@@ -19,8 +19,18 @@ import { Sheet, Toggle } from '../ui/forms';
 import { CircleButton, Pill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
+import { t, tn } from '../i18n';
 
 const SLIDE_MS = 5000;
+/** singular / plural nouns for the totals slide (English: the lowercase label + "s") */
+const COUNT_NOUN: Record<CareType, (n: number) => string> = {
+  meal: (n) => tn(n, 'meal', 'meals'),
+  walk: (n) => tn(n, 'walk', 'walks'),
+  water: (n) => tn(n, 'water', 'waters'),
+  play: (n) => tn(n, 'play', 'plays'),
+  grooming: (n) => tn(n, 'grooming', 'groomings'),
+  litter: (n) => tn(n, 'litter', 'litters'),
+};
 const DARK = new Set<StorySlide['kind']>(['cover', 'streak', 'photo', 'outro']);
 const BG: Record<StorySlide['kind'], string> = {
   cover: '#14B8C4',
@@ -70,7 +80,7 @@ export default function StoryPlayer() {
     );
   }, [db, pet, plan, range, settings.weightUnit]);
 
-  const slides = useMemo(() => (input ? buildStory({ ...input, petName: showName ? input.petName : 'My buddy' }) : null), [input, showName]);
+  const slides = useMemo(() => (input ? buildStory({ ...input, petName: showName ? input.petName : t('My buddy') }) : null), [input, showName]);
   const count = slides?.length ?? 0;
 
   const go = useCallback(
@@ -117,7 +127,7 @@ export default function StoryPlayer() {
         a.download = `${pet.name}-${range}-story-${index + 1}.png`;
         a.click();
       } else if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: `${pet.name}'s story` });
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: t("{name}'s story", { name: pet.name }) });
       }
     } catch (e) {
       console.warn('[pavurio] story share failed', e);
@@ -143,15 +153,15 @@ export default function StoryPlayer() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 10 }]}>
       <View style={styles.topBar}>
-        <CircleButton icon="close" label="Close story" onPress={() => router.back()} size={44} />
+        <CircleButton icon="close" label={t('Close story')} onPress={() => router.back()} size={44} />
         <View style={{ flex: 1 }} />
-        {slides ? <Pill label="SHARE" onPress={() => setShareOpen(true)} style={{ height: 44, paddingHorizontal: 22, minWidth: 0 }} color={colors.brand} testID="story-share" /> : null}
+        {slides ? <Pill label={t('SHARE')} onPress={() => setShareOpen(true)} style={{ height: 44, paddingHorizontal: 22, minWidth: 0 }} color={colors.brand} testID="story-share" /> : null}
       </View>
 
       {!slides ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 30 }}>
           <T weight="black" style={{ color: '#FFFFFF', fontSize: 20, textAlign: 'center' }}>
-            {input ? `Log a few more cares for ${pet.name} to make this story.` : ' '}
+            {input ? t('Log a few more cares for {name} to make this story.', { name: pet.name }) : ' '}
           </T>
         </View>
       ) : (
@@ -173,20 +183,20 @@ export default function StoryPlayer() {
           </View>
           {/* tap zones: left third back, rest forward; hold to pause */}
           <View style={[StyleSheet.absoluteFill, { flexDirection: 'row', top: 40 }]}>
-            <Pressable accessibilityRole="button" accessibilityLabel="Previous" style={{ flex: 1 }} onPress={() => (tapFeedback(), go(-1))} onLongPress={() => setPaused(true)} onPressOut={() => setPaused(false)} />
-            <Pressable accessibilityRole="button" accessibilityLabel="Next" style={{ flex: 2 }} onPress={() => (tapFeedback(), go(1))} onLongPress={() => setPaused(true)} onPressOut={() => setPaused(false)} testID="story-next" />
+            <Pressable accessibilityRole="button" accessibilityLabel={t('Previous')} style={{ flex: 1 }} onPress={() => (tapFeedback(), go(-1))} onLongPress={() => setPaused(true)} onPressOut={() => setPaused(false)} />
+            <Pressable accessibilityRole="button" accessibilityLabel={t('Next')} style={{ flex: 2 }} onPress={() => (tapFeedback(), go(1))} onLongPress={() => setPaused(true)} onPressOut={() => setPaused(false)} testID="story-next" />
           </View>
         </View>
       )}
 
-      <Sheet visible={shareOpen} onClose={() => setShareOpen(false)} title="Share this slide">
+      <Sheet visible={shareOpen} onClose={() => setShareOpen(false)} title={t('Share this slide')}>
         <T style={{ color: colors.muted, lineHeight: 20, marginBottom: 8 }}>
-          The image shows only what's on the slide: care counts, your photos and {pet.name}'s look. No location, health records or notes are included.
+          {t("The image shows only what's on the slide: care counts, your photos and {name}'s look. No location, health records or notes are included.", { name: pet.name })}
         </T>
-        <Toggle label={`Show ${pet.name}'s name`} value={showName} onChange={setShowName} />
+        <Toggle label={t("Show {name}'s name", { name: pet.name })} value={showName} onChange={setShowName} />
         <View style={{ gap: 8, marginTop: 14 }}>
-          <Pill label={busy === 'share' ? 'PREPARING…' : Platform.OS === 'web' ? 'DOWNLOAD IMAGE' : 'SHARE'} onPress={share} loading={busy === 'share'} />
-          {Platform.OS !== 'web' ? <Pill label="SAVE TO PHOTOS" color={colors.brand} onPress={save} loading={busy === 'save'} /> : null}
+          <Pill label={busy === 'share' ? t('PREPARING…') : Platform.OS === 'web' ? t('DOWNLOAD IMAGE') : t('SHARE')} onPress={share} loading={busy === 'share'} />
+          {Platform.OS !== 'web' ? <Pill label={t('SAVE TO PHOTOS')} color={colors.brand} onPress={save} loading={busy === 'save'} /> : null}
         </View>
       </Sheet>
     </View>
@@ -214,7 +224,7 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
       return (
         <View style={[styles.center, { paddingHorizontal: w * 0.1, alignItems: 'stretch' }]}>
           <T weight="black" style={{ fontSize: w * 0.075, marginBottom: 18, textAlign: 'center' }}>
-            All the care
+            {t('All the care')}
           </T>
           {slide.items.slice(0, 5).map((it) => (
             <View key={it.type} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginVertical: 7 }}>
@@ -224,9 +234,10 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
                   {it.count}
                 </T>
                 <T weight="xbold" style={{ fontSize: w * 0.04, color: colors.inkSoft, marginTop: -4 }}>
-                  {CARE[it.type].label.toLowerCase()}
-                  {it.count === 1 ? '' : 's'}
-                  {it.minutes ? ` · ${it.minutes >= 60 ? `${Math.floor(it.minutes / 60)}h ${it.minutes % 60}m` : `${it.minutes} min`}` : ''}
+                  {COUNT_NOUN[it.type](it.count)}
+                  {it.minutes
+                    ? ` · ${it.minutes >= 60 ? t('{h}h {m}m', { h: Math.floor(it.minutes / 60), m: it.minutes % 60 }) : t('{n} min', { n: it.minutes })}`
+                    : ''}
                 </T>
               </View>
             </View>
@@ -240,7 +251,9 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
             {slide.fullDays > 0 ? slide.fullDays : slide.activeDays}
           </T>
           <T weight="black" style={{ color: '#FFFFFF', fontSize: w * 0.065, textAlign: 'center' }}>
-            {slide.fullDays > 0 ? `day${slide.fullDays === 1 ? '' : 's'} fully colored in` : `day${slide.activeDays === 1 ? '' : 's'} with care logged`}
+            {slide.fullDays > 0
+              ? tn(slide.fullDays, 'day fully colored in', 'days fully colored in')
+              : tn(slide.activeDays, 'day with care logged', 'days with care logged')}
           </T>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 22, maxWidth: w * 0.8 }}>
             {Array.from({ length: slide.totalDays }).map((_, i) => (
@@ -248,7 +261,7 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
             ))}
           </View>
           <T style={{ color: '#FFFFFF99', fontSize: w * 0.038, marginTop: 14, textAlign: 'center' }}>
-            {slide.activeDays} of {slide.totalDays} days with care logged
+            {t('{n} of {total} days with care logged', { n: slide.activeDays, total: slide.totalDays })}
           </T>
         </View>
       );
@@ -278,7 +291,7 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
       return (
         <View style={[styles.center, { paddingHorizontal: w * 0.1 }]}>
           <T weight="xbold" style={{ fontSize: w * 0.045, color: colors.inkSoft }}>
-            Weigh-ins
+            {t('Weigh-ins')}
           </T>
           <T weight="black" style={{ fontSize: w * 0.18, color: '#1CB0F6' }}>
             {slide.to.toFixed(1)}
@@ -287,7 +300,7 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
             {slide.unit}
           </T>
           <T style={{ fontSize: w * 0.042, color: colors.inkSoft, marginTop: 12 }}>
-            {d === 0 ? 'Steady as can be' : `${d > 0 ? '+' : '−'}${Math.abs(d)} ${slide.unit} since ${slide.from.toFixed(1)}`}
+            {d === 0 ? t('Steady as can be') : t('{delta} since {from}', { delta: `${d > 0 ? '+' : '−'}${Math.abs(d)} ${slide.unit}`, from: slide.from.toFixed(1) })}
           </T>
         </View>
       );
@@ -296,11 +309,11 @@ function Slide({ slide, pet, w }: { slide: StorySlide; pet: NonNullable<ReturnTy
       return (
         <View style={[styles.center, { paddingHorizontal: w * 0.1 }]}>
           <T weight="black" style={{ fontSize: w * 0.075, color: '#6D4FD8', marginBottom: 14 }}>
-            Visits
+            {t('Visits')}
           </T>
-          {slide.titles.map((t, i) => (
+          {slide.titles.map((title, i) => (
             <T key={i} weight="xbold" style={{ fontSize: w * 0.05, color: colors.ink, marginVertical: 3, textAlign: 'center' }}>
-              ✓ {t}
+              ✓ {title}
             </T>
           ))}
         </View>

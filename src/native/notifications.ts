@@ -10,6 +10,7 @@ import { listPets } from '../data/repo';
 import { listAllSchedules, marksBetween, upcomingAppointments } from '../data/careRepo';
 import { planReminders } from '../domain/schedule';
 import { addDays, dayKeyOf } from '../domain/time';
+import { t } from '../i18n';
 
 const SUPPORTED = Platform.OS === 'ios' || Platform.OS === 'android';
 const CHANNEL = 'care-reminders';
@@ -23,7 +24,7 @@ export function configureNotifications() {
   });
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync(CHANNEL, {
-      name: 'Care reminders',
+      name: t('Care reminders'),
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 200, 120, 200],
     }).catch(() => {});
@@ -78,7 +79,7 @@ export function syncReminders(db: Db): Promise<number> {
       );
       const plans = [];
       for (const pet of pets) {
-        plans.push(...planReminders(schedules.filter((s) => s.petId === pet.id), marks, names.get(pet.id) ?? 'your pet', now, 4, 40));
+        plans.push(...planReminders(schedules.filter((s) => s.petId === pet.id), marks, names.get(pet.id) ?? t('your pet'), now, 4, 40));
       }
       for (const a of await upcomingAppointments(db, null, now, 20)) {
         if (a.remindMinutes == null) continue;
@@ -88,7 +89,12 @@ export function syncReminders(db: Db): Promise<number> {
           id: `pv:appt:${a.id}`,
           at,
           title: `${a.title} · ${names.get(a.petId) ?? ''}`.trim(),
-          body: a.remindMinutes >= 1440 ? 'Tomorrow' : `In ${a.remindMinutes >= 60 ? `${Math.round(a.remindMinutes / 60)} h` : `${a.remindMinutes} min`}`,
+          body:
+            a.remindMinutes >= 1440
+              ? t('Tomorrow')
+              : a.remindMinutes >= 60
+                ? t('In {n} h', { n: Math.round(a.remindMinutes / 60) })
+                : t('In {n} min', { n: a.remindMinutes }),
           scheduleId: '',
           key: `appt:${a.id}`,
         });

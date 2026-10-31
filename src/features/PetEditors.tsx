@@ -7,11 +7,12 @@ import { Icon, Label, T } from '../ui/primitives';
 import { CareIcon } from '../ui/CareIcon';
 import { colors, softShadow } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 export function LookPicker({ species, appearance, onChange }: { species: Species; appearance: Appearance; onChange: (a: Appearance) => void }) {
   return (
     <View style={{ alignSelf: 'stretch', paddingHorizontal: 24, gap: 14 }}>
-      <Label>Coat</Label>
+      <Label>{t('Coat')}</Label>
       <View style={styles.swatchRow}>
         {PALETTES[species].map((p) => {
           const on = p.id === appearance.paletteId;
@@ -20,7 +21,7 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
               key={p.id}
               accessibilityRole="radio"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={`${p.name} coat`}
+              accessibilityLabel={t('{name} coat', { name: p.name })}
               onPress={() => {
                 tapFeedback();
                 onChange({ ...appearance, paletteId: p.id });
@@ -35,7 +36,7 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
           );
         })}
       </View>
-      <Label>{species === 'dog' ? 'Bandana' : 'Collar'}</Label>
+      <Label>{species === 'dog' ? t('Bandana') : t('Collar')}</Label>
       <View style={styles.swatchRow}>
         {ACCESSORIES.map((a) => {
           const on = a.id === appearance.accessoryId;
@@ -44,7 +45,7 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
               key={a.id}
               accessibilityRole="radio"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={`${a.name} ${species === 'dog' ? 'bandana' : 'collar'}`}
+              accessibilityLabel={species === 'dog' ? t('{name} bandana', { name: a.name }) : t('{name} collar', { name: a.name })}
               onPress={() => {
                 tapFeedback();
                 onChange({ ...appearance, accessoryId: a.id });
@@ -64,22 +65,22 @@ export function PlanEditor({ species, plan, onChange }: { species: Species; plan
   const types = useMemo(() => SPECIES_CARE[species], [species]);
   return (
     <View style={{ gap: 10 }}>
-      {types.map((t) => {
-        const n = plan[t] ?? 0;
+      {types.map((ct) => {
+        const n = plan[ct] ?? 0;
         const set = (v: number) => {
           tapFeedback();
-          onChange({ ...plan, [t]: Math.max(0, Math.min(8, v)) });
+          onChange({ ...plan, [ct]: Math.max(0, Math.min(8, v)) });
         };
         return (
-          <View key={t} style={[styles.planRow, softShadow]}>
-            <CareIcon type={t} size={44} />
+          <View key={ct} style={[styles.planRow, softShadow]}>
+            <CareIcon type={ct} size={44} />
             <View style={{ flex: 1 }}>
-              <T weight="black" style={{ fontSize: 18, color: CARE[t].color }}>
-                {CARE[t].label}
+              <T weight="black" style={{ fontSize: 18, color: CARE[ct].color }}>
+                {CARE[ct].label}
               </T>
-              <T style={{ color: colors.muted, fontSize: 14 }}>{n === 0 ? 'Not in the daily plan' : `${n}× a day`}</T>
+              <T style={{ color: colors.muted, fontSize: 14 }}>{n === 0 ? t('Not in the daily plan') : t('{n}× a day', { n })}</T>
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel={`Fewer ${CARE[t].label}`} onPress={() => set(n - 1)} style={styles.stepBtn} hitSlop={6}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('Fewer {label}', { label: CARE[ct].label })} onPress={() => set(n - 1)} style={styles.stepBtn} hitSlop={6}>
               <T weight="black" style={styles.stepTxt}>
                 −
               </T>
@@ -87,7 +88,7 @@ export function PlanEditor({ species, plan, onChange }: { species: Species; plan
             <T weight="black" style={{ width: 22, textAlign: 'center', fontSize: 20 }}>
               {n}
             </T>
-            <Pressable accessibilityRole="button" accessibilityLabel={`More ${CARE[t].label}`} onPress={() => set(n + 1)} style={styles.stepBtn} hitSlop={6}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('More {label}', { label: CARE[ct].label })} onPress={() => set(n + 1)} style={styles.stepBtn} hitSlop={6}>
               <Icon name="plus" size={18} />
             </Pressable>
           </View>

@@ -2,6 +2,7 @@
  * Story recaps built only from what the owner logged: care counts, fully-colored days, photos,
  * weights and visits. A story is offered only when there is enough real data to fill it.
  */
+import { lang, t, tn } from '../i18n/core';
 import { CARE, CareType } from './care';
 import { Plan, computeProgress } from './progress';
 import { addDays, dayKeyOf } from './time';
@@ -36,13 +37,19 @@ export function storyWindow(range: StoryRange, endDay: string): { from: string; 
 }
 
 const TOP_LINE: Record<CareType, (n: number, name: string) => string> = {
-  meal: (n, p) => `${n} meals served. ${p} ate well.`,
-  walk: (n, p) => `${n} walks out with ${p}.`,
-  water: (n, p) => `${n} fresh bowls of water for ${p}.`,
-  play: (n, p) => `${n} play sessions with ${p}.`,
-  grooming: (n, p) => `${n} grooming sessions. Looking sharp, ${p}.`,
-  litter: (n) => `${n} litter cleanups. Thank you!`,
+  meal: (n, p) => tn(n, '{n} meal served. {name} ate well.', '{n} meals served. {name} ate well.', { name: p }),
+  walk: (n, p) => tn(n, '{n} walk out with {name}.', '{n} walks out with {name}.', { name: p }),
+  water: (n, p) => tn(n, '{n} fresh bowl of water for {name}.', '{n} fresh bowls of water for {name}.', { name: p }),
+  play: (n, p) => tn(n, '{n} play session with {name}.', '{n} play sessions with {name}.', { name: p }),
+  grooming: (n, p) => tn(n, '{n} grooming session. Looking sharp, {name}.', '{n} grooming sessions. Looking sharp, {name}.', { name: p }),
+  litter: (n) => tn(n, '{n} litter cleanup. Thank you!', '{n} litter cleanups. Thank you!'),
 };
+
+/** 'YYYY-MM-DD' → "10/24" (English) or "24/10" (French). */
+function shortDate(key: string): string {
+  const [, m, d] = key.split('-');
+  return lang() === 'fr' ? `${d}/${m}` : `${m}/${d}`;
+}
 
 /** Returns null when there isn't enough logged to make an honest story (fewer than 3 logs). */
 export function buildStory(i: StoryInput): StorySlide[] | null {
@@ -54,8 +61,8 @@ export function buildStory(i: StoryInput): StorySlide[] | null {
   const slides: StorySlide[] = [];
   slides.push({
     kind: 'cover',
-    title: i.range === 'week' ? `${i.petName}'s week` : `${i.petName}'s month`,
-    subtitle: `${from.slice(5).replace('-', '/')} – ${to.slice(5).replace('-', '/')}`,
+    title: i.range === 'week' ? t("{name}'s week", { name: i.petName }) : t("{name}'s month", { name: i.petName }),
+    subtitle: `${shortDate(from)} – ${shortDate(to)}`,
   });
 
   const byType = new Map<CareType, { count: number; minutes: number }>();
@@ -92,6 +99,6 @@ export function buildStory(i: StoryInput): StorySlide[] | null {
   const visits = i.visits.filter((v) => inRange(dayKeyOf(new Date(v.at))) && v.at <= Date.now());
   if (visits.length) slides.push({ kind: 'visits', titles: visits.map((v) => v.title).slice(0, 4) });
 
-  slides.push({ kind: 'outro', line: `Thanks for taking such good care of ${i.petName}.` });
+  slides.push({ kind: 'outro', line: t('Thanks for taking such good care of {name}.', { name: i.petName }) });
   return slides;
 }

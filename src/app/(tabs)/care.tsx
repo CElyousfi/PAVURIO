@@ -15,8 +15,10 @@ import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
 import { tapFeedback } from '../../native/haptics';
 import { formatWeight, toUnit } from '../../features/weight';
+import { t, tn } from '../../i18n';
+import { monthNamesShort, weekdayNamesShort } from '../../i18n/dates';
 
-const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DOW = (i: number) => weekdayNamesShort()[i].replace('.', '');
 
 export default function CareTab() {
   const { pet, db, bump, version, schedules, settings } = useApp();
@@ -89,20 +91,20 @@ export default function CareTab() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
       <TabTitle
-        title="Care"
-        subtitle={`${pet.name}'s routines & visits`}
-        right={<CircleButton icon="plus" label="Add to care" onPress={() => setAddOpen(true)} size={50} />}
+        title={t('Care')}
+        subtitle={t("{name}'s routines & visits", { name: pet.name })}
+        right={<CircleButton icon="plus" label={t('Add to care')} onPress={() => setAddOpen(true)} size={50} />}
       />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 18 }} showsVerticalScrollIndicator={false}>
         {/* week strip */}
         <View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
             <T weight="black" style={{ fontSize: 17, flex: 1 }}>
-              {day === today ? 'Today' : formatDateLong(day)}
+              {day === today ? t('Today') : formatDateLong(day)}
             </T>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Open month calendar"
+              accessibilityLabel={t('Open month calendar')}
               onPress={() => {
                 setMonth(day);
                 setMonthOpen(true);
@@ -111,12 +113,12 @@ export default function CareTab() {
               hitSlop={6}
             >
               <T weight="black" style={{ color: colors.brand, fontSize: 13, letterSpacing: 1 }}>
-                MONTH
+                {t('MONTH')}
               </T>
             </Pressable>
           </View>
           <View style={styles.week}>
-            <CircleButton icon="chevL" label="Previous week" onPress={() => setDay(addDays(day, -7))} size={34} />
+            <CircleButton icon="chevL" label={t('Previous week')} onPress={() => setDay(addDays(day, -7))} size={34} />
             {week.map((k) => {
               const sel = k === day;
               const isT = k === today;
@@ -133,7 +135,7 @@ export default function CareTab() {
                   style={[styles.wday, sel && { backgroundColor: colors.ink }]}
                 >
                   <T weight="xbold" style={{ fontSize: 11, color: sel ? '#FFFFFFB0' : colors.muted }}>
-                    {DOW[parseDayKey(k).getDay()].toUpperCase()}
+                    {DOW(parseDayKey(k).getDay()).toUpperCase()}
                   </T>
                   <T weight="black" style={{ fontSize: 17, color: sel ? '#FFFFFF' : isT ? colors.brand : colors.ink }}>
                     {Number(k.slice(8))}
@@ -141,22 +143,24 @@ export default function CareTab() {
                 </Pressable>
               );
             })}
-            <CircleButton icon="chevR" label="Next week" onPress={() => setDay(addDays(day, 7))} size={34} />
+            <CircleButton icon="chevR" label={t('Next week')} onPress={() => setDay(addDays(day, 7))} size={34} />
           </View>
         </View>
 
         {/* agenda */}
         <Card>
-          <Label>Agenda</Label>
+          <Label>{t('Agenda')}</Label>
           {occ.length === 0 && dayAppts.length === 0 ? (
             <View style={{ paddingVertical: 10 }}>
               <T style={{ color: colors.muted, lineHeight: 21 }}>
-                {schedules.length === 0 ? `No routines yet. Add ${pet.name}'s meals, walks or medication and get a gentle reminder.` : 'Nothing scheduled this day.'}
+                {schedules.length === 0
+                  ? t("No routines yet. Add {name}'s meals, walks or medication and get a gentle reminder.", { name: pet.name })
+                  : t('Nothing scheduled this day.')}
               </T>
             </View>
           ) : null}
           {dayAppts.map((a) => (
-            <Pressable key={a.id} accessibilityRole="button" accessibilityLabel={`Appointment ${a.title} at ${formatClock(a.at)}`} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={styles.apptRow}>
+            <Pressable key={a.id} accessibilityRole="button" accessibilityLabel={t('Appointment {title} at {time}', { title: a.title, time: formatClock(a.at) })} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={styles.apptRow}>
               <View style={styles.apptIcon}>
                 <CalendarGlyph />
               </View>
@@ -167,7 +171,7 @@ export default function CareTab() {
                 <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
                   {formatClock(a.at)}
                   {a.location ? ` · ${a.location}` : ''}
-                  {a.doneAt ? ' · Done' : ''}
+                  {a.doneAt ? ` · ${t('Done')}` : ''}
                 </T>
               </View>
               <Icon name="chevR" size={18} color={colors.faint} />
@@ -176,22 +180,24 @@ export default function CareTab() {
           {occ.map((o) => (
             <OccurrenceRow key={o.key} o={o} db={db} species={pet.species} bump={bump} />
           ))}
-          <Pressable accessibilityRole="button" accessibilityLabel="Open care log for this day" onPress={() => router.push({ pathname: '/day', params: { day } })} style={styles.logLink}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('Open care log for this day')} onPress={() => router.push({ pathname: '/day', params: { day } })} style={styles.logLink}>
             <T weight="xbold" style={{ color: colors.brand, fontSize: 14 }}>
-              {logCount === 0 ? 'No care logged' : `${logCount} care ${logCount === 1 ? 'entry' : 'entries'} logged`} · Open log
+              {logCount === 0 ? t('No care logged') : tn(logCount, '{n} care entry logged', '{n} care entries logged')} · {t('Open log')}
             </T>
           </Pressable>
         </Card>
 
         {/* routines */}
         <View>
-          <SectionHead title="Routines" action="New" onAction={() => router.push('/schedule')} />
+          <SectionHead title={t('Routines')} action={t('New')} onAction={() => router.push('/schedule')} />
           {schedules.length === 0 ? (
-            <Card onPress={() => router.push('/schedule')} accessibilityLabel="Create a routine">
+            <Card onPress={() => router.push('/schedule')} accessibilityLabel={t('Create a routine')}>
               <T weight="black" style={{ fontSize: 16 }}>
-                Set up a routine
+                {t('Set up a routine')}
               </T>
-              <T style={{ color: colors.muted, marginTop: 4, lineHeight: 20 }}>Breakfast at 8, a walk at 6, a pill every evening — pick times and days, and Pavurio reminds you.</T>
+              <T style={{ color: colors.muted, marginTop: 4, lineHeight: 20 }}>
+                {t('Breakfast at 8, a walk at 6, a pill every evening — pick times and days, and Pavurio reminds you.')}
+              </T>
             </Card>
           ) : (
             <Card style={{ paddingVertical: 6 }}>
@@ -199,7 +205,7 @@ export default function CareTab() {
                 <Pressable
                   key={s.id}
                   accessibilityRole="button"
-                  accessibilityLabel={`Edit routine ${s.title}`}
+                  accessibilityLabel={t('Edit routine {title}', { title: s.title })}
                   onPress={() => router.push({ pathname: '/schedule', params: { id: s.id } })}
                   style={[styles.routine, i > 0 && styles.divider]}
                 >
@@ -214,7 +220,7 @@ export default function CareTab() {
                   </View>
                   {!s.enabled ? (
                     <T weight="xbold" style={{ color: colors.muted, fontSize: 12 }}>
-                      PAUSED
+                      {t('PAUSED')}
                     </T>
                   ) : s.remind ? (
                     <BellGlyph color={kindMeta(s.type).color} />
@@ -228,18 +234,18 @@ export default function CareTab() {
 
         {/* appointments */}
         <View>
-          <SectionHead title="Upcoming visits" action="Add" onAction={() => router.push('/appointment')} />
+          <SectionHead title={t('Upcoming visits')} action={t('Add')} onAction={() => router.push('/appointment')} />
           {upcoming.length === 0 ? (
-            <Card onPress={() => router.push('/appointment')} accessibilityLabel="Add an appointment">
-              <T style={{ color: colors.muted, lineHeight: 20 }}>Vet, groomer or sitter — add a visit and get reminded the day before.</T>
+            <Card onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
+              <T style={{ color: colors.muted, lineHeight: 20 }}>{t('Vet, groomer or sitter — add a visit and get reminded the day before.')}</T>
             </Card>
           ) : (
             <Card style={{ paddingVertical: 6 }}>
               {upcoming.map((a, i) => (
-                <Pressable key={a.id} accessibilityRole="button" accessibilityLabel={`Edit ${a.title}`} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={[styles.routine, i > 0 && styles.divider]}>
+                <Pressable key={a.id} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: a.title })} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={[styles.routine, i > 0 && styles.divider]}>
                   <View style={styles.dateBadge}>
                     <T weight="black" style={{ fontSize: 11, color: colors.brand }}>
-                      {formatDateLong(dayKeyOf(new Date(a.at))).slice(0, 3).toUpperCase()}
+                      {monthNamesShort()[new Date(a.at).getMonth()].replace('.', '').toUpperCase()}
                     </T>
                     <T weight="black" style={{ fontSize: 18, marginTop: -2 }}>
                       {new Date(a.at).getDate()}
@@ -250,7 +256,7 @@ export default function CareTab() {
                       {a.title}
                     </T>
                     <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
-                      {DOW[new Date(a.at).getDay()]} · {formatClock(a.at)}
+                      {DOW(new Date(a.at).getDay())} · {formatClock(a.at)}
                       {a.location ? ` · ${a.location}` : ''}
                     </T>
                   </View>
@@ -263,8 +269,8 @@ export default function CareTab() {
 
         {/* weight */}
         <View>
-          <SectionHead title="Weight" action="Log" onAction={() => router.push({ pathname: '/weight', params: { add: '1' } })} />
-          <Card onPress={() => router.push('/weight')} accessibilityLabel="Open weight history">
+          <SectionHead title={t('Weight')} action={t('Log')} onAction={() => router.push({ pathname: '/weight', params: { add: '1' } })} />
+          <Card onPress={() => router.push('/weight')} accessibilityLabel={t('Open weight history')}>
             {latest ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <View style={{ flex: 1 }}>
@@ -273,19 +279,19 @@ export default function CareTab() {
                   </T>
                   <T style={{ color: colors.muted, fontSize: 13 }}>
                     {formatDateLong(dayKeyOf(new Date(latest.at)))}
-                    {prev ? ` · ${deltaText(toUnit(latest, settings.weightUnit) - toUnit(prev, settings.weightUnit), settings.weightUnit)} since last` : ''}
+                    {prev ? ` · ${t('{delta} since last', { delta: deltaText(toUnit(latest, settings.weightUnit) - toUnit(prev, settings.weightUnit), settings.weightUnit) })}` : ''}
                   </T>
                 </View>
                 <Spark values={weights.slice(-10).map((w) => toUnit(w, settings.weightUnit))} />
               </View>
             ) : (
-              <T style={{ color: colors.muted, lineHeight: 20 }}>Track {pet.name}'s weight over time. Your vet will love the chart.</T>
+              <T style={{ color: colors.muted, lineHeight: 20 }}>{t("Track {name}'s weight over time. Your vet will love the chart.", { name: pet.name })}</T>
             )}
           </Card>
         </View>
       </ScrollView>
 
-      <Sheet visible={monthOpen} onClose={() => setMonthOpen(false)} title="Calendar">
+      <Sheet visible={monthOpen} onClose={() => setMonthOpen(false)} title={t('Calendar')}>
         <MonthNav month={month} onChange={setMonth} />
         <MonthGrid
           month={month}
@@ -298,12 +304,12 @@ export default function CareTab() {
         />
       </Sheet>
 
-      <Sheet visible={addOpen} onClose={() => setAddOpen(false)} title="Add to care">
+      <Sheet visible={addOpen} onClose={() => setAddOpen(false)} title={t('Add to care')}>
         {[
-          { label: 'Routine & reminder', body: 'Meals, walks, medication — on a schedule', go: () => router.push('/schedule') },
-          { label: 'Appointment', body: 'Vet, groomer, sitter', go: () => router.push('/appointment') },
-          { label: 'Weight', body: `Log ${pet.name}'s weight today`, go: () => router.push({ pathname: '/weight', params: { add: '1' } }) },
-          { label: 'Walk timer', body: 'Time a walk and save it', go: () => router.push('/walk') },
+          { label: t('Routine & reminder'), body: t('Meals, walks, medication — on a schedule'), go: () => router.push('/schedule') },
+          { label: t('Appointment'), body: t('Vet, groomer, sitter'), go: () => router.push('/appointment') },
+          { label: t('Weight'), body: t("Log {name}'s weight today", { name: pet.name }), go: () => router.push({ pathname: '/weight', params: { add: '1' } }) },
+          { label: t('Walk timer'), body: t('Time a walk and save it'), go: () => router.push('/walk') },
         ].map((o) => (
           <Pressable
             key={o.label}
@@ -332,7 +338,7 @@ export default function CareTab() {
 
 function deltaText(d: number, unit: 'kg' | 'lb') {
   const r = Math.round(d * 10) / 10;
-  if (r === 0) return 'no change';
+  if (r === 0) return t('no change');
   return `${r > 0 ? '+' : '−'}${Math.abs(r)} ${unit}`;
 }
 
@@ -379,7 +385,7 @@ function CalendarGlyph() {
 
 function BellGlyph({ color }: { color: string }) {
   return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" accessibilityLabel="Reminders on">
+    <Svg width={18} height={18} viewBox="0 0 24 24" accessibilityLabel={t('Reminders on')}>
       <Path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0" stroke={color} strokeWidth={2.2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
     </Svg>
   );

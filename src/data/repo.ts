@@ -3,6 +3,7 @@ import { Appearance, defaultAppearance, parseAppearance } from '../domain/appear
 import { Plan } from '../domain/progress';
 import { newId } from '../domain/ids';
 import { Db } from './db';
+import { t } from '../i18n/core';
 
 export type Pet = {
   id: string;
@@ -116,14 +117,14 @@ export type NewPetInput = {
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 function validDate(d: string | null | undefined, label: string): string | null {
   if (!d) return null;
-  if (!DATE_RE.test(d)) throw new ValidationError(`${label} isn't a valid date.`);
+  if (!DATE_RE.test(d)) throw new ValidationError(t("{label} isn't a valid date.", { label }));
   return d;
 }
 
 export function validatePetName(name: string): string {
   const trimmed = name.trim().replace(/\s+/g, ' ');
-  if (!trimmed) throw new ValidationError('Please give your pet a name.');
-  if (trimmed.length > MAX_NAME) throw new ValidationError(`Names can be up to ${MAX_NAME} characters.`);
+  if (!trimmed) throw new ValidationError(t('Please give your pet a name.'));
+  if (trimmed.length > MAX_NAME) throw new ValidationError(t('Names can be up to {n} characters.', { n: MAX_NAME }));
   return trimmed;
 }
 
@@ -132,8 +133,8 @@ export async function createPet(db: Db, input: NewPetInput, now = Date.now()): P
   const id = newId();
   const appearance = input.appearance ?? defaultAppearance(input.species);
   const plan = input.plan ?? defaultPlan(input.species);
-  const birthDate = validDate(input.birthDate, 'Birthday');
-  const adoptionDate = validDate(input.adoptionDate, 'Adoption date');
+  const birthDate = validDate(input.birthDate, t('Birthday'));
+  const adoptionDate = validDate(input.adoptionDate, t('Adoption date'));
   await db.withTransactionAsync(async () => {
     await db.runAsync(
       'INSERT INTO pets (id, species, name, appearance_json, birth_date, adoption_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -187,10 +188,10 @@ export async function updatePet(
   now = Date.now(),
 ): Promise<void> {
   if (patch.birthDate !== undefined) {
-    await db.runAsync('UPDATE pets SET birth_date = ?, updated_at = ? WHERE id = ?', [validDate(patch.birthDate, 'Birthday'), now, id]);
+    await db.runAsync('UPDATE pets SET birth_date = ?, updated_at = ? WHERE id = ?', [validDate(patch.birthDate, t('Birthday')), now, id]);
   }
   if (patch.adoptionDate !== undefined) {
-    await db.runAsync('UPDATE pets SET adoption_date = ?, updated_at = ? WHERE id = ?', [validDate(patch.adoptionDate, 'Adoption date'), now, id]);
+    await db.runAsync('UPDATE pets SET adoption_date = ?, updated_at = ? WHERE id = ?', [validDate(patch.adoptionDate, t('Adoption date')), now, id]);
   }
   if (patch.name !== undefined) {
     const name = validatePetName(patch.name);
@@ -294,20 +295,20 @@ export type LogCareInput = {
 
 export async function logCare(db: Db, input: LogCareInput, now = Date.now()): Promise<CareEvent> {
   const pet = await getPet(db, input.petId);
-  if (!pet) throw new ValidationError('This pet no longer exists.');
+  if (!pet) throw new ValidationError(t('This pet no longer exists.'));
   if (!isCareType(input.type) || !careAllowedFor(pet.species, input.type)) {
-    throw new ValidationError(`${input.type} is not available for a ${pet.species}.`);
+    throw new ValidationError(t('{type} is not available for a {species}.', { type: input.type, species: pet.species }));
   }
-  if (!Number.isFinite(input.occurredAt)) throw new ValidationError('Please choose a valid time.');
+  if (!Number.isFinite(input.occurredAt)) throw new ValidationError(t('Please choose a valid time.'));
   if (input.occurredAt > now + FUTURE_TOLERANCE_MS) {
-    throw new ValidationError("Care can't be logged in the future.");
+    throw new ValidationError(t("Care can't be logged in the future."));
   }
   const spec = CARE[input.type].amount;
   let amount: number | null = null;
   if (spec) {
     const raw = input.amount ?? spec.default;
     if (!Number.isFinite(raw) || raw < spec.min || raw > spec.max) {
-      throw new ValidationError(`Amount must be between ${spec.min} and ${spec.max} ${spec.unit}.`);
+      throw new ValidationError(t('Amount must be between {min} and {max} {unit}.', { min: spec.min, max: spec.max, unit: spec.unit }));
     }
     amount = clampAmount(input.type, raw);
   }
@@ -323,7 +324,7 @@ export async function logCare(db: Db, input: LogCareInput, now = Date.now()): Pr
     );
   });
   const saved = await db.getFirstAsync<EventRow>('SELECT * FROM care_events WHERE mutation_id = ?', [input.mutationId]);
-  if (!saved) throw new Error('The care record could not be saved.');
+  if (!saved) throw new Error(t('The care record could not be saved.'));
   return toEvent(saved);
 }
 
@@ -380,19 +381,19 @@ export async function updateEvent(
   now = Date.now(),
 ): Promise<CareEvent> {
   const current = await getEvent(db, id);
-  if (!current || current.voidedAt) throw new ValidationError('This record no longer exists.');
+  if (!current || current.voidedAt) throw new ValidationError(t('This record no longer exists.'));
   const spec = CARE[current.type].amount;
   let amount = current.amount;
   if (patch.amount !== undefined && spec) {
     if (patch.amount == null || !Number.isFinite(patch.amount) || patch.amount < spec.min || patch.amount > spec.max) {
-      throw new ValidationError(`Amount must be between ${spec.min} and ${spec.max} ${spec.unit}.`);
+      throw new ValidationError(t('Amount must be between {min} and {max} {unit}.', { min: spec.min, max: spec.max, unit: spec.unit }));
     }
     amount = clampAmount(current.type, patch.amount);
   }
   let occurredAt = current.occurredAt;
   if (patch.occurredAt !== undefined) {
     if (!Number.isFinite(patch.occurredAt) || patch.occurredAt > now + FUTURE_TOLERANCE_MS) {
-      throw new ValidationError("Care can't be logged in the future.");
+      throw new ValidationError(t("Care can't be logged in the future."));
     }
     occurredAt = patch.occurredAt;
   }
@@ -416,14 +417,14 @@ export async function exportAll(db: Db): Promise<string> {
     'SELECT * FROM care_events WHERE voided_at IS NULL ORDER BY occurred_at',
     [],
   );
-  const t = (sql: string) => db.getAllAsync<Record<string, unknown>>(sql, []);
-  const schedules = await t('SELECT * FROM schedules');
-  const scheduleMarks = await t('SELECT * FROM schedule_marks');
-  const appointments = await t('SELECT * FROM appointments ORDER BY at');
-  const measurements = await t('SELECT * FROM measurements ORDER BY at');
-  const records = await t('SELECT * FROM records ORDER BY date');
-  const attachments = await t('SELECT * FROM attachments');
-  const memories = await t('SELECT * FROM memories ORDER BY date');
+  const q = (sql: string) => db.getAllAsync<Record<string, unknown>>(sql, []);
+  const schedules = await q('SELECT * FROM schedules');
+  const scheduleMarks = await q('SELECT * FROM schedule_marks');
+  const appointments = await q('SELECT * FROM appointments ORDER BY at');
+  const measurements = await q('SELECT * FROM measurements ORDER BY at');
+  const records = await q('SELECT * FROM records ORDER BY date');
+  const attachments = await q('SELECT * FROM attachments');
+  const memories = await q('SELECT * FROM memories ORDER BY date');
   return JSON.stringify(
     {
       app: 'pavurio',
@@ -468,8 +469,8 @@ export async function exportCareCsv(db: Db): Promise<string> {
 
 export async function resetAll(db: Db): Promise<void> {
   await db.withTransactionAsync(async () => {
-    for (const t of ['schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memories']) {
-      await db.runAsync(`DELETE FROM ${t}`, []);
+    for (const tbl of ['schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memories']) {
+      await db.runAsync(`DELETE FROM ${tbl}`, []);
     }
     await db.runAsync('DELETE FROM care_events', []);
     await db.runAsync('DELETE FROM care_plans', []);

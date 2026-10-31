@@ -12,6 +12,7 @@ import { Card, Chip, DateField, ModalScreen, formatDateLong } from '../ui/forms'
 import { Icon, Label, Pill, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
 import { errorFeedback, successFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 export default function WeightScreen() {
   const params = useLocalSearchParams<{ add?: string }>();
@@ -44,7 +45,7 @@ export default function WeightScreen() {
       setAdding(false);
       bump();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Could not save the weight.');
+      setError(e instanceof ValidationError ? e.message : t('Could not save the weight.'));
       errorFeedback();
     }
   };
@@ -52,14 +53,14 @@ export default function WeightScreen() {
   const chartW = Math.min(width, 560) - 40 - 32;
   return (
     <ModalScreen
-      title={`${pet.name}'s weight`}
+      title={t("{name}'s weight", { name: pet.name })}
       onClose={() => router.back()}
       error={adding ? error : null}
       footer={
         adding ? (
-          <Pill label="SAVE WEIGHT" onPress={save} disabled={!value.trim()} testID="save-weight" />
+          <Pill label={t('SAVE WEIGHT')} onPress={save} disabled={!value.trim()} testID="save-weight" />
         ) : (
-          <Pill label="+ LOG WEIGHT" onPress={() => setAdding(true)} />
+          <Pill label={t('+ LOG WEIGHT')} onPress={() => setAdding(true)} />
         )
       }
     >
@@ -70,24 +71,24 @@ export default function WeightScreen() {
 
       {adding ? (
         <Card style={{ gap: 14 }}>
-          <Label>New weight</Label>
+          <Label>{t('New weight')}</Label>
           <View style={styles.bigInputRow}>
             <TextInput
               value={value}
-              onChangeText={(t) => setValue(t.replace(/[^0-9.,]/g, '').slice(0, 6))}
+              onChangeText={(v) => setValue(v.replace(/[^0-9.,]/g, '').slice(0, 6))}
               placeholder="0.0"
               placeholderTextColor={colors.faint}
               keyboardType="decimal-pad"
               autoFocus
               style={styles.bigInput}
-              accessibilityLabel={`Weight in ${unit}`}
+              accessibilityLabel={t('Weight in {unit}', { unit })}
               onSubmitEditing={save}
             />
             <T weight="black" style={{ fontSize: 28, color: colors.muted }}>
               {unit}
             </T>
           </View>
-          <DateField label="Weighed on" value={day} onChange={(v) => v && setDay(v)} maxDay={dayKeyOf(new Date())} />
+          <DateField label={t('Weighed on')} value={day} onChange={(v) => v && setDay(v)} maxDay={dayKeyOf(new Date())} />
         </Card>
       ) : null}
 
@@ -97,7 +98,9 @@ export default function WeightScreen() {
         </Card>
       ) : series.length === 0 && !adding ? (
         <Card>
-          <T style={{ color: colors.muted, lineHeight: 21 }}>No weights yet. Weigh {pet.name} every few weeks to spot changes early — a chart appears after two entries.</T>
+          <T style={{ color: colors.muted, lineHeight: 21 }}>
+            {t('No weights yet. Weigh {name} every few weeks to spot changes early — a chart appears after two entries.', { name: pet.name })}
+          </T>
         </Card>
       ) : null}
 
@@ -121,10 +124,10 @@ export default function WeightScreen() {
                 ) : null}
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel={`Delete weight from ${formatDateLong(dayKeyOf(new Date(m.at)))}`}
+                  accessibilityLabel={t('Delete weight from {date}', { date: formatDateLong(dayKeyOf(new Date(m.at))) })}
                   hitSlop={8}
                   onPress={async () => {
-                    if (!(await confirmAsync('Delete this weight?', formatWeight(m, unit)))) return;
+                    if (!(await confirmAsync(t('Delete this weight?'), formatWeight(m, unit)))) return;
                     await deleteMeasurement(db, m.id);
                     bump();
                   }}
@@ -153,17 +156,17 @@ function WeightChart({ data, w, h, unit }: { data: { at: number; v: number }[]; 
   }
   const t0 = data[0].at;
   const t1 = data[data.length - 1].at || t0 + 1;
-  const x = (t: number) => padL + ((t - t0) / Math.max(1, t1 - t0)) * (w - padL - 8);
+  const x = (ms: number) => padL + ((ms - t0) / Math.max(1, t1 - t0)) * (w - padL - 8);
   const y = (v: number) => 8 + (1 - (v - min) / (max - min)) * (h - padB - 16);
   const d = data.map((p, i) => `${i ? 'L' : 'M'}${x(p.at).toFixed(1)} ${y(p.v).toFixed(1)}`).join(' ');
   const ticks = [min, (min + max) / 2, max];
   return (
-    <Svg width={w} height={h} accessibilityLabel={`Weight chart, ${data.length} entries`}>
-      {ticks.map((t, i) => (
+    <Svg width={w} height={h} accessibilityLabel={t('Weight chart, {n} entries', { n: data.length })}>
+      {ticks.map((tk, i) => (
         <React.Fragment key={i}>
-          <Line x1={padL} x2={w} y1={y(t)} y2={y(t)} stroke={colors.line} strokeWidth={1} />
-          <SvgText x={0} y={y(t) + 4} fontSize={11} fontFamily={font.bold} fill={colors.muted}>
-            {t.toFixed(1)}
+          <Line x1={padL} x2={w} y1={y(tk)} y2={y(tk)} stroke={colors.line} strokeWidth={1} />
+          <SvgText x={0} y={y(tk) + 4} fontSize={11} fontFamily={font.bold} fill={colors.muted}>
+            {tk.toFixed(1)}
           </SvgText>
         </React.Fragment>
       ))}

@@ -12,15 +12,16 @@ import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { KindGlyph } from '../features/RecordGlyph';
+import { t } from '../i18n';
 
 type Draft = { id?: string; uri: string; mime: string | null; name: string | null };
 
-const TITLE_HINT: Record<RecordKind, string> = {
-  vaccine: 'e.g. Rabies',
-  vet_visit: 'e.g. Annual check-up',
-  medication: 'e.g. Flea & tick treatment',
-  allergy: 'e.g. Chicken',
-  other: 'e.g. Microchip number',
+const TITLE_HINT: Record<RecordKind, () => string> = {
+  vaccine: () => t('e.g. Rabies'),
+  vet_visit: () => t('e.g. Annual check-up'),
+  medication: () => t('e.g. Flea & tick treatment'),
+  allergy: () => t('e.g. Chicken'),
+  other: () => t('e.g. Microchip number'),
 };
 
 export default function RecordEditor() {
@@ -65,7 +66,7 @@ export default function RecordEditor() {
       const picked: PickedFile | null = how === 'document' ? await pickDocument() : await pickPhoto(how);
       if (picked) setFiles((f) => [...f, { ...picked, id: undefined }]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not add that file.');
+      setError(e instanceof Error ? e.message : t('Could not add that file.'));
     } finally {
       setPicking(false);
     }
@@ -92,7 +93,7 @@ export default function RecordEditor() {
       bump();
       router.back();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : e instanceof Error ? e.message : 'Could not save the record.');
+      setError(e instanceof ValidationError ? e.message : e instanceof Error ? e.message : t('Could not save the record.'));
       errorFeedback();
       setSaving(false);
     }
@@ -100,7 +101,7 @@ export default function RecordEditor() {
 
   const remove = async () => {
     if (!params.id) return;
-    if (!(await confirmAsync('Delete this record?', 'Its attachments are deleted from this device too.'))) return;
+    if (!(await confirmAsync(t('Delete this record?'), t('Its attachments are deleted from this device too.')))) return;
     for (const f of files) if (f.id) removeStoredFile(f.uri);
     await deleteRecord(db, params.id);
     bump();
@@ -109,18 +110,18 @@ export default function RecordEditor() {
 
   return (
     <ModalScreen
-      title={params.id ? 'Record' : 'New record'}
+      title={params.id ? t('Record') : t('New record')}
       onClose={() => router.back()}
       error={error}
       footer={
         <>
-          <Pill label={params.id ? 'SAVE RECORD' : 'ADD RECORD'} color={k.color} onPress={save} loading={saving} testID="save-record" />
-          {params.id ? <SoftPill label="Delete record" color={colors.danger} tint={colors.dangerSoft} onPress={remove} /> : null}
+          <Pill label={params.id ? t('SAVE RECORD') : t('ADD RECORD')} color={k.color} onPress={save} loading={saving} testID="save-record" />
+          {params.id ? <SoftPill label={t('Delete record')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} /> : null}
         </>
       }
     >
       <View style={{ gap: 8 }}>
-        <Label>Type</Label>
+        <Label>{t('Type')}</Label>
         <View style={styles.kinds}>
           {RECORD_KINDS.map((r) => {
             const on = r.kind === kind;
@@ -137,7 +138,7 @@ export default function RecordEditor() {
                 style={[styles.kind, { backgroundColor: on ? r.color : r.tint }]}
               >
                 <KindGlyph kind={r.kind} color={on ? '#FFFFFF' : r.color} size={24} />
-                <T weight="black" style={{ fontSize: 12, color: on ? '#FFFFFF' : r.color }} numberOfLines={1}>
+                <T weight="black" style={{ fontSize: 12, color: on ? '#FFFFFF' : r.color }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                   {r.label}
                 </T>
               </Pressable>
@@ -146,21 +147,21 @@ export default function RecordEditor() {
         </View>
       </View>
 
-      <Field label="Name" value={title} onChangeText={setTitle} placeholder={TITLE_HINT[kind]} maxLength={80} />
+      <Field label={t('Name')} value={title} onChangeText={setTitle} placeholder={TITLE_HINT[kind]()} maxLength={80} />
 
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <View style={{ flex: 1 }}>
-          <DateField label={kind === 'allergy' ? 'Noted on' : 'Date'} value={date} onChange={(v) => v && setDate(v)} />
+          <DateField label={kind === 'allergy' ? t('Noted on') : t('Date')} value={date} onChange={(v) => v && setDate(v)} />
         </View>
         {kind !== 'allergy' ? (
           <View style={{ flex: 1 }}>
-            <DateField label="Next due" value={dueDate} onChange={setDueDate} allowClear placeholder="None" />
+            <DateField label={t('Next due')} value={dueDate} onChange={setDueDate} allowClear placeholder={t('None')} />
           </View>
         ) : null}
       </View>
 
       <View style={{ gap: 8 }}>
-        <Label>Source</Label>
+        <Label>{t('Source')}</Label>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {SOURCES.map((s) => (
             <Chip key={s.id} label={s.label} on={source === s.id} onPress={() => setSource(s.id)} />
@@ -168,21 +169,21 @@ export default function RecordEditor() {
         </View>
       </View>
 
-      <Field label="Notes (optional)" value={notes} onChangeText={setNotes} placeholder="Batch number, dosage, what the vet said…" multiline maxLength={2000} />
+      <Field label={t('Notes (optional)')} value={notes} onChangeText={setNotes} placeholder={t('Batch number, dosage, what the vet said…')} multiline maxLength={2000} />
 
       <View style={{ gap: 10 }}>
-        <Label>Attachments</Label>
+        <Label>{t('Attachments')}</Label>
         {files.length ? (
           <View style={styles.files}>
             {files.map((f, i) => (
               <View key={`${f.id ?? 'new'}-${i}`} style={styles.file}>
-                <Pressable accessibilityRole="button" accessibilityLabel={`Open ${f.name ?? 'attachment'}`} onPress={() => openFile(f)} style={{ flex: 1 }}>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('Open {name}', { name: f.name ?? t('attachment') })} onPress={() => openFile(f)} style={{ flex: 1 }}>
                   {f.mime?.startsWith('image/') ? (
                     <Image source={{ uri: f.uri }} style={styles.fileImg} />
                   ) : (
                     <View style={[styles.fileImg, styles.doc]}>
                       <T weight="black" style={{ color: colors.danger, fontSize: 13 }}>
-                        {f.mime === 'application/pdf' ? 'PDF' : 'FILE'}
+                        {f.mime === 'application/pdf' ? 'PDF' : t('FILE')}
                       </T>
                       <T style={{ fontSize: 10, color: colors.muted, paddingHorizontal: 4 }} numberOfLines={2}>
                         {f.name ?? ''}
@@ -192,7 +193,7 @@ export default function RecordEditor() {
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Remove attachment"
+                  accessibilityLabel={t('Remove attachment')}
                   hitSlop={8}
                   onPress={() => {
                     tapFeedback();
@@ -207,12 +208,12 @@ export default function RecordEditor() {
             ))}
           </View>
         ) : (
-          <T style={{ color: colors.muted, fontSize: 14 }}>Add a photo of the certificate or the vet's PDF.</T>
+          <T style={{ color: colors.muted, fontSize: 14 }}>{t("Add a photo of the certificate or the vet's PDF.")}</T>
         )}
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          <SoftPill label="Camera" small onPress={() => add('camera')} />
-          <SoftPill label="Photo" small onPress={() => add('library')} />
-          <SoftPill label="PDF / file" small onPress={() => add('document')} />
+          <SoftPill label={t('Camera')} small onPress={() => add('camera')} />
+          <SoftPill label={t('Photo')} small onPress={() => add('library')} />
+          <SoftPill label={t('PDF / file')} small onPress={() => add('document')} />
         </View>
       </View>
     </ModalScreen>

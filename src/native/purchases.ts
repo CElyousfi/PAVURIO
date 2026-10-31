@@ -4,6 +4,7 @@
  * instead of pretending a purchase can happen. Reminders, records and exports are never paid features.
  */
 import { Platform } from 'react-native';
+import { t } from '../i18n';
 
 export const ENTITLEMENT = 'pro';
 export const FREE_PET_LIMIT = 1;
@@ -21,8 +22,8 @@ function apiKey(): string | null {
 }
 
 export function storeState(): StoreState {
-  if (Platform.OS === 'web') return { configured: false, reason: 'Purchases are available in the iPhone and Android app.' };
-  if (!apiKey()) return { configured: false, reason: "The store isn't connected in this build yet." };
+  if (Platform.OS === 'web') return { configured: false, reason: t('Purchases are available in the iPhone and Android app.') };
+  if (!apiKey()) return { configured: false, reason: t("The store isn't connected in this build yet.") };
   return { configured: true };
 }
 

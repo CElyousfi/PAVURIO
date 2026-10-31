@@ -7,9 +7,16 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
 import { tapFeedback } from '../../native/haptics';
+import { t } from '../../i18n';
 
 type TabName = 'index' | 'care' | 'moments' | 'records' | 'pets';
-const LABELS: Record<TabName, string> = { index: 'Home', care: 'Care', moments: 'Moments', records: 'Records', pets: 'Pets' };
+const LABELS: Record<TabName, () => string> = {
+  index: () => t('Home'),
+  care: () => t('Care'),
+  moments: () => t('Moments'),
+  records: () => t('Records'),
+  pets: () => t('Pets'),
+};
 
 function TabIcon({ name, color }: { name: TabName; color: string }) {
   const p = { stroke: color, strokeWidth: 2.4, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, fill: 'none' };
@@ -64,7 +71,7 @@ function TabBar({ state, navigateToTab }: BottomTabBarProps) {
             key={route.key}
             accessibilityRole="tab"
             accessibilityState={{ selected: focused }}
-            accessibilityLabel={LABELS[name]}
+            accessibilityLabel={LABELS[name]()}
             testID={`tab-${name}`}
             onPress={() => {
               if (focused) return;
@@ -77,7 +84,7 @@ function TabBar({ state, navigateToTab }: BottomTabBarProps) {
               <TabIcon name={name} color={color} />
             </View>
             <T weight={focused ? 'black' : 'xbold'} style={[styles.label, { color }]}>
-              {LABELS[name]}
+              {LABELS[name]()}
             </T>
           </Pressable>
         );

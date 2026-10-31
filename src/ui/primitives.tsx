@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, TextProps, T
 import Svg, { Path } from 'react-native-svg';
 import { colors, font, radius, shadow } from './theme';
 import { tapFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 export function T({ style, weight = 'bold', ...rest }: TextProps & { weight?: 'bold' | 'xbold' | 'black' }) {
   return <Text {...rest} style={[{ fontFamily: font[weight], color: colors.ink }, style]} />;
@@ -26,7 +27,7 @@ export function Pill({ label, onPress, color = colors.ink, textColor = '#FFFFFF'
     <Pressable
       testID={testID}
       accessibilityRole="button"
-      accessibilityLabel={label.replace('+ ', 'Add ')}
+      accessibilityLabel={label.replace('+ ', t('Add '))}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!disabled || !!loading, busy: !!loading }}
       disabled={disabled || loading}
@@ -40,7 +41,7 @@ export function Pill({ label, onPress, color = colors.ink, textColor = '#FFFFFF'
         style,
       ]}
     >
-      {loading ? <ActivityIndicator color={textColor} /> : <Text style={[styles.pillText, { color: textColor }]}>{label}</Text>}
+      {loading ? <ActivityIndicator color={textColor} /> : <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.pillText, { color: textColor }, label.length > 16 && { fontSize: 17, letterSpacing: 0.6 }]}>{label}</Text>}
     </Pressable>
   );
 }

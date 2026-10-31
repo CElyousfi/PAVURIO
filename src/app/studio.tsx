@@ -11,6 +11,7 @@ import { LookPicker } from '../features/PetEditors';
 import { CircleButton, Pill, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
 import { errorFeedback, petFeedback, successFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
 /** Character Studio — appearance is stored locally per pet and previewed live. */
 export default function Studio() {
@@ -44,7 +45,7 @@ export default function Studio() {
       bump();
       router.back();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Could not save changes.');
+      setError(e instanceof ValidationError ? e.message : t('Could not save changes.'));
       errorFeedback();
       setSaving(false);
     }
@@ -56,9 +57,9 @@ export default function Studio() {
         <View style={{ width: W }}>
           <View style={styles.topRow}>
             <T weight="black" style={{ fontSize: 22 }} accessibilityRole="header">
-              Character Studio
+              {t('Character Studio')}
             </T>
-            <CircleButton icon="close" label="Close" onPress={() => router.back()} />
+            <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} />
           </View>
           <View style={{ alignItems: 'center', marginTop: 4 }}>
             <PetRig
@@ -74,7 +75,7 @@ export default function Studio() {
                 fire('hearts', ['#FF6B9A', '#FF8FA3']);
               }}
               bursts={bursts}
-              accessibilityLabel={`${pet.name} preview`}
+              accessibilityLabel={t('{name} preview', { name: pet.name })}
             />
           </View>
           <TextInput
@@ -82,14 +83,14 @@ export default function Studio() {
             onChangeText={setName}
             style={styles.name}
             maxLength={40}
-            accessibilityLabel="Pet name"
+            accessibilityLabel={t('Pet name')}
           />
           <LookPicker species={pet.species} appearance={appearance} onChange={setAppearance} />
           {error ? <T style={{ color: colors.danger, textAlign: 'center', marginTop: 10 }}>{error}</T> : null}
           <View style={{ paddingHorizontal: 24, marginTop: 26 }}>
-            <Pill label="SAVE LOOK" onPress={save} loading={saving} disabled={!dirty || !name.trim()} />
+            <Pill label={t('SAVE LOOK')} onPress={save} loading={saving} disabled={!dirty || !name.trim()} />
           </View>
-          <T style={styles.note}>More accessories, outfits and Little World items arrive in a later update.</T>
+          <T style={styles.note}>{t('More accessories, outfits and Little World items arrive in a later update.')}</T>
         </View>
       </ScrollView>
     </View>

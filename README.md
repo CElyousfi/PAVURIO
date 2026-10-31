@@ -1,39 +1,41 @@
 # PAVURIO
 
-A little world for all their big moments. Pavurio is a pet care companion for iOS and Android with an original, code-animated dog and cat (no AI features).
+A little world for all their big moments. Pavurio is a pet care companion for iOS and Android. The dog is animated from generated video clips (Gemini) and the cat and all static art come from GPT illustrations; nothing is drawn by hand in code.
 
 Its design comes from [Waterllama](https://refero.design/apps/274), studied through the Refero MCP. **The pet is the progress bar.** Each day your pet starts as a soft pencil sketch. Every care you log colors in more of them, using their real palette. See [`docs/research/REFERENCE_BOARD.md`](docs/research/REFERENCE_BOARD.md).
 
 ![flow](docs/screenshots/flow-overview.png)
 
-## What works today (milestone M2: vertical slice)
+## What's in the app (v1.0)
 
-| Area | Status |
+| Area | What it does |
 |---|---|
-| Onboarding: welcome, choose dog or cat, name, coat and bandana/collar, daily plan | ✅ |
-| Home: big `done/planned` number, layered pet that colors in, banded care rug, quick-add row, today peek card | ✅ |
-| Interactive pet: breathing, tail, random blinks, ear twitches, eyes and head follow your finger, tap bounce with hearts | ✅ |
-| Log card (full screen): illustration that reacts to the amount, up/down control, presets, time chips, note, `+ MEAL` pill | ✅ |
-| Real persistence: SQLite transaction, idempotent `mutation_id` (stops double-tap duplicates), validation | ✅ |
-| The pet celebrates **only after** a save succeeds; a 6 s **Undo** snackbar soft-voids the record | ✅ |
-| Day detail: browse past days, edit or delete entries, add a missed entry at the right time | ✅ |
-| Character Studio, Settings (plan, haptics, reduce motion, JSON export, erase all) | ✅ |
-| Data survives a full restart (automated test plus a browser reload check) | ✅ |
-| Reminders and notifications, records, Moments and Stories, paywall, widgets, Live Activity | ⏭ next milestones (see below) |
+| **Home** | `done/planned` number, the pet colouring in, banded care rug, quick-add row, a **Next up** card with Done / Skip / Snooze, Undo after every log; each care plays its own dog clip |
+| **Log card** | amount control, presets, time chips, note; a log ticks the matching scheduled time (±3 h) |
+| **Care tab** | week strip + month calendar with dots, day agenda, **routines** (times, weekdays, start/end, reminders, pause), **appointments** with reminders, **weight** log + chart (kg/lb), **walk timer** that survives closing the app |
+| **Reminders** | local notifications for the next 4 days, re-planned after every change; tapping one opens the right log card; nothing is ever marked done automatically |
+| **Records tab** | vaccines, vet visits, medication, allergies, other; next-due list; photo/PDF attachments stored in the app; a shareable care summary for the vet or a sitter |
+| **Moments tab** | photo memories and milestones, birthday / adoption countdowns, **weekly and monthly stories** built only from logged data (9:16 player, share or save a slide, privacy sheet) |
+| **Pets tab** | several pets, switch, add, edit, archive/restore, delete |
+| **Pro** | RevenueCat (more pets, monthly stories). Without store keys the paywall says it isn't available; reminders, records and exports are always free |
+| **Settings** | daily plan, haptics, reduce motion, reminders status, units, **English / Français**, CSV + JSON export, erase |
 
 ## Stack
 
-Expo SDK 58 · React Native 0.88 · TypeScript · Expo Router (`src/app`) · expo-sqlite · Reanimated 4 · react-native-svg · expo-haptics · Nunito (OFL)
+Expo SDK 58 · React Native 0.88 · TypeScript · Expo Router (`src/app`) · expo-sqlite · Reanimated 4 · expo-notifications · expo-image-picker / document-picker / file-system / sharing / media-library · react-native-view-shot · react-native-purchases · Nunito (OFL)
 
 ```
-src/app/          routes: index (Home), onboarding, log/[type], day, studio, settings
-src/animation/    art.tsx (layered vector dog and cat), PetRig, usePetMotion (controller), Burst, PetAvatar
-src/domain/       care templates, progress (plan-based, never a welfare score), time (local-day calendar math)
-src/data/         Db interface, migrations (PRAGMA user_version), repositories
-src/state/        AppProvider + useDay
-src/ui/           theme tokens, primitives, care illustrations
-tests/            vitest; repositories run on a real SQLite file through node:sqlite
-docs/             specs, Refero reference board, art reference, screenshots
+src/app/(tabs)/   Home, Care, Moments, Records, Pets (custom tab bar)
+src/app/          onboarding, log/[type], day, studio, settings, schedule, appointment,
+                  weight, walk, record, memory, story, paywall, pet
+src/animation/    DogStage (video-clip sprite sheets), CatStage, PetRig, PetAvatar, Burst
+src/domain/       care templates, progress, time, schedule engine, stories
+src/data/         migrations (v2), repo (pets, care), careRepo (routines, marks, visits, weight), recordsRepo
+src/features/     routines UI, care-log ↔ schedule link, summary, weight helpers
+src/native/       haptics, notifications, files (pickers + storage), purchases (RevenueCat)
+src/i18n/         t() + French strings
+tools/art/        pipelines that turn the GPT/Gemini art into app assets
+tests/            vitest in UTC, Paris and New York; SQLite through node:sqlite
 ```
 
 ## Run it
@@ -41,11 +43,11 @@ docs/             specs, Refero reference board, art reference, screenshots
 ```bash
 npm install
 npx expo start          # press i / a / w
-npm test                # 18 domain and database tests
+npm test                # domain + database tests in 3 time zones
 npm run typecheck
 ```
 
-Expo Go works for this slice. Later milestones (RevenueCat, widgets, Live Activities) need a development build: `npx expo run:ios` / `npx expo run:android` or `eas build --profile development`.
+Notifications, RevenueCat and media-library need a development or store build: `npx expo run:ios` / `npx expo run:android` or `eas build --profile preview`. See [`docs/RELEASE.md`](docs/RELEASE.md).
 
 On web, expo-sqlite needs the COOP/COEP headers that are already set in `metro.config.js`.
 
@@ -55,12 +57,12 @@ On web, expo-sqlite needs the COOP/COEP headers that are already set in `metro.c
 - Progress means "share of **your** plan logged today". It is never a health or welfare score, and the sketch state is neutral (the pet's face stays happy).
 - Care is never logged in the future. Instants are stored in UTC; days use local calendar math, so they stay correct across DST.
 - All data stays on the device. Export and erase work offline.
+- Reminders are never a paid feature, and a scheduled care is never ticked off for you.
+- Stories and summaries only state what the owner logged.
 
-## Next milestones
+## Still to come
 
-- **M3:** recurring schedules and local reminders (permission explained before the OS prompt), appointments.
-- **M4:** records (vet visits and vaccines, with source and provenance), Moments photo scrapbook.
-- **M5:** Stories (9:16 recap player and static export, with a privacy checklist).
-- **M6:** RevenueCat with real store products, then widgets and a walk Live Activity.
+- Home-screen widget and a walk Live Activity (need native targets; see `docs/RELEASE.md`).
+- The remaining dog clips (hello, sleep, idle 2) and the cat's video clips.
 
 Specs live in [`docs/specs`](docs/specs).

@@ -9,13 +9,15 @@ import { useApp } from '../state/AppState';
 import { CircleButton, Icon, Pill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
-const PERKS = [
-  { title: 'Every pet in one place', body: 'Add the whole family — dogs and cats, each with their own day, routines and records.' },
-  { title: 'Monthly stories', body: 'A 30-day recap built from the care you logged, ready to share.' },
-  { title: 'Support a small team', body: 'Pro keeps Pavurio ad-free and independent.' },
+const PERKS = () => [
+  { title: t('Every pet in one place'), body: t('Add the whole family — dogs and cats, each with their own day, routines and records.') },
+  { title: t('Monthly stories'), body: t('A 30-day recap built from the care you logged, ready to share.') },
+  { title: t('Support a small team'), body: t('Pro keeps Pavurio ad-free and independent.') },
 ];
-const ALWAYS_FREE = 'Reminders, health records, attachments, weekly stories and data export stay free — always.';
+const ALWAYS_FREE = () => t('Reminders, health records, attachments, weekly stories and data export stay free — always.');
+const periodWord = (p: string) => (p === 'year' ? t('year') : p === 'month' ? t('month') : p === 'once' ? t('once') : p);
 
 export default function Paywall() {
   const params = useLocalSearchParams<{ reason?: string }>();
@@ -36,7 +38,7 @@ export default function Paywall() {
       })
       .catch(() => {
         setPlans([]);
-        setMsg("Couldn't reach the store. Check your connection and try again.");
+        setMsg(t("Couldn't reach the store. Check your connection and try again."));
       });
   }, [store.configured]);
 
@@ -54,7 +56,7 @@ export default function Paywall() {
       }
     } catch (e) {
       errorFeedback();
-      setMsg(e instanceof Error ? e.message : 'The purchase did not go through. You were not charged.');
+      setMsg(e instanceof Error ? e.message : t('The purchase did not go through. You were not charged.'));
     } finally {
       setBusy(null);
     }
@@ -66,10 +68,10 @@ export default function Paywall() {
     try {
       const ok = await restore();
       await setPro(ok);
-      setMsg(ok ? 'Pro restored. Welcome back!' : 'No previous Pro purchase was found for this account.');
+      setMsg(ok ? t('Pro restored. Welcome back!') : t('No previous Pro purchase was found for this account.'));
       if (ok) successFeedback();
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Could not restore right now.');
+      setMsg(e instanceof Error ? e.message : t('Could not restore right now.'));
     } finally {
       setBusy(null);
     }
@@ -79,7 +81,7 @@ export default function Paywall() {
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20 }}>
-          <CircleButton icon="close" label="Close" onPress={() => router.back()} size={44} />
+          <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={44} />
         </View>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}>
           <View style={styles.hero}>
@@ -94,13 +96,13 @@ export default function Paywall() {
             Pavurio <T weight="black" style={{ color: colors.brand, fontSize: 34 }}>Pro</T>
           </T>
           {params.reason === 'pets' ? (
-            <T style={styles.sub}>The free plan covers one pet. Go Pro to add more.</T>
+            <T style={styles.sub}>{t('The free plan covers one pet. Go Pro to add more.')}</T>
           ) : (
-            <T style={styles.sub}>More pets, more stories.</T>
+            <T style={styles.sub}>{t('More pets, more stories.')}</T>
           )}
 
           <View style={{ gap: 14, marginTop: 22 }}>
-            {PERKS.map((p) => (
+            {PERKS().map((p) => (
               <View key={p.title} style={{ flexDirection: 'row', gap: 12 }}>
                 <View style={styles.check}>
                   <Icon name="check" size={16} color="#FFFFFF" />
@@ -117,22 +119,24 @@ export default function Paywall() {
 
           <View style={styles.free}>
             <T weight="xbold" style={{ color: colors.inkSoft, fontSize: 13, lineHeight: 18 }}>
-              {ALWAYS_FREE}
+              {ALWAYS_FREE()}
             </T>
           </View>
 
           {pro ? (
             <View style={[styles.free, { backgroundColor: colors.brandSoft, borderColor: colors.brandSoft }]}>
               <T weight="black" style={{ color: colors.brand, textAlign: 'center' }}>
-                You have Pro. Thank you!
+                {t('You have Pro. Thank you!')}
               </T>
             </View>
           ) : !store.configured ? (
             <View style={[styles.free, { backgroundColor: '#FFF8EC', borderColor: '#FFE7BF' }]}>
               <T weight="black" style={{ fontSize: 15 }}>
-                Not available yet
+                {t('Not available yet')}
               </T>
-              <T style={{ color: colors.inkSoft, fontSize: 14, marginTop: 4, lineHeight: 19 }}>{store.reason} Nothing will be charged.</T>
+              <T style={{ color: colors.inkSoft, fontSize: 14, marginTop: 4, lineHeight: 19 }}>
+                {store.reason} {t('Nothing will be charged.')}
+              </T>
             </View>
           ) : plans == null ? (
             <ActivityIndicator color={colors.brand} style={{ marginTop: 24 }} />
@@ -145,7 +149,7 @@ export default function Paywall() {
                     key={p.id}
                     accessibilityRole="radio"
                     accessibilityState={{ selected: on }}
-                    accessibilityLabel={`${p.title} ${p.price} per ${p.period}`}
+                    accessibilityLabel={t('{title} {price} per {period}', { title: p.title, price: p.price, period: periodWord(p.period) })}
                     onPress={() => {
                       tapFeedback();
                       setSel(p.id);
@@ -154,11 +158,11 @@ export default function Paywall() {
                   >
                     <View style={[styles.radio, on && { borderColor: colors.brand }]}>{on ? <View style={styles.radioDot} /> : null}</View>
                     <T weight="black" style={{ flex: 1, fontSize: 16 }}>
-                      {p.period === 'year' ? 'Yearly' : p.period === 'month' ? 'Monthly' : p.period === 'once' ? 'Lifetime' : p.title}
+                      {p.period === 'year' ? t('Yearly') : p.period === 'month' ? t('Monthly') : p.period === 'once' ? t('Lifetime') : p.title}
                     </T>
                     <T weight="black" style={{ fontSize: 16 }}>
                       {p.price}
-                      {p.period && p.period !== 'once' ? <T style={{ color: colors.muted, fontSize: 13 }}> /{p.period}</T> : null}
+                      {p.period && p.period !== 'once' ? <T style={{ color: colors.muted, fontSize: 13 }}> /{periodWord(p.period)}</T> : null}
                     </T>
                   </Pressable>
                 );
@@ -172,17 +176,17 @@ export default function Paywall() {
           ) : null}
         </ScrollView>
         <View style={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 14, gap: 10 }}>
-          {!pro && store.configured ? <Pill label="CONTINUE" onPress={buy} loading={busy === 'buy'} disabled={!sel} /> : <Pill label="CLOSE" onPress={() => router.back()} />}
+          {!pro && store.configured ? <Pill label={t('CONTINUE')} onPress={buy} loading={busy === 'buy'} disabled={!sel} /> : <Pill label={t('CLOSE')} onPress={() => router.back()} />}
           {store.configured ? (
-            <Pressable accessibilityRole="button" accessibilityLabel="Restore purchases" onPress={doRestore} style={{ alignSelf: 'center', padding: 6 }}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('Restore purchases')} onPress={doRestore} style={{ alignSelf: 'center', padding: 6 }}>
               <T weight="black" style={{ color: colors.muted, fontSize: 13, letterSpacing: 1 }}>
-                {busy === 'restore' ? 'RESTORING…' : 'RESTORE PURCHASES'}
+                {busy === 'restore' ? t('RESTORING…') : t('RESTORE PURCHASES')}
               </T>
             </Pressable>
           ) : null}
           {store.configured ? (
             <T style={{ color: colors.faint, fontSize: 11, textAlign: 'center', lineHeight: 15 }}>
-              Subscriptions renew automatically until cancelled in your store account settings at least 24 hours before the period ends.
+              {t('Subscriptions renew automatically until cancelled in your store account settings at least 24 hours before the period ends.')}
             </T>
           ) : null}
         </View>

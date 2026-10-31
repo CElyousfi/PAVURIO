@@ -1,3 +1,4 @@
+import { t } from '../i18n/core';
 import { CareType } from './care';
 
 export type Plan = Partial<Record<CareType, number>>;
@@ -40,8 +41,8 @@ export function computeProgress(plan: Plan, events: CareEventLite[]): Progress {
 }
 
 export function progressSentence(p: Progress): string {
-  if (p.planned === 0) return p.done > 0 ? 'Care logged today' : 'No daily plan yet';
+  if (p.planned === 0) return p.done > 0 ? t('Care logged today') : t('No daily plan yet');
   const pct = Math.round(p.ratio * 100);
-  if (pct >= 100) return "Today's plan is all colored in";
-  return `Care logged · ${pct}% of today's plan`;
+  if (pct >= 100) return t("Today's plan is all colored in");
+  return t("Care logged · {pct}% of today's plan", { pct });
 }

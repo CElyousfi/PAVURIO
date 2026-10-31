@@ -2,22 +2,23 @@
 import { Db } from './db';
 import { newId } from '../domain/ids';
 import { ValidationError } from './repo';
+import { t } from '../i18n/core';
 
 export type RecordKind = 'vaccine' | 'vet_visit' | 'medication' | 'allergy' | 'other';
 export const RECORD_KINDS: { kind: RecordKind; label: string; color: string; tint: string }[] = [
-  { kind: 'vaccine', label: 'Vaccine', color: '#14B8C4', tint: '#DDF6F7' },
-  { kind: 'vet_visit', label: 'Vet visit', color: '#1CB0F6', tint: '#DDF3FE' },
-  { kind: 'medication', label: 'Medication', color: '#9B7BF7', tint: '#EEE8FE' },
-  { kind: 'allergy', label: 'Allergy', color: '#FF6B6B', tint: '#FFE5E5' },
-  { kind: 'other', label: 'Other', color: '#7C8495', tint: '#EEF0F3' },
+  { kind: 'vaccine', get label() { return t('Vaccine'); }, color: '#14B8C4', tint: '#DDF6F7' },
+  { kind: 'vet_visit', get label() { return t('Vet visit'); }, color: '#1CB0F6', tint: '#DDF3FE' },
+  { kind: 'medication', get label() { return t('Medication'); }, color: '#9B7BF7', tint: '#EEE8FE' },
+  { kind: 'allergy', get label() { return t('Allergy'); }, color: '#FF6B6B', tint: '#FFE5E5' },
+  { kind: 'other', get label() { return t('Other'); }, color: '#7C8495', tint: '#EEF0F3' },
 ];
 export const recordKind = (k: string) => RECORD_KINDS.find((r) => r.kind === k) ?? RECORD_KINDS[4];
 
 export type RecordSource = 'owner' | 'vet_document' | 'clinic';
 export const SOURCES: { id: RecordSource; label: string }[] = [
-  { id: 'owner', label: 'Entered by me' },
-  { id: 'vet_document', label: 'From a vet document' },
-  { id: 'clinic', label: 'Told by the clinic' },
+  { id: 'owner', get label() { return t('Entered by me'); } },
+  { id: 'vet_document', get label() { return t('From a vet document'); } },
+  { id: 'clinic', get label() { return t('Told by the clinic'); } },
 ];
 
 export type PetRecord = {
@@ -50,10 +51,10 @@ export type RecordInput = {
 
 function validate(i: RecordInput) {
   const title = i.title.trim();
-  if (!title) throw new ValidationError('Give the record a name.');
-  if (title.length > 80) throw new ValidationError('Names can be up to 80 characters.');
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(i.date)) throw new ValidationError('Choose a date.');
-  if (i.dueDate && i.dueDate < i.date) throw new ValidationError('The next due date is before the record date.');
+  if (!title) throw new ValidationError(t('Give the record a name.'));
+  if (title.length > 80) throw new ValidationError(t('Names can be up to 80 characters.'));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(i.date)) throw new ValidationError(t('Choose a date.'));
+  if (i.dueDate && i.dueDate < i.date) throw new ValidationError(t('The next due date is before the record date.'));
   return { title, notes: i.notes?.trim() ? i.notes.trim().slice(0, 2000) : null };
 }
 
@@ -150,9 +151,9 @@ export type MemoryInput = { petId: string; photoUri?: string | null; title: stri
 
 function validateMem(i: MemoryInput) {
   const title = i.title.trim();
-  if (!title) throw new ValidationError('Give the moment a title.');
-  if (title.length > 60) throw new ValidationError('Titles can be up to 60 characters.');
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(i.date)) throw new ValidationError('Choose a date.');
+  if (!title) throw new ValidationError(t('Give the moment a title.'));
+  if (title.length > 60) throw new ValidationError(t('Titles can be up to 60 characters.'));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(i.date)) throw new ValidationError(t('Choose a date.'));
   return { title, caption: i.caption?.trim() ? i.caption.trim().slice(0, 500) : null };
 }
 

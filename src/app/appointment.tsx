@@ -12,14 +12,15 @@ import { Chip, DateField, Field, ModalScreen, TimeField } from '../ui/forms';
 import { Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, successFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
-const REMIND: { label: string; minutes: number | null }[] = [
-  { label: 'No reminder', minutes: null },
-  { label: '1 hour before', minutes: 60 },
-  { label: '3 hours before', minutes: 180 },
-  { label: 'Day before', minutes: 1440 },
+const REMIND = (): { label: string; minutes: number | null }[] => [
+  { label: t('No reminder'), minutes: null },
+  { label: t('1 hour before'), minutes: 60 },
+  { label: t('3 hours before'), minutes: 180 },
+  { label: t('Day before'), minutes: 1440 },
 ];
-const PRESETS = ['Vet check-up', 'Vaccination', 'Groomer', 'Dental cleaning', 'Pet sitter'];
+const PRESETS = () => [t('Vet check-up'), t('Vaccination'), t('Groomer'), t('Dental cleaning'), t('Pet sitter')];
 
 export default function AppointmentEditor() {
   const params = useLocalSearchParams<{ id?: string; day?: string }>();
@@ -68,7 +69,7 @@ export default function AppointmentEditor() {
       bump();
       router.back();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : 'Could not save the appointment.');
+      setError(e instanceof ValidationError ? e.message : t('Could not save the appointment.'));
       errorFeedback();
       setSaving(false);
     }
@@ -76,16 +77,16 @@ export default function AppointmentEditor() {
 
   return (
     <ModalScreen
-      title={params.id ? 'Appointment' : 'New appointment'}
+      title={params.id ? t('Appointment') : t('New appointment')}
       onClose={() => router.back()}
       error={error}
       footer={
         <>
-          <Pill label={params.id ? 'SAVE' : 'ADD APPOINTMENT'} onPress={save} loading={saving} testID="save-appointment" />
+          <Pill label={params.id ? t('SAVE') : t('ADD APPOINTMENT')} onPress={save} loading={saving} testID="save-appointment" />
           {params.id ? (
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <SoftPill
-                label={doneAt ? 'Mark not done' : 'Mark as done'}
+                label={doneAt ? t('Mark not done') : t('Mark as done')}
                 style={{ flex: 1 }}
                 onPress={async () => {
                   await setAppointmentDone(db, params.id!, !doneAt);
@@ -94,12 +95,12 @@ export default function AppointmentEditor() {
                 }}
               />
               <SoftPill
-                label="Delete"
+                label={t('Delete')}
                 color={colors.danger}
                 tint={colors.dangerSoft}
                 style={{ flex: 1 }}
                 onPress={async () => {
-                  if (!(await confirmAsync('Delete this appointment?', 'Its reminder is cancelled too.'))) return;
+                  if (!(await confirmAsync(t('Delete this appointment?'), t('Its reminder is cancelled too.')))) return;
                   await deleteAppointment(db, params.id!);
                   bump();
                   router.back();
@@ -110,37 +111,37 @@ export default function AppointmentEditor() {
         </>
       }
     >
-      <Field label="What" value={title} onChangeText={setTitle} placeholder="e.g. Annual check-up" maxLength={80} />
+      <Field label={t('What')} value={title} onChangeText={setTitle} placeholder={t('e.g. Annual check-up')} maxLength={80} />
       {!params.id ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: -8 }}>
-          {PRESETS.map((p) => (
+          {PRESETS().map((p) => (
             <Chip key={p} label={p} on={title === p} onPress={() => setTitle(p)} />
           ))}
         </View>
       ) : null}
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <View style={{ flex: 1.2 }}>
-          <DateField label="Day" value={day} onChange={(v) => v && setDay(v)} />
+          <DateField label={t('Day')} value={day} onChange={(v) => v && setDay(v)} />
         </View>
         <View style={{ flex: 1 }}>
-          <TimeField label="Time" value={time} onChange={setTime} />
+          <TimeField label={t('Time')} value={time} onChange={setTime} />
         </View>
       </View>
       {past && !params.id ? (
         <T weight="xbold" style={{ color: '#B45309', fontSize: 13, marginTop: -8 }}>
-          This is in the past — fine for keeping a record of a visit.
+          {t('This is in the past — fine for keeping a record of a visit.')}
         </T>
       ) : null}
-      <Field label="Where (optional)" value={location} onChangeText={setLocation} placeholder="Clinic or address" maxLength={120} />
+      <Field label={t('Where (optional)')} value={location} onChangeText={setLocation} placeholder={t('Clinic or address')} maxLength={120} />
       <View style={{ gap: 8 }}>
-        <Label>Reminder</Label>
+        <Label>{t('Reminder')}</Label>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {REMIND.map((r) => (
+          {REMIND().map((r) => (
             <Chip key={r.label} label={r.label} on={remind === r.minutes} onPress={() => setRemind(r.minutes)} />
           ))}
         </View>
       </View>
-      <Field label="Notes (optional)" value={notes} onChangeText={setNotes} placeholder="Questions for the vet, things to bring…" multiline maxLength={2000} />
+      <Field label={t('Notes (optional)')} value={notes} onChangeText={setNotes} placeholder={t('Questions for the vet, things to bring…')} multiline maxLength={2000} />
     </ModalScreen>
   );
 }

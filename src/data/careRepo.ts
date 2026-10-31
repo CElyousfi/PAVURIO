@@ -4,6 +4,7 @@ import { newId } from '../domain/ids';
 import { Mark, MarkStatus, Schedule, normalizeTimes } from '../domain/schedule';
 import { ValidationError } from './repo';
 import { dayKeyOf } from '../domain/time';
+import { t } from '../i18n/core';
 
 // ---------------------------------------------------------------- schedules
 
@@ -57,14 +58,14 @@ export type ScheduleInput = {
 
 function validateSchedule(input: ScheduleInput) {
   const title = input.title.trim();
-  if (!title) throw new ValidationError('Give the reminder a name.');
-  if (title.length > 60) throw new ValidationError('Names can be up to 60 characters.');
+  if (!title) throw new ValidationError(t('Give the reminder a name.'));
+  if (title.length > 60) throw new ValidationError(t('Names can be up to 60 characters.'));
   const times = normalizeTimes(input.times);
-  if (times.length === 0) throw new ValidationError('Add at least one time.');
-  if (times.length > 12) throw new ValidationError('Up to 12 times a day.');
+  if (times.length === 0) throw new ValidationError(t('Add at least one time.'));
+  if (times.length > 12) throw new ValidationError(t('Up to 12 times a day.'));
   const days = [...new Set((input.days ?? []).filter((d) => d >= 0 && d <= 6))].sort();
   if (input.endDate && input.startDate && input.endDate < input.startDate) {
-    throw new ValidationError('The end date is before the start date.');
+    throw new ValidationError(t('The end date is before the start date.'));
   }
   return { title, times, days: days.length === 7 ? [] : days };
 }
@@ -167,8 +168,8 @@ export type AppointmentInput = { petId: string; title: string; at: number; locat
 
 function validateAppt(i: AppointmentInput) {
   const title = i.title.trim();
-  if (!title) throw new ValidationError('Give the appointment a name.');
-  if (!Number.isFinite(i.at)) throw new ValidationError('Choose a date and time.');
+  if (!title) throw new ValidationError(t('Give the appointment a name.'));
+  if (!Number.isFinite(i.at)) throw new ValidationError(t('Choose a date and time.'));
   return { title, location: i.location?.trim() || null, notes: i.notes?.trim() || null };
 }
 
@@ -229,8 +230,8 @@ export async function addMeasurement(
   i: { petId: string; kind: 'weight'; value: number; unit: 'kg' | 'lb'; at: number; note?: string | null },
   now = Date.now(),
 ): Promise<Measurement> {
-  if (!Number.isFinite(i.value) || i.value <= 0 || i.value > 200) throw new ValidationError('Enter a weight between 0 and 200.');
-  if (i.at > now + 5 * 60_000) throw new ValidationError("Weights can't be in the future.");
+  if (!Number.isFinite(i.value) || i.value <= 0 || i.value > 200) throw new ValidationError(t('Enter a weight between 0 and 200.'));
+  if (i.at > now + 5 * 60_000) throw new ValidationError(t("Weights can't be in the future."));
   const id = newId();
   await db.runAsync('INSERT INTO measurements (id, pet_id, kind, value, unit, at, note, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
     id,

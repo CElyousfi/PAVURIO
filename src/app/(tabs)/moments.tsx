@@ -11,12 +11,13 @@ import { useApp } from '../../state/AppState';
 import { EmptyState, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
+import { t, tn } from '../../i18n';
 
 function nextAnniversary(date: string | null, today: string): { day: string; years: number } | null {
   if (!date) return null;
   const d = parseDayKey(date);
-  const t = parseDayKey(today);
-  let y = t.getFullYear();
+  const td = parseDayKey(today);
+  let y = td.getFullYear();
   let next = new Date(y, d.getMonth(), d.getDate());
   if (dayKeyOf(next) < today) next = new Date(++y, d.getMonth(), d.getDate());
   const years = y - d.getFullYear();
@@ -51,11 +52,14 @@ export default function MomentsTab() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
-      <TabTitle title="Moments" subtitle={`Photos & milestones with ${pet.name}`} right={<CircleButton icon="plus" label="Add a moment" onPress={() => router.push('/memory')} size={50} />} />
+      <TabTitle
+        title={t('Moments')}
+        subtitle={t('Photos & milestones with {name}', { name: pet.name })}
+        right={<CircleButton icon="plus" label={t('Add a moment')} onPress={() => router.push('/memory')} size={50} />} />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 18 }} showsVerticalScrollIndicator={false}>
         <View>
           <T weight="black" style={styles.section}>
-            Stories
+            {t('Stories')}
           </T>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             {(['week', 'month'] as StoryRange[]).map((r) => (
@@ -64,7 +68,7 @@ export default function MomentsTab() {
                 disabled={!ready[r]}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: !ready[r] }}
-                accessibilityLabel={r === 'week' ? 'Play this week story' : 'Play this month story'}
+                accessibilityLabel={r === 'week' ? t('Play this week story') : t('Play this month story')}
                 onPress={() => (r === 'month' && !pro ? router.push({ pathname: '/paywall', params: { reason: 'story' } }) : router.push({ pathname: '/story', params: { range: r } }))}
                 style={({ pressed }) => [styles.story, { opacity: ready[r] ? 1 : 0.5, transform: [{ scale: pressed ? 0.97 : 1 }] }, r === 'month' && { backgroundColor: '#FFE9D6' }]}
                 testID={`story-${r}`}
@@ -73,9 +77,9 @@ export default function MomentsTab() {
                   <PetAvatar species={pet.species} appearance={pet.appearance} size={60} />
                 </View>
                 <T weight="black" style={{ fontSize: 16, marginTop: 8 }}>
-                  {r === 'week' ? 'This week' : 'This month'}
+                  {r === 'week' ? t('This week') : t('This month')}
                 </T>
-                <T style={{ fontSize: 12, color: colors.muted, textAlign: 'center' }}>{!ready[r] ? 'Log a few cares to unlock' : r === 'month' && !pro ? 'Pro · tap to see' : 'Tap to play'}</T>
+                <T style={{ fontSize: 12, color: colors.muted, textAlign: 'center' }}>{!ready[r] ? t('Log a few cares to unlock') : r === 'month' && !pro ? t('Pro · tap to see') : t('Tap to play')}</T>
               </Pressable>
             ))}
           </View>
@@ -83,23 +87,26 @@ export default function MomentsTab() {
 
         {birthday || gotcha ? (
           <View style={{ gap: 8 }}>
-            {birthday ? <Milestone emoji="🎂" title={`${pet.name} turns ${birthday.years}`} day={birthday.day} today={today} /> : null}
-            {gotcha ? <Milestone emoji="🏡" title={`${gotcha.years} year${gotcha.years === 1 ? '' : 's'} together`} day={gotcha.day} today={today} /> : null}
+            {birthday ? <Milestone emoji="🎂" title={t('{name} turns {n}', { name: pet.name, n: birthday.years })} day={birthday.day} today={today} /> : null}
+            {gotcha ? <Milestone emoji="🏡" title={gotcha.years === 1 ? t('{n} year together', { n: gotcha.years }) : t('{n} years together', { n: gotcha.years })} day={gotcha.day} today={today} /> : null}
           </View>
         ) : !pet.birthDate ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Add birthday" onPress={() => router.push({ pathname: '/pet', params: { id: pet.id } })} style={styles.hintCard}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('Add birthday')} onPress={() => router.push({ pathname: '/pet', params: { id: pet.id } })} style={styles.hintCard}>
             <T weight="xbold" style={{ color: colors.inkSoft, fontSize: 14 }}>
-              Add {pet.name}'s birthday or adoption day to celebrate milestones →
+              {t("Add {name}'s birthday or adoption day to celebrate milestones →", { name: pet.name })}
             </T>
           </Pressable>
         ) : null}
 
         <View>
           <T weight="black" style={styles.section}>
-            Moments
+            {t('Moments')}
           </T>
           {items.length === 0 ? (
-            <EmptyState title="Your first moment" body={`First bath, a new trick, a lazy Sunday — add a photo and it shows up in ${pet.name}'s stories.`} action="ADD A MOMENT" onAction={() => router.push('/memory')} />
+            <EmptyState
+              title={t('Your first moment')}
+              body={t("First bath, a new trick, a lazy Sunday — add a photo and it shows up in {name}'s stories.", { name: pet.name })}
+              action={t('ADD A MOMENT')} onAction={() => router.push('/memory')} />
           ) : (
             <View style={styles.grid}>
               {items.map((m) => (
@@ -131,7 +138,7 @@ export default function MomentsTab() {
 function Milestone({ emoji, title, day, today }: { emoji: string; title: string; day: string; today: string }) {
   const diff = Math.round((parseDayKey(day).getTime() - parseDayKey(today).getTime()) / 86_400_000);
   return (
-    <View style={styles.milestone} accessibilityLabel={`${title}, ${diff === 0 ? 'today' : `in ${diff} days`}`}>
+    <View style={styles.milestone} accessibilityLabel={`${title}, ${diff === 0 ? t('today') : tn(diff, 'in {n} day', 'in {n} days')}`}>
       <T style={{ fontSize: 26 }}>{emoji}</T>
       <View style={{ flex: 1 }}>
         <T weight="black" style={{ fontSize: 16 }}>
@@ -140,7 +147,7 @@ function Milestone({ emoji, title, day, today }: { emoji: string; title: string;
         <T style={{ color: colors.muted, fontSize: 13 }}>{formatDateLong(day)}</T>
       </View>
       <T weight="black" style={{ color: diff === 0 ? '#E58A00' : colors.brand, fontSize: 14 }}>
-        {diff === 0 ? 'Today!' : diff === 1 ? 'Tomorrow' : `in ${diff} days`}
+        {diff === 0 ? t('Today!') : diff === 1 ? t('Tomorrow') : tn(diff, 'in {n} day', 'in {n} days')}
       </T>
     </View>
   );

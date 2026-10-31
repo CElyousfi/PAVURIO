@@ -4,6 +4,8 @@
  * 24 h, so DST days are correct. A mark (done / skipped / snoozed) is stored only when the owner acts;
  * an occurrence is never completed automatically.
  */
+import { t } from '../i18n/core';
+import { formatHM, weekdayInitials, weekdayNamesShort } from '../i18n/dates';
 import { addDays, dayKeyOf, parseDayKey } from './time';
 
 export type ScheduleKind = string; // a CareType or 'custom'
@@ -173,8 +175,8 @@ export function planReminders(
       out.push({
         id: `pv:${o.key}`,
         at,
-        title: `${o.title} for ${petName}`,
-        body: 'Tap to log it when it’s done.',
+        title: t('{title} for {name}', { title: o.title, name: petName }),
+        body: t('Tap to log it when it’s done.'),
         scheduleId: o.scheduleId,
         key: o.key,
       });
@@ -183,21 +185,22 @@ export function planReminders(
   return out.sort((a, b) => a.at - b.at).slice(0, limit);
 }
 
+/** English weekday initials, Sunday first. UI should use `weekdayInitials()` (language-aware). */
 export const WEEKDAYS_SHORT = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+export { weekdayInitials };
 
 export function describeDays(days: number[]): string {
-  if (days.length === 0 || days.length === 7) return 'Every day';
-  const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  if (days.length === 0 || days.length === 7) return t('Every day');
+  const names = weekdayNamesShort();
   const set = [...days].sort();
-  if (set.join() === '1,2,3,4,5') return 'Weekdays';
-  if (set.join() === '0,6') return 'Weekends';
+  if (set.join() === '1,2,3,4,5') return t('Weekdays');
+  if (set.join() === '0,6') return t('Weekends');
   return set.map((d) => names[d]).join(', ');
 }
 
-export function formatTime24to12(t: string): string {
-  const p = parseTime(t);
-  if (!p) return t;
-  const ampm = p.h >= 12 ? 'PM' : 'AM';
-  const h = p.h % 12 || 12;
-  return `${h}:${String(p.m).padStart(2, '0')} ${ampm}`;
+/** 'HH:MM' → "8:00 AM" (English) or "8h00" (French). */
+export function formatTime24to12(time: string): string {
+  const p = parseTime(time);
+  if (!p) return time;
+  return formatHM(p.h, p.m);
 }

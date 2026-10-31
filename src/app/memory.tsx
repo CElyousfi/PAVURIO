@@ -11,8 +11,9 @@ import { Chip, DateField, Field, ModalScreen } from '../ui/forms';
 import { Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, successFeedback } from '../native/haptics';
+import { t } from '../i18n';
 
-const IDEAS = ['First walk', 'New trick', 'Bath day', 'Vet hero', 'Nap champion', 'Birthday'];
+const IDEAS = () => [t('First walk'), t('New trick'), t('Bath day'), t('Vet hero'), t('Nap champion'), t('Birthday')];
 
 export default function MemoryEditor() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -50,7 +51,7 @@ export default function MemoryEditor() {
       const p = await pickPhoto(from);
       if (p) setPhoto(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not open photos.');
+      setError(e instanceof Error ? e.message : t('Could not open photos.'));
     }
   };
 
@@ -69,7 +70,7 @@ export default function MemoryEditor() {
       bump();
       router.back();
     } catch (e) {
-      setError(e instanceof ValidationError ? e.message : e instanceof Error ? e.message : 'Could not save the moment.');
+      setError(e instanceof ValidationError ? e.message : e instanceof Error ? e.message : t('Could not save the moment.'));
       errorFeedback();
       setSaving(false);
     }
@@ -77,7 +78,7 @@ export default function MemoryEditor() {
 
   const remove = async () => {
     if (!params.id) return;
-    if (!(await confirmAsync('Delete this moment?', 'The photo is removed from Pavurio (your camera roll keeps its copy).'))) return;
+    if (!(await confirmAsync(t('Delete this moment?'), t('The photo is removed from Pavurio (your camera roll keeps its copy).')))) return;
     if (storedUri) removeStoredFile(storedUri);
     await deleteMemory(db, params.id);
     bump();
@@ -87,17 +88,17 @@ export default function MemoryEditor() {
   const pw = Math.min(width, 560) - 40;
   return (
     <ModalScreen
-      title={params.id ? 'Moment' : 'New moment'}
+      title={params.id ? t('Moment') : t('New moment')}
       onClose={() => router.back()}
       error={error}
       footer={
         <>
-          <Pill label={params.id ? 'SAVE' : 'ADD MOMENT'} onPress={save} loading={saving} testID="save-memory" />
-          {params.id ? <SoftPill label="Delete moment" color={colors.danger} tint={colors.dangerSoft} onPress={remove} /> : null}
+          <Pill label={params.id ? t('SAVE') : t('ADD MOMENT')} onPress={save} loading={saving} testID="save-memory" />
+          {params.id ? <SoftPill label={t('Delete moment')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} /> : null}
         </>
       }
     >
-      <Pressable accessibilityRole="button" accessibilityLabel={shown ? 'Change photo' : 'Add a photo'} onPress={() => choose('library')} style={[styles.photo, { height: pw * 0.8 }]}>
+      <Pressable accessibilityRole="button" accessibilityLabel={shown ? t('Change photo') : t('Add a photo')} onPress={() => choose('library')} style={[styles.photo, { height: pw * 0.8 }]}>
         {shown ? (
           <Image source={{ uri: shown }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : (
@@ -106,17 +107,17 @@ export default function MemoryEditor() {
               +
             </T>
             <T weight="xbold" style={{ color: colors.brand }}>
-              Add a photo
+              {t('Add a photo')}
             </T>
           </View>
         )}
       </Pressable>
       <View style={{ flexDirection: 'row', gap: 8, marginTop: -6 }}>
-        <SoftPill label="Camera" small onPress={() => choose('camera')} />
-        <SoftPill label="Library" small onPress={() => choose('library')} />
+        <SoftPill label={t('Camera')} small onPress={() => choose('camera')} />
+        <SoftPill label={t('Library')} small onPress={() => choose('library')} />
         {shown ? (
           <SoftPill
-            label="Remove photo"
+            label={t('Remove photo')}
             small
             color={colors.inkSoft}
             tint={colors.line}
@@ -128,21 +129,21 @@ export default function MemoryEditor() {
         ) : null}
       </View>
 
-      <Field label="Title" value={title} onChangeText={setTitle} placeholder="What happened?" maxLength={60} />
+      <Field label={t('Title')} value={title} onChangeText={setTitle} placeholder={t('What happened?')} maxLength={60} />
       {!params.id ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: -8 }}>
-          {IDEAS.map((i) => (
+          {IDEAS().map((i) => (
             <Chip key={i} label={i} on={title === i} onPress={() => setTitle(i)} />
           ))}
         </View>
       ) : null}
-      <Field label="Caption (optional)" value={caption} onChangeText={setCaption} placeholder="A line to remember it by" multiline maxLength={500} />
-      <DateField label="Date" value={date} onChange={(v) => v && setDate(v)} maxDay={dayKeyOf(new Date())} />
+      <Field label={t('Caption (optional)')} value={caption} onChangeText={setCaption} placeholder={t('A line to remember it by')} multiline maxLength={500} />
+      <DateField label={t('Date')} value={date} onChange={(v) => v && setDate(v)} maxDay={dayKeyOf(new Date())} />
       <View style={{ gap: 8 }}>
-        <Label>Kind</Label>
+        <Label>{t('Kind')}</Label>
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          <Chip label="Moment" on={!milestone} onPress={() => setMilestone(false)} />
-          <Chip label="★ Milestone" on={milestone} color="#E58A00" tint="#FFF1DC" onPress={() => setMilestone(true)} />
+          <Chip label={t('Moment')} on={!milestone} onPress={() => setMilestone(false)} />
+          <Chip label={t('★ Milestone')} on={milestone} color="#E58A00" tint="#FFF1DC" onPress={() => setMilestone(true)} />
         </View>
       </View>
     </ModalScreen>
