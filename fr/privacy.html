@@ -1,0 +1,113 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confidentialité · Pavurio</title><meta name="description" content="Votre animal se colore au fil des soins."><link rel="icon" href="../favicon.png">
+<link rel="alternate" hreflang="en" href="https://celyousfi.github.io/PAVURIO/privacy.html">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#23304A;--soft:#3D4A63;--muted:#7C8494;--brand:#14B8C4;--brandSoft:#DDF6F7;--line:#EEF0F3;--warm:#FFF6E6}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Nunito,ui-rounded,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#fff;line-height:1.6;font-size:17px}
+a{color:var(--brand);font-weight:800;text-decoration:none}a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:2}
+.bar{max-width:880px;margin:auto;display:flex;align-items:center;gap:18px;padding:12px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:900;font-size:20px}.brand img{width:34px;height:34px;border-radius:9px}
+nav{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap;font-size:15px}nav a{color:var(--soft)}nav a.on{color:var(--brand)}
+main{max-width:760px;margin:auto;padding:28px 20px 60px}
+h1{font-weight:900;font-size:34px;line-height:1.15;margin:.4em 0 .3em}h2{font-weight:900;font-size:22px;margin:1.6em 0 .4em}
+p,li{color:var(--soft)}strong{color:var(--ink)}em{color:var(--muted);font-style:normal;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}th{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;padding-top:20px}
+.hero img{width:100%;max-width:340px;justify-self:center}
+.tag{font-size:40px;font-weight:900;line-height:1.1;margin:0 0 14px}
+.pill{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:14px 22px;font-weight:900;margin-top:10px}
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:30px}
+.feat{background:var(--warm);border-radius:20px;padding:16px 18px;font-weight:800;color:var(--ink)}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer .bar{justify-content:center}
+@media(max-width:680px){.hero{grid-template-columns:1fr}.tag{font-size:32px}.feats{grid-template-columns:1fr}nav{margin-left:0}}
+</style></head><body>
+<header><div class="bar"><a class="brand" href="index.html"><img src="../img/icon.png" alt="">Pavurio</a><nav><a href="index.html" class="">Accueil</a><a href="support.html" class="">Aide</a><a href="privacy.html" class="on">Confidentialité</a><a href="terms.html" class="">Conditions</a><a href="delete-account.html" class="">Supprimer le compte</a><a href="https://celyousfi.github.io/PAVURIO/privacy.html">English</a></nav></div></header>
+<main><h1>Politique de confidentialité</h1>
+<p><em>Dernière mise à jour : 31 octobre 2026</em></p>
+<p>Pavurio est une application de suivi des soins pour animaux. Cette politique explique ce que l'app conserve, où, et comment le supprimer. En bref : <strong>les données de vos animaux restent sur votre téléphone, une copie de sauvegarde est conservée dans votre compte Pavurio pour pouvoir la restaurer, et nous ne vendons aucune donnée ni n'affichons de publicité.</strong></p>
+<h2>Ce que Pavurio conserve</h2>
+<p><strong>Ce que vous saisissez.</strong> Vos animaux (nom, espèce, apparence, anniversaire, date d'adoption), les soins que vous notez, les routines et rappels, les rendez-vous vétérinaires, les poids, les dossiers de santé, les moments (titres et légendes) et les réglages.</p>
+<ul>
+<li>Ces données sont enregistrées <strong>sur votre téléphone</strong>.</li>
+<li>Une <strong>copie de sauvegarde</strong> est conservée dans votre compte Pavurio (Google Firebase Cloud Firestore), pour les retrouver après un changement ou une réinitialisation de téléphone. Elle est liée à votre compte et lisible par vous seul.</li>
+</ul>
+<p><strong>Les photos et pièces jointes</strong> restent <strong>uniquement sur votre téléphone</strong>. Elles ne sont pas envoyées.</p>
+<p><strong>Votre compte (Firebase Authentication).</strong></p>
+<ul>
+<li>Chaque installation reçoit automatiquement un identifiant aléatoire, pour que vos données soient sauvegardées dès le début.</li>
+<li>Si vous enregistrez votre compte, nous conservons aussi <strong>l'adresse e-mail</strong> de l'identifiant choisi : Se connecter avec Apple, Google, ou e-mail et mot de passe.</li>
+<li>Avec Apple, vous pouvez masquer votre e-mail ; Apple nous transmet alors une adresse relais privée.</li>
+<li>Nous ne demandons pas votre nom.</li>
+</ul>
+<p><strong>Rapports de plantage (Firebase Crashlytics).</strong></p>
+<ul>
+<li>Si l'app plante, un rapport technique est envoyé : modèle d'appareil, versions du système et de l'app, et ce que faisait l'app.</li>
+<li>Il est lié à l'identifiant aléatoire, jamais aux données de vos animaux.</li>
+<li>Vous pouvez le désactiver dans <strong>Réglages → Compte → Envoyer les rapports de plantage</strong>.</li>
+</ul>
+<p><strong>Achats.</strong></p>
+<ul>
+<li>Pavurio Pro s'achète via l'App Store ou Google Play ; nous ne voyons jamais vos moyens de paiement.</li>
+<li>Pour savoir si Pro est actif, nous utilisons <strong>RevenueCat</strong>, qui reçoit votre identifiant aléatoire et vos reçus d'achat.</li>
+</ul>
+<p><strong>Notifications.</strong> Les rappels sont programmés sur votre téléphone ; aucun contenu ne nous est envoyé.</p>
+<h2>Ce que Pavurio ne fait pas</h2>
+<ul>
+<li>Pas de publicité ni de SDK publicitaire.</li>
+<li>Aucune vente ni partage de données personnelles.</li>
+<li>Aucun suivi entre applications ou sites.</li>
+<li>Aucun SDK d'analyse. Pavurio ne donne pas d'avis médical.</li>
+</ul>
+<h2>Qui traite les données pour nous</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Finalité</th>
+<th>Données</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Firebase (Authentication, Cloud Firestore, Crashlytics)</td>
+<td>compte, sauvegarde, rapports de plantage</td>
+<td>identifiant, e-mail de connexion, copie de sauvegarde, rapports de plantage</td>
+</tr>
+<tr>
+<td>RevenueCat</td>
+<td>vérification de Pavurio Pro</td>
+<td>identifiant, reçus d'achat</td>
+</tr>
+<tr>
+<td>Apple / Google</td>
+<td>connexion, paiements, distribution</td>
+<td>selon leurs propres politiques</td>
+</tr>
+</tbody>
+</table>
+<p>Ces prestataires peuvent traiter des données hors de votre pays (par exemple aux États-Unis) selon leurs clauses de protection des données.</p>
+<h2>Durée de conservation</h2>
+<ul>
+<li>Votre compte et votre sauvegarde sont conservés tant que le compte existe.</li>
+<li>Crashlytics conserve les rapports jusqu'à 90 jours.</li>
+<li>La suppression du compte efface immédiatement le compte et la sauvegarde.</li>
+</ul>
+<h2>Supprimer vos données</h2>
+<ul>
+<li><strong>Dans l'app :</strong> Réglages → Compte → <strong>Supprimer le compte</strong>. Cela supprime le compte, la sauvegarde et les données du téléphone.</li>
+<li><strong>Sans l'app :</strong> voir <a href="delete-account.html">Supprimer votre compte</a>.</li>
+<li><strong>Données du téléphone uniquement :</strong> Réglages → Vos données → Tout effacer, ou supprimez l'app.</li>
+<li><strong>Export :</strong> vous pouvez tout exporter à tout moment (Réglages → Vos données → CSV / JSON).</li>
+</ul>
+<h2>Vos droits</h2>
+<p>Vous pouvez demander l'accès, la rectification, l'export ou la suppression de vos données, ou vous opposer à leur utilisation, en écrivant à <strong>lesepavistespro@gmail.com</strong>. Dans l'UE/EEE ou au Royaume-Uni, vous pouvez aussi saisir votre autorité de protection des données (en France, la CNIL).</p>
+<h2>Enfants</h2>
+<p>Pavurio ne s'adresse pas aux enfants de moins de 13 ans (16 ans dans l'UE) et nous ne collectons pas sciemment leurs données.</p>
+<h2>Modifications</h2>
+<p>Nous mettrons à jour cette page et sa date en cas de changement. Les changements importants seront aussi signalés dans l'app.</p>
+<p><strong>Contact :</strong> lesepavistespro@gmail.com</p></main>
+<footer><div class="bar">© 2026 Pavurio · <a href="mailto:lesepavistespro@gmail.com">lesepavistespro@gmail.com</a></div></footer>
+</body></html>

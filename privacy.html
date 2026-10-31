@@ -1,0 +1,113 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy · Pavurio</title><meta name="description" content="Your pet colours in as you care for them."><link rel="icon" href="favicon.png">
+<link rel="alternate" hreflang="fr" href="https://celyousfi.github.io/PAVURIO/fr/privacy.html">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#23304A;--soft:#3D4A63;--muted:#7C8494;--brand:#14B8C4;--brandSoft:#DDF6F7;--line:#EEF0F3;--warm:#FFF6E6}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Nunito,ui-rounded,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#fff;line-height:1.6;font-size:17px}
+a{color:var(--brand);font-weight:800;text-decoration:none}a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:2}
+.bar{max-width:880px;margin:auto;display:flex;align-items:center;gap:18px;padding:12px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:900;font-size:20px}.brand img{width:34px;height:34px;border-radius:9px}
+nav{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap;font-size:15px}nav a{color:var(--soft)}nav a.on{color:var(--brand)}
+main{max-width:760px;margin:auto;padding:28px 20px 60px}
+h1{font-weight:900;font-size:34px;line-height:1.15;margin:.4em 0 .3em}h2{font-weight:900;font-size:22px;margin:1.6em 0 .4em}
+p,li{color:var(--soft)}strong{color:var(--ink)}em{color:var(--muted);font-style:normal;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}th{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;padding-top:20px}
+.hero img{width:100%;max-width:340px;justify-self:center}
+.tag{font-size:40px;font-weight:900;line-height:1.1;margin:0 0 14px}
+.pill{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:14px 22px;font-weight:900;margin-top:10px}
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:30px}
+.feat{background:var(--warm);border-radius:20px;padding:16px 18px;font-weight:800;color:var(--ink)}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer .bar{justify-content:center}
+@media(max-width:680px){.hero{grid-template-columns:1fr}.tag{font-size:32px}.feats{grid-template-columns:1fr}nav{margin-left:0}}
+</style></head><body>
+<header><div class="bar"><a class="brand" href="index.html"><img src="img/icon.png" alt="">Pavurio</a><nav><a href="index.html" class="">Home</a><a href="support.html" class="">Support</a><a href="privacy.html" class="on">Privacy</a><a href="terms.html" class="">Terms</a><a href="delete-account.html" class="">Delete account</a><a href="https://celyousfi.github.io/PAVURIO/fr/privacy.html">Français</a></nav></div></header>
+<main><h1>Privacy Policy</h1>
+<p><em>Last updated: 31 October 2026</em></p>
+<p>Pavurio is a pet-care tracker. This policy explains what the app stores, where, and how to delete it. In short: <strong>your pet data lives on your phone, a backup copy is kept in your Pavurio account so you can restore it, and we never sell data or show ads.</strong></p>
+<h2>What Pavurio stores</h2>
+<p><strong>What you enter.</strong> Your pets (name, species, look, birthday, adoption day), care you log, routines and reminders, vet visits, weights, health records, moments (titles and captions) and app settings.</p>
+<ul>
+<li>It is saved <strong>on your phone</strong>.</li>
+<li>A <strong>backup copy</strong> is saved in your Pavurio account (Google Firebase Cloud Firestore) so you can get it back after changing or resetting your phone. It is linked to your account and readable only by you.</li>
+</ul>
+<p><strong>Photos and attachments</strong> you add to records and moments stay <strong>on your phone only</strong>. They are not uploaded.</p>
+<p><strong>Your account (Firebase Authentication).</strong></p>
+<ul>
+<li>Every installation gets a random account ID automatically, so your data is backed up from the start.</li>
+<li>If you choose to save your account, we also store the <strong>email address</strong> of the sign-in you pick: Sign in with Apple, Google or email and password.</li>
+<li>With Sign in with Apple you can hide your email; Apple then gives us a private relay address.</li>
+<li>We don't ask for your name.</li>
+</ul>
+<p><strong>Crash reports (Firebase Crashlytics).</strong></p>
+<ul>
+<li>If the app crashes, a report with technical details is sent: device model, system and app version, and what the app was doing.</li>
+<li>It is linked to the random account ID, never to your pet data.</li>
+<li>You can turn this off in <strong>Settings → Account → Share crash reports</strong>.</li>
+</ul>
+<p><strong>Purchases.</strong></p>
+<ul>
+<li>Pavurio Pro is bought through the App Store or Google Play; we never see your payment details.</li>
+<li>To know whether Pro is active, we use <strong>RevenueCat</strong>, which receives your random account ID and your purchase receipts.</li>
+</ul>
+<p><strong>Notifications.</strong> Reminders are scheduled on your phone; no reminder content is sent to us.</p>
+<h2>What Pavurio does not do</h2>
+<ul>
+<li>No advertising and no ad SDKs.</li>
+<li>No selling or sharing of personal data.</li>
+<li>No tracking across other apps or websites.</li>
+<li>No analytics SDK. Pavurio does not give medical advice.</li>
+</ul>
+<h2>Who processes data for us</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Purpose</th>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Firebase (Authentication, Cloud Firestore, Crashlytics)</td>
+<td>account, backup, crash reports</td>
+<td>account ID, sign-in email, backup copy, crash reports</td>
+</tr>
+<tr>
+<td>RevenueCat</td>
+<td>checking Pavurio Pro</td>
+<td>account ID, purchase receipts</td>
+</tr>
+<tr>
+<td>Apple / Google</td>
+<td>sign-in, payments, app distribution</td>
+<td>as described in their own policies</td>
+</tr>
+</tbody>
+</table>
+<p>These providers may process data outside your country (for example in the United States) under their standard data-protection terms.</p>
+<h2>How long we keep it</h2>
+<ul>
+<li>Your backup and account are kept while your account exists.</li>
+<li>Crash reports are kept by Crashlytics for up to 90 days.</li>
+<li>Deleting your account removes your account and your backup immediately.</li>
+</ul>
+<h2>Delete your data</h2>
+<ul>
+<li><strong>In the app:</strong> Settings → Account → <strong>Delete account</strong>. This deletes your account, your backup and the data on your phone.</li>
+<li><strong>Without the app:</strong> see <a href="delete-account.html">Delete your account</a>.</li>
+<li><strong>Data on your phone only:</strong> Settings → Your data → Erase everything, or delete the app.</li>
+<li><strong>Export:</strong> you can export everything at any time (Settings → Your data → CSV / JSON).</li>
+</ul>
+<h2>Your rights</h2>
+<p>You can ask to access, correct, export or delete your personal data, or object to its use, by writing to <strong>lesepavistespro@gmail.com</strong>. If you are in the EU/EEA or UK, you can also complain to your data-protection authority.</p>
+<h2>Children</h2>
+<p>Pavurio is not directed at children under 13 (16 in the EU), and we do not knowingly collect their data.</p>
+<h2>Changes</h2>
+<p>We will update this page and its date if anything changes. Important changes will also be shown in the app.</p>
+<p><strong>Contact:</strong> lesepavistespro@gmail.com</p></main>
+<footer><div class="bar">© 2026 Pavurio · <a href="mailto:lesepavistespro@gmail.com">lesepavistespro@gmail.com</a></div></footer>
+</body></html>
