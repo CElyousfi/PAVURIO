@@ -84,14 +84,14 @@ export function HomeFeed({ width }: { width: number }) {
     <View style={{ width, paddingHorizontal: 20, paddingBottom: 40 }}>
       {/* streak */}
       <Enter index={0}>
-        <Bouncy onPress={() => router.push('/achievements')} style={[styles.streak, softShadow]} accessibilityRole="button" accessibilityLabel={tn(streak.current, '{n}-day streak', '{n}-day streak')} testID="feed-streak">
+        <Bouncy onPress={() => router.push('/achievements')} style={[styles.streak, softShadow]} accessibilityRole="button" accessibilityLabel={streak.current > 0 ? tn(streak.current, '1-day streak', '{n}-day streak') : t('Start a streak')} testID="feed-streak">
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <Pulse active={streak.atRisk} amount={0.12} period={1200}>
               <Flame size={44} lit={streak.current > 0} />
             </Pulse>
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ fontSize: 24 }}>
-                {streak.current > 0 ? tn(streak.current, '{n}-day streak', '{n}-day streak') : t('Start a streak')}
+                {streak.current > 0 ? tn(streak.current, '1-day streak', '{n}-day streak') : t('Start a streak')}
               </T>
               <T weight="xbold" style={{ color: streak.atRisk ? '#E26A00' : colors.muted, fontSize: 14 }}>
                 {streak.atRisk

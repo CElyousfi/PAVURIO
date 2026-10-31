@@ -227,4 +227,5 @@ export const FR2: Record<string, string> = {
   'Save your account to get your pets back on a new phone.': 'Enregistrez votre compte pour retrouver vos animaux sur un nouveau téléphone.',
   'Help center': 'Centre d’aide',
   'Restoring, subscriptions, reminders': 'Restauration, abonnements, rappels',
+  '1-day streak': 'Série de 1 jour',
 };
