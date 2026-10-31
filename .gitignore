@@ -44,3 +44,9 @@ yarn-error.*
 dist/
 *.db
 /tmp-shots/
+
+# Firebase functions
+functions/.env
+functions/lib/
+.firebase/
+*-debug.log
