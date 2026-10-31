@@ -38,7 +38,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer
 <p><strong>Your account (Firebase Authentication).</strong></p>
 <ul>
 <li>Every installation gets a random account ID automatically, so your data is backed up from the start.</li>
-<li>If you choose to save your account, we also store the <strong>email address</strong> of the sign-in you pick: Sign in with Apple, Google or email and password.</li>
+<li>If you choose to save your account, we also store the <strong>email address</strong> of the sign-in you pick: Google, Sign in with Apple, or email and password.</li>
+<li>Email addresses used with a password are confirmed with a 6-digit code that we email to you. The code is stored only in scrambled (hashed) form and expires after 10 minutes. Password resets work the same way.</li>
 <li>With Sign in with Apple you can hide your email; Apple then gives us a private relay address.</li>
 <li>We don't ask for your name.</li>
 </ul>
@@ -52,6 +53,12 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer
 <ul>
 <li>Pavurio Pro is bought through the App Store or Google Play; we never see your payment details.</li>
 <li>To know whether Pro is active, we use <strong>RevenueCat</strong>, which receives your random account ID and your purchase receipts.</li>
+</ul>
+<p><strong>Emails from us.</strong></p>
+<ul>
+<li>We send account emails: sign-in codes and password-reset codes.</li>
+<li>We send tips and news <strong>only if you tick the box</strong> when you create your account. You can unsubscribe from any newsletter with one click.</li>
+<li>Emails are sent through <strong>Resend</strong>, which receives your email address and the message.</li>
 </ul>
 <p><strong>Notifications.</strong> Reminders are scheduled on your phone; no reminder content is sent to us.</p>
 <h2>What Pavurio does not do</h2>
@@ -72,9 +79,14 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer
 </thead>
 <tbody>
 <tr>
-<td>Google Firebase (Authentication, Cloud Firestore, Crashlytics)</td>
-<td>account, backup, crash reports</td>
-<td>account ID, sign-in email, backup copy, crash reports</td>
+<td>Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics)</td>
+<td>account, email codes, backup, crash reports</td>
+<td>account ID, sign-in email, newsletter choice, backup copy, crash reports</td>
+</tr>
+<tr>
+<td>Resend</td>
+<td>sending code emails and, if you opt in, the newsletter</td>
+<td>email address, message content</td>
 </tr>
 <tr>
 <td>RevenueCat</td>

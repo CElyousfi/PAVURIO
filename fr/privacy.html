@@ -38,7 +38,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer
 <p><strong>Votre compte (Firebase Authentication).</strong></p>
 <ul>
 <li>Chaque installation reçoit automatiquement un identifiant aléatoire, pour que vos données soient sauvegardées dès le début.</li>
-<li>Si vous enregistrez votre compte, nous conservons aussi <strong>l'adresse e-mail</strong> de l'identifiant choisi : Se connecter avec Apple, Google, ou e-mail et mot de passe.</li>
+<li>Si vous enregistrez votre compte, nous conservons aussi <strong>l'adresse e-mail</strong> de l'identifiant choisi : Google, Se connecter avec Apple, ou e-mail et mot de passe.</li>
+<li>Une adresse utilisée avec un mot de passe est confirmée par un code à 6 chiffres envoyé par e-mail. Le code n'est conservé que sous forme chiffrée (hachée) et expire au bout de 10 minutes. La réinitialisation du mot de passe fonctionne de la même façon.</li>
 <li>Avec Apple, vous pouvez masquer votre e-mail ; Apple nous transmet alors une adresse relais privée.</li>
 <li>Nous ne demandons pas votre nom.</li>
 </ul>
@@ -52,6 +53,12 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer
 <ul>
 <li>Pavurio Pro s'achète via l'App Store ou Google Play ; nous ne voyons jamais vos moyens de paiement.</li>
 <li>Pour savoir si Pro est actif, nous utilisons <strong>RevenueCat</strong>, qui reçoit votre identifiant aléatoire et vos reçus d'achat.</li>
+</ul>
+<p><strong>E-mails de notre part.</strong></p>
+<ul>
+<li>Nous envoyons les e-mails liés au compte : codes de connexion et de réinitialisation.</li>
+<li>Nous envoyons des conseils et nouveautés <strong>seulement si vous cochez la case</strong> à la création du compte. Chaque newsletter contient un lien de désinscription en un clic.</li>
+<li>Les e-mails sont envoyés via <strong>Resend</strong>, qui reçoit votre adresse et le message.</li>
 </ul>
 <p><strong>Notifications.</strong> Les rappels sont programmés sur votre téléphone ; aucun contenu ne nous est envoyé.</p>
 <h2>Ce que Pavurio ne fait pas</h2>
@@ -72,9 +79,14 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px}footer
 </thead>
 <tbody>
 <tr>
-<td>Google Firebase (Authentication, Cloud Firestore, Crashlytics)</td>
-<td>compte, sauvegarde, rapports de plantage</td>
-<td>identifiant, e-mail de connexion, copie de sauvegarde, rapports de plantage</td>
+<td>Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics)</td>
+<td>compte, codes e-mail, sauvegarde, rapports de plantage</td>
+<td>identifiant, e-mail de connexion, choix newsletter, copie de sauvegarde, rapports de plantage</td>
+</tr>
+<tr>
+<td>Resend</td>
+<td>envoi des codes et, si vous l'acceptez, de la newsletter</td>
+<td>adresse e-mail, contenu du message</td>
 </tr>
 <tr>
 <td>RevenueCat</td>
