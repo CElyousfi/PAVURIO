@@ -1,0 +1,100 @@
+[
+  {
+    "key": "first_log",
+    "color": "#F59E0B",
+    "icon": "paw",
+    "png": "first_log.png",
+    "svg": "first_log.svg"
+  },
+  {
+    "key": "streak3",
+    "color": "#14B8C4",
+    "icon": "star",
+    "png": "streak3.png",
+    "svg": "streak3.svg"
+  },
+  {
+    "key": "streak7",
+    "color": "#0E9AA5",
+    "icon": "flame",
+    "png": "streak7.png",
+    "svg": "streak7.svg"
+  },
+  {
+    "key": "streak30",
+    "color": "#E58A00",
+    "icon": "trophy",
+    "png": "streak30.png",
+    "svg": "streak30.svg"
+  },
+  {
+    "key": "logs50",
+    "color": "#FF6B9A",
+    "icon": "heart",
+    "png": "logs50.png",
+    "svg": "logs50.svg"
+  },
+  {
+    "key": "logs250",
+    "color": "#E2477C",
+    "icon": "doubleheart",
+    "png": "logs250.png",
+    "svg": "logs250.svg"
+  },
+  {
+    "key": "routine",
+    "color": "#1CB0F6",
+    "icon": "calendar",
+    "png": "routine.png",
+    "svg": "routine.svg"
+  },
+  {
+    "key": "record",
+    "color": "#9B7BF7",
+    "icon": "file",
+    "png": "record.png",
+    "svg": "record.svg"
+  },
+  {
+    "key": "moment",
+    "color": "#FF8A3D",
+    "icon": "camera",
+    "png": "moment.png",
+    "svg": "moment.svg"
+  },
+  {
+    "key": "weight",
+    "color": "#58C322",
+    "icon": "scale",
+    "png": "weight.png",
+    "svg": "weight.svg"
+  },
+  {
+    "key": "walker",
+    "color": "#3E8E17",
+    "icon": "shoe",
+    "png": "walker.png",
+    "svg": "walker.svg"
+  },
+  {
+    "key": "challenge1",
+    "color": "#7C5CE6",
+    "icon": "flag",
+    "png": "challenge1.png",
+    "svg": "challenge1.svg"
+  },
+  {
+    "key": "challenge3",
+    "color": "#5B3FD0",
+    "icon": "crown",
+    "png": "challenge3.png",
+    "svg": "challenge3.svg"
+  },
+  {
+    "key": "family",
+    "color": "#B07A4F",
+    "icon": "pawpair",
+    "png": "family.png",
+    "svg": "family.svg"
+  }
+]
