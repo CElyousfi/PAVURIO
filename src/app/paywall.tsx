@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Image, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, ZoomIn } from 'react-native-reanimated';
@@ -17,6 +17,8 @@ import { Bouncy, ConfettiRain, Enter, Float, PopIn, Pulse, Shimmer } from '../ui
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 import { LEGAL } from '../config/links';
+import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
 
 type Reason = 'onboarding' | 'pets' | 'story' | 'challenge' | 'tip' | 'stats' | 'settings' | 'feed';
 
@@ -44,7 +46,11 @@ function perks() {
   ];
 }
 
+const PERK_ART: Record<string, keyof typeof ART.icons> = { paw: 'paw', trophy: 'trophy', chart: 'chart', film: 'calendar', bulb: 'shield', heart: 'heart' };
+
 function PerkIcon({ icon, color }: { icon: ReturnType<typeof perks>[number]['icon']; color: string }) {
+  const art = ART.icons[PERK_ART[icon]];
+  if (art) return <Image source={art} style={{ width: 34, height: 34 }} resizeMode="contain" accessibilityIgnoresInvertColors />;
   const p = { stroke: color, strokeWidth: 2.4, fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
     <Svg width={26} height={26} viewBox="0 0 24 24">
@@ -166,12 +172,20 @@ export default function Paywall() {
           {/* hero */}
           <View style={styles.hero}>
             <View style={styles.glow} />
-            <Float style={[styles.av, { left: cw / 2 - 128, transform: [{ rotate: '-8deg' }] }]} period={2600}>
-              <PetAvatar species="cat" appearance={defaultAppearance('cat')} size={100} />
-            </Float>
-            <Float style={[styles.av, { left: cw / 2 + 8, top: 2, transform: [{ rotate: '7deg' }] }]} period={3100} amount={8}>
-              <PetAvatar species="dog" appearance={pet?.species === 'dog' ? pet.appearance : defaultAppearance('dog')} size={100} />
-            </Float>
+            {ART.ui.paywallHero ? (
+              <Float style={{ position: 'absolute', alignSelf: 'center', top: 0 }} period={2800} amount={6}>
+                <Scene source={ART.ui.paywallHero} width={142} height={178} border={5} tilt={-4} />
+              </Float>
+            ) : (
+              <>
+                <Float style={[styles.av, { left: cw / 2 - 128, transform: [{ rotate: '-8deg' }] }]} period={2600}>
+                  <PetAvatar species="cat" appearance={defaultAppearance('cat')} size={100} />
+                </Float>
+                <Float style={[styles.av, { left: cw / 2 + 8, top: 2, transform: [{ rotate: '7deg' }] }]} period={3100} amount={8}>
+                  <PetAvatar species="dog" appearance={pet?.species === 'dog' ? pet.appearance : defaultAppearance('dog')} size={100} />
+                </Float>
+              </>
+            )}
             <PopIn delay={350} style={styles.proBadge}>
               <T weight="black" style={{ color: '#FFFFFF', fontSize: 13, letterSpacing: 2 }}>
                 PRO
@@ -220,9 +234,13 @@ export default function Paywall() {
                       ) : null}
                       <View style={[styles.radio, on && { borderColor: '#FFFFFF', backgroundColor: '#FFFFFF' }]}>{on ? <Icon name="check" size={14} color={colors.brand} /> : null}</View>
                       <View style={{ flex: 1 }}>
-                        <T weight="black" style={{ fontSize: 18, color: on ? '#FFFFFF' : colors.ink }}>
-                          {periodLabel(p)}
-                        </T>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                          <T weight="black" style={{ fontSize: 18, color: on ? '#FFFFFF' : colors.ink }}>
+                            {periodLabel(p)}
+                          </T>
+                          {p.period === 'once' && ART.icons.infinity ? <Image source={ART.icons.infinity} style={{ width: 30, height: 18 }} resizeMode="contain" /> : null}
+                          {p.period === 'year' && ART.icons.gem ? <Image source={ART.icons.gem} style={{ width: 18, height: 22 }} resizeMode="contain" /> : null}
+                        </View>
                         <T weight="xbold" style={{ fontSize: 14, color: on ? '#FFFFFFD8' : colors.muted, marginTop: 1 }}>
                           {p.trialDays > 0
                             ? tn(p.trialDays, '{n} day free, then {price}{per}', '{n} days free, then {price}{per}', { price: p.price, per: perWord(p) })
@@ -267,8 +285,8 @@ export default function Paywall() {
                 { c: colors.ink, title: tn(trial, 'Day {n}', 'Day {n}'), body: t('Your subscription starts, unless you cancel before.') },
               ].map((s, i, arr) => (
                 <View key={i} style={{ flexDirection: 'row', gap: 12 }}>
-                  <View style={{ alignItems: 'center' }}>
-                    <View style={[styles.dot, { backgroundColor: s.c }]} />
+                  <View style={{ alignItems: 'center', width: 26 }}>
+                    {i === 0 && ART.icons.gift ? <Image source={ART.icons.gift} style={{ width: 26, height: 26 }} resizeMode="contain" /> : <View style={[styles.dot, { backgroundColor: s.c }]} />}
                     {i < arr.length - 1 ? <View style={styles.line} /> : null}
                   </View>
                   <View style={{ flex: 1, paddingBottom: i < arr.length - 1 ? 14 : 0 }}>
@@ -311,9 +329,12 @@ export default function Paywall() {
           </View>
 
           {msg ? (
-            <T weight="xbold" style={{ textAlign: 'center', marginTop: 14, color: colors.inkSoft }} accessibilityLiveRegion="polite">
-              {msg}
-            </T>
+            <View style={{ alignItems: 'center', marginTop: 14, gap: 6 }}>
+              {plans?.length === 0 && ART.icons.offline ? <Image source={ART.icons.offline} style={{ width: 64, height: 52 }} resizeMode="contain" /> : null}
+              <T weight="xbold" style={{ textAlign: 'center', color: colors.inkSoft }} accessibilityLiveRegion="polite">
+                {msg}
+              </T>
+            </View>
           ) : null}
 
           <View style={styles.legal}>
@@ -402,10 +423,10 @@ export default function Paywall() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
   top: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 18, height: 48, zIndex: 2 },
-  hero: { height: 150, marginTop: -6 },
+  hero: { height: ART.ui.paywallHero ? 196 : 150, marginTop: -6 },
   glow: { position: 'absolute', alignSelf: 'center', top: 10, width: 230, height: 130, borderRadius: 80, backgroundColor: colors.brandSoft },
   av: { position: 'absolute', top: 14, width: 120, height: 120, borderRadius: 36, backgroundColor: '#FFF4E3', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderWidth: 4, borderColor: '#FFFFFF' },
-  proBadge: { position: 'absolute', alignSelf: 'center', bottom: 0, backgroundColor: colors.ink, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 14 },
+  proBadge: { position: 'absolute', alignSelf: 'center', bottom: -4, backgroundColor: colors.ink, paddingHorizontal: 16, paddingVertical: 6, borderRadius: 14 },
   kicker: { color: '#E58A00', fontSize: 15, textAlign: 'center', marginTop: 10 },
   h1: { fontSize: 29, lineHeight: 35, textAlign: 'center', marginTop: 4 },
   h2: { fontSize: 21, textAlign: 'center' },

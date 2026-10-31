@@ -1,6 +1,9 @@
 /** French for the engagement / paywall / onboarding v2 strings. */
 export const FR2: Record<string, string> = {
   '/month': '/mois',
+  'Something went wrong': 'Oups, un souci',
+  'Your data is safe on this device. Let’s try that again.': 'Vos données sont en sécurité sur cet appareil. On réessaie ?',
+  'TRY AGAIN': 'RÉESSAYER',
   'Start a streak': 'Lancez une série',
   '/week': '/semaine',
   '/year': '/an',

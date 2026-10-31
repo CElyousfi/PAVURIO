@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { ActivityIndicator, Image, View } from 'react-native';
+import { Stack, router, type ErrorBoundaryProps } from 'expo-router';
+import { ART } from '../ui/art';
+import { Pill, T } from '../ui/primitives';
+import { t } from '../i18n';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { SQLiteProvider } from 'expo-sqlite';
@@ -128,5 +131,19 @@ function Gate() {
         <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom' }} />
       </Stack>
     </React.Fragment>
+  );
+}
+
+/** Shown by expo-router if a screen crashes: friendly art, nothing technical, a way back. */
+export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      {ART.icons.error ? <Image source={ART.icons.error} style={{ width: 170, height: 130 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+      <T weight="black" style={{ fontSize: 24, textAlign: 'center', marginTop: 18 }}>
+        {t('Something went wrong')}
+      </T>
+      <T style={{ color: colors.muted, textAlign: 'center', marginTop: 8, lineHeight: 21 }}>{t('Your data is safe on this device. Let’s try that again.')}</T>
+      <Pill label={t('TRY AGAIN')} onPress={() => void retry()} style={{ marginTop: 24, minWidth: 220 }} />
+    </View>
   );
 }

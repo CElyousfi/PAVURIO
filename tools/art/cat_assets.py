@@ -1,4 +1,5 @@
-"""Build the in-app cat from GPT's cat sheet (docs/art/gpt-cat/source/coat_*.png, upscaled 4x with EDSR).
+"""LEGACY (v1 Tabby, replaced 31 Oct by the Gemini cat — see cat_avatars.py and clips.py SPECIES=cat).
+Build the in-app cat from GPT's cat sheet (docs/art/gpt-cat/source/coat_*.png, upscaled 4x with EDSR).
 Writes assets/pets/cat/: coat images on one shared canvas, gray sketch versions, collar color overlays, avatars."""
 import cv2, numpy as np, json, os
 from PIL import Image

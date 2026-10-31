@@ -120,7 +120,7 @@ export default function Onboarding() {
       setFirstLogged(firstType);
       bump();
       successFeedback();
-      if (species === 'dog' && !reduceMotion && CLIP_FOR[firstType]) setClip({ name: CLIP_FOR[firstType]!, nonce: Date.now() });
+      if (!reduceMotion && CLIP_FOR[firstType]) setClip({ name: CLIP_FOR[firstType]!, nonce: Date.now() });
       setTimeout(() => setConfetti(Date.now()), 500);
     } catch {
       errorFeedback();
@@ -412,7 +412,6 @@ function ReminderPreview({ pet }: { pet: Pet }) {
   const copy = reminderCopy('meal', t('Meals'), pet.name);
   return (
     <View style={styles.previewCard}>
-      {ART.ui.remindersHero ? <Image source={ART.ui.remindersHero} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
       <Animated.View entering={FadeInDown.delay(300).springify().damping(14)} style={styles.notif}>
         <View style={styles.notifIcon}>
           <PetAvatar species={pet.species} appearance={pet.appearance} size={40} />
@@ -427,12 +426,16 @@ function ReminderPreview({ pet }: { pet: Pet }) {
         </View>
         <T style={{ fontSize: 12, color: colors.muted }}>{formatHM(8, 0)}</T>
       </Animated.View>
-      {!ART.ui.remindersHero ? (
+      {!ART.ui.remindersHero ? <View style={styles.previewGround} /> : null}
+      {ART.ui.remindersHero ? (
+        <Float style={{ alignSelf: 'center', marginTop: 4, zIndex: -1 }} amount={6} period={2200}>
+          <Image source={ART.ui.remindersHero} style={{ width: 240, height: 240 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        </Float>
+      ) : (
         <Float style={{ alignSelf: 'center', marginTop: 10 }} amount={10} period={1600}>
           <PetAvatar species={pet.species} appearance={pet.appearance} size={150} />
         </Float>
-      ) : null}
-      <View style={styles.previewGround} />
+      )}
     </View>
   );
 }

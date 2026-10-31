@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { PetRig, PetClipName } from '../../animation/PetRig';
+import { catClip } from '../../animation/CatStage';
 import { useBursts } from '../../animation/Burst';
 import { PetAvatar } from '../../animation/PetAvatar';
 import { CARE, CareType, HOME_ROW_SIZE, SPECIES_CARE, formatAmount } from '../../domain/care';
@@ -27,6 +28,18 @@ export default function Home() {
   if (ready && !pet) return <Redirect href="/onboarding" />;
   if (!pet) return null;
   return <HomeScreen />;
+}
+
+let helloPlayed = false;
+const isNight = (d = new Date()) => d.getHours() >= 22 || d.getHours() < 6;
+
+function useNight() {
+  const [night, setNight] = useState(isNight);
+  useEffect(() => {
+    const timer = setInterval(() => setNight(isNight()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  return night;
 }
 
 function useTodayKey() {
@@ -55,6 +68,14 @@ function HomeScreen() {
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
+  const night = useNight();
+  // a wave the first time Home is opened in this session (not at night, not over a celebration)
+  useEffect(() => {
+    if (helloPlayed || !focused || reduceMotion || night || pet?.species !== 'dog') return;
+    helloPlayed = true;
+    const timer = setTimeout(() => setClip((c) => c ?? { name: 'hello', nonce: Date.now() }), 700);
+    return () => clearTimeout(timer);
+  }, [focused, reduceMotion, night, pet?.species]);
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [vh, setVh] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -70,18 +91,20 @@ function HomeScreen() {
     if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
     celebrateTimer.current = setTimeout(() => {
       const confetti = () => fire('confetti', [CARE[type].color, '#FFC83D', colors.brand, '#FF6B9A']);
-      if (pet?.species === 'dog' && !reduceMotion) {
+      if (pet && !reduceMotion) {
         // each care plays its own generated clip; anything without one gets the happy jump
-        const CLIP_FOR: Partial<Record<CareType, 'eat' | 'drink' | 'walk' | 'play' | 'groom'>> = {
+        const CLIP_FOR: Partial<Record<CareType, PetClipName>> = {
           meal: 'eat',
           water: 'drink',
           walk: 'walk',
           play: 'play',
           grooming: 'groom',
+          litter: 'litter',
         };
         const name = CLIP_FOR[type] ?? 'celebrate';
         setClip({ name, nonce: Date.now() });
-        if (name === 'celebrate') setTimeout(confetti, 600);
+        const played = pet.species === 'cat' ? catClip(name) : name;
+        if (played === 'celebrate') setTimeout(confetti, 600);
         else setTimeout(() => fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']), 400);
       } else {
         confetti();
@@ -91,7 +114,7 @@ function HomeScreen() {
     setSnack({ eventId, type });
     if (snackTimer.current) clearTimeout(snackTimer.current);
     snackTimer.current = setTimeout(() => setSnack(null), 6000);
-  }, [logged, focused, clearLogged, fire, pet?.species, reduceMotion]);
+  }, [logged, focused, clearLogged, fire, pet, reduceMotion]);
 
   useEffect(
     () => () => {
@@ -160,6 +183,8 @@ function HomeScreen() {
             onClipEnd={() => setClip(null)}
             active={focused}
             reduceMotion={reduceMotion}
+            rest={night}
+            ambient
             accessibilityLabel={t('{name}, {pct} percent colored in today', { name: pet.name, pct: Math.round(progress.ratio * 100) })}
           />
           {isEmptyDay ? (

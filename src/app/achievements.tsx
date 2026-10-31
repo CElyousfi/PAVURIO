@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BADGES, BadgeDef, badgeText } from '../domain/badges';
+import { BadgeDef, badgeText, badgesFor } from '../domain/badges';
 import { CHALLENGES, careOk } from '../domain/challenges';
 import { ChallengeCard, Flame } from '../features/HomeFeed';
 import { Medal } from '../features/Medal';
@@ -25,6 +25,7 @@ export default function Achievements() {
   const cols = 3;
   const cell = (W - 40 - (cols - 1) * 12) / cols;
   const list = CHALLENGES.filter((c) => careOk(c, pet.species));
+  const mine = badgesFor(pet.species);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -68,10 +69,10 @@ export default function Achievements() {
           </View>
 
           <T weight="black" style={styles.h2}>
-            {t('Badges')} · {earned.length}/{BADGES.length}
+            {t('Badges')} · {mine.filter((b) => earned.includes(b.key)).length}/{mine.length}
           </T>
           <View style={styles.grid}>
-            {BADGES.map((b, i) => {
+            {mine.map((b, i) => {
               const got = earned.includes(b.key);
               return (
                 <Enter key={b.key} index={i} style={{ width: cell }}>
