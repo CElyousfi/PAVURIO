@@ -32,8 +32,8 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 
 | Done | Item | Owner |
 |---|---|---|
-| [ ] | Care objects ×10 (meal ×3 states, water ×3 states, walk, play, grooming, litter) | ChatGPT |
-| [ ] | Welcome badge, empty-day picture, plan header | ChatGPT |
+| [x] | Care objects ×10 (meal ×3 states, water ×3 states, walk, play, grooming, litter) | ChatGPT |
+| [x] | Welcome badge, empty-day picture, plan header | ChatGPT |
 
 ## Later features (brief §6; not wired yet)
 
@@ -44,3 +44,5 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 | [ ] | Accessories (neckwear, hats, glasses, outfits) | ChatGPT |
 | [ ] | Empty states: Records, Moments; reminders permission; paywall hero | ChatGPT |
 | [ ] | Future species masters: rabbit, hamster, bird, turtle | ChatGPT |
+
+> Cat artwork review required: the original batch assets were not a style match. See `docs/art/gpt-cat/reference/style-correction.jpg` and `docs/art/gpt-cat/reference/CLAUDE_HANDOFF.md`. Do not mark cat tasks complete until a high-resolution, visually approved standalone master, matched frames and avatar replace the draft assets.
