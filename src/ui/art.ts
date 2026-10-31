@@ -45,22 +45,22 @@ export const ART = {
     /** streak flame (PR #4 atlas B, EDSR 4x) */
     streak: require('../../assets/art/icons/flame.webp') as Img,
   },
-  /** rosette medals from PR #4 atlas B (EDSR 4x, tools/art/atlas_icons.py); missing = built-in medal */
+  /** GPT's 14 badge medals (docs/art/gpt-badges/sheet.png → tools/art/badges.py, 512 px) */
   badges: {
-    first_log: require('../../assets/art/badges/rosette_paw.webp'),
-    streak3: require('../../assets/art/badges/rosette_star.webp'),
-    streak7: require('../../assets/art/badges/rosette_flame.webp'),
-    streak30: require('../../assets/art/badges/rosette_crown.webp'),
-    logs50: require('../../assets/art/badges/rosette_heart.webp'),
-    logs250: require('../../assets/art/badges/rosette_moon.webp'),
-    routine: require('../../assets/art/badges/rosette_calendar.webp'),
-    record: require('../../assets/art/badges/rosette_plus.webp'),
-    moment: require('../../assets/art/badges/rosette_camera.webp'),
-    weight: require('../../assets/art/badges/rosette_leaf.webp'),
-    walker: require('../../assets/art/badges/rosette_paw_brown.webp'),
-    challenge1: require('../../assets/art/badges/rosette_trophy.webp'),
-    challenge3: require('../../assets/art/badges/rosette_trophy_purple.webp'),
-    family: require('../../assets/art/badges/rosette_heart_teal.webp'),
+    family: require('../../assets/art/badges/family.webp'),
+    hydration: require('../../assets/art/badges/hydration.webp'),
+    first_log: require('../../assets/art/badges/first_log.webp'),
+    walker: require('../../assets/art/badges/walker.webp'),
+    streak3: require('../../assets/art/badges/streak3.webp'),
+    groomer: require('../../assets/art/badges/groomer.webp'),
+    routine: require('../../assets/art/badges/routine.webp'),
+    record: require('../../assets/art/badges/record.webp'),
+    weight: require('../../assets/art/badges/weight.webp'),
+    meds: require('../../assets/art/badges/meds.webp'),
+    birthday: require('../../assets/art/badges/birthday.webp'),
+    moment: require('../../assets/art/badges/moment.webp'),
+    streak7: require('../../assets/art/badges/streak7.webp'),
+    challenge1: require('../../assets/art/badges/challenge1.webp'),
   } as Record<string, Img>,
   /** object icons from PR #4 (no characters): paywall perks, empty and error states */
   icons: {

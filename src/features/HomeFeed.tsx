@@ -6,7 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import { PetAvatar } from '../animation/PetAvatar';
 import { TIPS, tipText } from '../content/tips';
 import { Appointment, upcomingAppointments } from '../data/careRepo';
-import { BADGES } from '../domain/badges';
+import { badgesFor } from '../domain/badges';
 import { CHALLENGES, ChallengeDef, careOk, pick } from '../domain/challenges';
 import { CareType } from '../domain/care';
 import { dayComplete } from '../domain/streak';
@@ -221,9 +221,9 @@ export function HomeFeed({ width }: { width: number }) {
       </Enter>
 
       {/* badges */}
-      <Section title={t('Achievements')} action={t('{n} of {total}', { n: earned.length, total: BADGES.length })} onAction={() => router.push('/achievements')}>
+      <Section title={t('Achievements')} action={t('{n} of {total}', { n: badgesFor(pet.species).filter((b) => earned.includes(b.key)).length, total: badgesFor(pet.species).length })} onAction={() => router.push('/achievements')}>
         <Bouncy onPress={() => router.push('/achievements')} style={[styles.badges, softShadow]} accessibilityRole="button" accessibilityLabel={t('Open achievements')}>
-          {BADGES.slice()
+          {badgesFor(pet.species)
             .sort((a, b) => Number(earned.includes(b.key)) - Number(earned.includes(a.key)))
             .slice(0, 5)
             .map((b) => (

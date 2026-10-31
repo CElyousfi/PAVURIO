@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { computeStreak, groupByDay } from '../src/domain/streak';
 import { challengeDef, challengeProgress } from '../src/domain/challenges';
-import { BADGES, earnedBadges } from '../src/domain/badges';
+import { BADGES, badgesFor, earnedBadges } from '../src/domain/badges';
 import { TIPS } from '../src/content/tips';
 
 const at = (day: string, h = 9) => {
@@ -57,10 +57,12 @@ describe('challenges', () => {
 
 describe('badges and tips', () => {
   it('earns from real stats only', () => {
-    const none = { logs: 0, bestStreak: 0, routines: 0, records: 0, moments: 0, weights: 0, challengesDone: 0, pets: 1, walksTimed: 0 };
+    const none = { logs: 0, bestStreak: 0, routines: 0, medRoutines: 0, records: 0, moments: 0, weights: 0, challengesDone: 0, pets: 1, walksTimed: 0, waterLogs: 0, groomLogs: 0, hasBirthday: false };
     expect(earnedBadges(none)).toEqual([]);
-    expect(earnedBadges({ ...none, logs: 60, bestStreak: 7 })).toEqual(['first_log', 'streak3', 'streak7', 'logs50']);
-    expect(new Set(BADGES.map((b) => b.key)).size).toBe(BADGES.length);
+    expect(earnedBadges({ ...none, logs: 60, bestStreak: 7, waterLogs: 20, hasBirthday: true })).toEqual(['first_log', 'streak3', 'streak7', 'hydration', 'birthday']);
+    expect(new Set(BADGES.map((b) => b.key)).size).toBe(14);
+    expect(badgesFor('cat').some((b) => b.key === 'walker')).toBe(false);
+    expect(badgesFor('dog').length).toBe(14);
   });
   it('every tip has 3 slides in both languages', () => {
     for (const tip of TIPS) {

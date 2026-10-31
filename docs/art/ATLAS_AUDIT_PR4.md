@@ -13,7 +13,34 @@ Reviewer: Claude · 31 Oct 2026. Source: `docs/art/references/remaining-coverage
   - It contains no characters, so it can't drift off-model, and it matches the palette.
   - `tools/art/atlas_icons.py` crops each item by a checked box, upscales it 4× with EDSR, smooths it, removes the background with GrabCut, trims it, and saves WebP.
 
-## Shipped (`assets/art/badges`, `assets/art/icons`, 175 KB)
+## Update — GPT's dedicated badge sheet (31 Oct, 15:36)
+
+GPT delivered a proper 14-badge sheet (1536×1024, transparent, about 290 px per medal, no text). It replaces the atlas rosettes completely. Source: `docs/art/gpt-badges/sheet.png`. Output: `tools/art/badges.py` → `assets/art/badges/<key>.webp` (512 px).
+
+The achievement set was redefined to match the art. Each badge is still earned only from the owner's own records:
+
+| Medal art | Badge | How it's earned |
+|---|---|---|
+| bowl of kibble | First care | log any care |
+| sleeping Tabby | Cosy routine | 3-day streak |
+| Honey & Tabby under the moon | Week of care | 7-day streak |
+| water bowl | Hydration hero | log water 20 times |
+| Honey running (bandana ✓) | Trail buddy | time 5 walks (dogs only) |
+| brush | Grooming star | log grooming 10 times |
+| calendar | Planner | create a routine |
+| medicine | On the dot | create a medication routine |
+| shield and stethoscope | Health file | add a health record |
+| scale | Weigh-in | log a weight |
+| cake | Party animal | add a birthday or adoption day |
+| Honey & Tabby by the mountains | Memory keeper | save a moment |
+| trophy | Challenger | complete a challenge |
+| Honey & Tabby hugging | Best friends | care for 2 pets |
+
+Character check: the small pet portraits inside the medals are on-model enough at medal size. Honey has the orange coat and cream blaze, and wears the bandana where her neck shows. Tabby is grey with a white muzzle, though her collar is hidden in most of them. Accepted.
+
+## Previously shipped from the atlases (`assets/art/icons`)
+
+_The 11 atlas rosettes and the 3 recolours were withdrawn after the dedicated badge sheet arrived._
 
 | Asset | From | Used for |
 |---|---|---|
