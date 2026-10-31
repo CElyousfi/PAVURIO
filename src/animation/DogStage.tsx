@@ -9,14 +9,14 @@
  *   frames are skipped rather than the clip slowing down. Only the current and the next sheet are
  *   mounted; an action starts only after its first sheets have loaded, so there is no blank frame.
  */
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
 import Animated, { Easing, SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import Svg, { ClipPath, Defs, Ellipse, G, Rect } from 'react-native-svg';
+import Svg, { Ellipse } from 'react-native-svg';
+import { CareRug } from './CareRug';
 import { DOG_ANCHOR, DOG_CLIPS, DOG_CLIP_IMG, DogClipName } from './dogClips';
 import { BurstLayer } from './Burst';
 import type { PetRigProps } from './PetRig';
-import { CARE, CareType } from '../domain/care';
 
 export type ActionName = Exclude<DogClipName, 'idle'>;
 
@@ -315,7 +315,11 @@ export function DogStage({
       accessibilityHint={interactive ? 'Tap to say hello. This does not log any care.' : undefined}
       {...handlers}
     >
-      {rug ? <Rug bands={rug.bands} planned={rug.planned} geo={geo} /> : <Shadow geo={geo} />}
+      {rug ? (
+        <CareRug bands={rug.bands} planned={rug.planned} w={geo.w} h={geo.h} cy={PAWS * geo.h - geo.h * 0.005} rx={geo.w * 0.44} ry={geo.h * 0.06} />
+      ) : (
+        <Shadow geo={geo} />
+      )}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, idleStyle]}>
         <ClipView name="idle" frame={idleFrame} palette={palette} bandana={bandana} fill={fill} geo={geo} />
       </Animated.View>
@@ -341,37 +345,6 @@ function Shadow({ geo }: { geo: Geo }) {
   return (
     <Svg width={geo.w} height={geo.h} style={StyleSheet.absoluteFill} pointerEvents="none">
       <Ellipse cx={geo.w / 2} cy={PAWS * geo.h} rx={geo.w * 0.3} ry={geo.h * 0.022} fill="#23304A" opacity={0.07} />
-    </Svg>
-  );
-}
-
-function Rug({ bands, planned, geo }: { bands: CareType[]; planned: number; geo: Geo }) {
-  const raw = useId();
-  const clipId = `dogrug${raw.replace(/[^a-zA-Z0-9]/g, '')}`;
-  const slots = Math.max(1, Math.min(12, planned || bands.length || 1));
-  const cx = geo.w / 2;
-  const cy = PAWS * geo.h - geo.h * 0.005;
-  const rx = geo.w * 0.44;
-  const ry = geo.h * 0.06;
-  const stripe = (ry * 2) / slots;
-  return (
-    <Svg width={geo.w} height={geo.h} style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Defs>
-        <ClipPath id={clipId}>
-          <Ellipse cx={cx} cy={cy} rx={rx} ry={ry} />
-        </ClipPath>
-      </Defs>
-      <G clipPath={`url(#${clipId})`}>
-        <Rect x={0} y={cy - ry} width={geo.w} height={ry * 2} fill="#ECEDEF" />
-        {Array.from({ length: slots }).map((_, i) => {
-          const t = bands[i];
-          if (!t) return null;
-          return <Rect key={i} x={0} y={cy + ry - stripe * (i + 1)} width={geo.w} height={stripe + 0.5} fill={CARE[t].color} />;
-        })}
-        {Array.from({ length: slots - 1 }).map((_, i) => (
-          <Rect key={`l${i}`} x={0} y={cy + ry - stripe * (i + 1) - 0.5} width={geo.w} height={1} fill="#FFFFFF" opacity={0.7} />
-        ))}
-      </G>
     </Svg>
   );
 }

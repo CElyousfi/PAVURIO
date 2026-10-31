@@ -29,7 +29,7 @@ export function CareIcon({ type, size, level = 0.7, ring = false }: { type: Care
             <TimeRing color={c} level={l} />
           </Svg>
         ) : null}
-        <Image source={art} style={{ position: 'absolute', left: size * 0.1, top: size * 0.1, width: size * 0.8, height: size * 0.8 }} fadeDuration={0} />
+        <Image source={art} style={{ position: 'absolute', left: size * 0.06, top: size * 0.06, width: size * 0.88, height: size * 0.88 }} fadeDuration={0} />
       </View>
     );
   }

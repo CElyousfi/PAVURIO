@@ -28,10 +28,10 @@ export const PALETTES: Record<Species, Palette[]> = {
     { id: 'midnight', name: 'Midnight', coat: '#EEEFF3', patch: '#4A4F5C', light: '#F3F1EE', pink: '#FB8781', shade: '#1F2128' },
   ],
   cat: [
-    { id: 'tabby', name: 'Tabby', coat: '#9A929E', patch: '#665A6D', light: '#FBF3E2', pink: '#F9A3AE', shade: '#7E7586' },
-    { id: 'ginger', name: 'Ginger', coat: '#FFB765', patch: '#E8822D', light: '#FFF7EC', pink: '#FF9BB0', shade: '#F29C48' },
-    { id: 'tuxedo', name: 'Tuxedo', coat: '#3B3E48', patch: '#24262D', light: '#FAFAFA', pink: '#FF9BB0', shade: '#30333B' },
-    { id: 'cream', name: 'Cream', coat: '#F3DFC4', patch: '#D8B88F', light: '#FFFBF5', pink: '#FF9BB0', shade: '#E4CAA6' },
+    { id: 'tabby', name: 'Tabby', coat: '#A7A2AD', patch: '#6E6A78', light: '#FBF3E2', pink: '#F9A3AE', shade: '#7E7586' },
+    { id: 'ginger', name: 'Ginger', coat: '#F6A55E', patch: '#DD7A2C', light: '#FFF4E6', pink: '#F9A3AE', shade: '#C9661F' },
+    { id: 'tuxedo', name: 'Tuxedo', coat: '#46464E', patch: '#2A2A30', light: '#FBF3E2', pink: '#F9A3AE', shade: '#1E1E22' },
+    { id: 'cream', name: 'Cream', coat: '#E6D0B6', patch: '#C7A888', light: '#FFF8EE', pink: '#F9A3AE', shade: '#B39272' },
   ],
 };
 

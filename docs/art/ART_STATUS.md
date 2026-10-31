@@ -1,5 +1,17 @@
 # Art status
 
+## Cat (31 Oct 2026)
+
+The cat now comes from ChatGPT's cat sheet (`gpt-cat/source/cat_sheet.png`): 54 elements cut into `gpt-cat/elements/`,
+the four coats upscaled 4× with EDSR (`tools/art/upscale.py`), and `tools/art/cat_assets.py` builds the app files
+(coats on one shared canvas, gray sketch, collar color overlays, avatars). `CatStage` shows the cat still, with the
+color-in fill, until its videos exist. `tools/art/cat_start_frames.py` makes the Gemini start frames with the same framing
+as the dog videos. The hand-made vector pets and their code motion were removed.
+
+ChatGPT batch 1: the 10 care objects and the welcome badge were merged, trimmed to their content so they read at icon
+size. The empty-day picture, plan header and code-drawn cat drafts were not taken (they don't match the approved characters).
+
+
 ## Dog = generated video only (30 Oct 2026, evening)
 
 All hand-made dog motion was removed. The dog is now played **only** from the generated videos:

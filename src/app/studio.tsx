@@ -3,7 +3,6 @@ import { ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 're
 import { router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PetRig } from '../animation/PetRig';
-import { usePetMotion } from '../animation/usePetMotion';
 import { useBursts } from '../animation/Burst';
 import { Appearance } from '../domain/appearance';
 import { ValidationError, updatePet } from '../data/repo';
@@ -20,7 +19,6 @@ export default function Studio() {
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
   const focused = useIsFocused();
-  const motion = usePetMotion({ active: focused, reduceMotion });
   const { bursts, fire } = useBursts(!reduceMotion);
   const [appearance, setAppearance] = useState<Appearance | null>(pet?.appearance ?? null);
   const [name, setName] = useState(pet?.name ?? '');
@@ -67,7 +65,7 @@ export default function Studio() {
               species={pet.species}
               appearance={appearance}
               size={Math.min(W * 0.7, height * 0.36, 300)}
-              motion={motion}
+             
               active={focused}
               reduceMotion={reduceMotion}
               interactive

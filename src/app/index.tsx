@@ -4,8 +4,7 @@ import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { PetRig } from '../animation/PetRig';
-import { usePetMotion } from '../animation/usePetMotion';
+import { PetRig, PetClipName } from '../animation/PetRig';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, HOME_ROW_SIZE, SPECIES_CARE, formatAmount } from '../domain/care';
@@ -45,10 +44,9 @@ function HomeScreen() {
   const focused = useIsFocused();
   const todayKey = useTodayKey();
   const { events, progress, loading } = useDay(todayKey);
-  const motion = usePetMotion({ active: focused, reduceMotion });
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
-  const [clip, setClip] = useState<{ name: 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom'; nonce: number } | null>(null);
+  const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Celebrate ONLY after the log card confirmed the record was persisted.
@@ -75,7 +73,6 @@ function HomeScreen() {
         if (name === 'celebrate') setTimeout(confetti, 600);
         else setTimeout(() => fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']), 400);
       } else {
-        motion.celebrate();
         confetti();
       }
       successFeedback();
@@ -83,7 +80,7 @@ function HomeScreen() {
     setSnack({ eventId, type });
     if (snackTimer.current) clearTimeout(snackTimer.current);
     snackTimer.current = setTimeout(() => setSnack(null), 6000);
-  }, [logged, focused, clearLogged, motion, fire, pet?.species, reduceMotion]);
+  }, [logged, focused, clearLogged, fire, pet?.species, reduceMotion]);
 
   useEffect(
     () => () => {
@@ -133,7 +130,7 @@ function HomeScreen() {
             appearance={pet.appearance}
             size={petSize}
             progress={progress.planned > 0 ? progress.ratio : events.length > 0 ? 1 : 0}
-            motion={motion}
+           
             interactive
             onTap={() => {
               petFeedback();

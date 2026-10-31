@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
 import { PetRig } from '../animation/PetRig';
-import { usePetMotion } from '../animation/usePetMotion';
 import { Species } from '../domain/care';
 import { Appearance, defaultAppearance } from '../domain/appearance';
 import { Plan } from '../domain/progress';
@@ -32,7 +31,6 @@ export default function Onboarding() {
   const [plan, setPlan] = useState<Plan>(defaultPlan('dog'));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const motion = usePetMotion({ active: true, reduceMotion });
 
   // Welcome: the sketch colors itself in, on a gentle loop (skippable, decorative).
   const [demoFill, setDemoFill] = useState(0.15);
@@ -116,7 +114,7 @@ export default function Onboarding() {
             <T style={styles.sub}>Log the care you give. Watch them color in.</T>
           </View>
           <View style={styles.hero}>
-            <PetRig species="dog" appearance={defaultAppearance('dog')} size={petSize} progress={demoFill} motion={motion} reduceMotion={reduceMotion} interactive />
+            <PetRig species="dog" appearance={defaultAppearance('dog')} size={petSize} progress={demoFill} reduceMotion={reduceMotion} interactive />
           </View>
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
             <Pill label="GET STARTED" onPress={() => go('species')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="get-started" />
@@ -156,7 +154,7 @@ export default function Onboarding() {
             What's their name?
           </T>
           <View style={styles.hero}>
-            <PetRig species={species} appearance={appearance} size={petSize * 0.78} motion={motion} reduceMotion={reduceMotion} interactive />
+            <PetRig species={species} appearance={appearance} size={petSize * 0.78} reduceMotion={reduceMotion} interactive />
           </View>
           <TextInput
             value={name}
@@ -187,7 +185,7 @@ export default function Onboarding() {
             Make {displayName} look like {displayName}
           </T>
           <View style={styles.hero}>
-            <PetRig species={species} appearance={appearance} size={petSize * 0.8} motion={motion} reduceMotion={reduceMotion} interactive />
+            <PetRig species={species} appearance={appearance} size={petSize * 0.8} reduceMotion={reduceMotion} interactive />
           </View>
           <LookPicker species={species} appearance={appearance} onChange={setAppearance} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
