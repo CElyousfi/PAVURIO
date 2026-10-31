@@ -26,7 +26,8 @@ One shared checklist. **Owner** does the work, then ticks the box in the same PR
 | [x] | Cat master, full body, sitting, front (from ChatGPT's cat sheet, EDSR 4× upscale) | ChatGPT → Claude | `docs/art/gpt-cat/source/master.png` |
 | [x] | Cat video start frames idle/eat/drink/play/litter (same framing as the dog videos) | Claude | `docs/art/gpt-cat/start-frames/*.png` |
 | [x] | Cat in app: 4 coats + sketch + collar colors + avatars | Claude | `assets/pets/cat/` |
-| [ ] | Clips: idle, celebrate, eat, drink, play, groom (lick paw), litter | Gemini → Claude | `docs/art/gpt-cat/videos/*.mp4` |
+| [x] | Clips batch 1: idle, celebrate, eat (31 Oct) — in app for all 4 coats + 5 collars. **Note:** Gemini drew its own cat (slimmer, eyelashes, white paws), not the Tabby start frame; accepted by the owner. Static cat art (avatars, scenes) still shows the original Tabby | Gemini → Claude | `docs/art/gpt-cat/videos/{idle,celebrate,eat}.mp4` → `assets/pets/cat/clips/` |
+| [ ] | Clips batch 2: drink, play, groom (lick paw), litter, then hello, sleep, idle2 — **use the same cat as batch 1** (attach a frame of `idle.mp4` as the start image). Until then these cares play `celebrate` | Gemini → Claude | `docs/art/gpt-cat/videos/*.mp4`, prompts in `docs/art/gpt-cat/GEMINI_PROMPTS.md` |
 
 ## Static illustrations wired into the app (brief §3)
 

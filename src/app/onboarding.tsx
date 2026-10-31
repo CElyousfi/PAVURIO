@@ -120,7 +120,7 @@ export default function Onboarding() {
       setFirstLogged(firstType);
       bump();
       successFeedback();
-      if (species === 'dog' && !reduceMotion && CLIP_FOR[firstType]) setClip({ name: CLIP_FOR[firstType]!, nonce: Date.now() });
+      if (!reduceMotion && CLIP_FOR[firstType]) setClip({ name: CLIP_FOR[firstType]!, nonce: Date.now() });
       setTimeout(() => setConfetti(Date.now()), 500);
     } catch {
       errorFeedback();
