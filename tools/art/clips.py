@@ -13,6 +13,9 @@ CLIPS={
  'celebrate':(f'{V}/celebrate.mp4',[(1.2,3.25),(7.45,8.75)]),
  'eat':(f'{V}/eat.mp4',[(1.3,8.6)]),
  'drink':(f'{V}/drink.mp4',[(1.3,8.3)]),
+ 'walk':(f'{V}/walk.mp4',[(0.3,5.2)]),
+ 'play':(f'{V}/play.mp4',[(1.0,9.0)]),
+ 'groom':(f'{V}/groom.mp4',[(1.5,8.6)]),
 }
 def frames(path,segs):
     out=[]
@@ -31,8 +34,12 @@ def key(rgb):
     # drop speckles, keep big blobs (dog + prop)
     n,lab,st,_=cv2.connectedComponentsWithStats(fg,8)
     keep=np.zeros_like(fg)
+    sat=(mx-mn)
     for i in range(1,n):
         if st[i,4]>1500: keep[lab==i]=1
+        elif st[i,4]>25:
+            m=lab==i
+            if sat[m].mean()>40: keep[m]=1
     keep=cv2.morphologyEx(keep,cv2.MORPH_OPEN,np.ones((3,3),np.uint8))
     # thin gray ground line / shadow
     gray=((mx-mn)<24)&(mx<236)&(mx>70)
@@ -129,14 +136,18 @@ for name,(path,segs) in CLIPS.items():
     for pal in ['honey','cocoa','snow','midnight']: sheet(lambda x,p=pal: recolor(x,p), pal)
     sheet(sketch,'sketch')
     for bnd,t in BAND.items(): sheet(lambda x:x, f'band_{bnd}', lambda rgb,A,t=t: band_overlay(rgb,A,t))
-    manifest[name]={'loop':name=='idle','pingpong':name=='idle','frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
+    manifest[name]={'origin':[int(x0),int(y0)],'sc':float(sc),'native':{'cx':float(x0+ref['cx']/sc),'bottom':float(y0+ref['bottom']/sc),'height':float((ref['bottom']-ref['top'])/sc)},'loop':name=='idle','pingpong':name=='idle','frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
     print(name,n,'frames',tw,'x',th,'chunks',chunks,sizes,flush=True)
+# all videos share Gemini's framing (bandana width 221–229 px in each), so one anchor fits all:
+# the sitting idle dog defines where the paws and the head centre are and how tall the dog is.
+manifest['_anchor']=manifest['idle']['native']
 json.dump(manifest,open(f'{OUT}/clips.json','w'),indent=1)
 
 # --- regenerate the TypeScript asset map
 tags=['honey','cocoa','snow','midnight','sketch','band_coral','band_leaf','band_sun','band_berry']
-L=["/* Generated from tools/art/clips.py output (assets/pets/dog/clips). Do not edit by hand. */","import clips from '../../assets/pets/dog/clips/clips.json';","","export const DOG_CLIPS = clips;","export type DogClipName = keyof typeof clips;","export type DogClipSheets = Record<string, number[]>;","","export const DOG_CLIP_IMG: Record<DogClipName, DogClipSheets> = {"]
+L=["/* Generated from tools/art/clips.py output (assets/pets/dog/clips). Do not edit by hand. */","import clips from '../../assets/pets/dog/clips/clips.json';","","export const DOG_CLIPS = clips;","export type DogClipName = Exclude<keyof typeof clips, '_anchor'>;","export const DOG_ANCHOR = clips._anchor;","export type DogClipSheets = Record<string, number[]>;","","export const DOG_CLIP_IMG: Record<DogClipName, DogClipSheets> = {"]
 for name,c in manifest.items():
+    if name.startswith('_'): continue
     L.append(f"  {name}: {{")
     for t in tags:
         L.append(f"    {t}: [" + ', '.join(f"require('../../assets/pets/dog/clips/{name}_{t}_{i}.webp')" for i in range(c['chunks'])) + "],")

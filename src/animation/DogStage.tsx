@@ -13,12 +13,12 @@ import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 
 import { GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
 import Animated, { Easing, SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { ClipPath, Defs, Ellipse, G, Rect } from 'react-native-svg';
-import { DOG_CLIPS, DOG_CLIP_IMG, DogClipName } from './dogClips';
+import { DOG_ANCHOR, DOG_CLIPS, DOG_CLIP_IMG, DogClipName } from './dogClips';
 import { BurstLayer } from './Burst';
 import type { PetRigProps } from './PetRig';
 import { CARE, CareType } from '../domain/care';
 
-type ActionName = Exclude<DogClipName, 'idle'>;
+export type ActionName = Exclude<DogClipName, 'idle'>;
 
 /** Stage proportions (relative to the stage width). */
 const ASPECT = 1.05;
@@ -67,15 +67,20 @@ function useFrameClock(name: DogClipName, running: boolean, onEnd?: () => void) 
 
 type Geo = { w: number; h: number };
 
+/**
+ * All clips share the generated videos' framing, so they are placed with ONE transform from video
+ * pixels to stage points: the sitting idle dog's head centre, paw line and height define it.
+ * `s` converts sheet pixels (video pixels × sc) to stage points.
+ */
 function frameRect(name: DogClipName, g: Geo) {
   const c = DOG_CLIPS[name];
-  const s = (DOG_H * g.h) / (c.ref.bottom - c.ref.top);
+  const k = (DOG_H * g.h) / DOG_ANCHOR.height; // stage points per video pixel
   return {
-    s,
-    left: g.w / 2 - c.ref.cx * s,
-    top: PAWS * g.h - c.ref.bottom * s,
-    width: c.fw * s,
-    height: c.fh * s,
+    s: k / c.sc,
+    left: g.w / 2 + (c.origin[0] - DOG_ANCHOR.cx) * k,
+    top: PAWS * g.h + (c.origin[1] - DOG_ANCHOR.bottom) * k,
+    width: c.fw * (k / c.sc),
+    height: c.fh * (k / c.sc),
   };
 }
 

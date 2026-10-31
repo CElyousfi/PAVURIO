@@ -1,5 +1,15 @@
 {
  "idle": {
+  "origin": [
+   394,
+   124
+  ],
+  "sc": 0.8389261744966443,
+  "native": {
+   "cx": 634.0956067833862,
+   "bottom": 719.0,
+   "height": 589.0
+  },
   "loop": true,
   "pingpong": true,
   "frames": 15,
@@ -16,6 +26,16 @@
   }
  },
  "celebrate": {
+  "origin": [
+   282,
+   0
+  ],
+  "sc": 0.6944444444444444,
+  "native": {
+   "cx": 594.6981914203104,
+   "bottom": 719.0,
+   "height": 480.0
+  },
   "loop": false,
   "pingpong": false,
   "frames": 41,
@@ -32,6 +52,16 @@
   }
  },
  "eat": {
+  "origin": [
+   276,
+   70
+  ],
+  "sc": 0.6666666666666666,
+  "native": {
+   "cx": 614.8136442244618,
+   "bottom": 695.0,
+   "height": 595.0
+  },
   "loop": false,
   "pingpong": false,
   "frames": 88,
@@ -48,6 +78,16 @@
   }
  },
  "drink": {
+  "origin": [
+   286,
+   74
+  ],
+  "sc": 0.7183908045977011,
+  "native": {
+   "cx": 622.2591831492423,
+   "bottom": 687.0,
+   "height": 599.0
+  },
   "loop": false,
   "pingpong": false,
   "frames": 84,
@@ -62,5 +102,88 @@
    "top": 10.057471264367816,
    "cx": 241.56550513594988
   }
+ },
+ "walk": {
+  "origin": [
+   310,
+   78
+  ],
+  "sc": 0.7288629737609329,
+  "native": {
+   "cx": 593.9090402888294,
+   "bottom": 663.0,
+   "height": 533.0
+  },
+  "loop": false,
+  "pingpong": false,
+  "frames": 59,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
+  "chunks": 5,
+  "fw": 499,
+  "fh": 435,
+  "ref": {
+   "bottom": 426.38483965014575,
+   "top": 37.90087463556851,
+   "cx": 206.93078738252873
+  }
+ },
+ "play": {
+  "origin": [
+   250,
+   0
+  ],
+  "sc": 0.6613756613756614,
+  "native": {
+   "cx": 623.1646814024771,
+   "bottom": 679.0,
+   "height": 593.0
+  },
+  "loop": false,
+  "pingpong": false,
+  "frames": 96,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
+  "chunks": 8,
+  "fw": 500,
+  "fh": 453,
+  "ref": {
+   "bottom": 449.0740740740741,
+   "top": 56.87830687830688,
+   "cx": 246.8020379646012
+  }
+ },
+ "groom": {
+  "origin": [
+   86,
+   0
+  ],
+  "sc": 0.4681647940074906,
+  "native": {
+   "cx": 620.7657014257467,
+   "bottom": 659.0,
+   "height": 563.0
+  },
+  "loop": false,
+  "pingpong": false,
+  "frames": 86,
+  "fps": 12,
+  "per": 12,
+  "cols": 4,
+  "chunks": 8,
+  "fw": 500,
+  "fh": 330,
+  "ref": {
+   "bottom": 308.5205992509363,
+   "top": 44.9438202247191,
+   "cx": 250.35847445025593
+  }
+ },
+ "_anchor": {
+  "cx": 634.0956067833862,
+  "bottom": 719.0,
+  "height": 589.0
  }
 }

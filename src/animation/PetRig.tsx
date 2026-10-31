@@ -23,8 +23,8 @@ export type PetRigProps = {
   rug?: { bands: CareType[]; planned: number };
   bursts?: Burst[];
   accessibilityLabel?: string;
-  /** dog only: play a generated clip once ('celebrate' | 'eat' | 'drink'); nonce restarts it */
-  clip?: { name: 'celebrate' | 'eat' | 'drink'; nonce: number } | null;
+  /** dog only: play a generated clip once; nonce restarts it */
+  clip?: { name: 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom'; nonce: number } | null;
   onClipEnd?: () => void;
   /** pause looping animation (e.g. screen not focused) */
   active?: boolean;

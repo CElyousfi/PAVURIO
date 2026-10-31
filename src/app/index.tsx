@@ -48,7 +48,7 @@ function HomeScreen() {
   const motion = usePetMotion({ active: focused, reduceMotion });
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
-  const [clip, setClip] = useState<{ name: 'celebrate' | 'eat' | 'drink'; nonce: number } | null>(null);
+  const [clip, setClip] = useState<{ name: 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom'; nonce: number } | null>(null);
   const snackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Celebrate ONLY after the log card confirmed the record was persisted.
@@ -62,8 +62,15 @@ function HomeScreen() {
     celebrateTimer.current = setTimeout(() => {
       const confetti = () => fire('confetti', [CARE[type].color, '#FFC83D', colors.brand, '#FF6B9A']);
       if (pet?.species === 'dog' && !reduceMotion) {
-        // pre-rendered clips: eating for meals, drinking for water, a happy jump otherwise
-        const name = type === 'meal' ? 'eat' : type === 'water' ? 'drink' : 'celebrate';
+        // each care plays its own generated clip; anything without one gets the happy jump
+        const CLIP_FOR: Partial<Record<CareType, 'eat' | 'drink' | 'walk' | 'play' | 'groom'>> = {
+          meal: 'eat',
+          water: 'drink',
+          walk: 'walk',
+          play: 'play',
+          grooming: 'groom',
+        };
+        const name = CLIP_FOR[type] ?? 'celebrate';
         setClip({ name, nonce: Date.now() });
         if (name === 'celebrate') setTimeout(confetti, 600);
         else setTimeout(() => fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']), 400);

@@ -9,7 +9,14 @@ All hand-made dog motion was removed. The dog is now played **only** from the ge
 | idle (loop, played forward then back) | celebrate.mp4 8.7–9.95 s, sitting and panting | always |
 | eat | eat.mp4 | Meal saved |
 | drink | drink.mp4 | Water saved |
-| celebrate | celebrate.mp4 1.2–3.25 s + 7.45–8.75 s | any other care, or a tap on the pet |
+| celebrate | celebrate.mp4 1.2–3.25 s + 7.45–8.75 s | litter / anything without its own clip, or a tap on the pet |
+| walk | walk.mp4 0.3–5.2 s | Walk saved |
+| play | play.mp4 1.0–9.0 s | Play saved |
+| groom | groom.mp4 1.5–8.6 s (droplets + sparkles kept) | Grooming saved |
+
+Placement: all generated videos share Gemini's framing (bandana 221–229 px wide in every video), so every clip uses one
+video-pixel → stage transform anchored on the sitting idle dog (`_anchor` in clips.json). The dog never changes size
+between clips.
 
 `src/animation/DogStage.tsx` timing: clock-based (frames are skipped, never slowed), 140 ms crossfade into an action and
 220 ms back to idle, and an action only starts once its first sheets are decoded. A new action interrupts the current one
