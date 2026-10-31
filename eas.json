@@ -8,7 +8,9 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "EXPO_PUBLIC_APPCHECK_DEBUG": "1"
+        "EXPO_PUBLIC_APPCHECK_DEBUG": "1",
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_hbmEhkhdQoaTCATGJKHmetdsYrn",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": "goog_MIYoimNkykZbPLeBDRTqMMTFexp"
       }
     },
     "preview": {
@@ -18,12 +20,18 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_APPCHECK_DEBUG": "1"
+        "EXPO_PUBLIC_APPCHECK_DEBUG": "1",
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_hbmEhkhdQoaTCATGJKHmetdsYrn",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": "goog_MIYoimNkykZbPLeBDRTqMMTFexp"
       }
     },
     "production": {
       "channel": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_hbmEhkhdQoaTCATGJKHmetdsYrn",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": "goog_MIYoimNkykZbPLeBDRTqMMTFexp"
+      }
     }
   },
   "submit": {

@@ -96,7 +96,8 @@ export async function loadPlans(): Promise<Plan[]> {
   const c = await client();
   if (!c) return [];
   const o = await c.getOfferings();
-  return (o.current?.availablePackages ?? []).map((p) => ({
+  const ORDER: Record<string, number> = { year: 0, month: 1, week: 2, once: 3 };
+  const plans = (o.current?.availablePackages ?? []).map((p) => ({
     id: p.identifier,
     title: p.product.title,
     price: p.product.priceString,
@@ -106,6 +107,8 @@ export async function loadPlans(): Promise<Plan[]> {
     trialDays: trialDaysOf(p.product),
     packageRef: p,
   }));
+  // yearly first (the highlighted plan), whatever order the offering lists them in
+  return plans.sort((a, b) => (ORDER[a.period] ?? 9) - (ORDER[b.period] ?? 9));
 }
 
 /** Resolves true when Pro is active afterwards; false when the user cancelled. Throws on store errors. */
