@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plan } from '../domain/progress';
-import { countAllEvents, exportAll, resetAll, setPlan } from '../data/repo';
+import { countAllEvents, exportAll, exportCareCsv, resetAll, setPlan } from '../data/repo';
+import { shareText } from '../native/files';
+import { PermissionState, getPermission, requestPermission } from '../native/notifications';
+import { Chip } from '../ui/forms';
+import { Icon } from '../ui/primitives';
 import { useApp } from '../state/AppState';
 import { PlanEditor } from '../features/PetEditors';
 import { CircleButton, Label, Pill, SoftPill, T } from '../ui/primitives';
@@ -11,7 +15,11 @@ import { colors, softShadow } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
 
 export default function Settings() {
-  const { pet, plan, db, bump, reload, settings, setSetting } = useApp();
+  const { pet, pets, plan, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
+  const [perm, setPerm] = useState<PermissionState>('undetermined');
+  useEffect(() => {
+    void getPermission().then(setPerm);
+  }, []);
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -35,20 +43,9 @@ export default function Settings() {
     setTimeout(() => setSavedPlan(false), 1800);
   };
 
-  const doExport = async () => {
-    const json = await exportAll(db);
-    if (Platform.OS === 'web') {
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `pavurio-export-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      return;
-    }
-    await Share.share({ message: json, title: 'Pavurio data export' });
-  };
+  const stamp = () => new Date().toISOString().slice(0, 10);
+  const doExport = async () => shareText(await exportAll(db), `pavurio-export-${stamp()}.json`, 'application/json');
+  const doCsv = async () => shareText(await exportCareCsv(db), `pavurio-care-${stamp()}.csv`, 'text/csv');
 
   const confirmReset = () => {
     const run = async () => {
@@ -58,10 +55,10 @@ export default function Settings() {
     };
     if (Platform.OS === 'web') {
       // eslint-disable-next-line no-alert
-      if (window.confirm(`Erase ${pet.name} and all ${total} care records from this device? This cannot be undone.`)) run();
+      if (window.confirm(`Erase all ${pets.length} pet${pets.length === 1 ? '' : 's'} and every record from this device? This cannot be undone.`)) run();
       return;
     }
-    Alert.alert('Erase all data?', `${pet.name} and ${total} care records will be removed from this device. Export first if you want a copy.`, [
+    Alert.alert('Erase all data?', `All pets, care logs, routines, records and moments will be removed from this device. Export first if you want a copy.`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Erase', style: 'destructive', onPress: run },
     ]);
@@ -97,13 +94,56 @@ export default function Settings() {
             />
           </View>
 
+          <Label style={styles.section}>Reminders</Label>
+          <View style={[styles.card, softShadow]}>
+            <T weight="xbold" style={{ fontSize: 17 }}>
+              {perm === 'granted' ? 'Notifications are on' : perm === 'denied' ? 'Notifications are off' : perm === 'unsupported' ? 'Reminders need the phone app' : 'Notifications not set up'}
+            </T>
+            <T style={{ color: colors.muted, fontSize: 13, marginTop: 2, lineHeight: 18 }}>
+              Routines you create in Care send a reminder at each time. Nothing is ever marked done for you.
+            </T>
+            {perm === 'undetermined' ? <SoftPill label="Turn on reminders" small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={async () => setPerm(await requestPermission())} /> : null}
+            {perm === 'denied' && Platform.OS !== 'web' ? <SoftPill label="Open phone settings" small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings()} /> : null}
+          </View>
+
+          <Label style={styles.section}>Units & language</Label>
+          <View style={[styles.card, softShadow, { gap: 14 }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <T weight="xbold" style={{ fontSize: 17, flex: 1 }}>
+                Weight
+              </T>
+              <Chip label="kg" on={settings.weightUnit === 'kg'} onPress={() => setWeightUnit('kg')} />
+              <Chip label="lb" on={settings.weightUnit === 'lb'} onPress={() => setWeightUnit('lb')} />
+            </View>
+            <View style={styles.sep} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <T weight="xbold" style={{ fontSize: 17, flex: 1 }}>
+                Language
+              </T>
+              <Chip label="English" on={language === 'en'} onPress={() => setLanguage('en')} />
+              <Chip label="Français" on={language === 'fr'} onPress={() => setLanguage('fr')} />
+            </View>
+          </View>
+
+          <Label style={styles.section}>Pavurio Pro</Label>
+          <Pressable accessibilityRole="button" accessibilityLabel="Pavurio Pro" onPress={() => router.push('/paywall')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+            <View style={{ flex: 1 }}>
+              <T weight="xbold" style={{ fontSize: 17 }}>
+                {pro ? 'Pro is active' : 'More pets & monthly stories'}
+              </T>
+              <T style={{ color: colors.muted, fontSize: 13 }}>{pro ? 'Thank you for supporting Pavurio.' : 'Restore a purchase or see plans'}</T>
+            </View>
+            <Icon name="chevR" size={18} color={colors.faint} />
+          </Pressable>
+
           <Label style={styles.section}>Your data</Label>
           <View style={[styles.card, softShadow]}>
             <T style={{ color: colors.inkSoft }}>
-              {total} care record{total === 1 ? '' : 's'} stored on this device. Nothing is uploaded.
+              {total} care record{total === 1 ? '' : 's'} for {pet.name}, stored on this device. Nothing is uploaded.
             </T>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
-              <SoftPill label="Export JSON" onPress={doExport} small />
+              <SoftPill label="Care log (CSV)" onPress={doCsv} small />
+              <SoftPill label="Full backup (JSON)" onPress={doExport} small />
               <SoftPill label="Erase everything" onPress={confirmReset} color={colors.danger} tint={colors.dangerSoft} small />
             </View>
           </View>
@@ -113,7 +153,7 @@ export default function Settings() {
             Pavurio helps you keep track of the care you give. It does not give medical advice or judge your pet's
             health — your progress is simply how much of your own plan you logged today.
           </T>
-          <T style={{ color: colors.faint, marginTop: 14, fontSize: 12 }}>Pavurio 0.1.0 · vertical slice</T>
+          <T style={{ color: colors.faint, marginTop: 14, fontSize: 12 }}>Pavurio 1.0.0</T>
         </View>
       </ScrollView>
     </View>

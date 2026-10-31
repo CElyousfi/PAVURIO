@@ -10,6 +10,8 @@ export type Pet = {
   name: string;
   appearance: Appearance;
   createdAt: number;
+  birthDate: string | null;
+  adoptionDate: string | null;
 };
 
 export type CareEvent = {
@@ -33,7 +35,16 @@ export class ValidationError extends Error {
   }
 }
 
-type PetRow = { id: string; species: Species; name: string; appearance_json: string; created_at: number };
+type PetRow = {
+  id: string;
+  species: Species;
+  name: string;
+  appearance_json: string;
+  created_at: number;
+  birth_date: string | null;
+  adoption_date: string | null;
+};
+const PET_COLS = 'id, species, name, appearance_json, created_at, birth_date, adoption_date';
 type EventRow = {
   id: string;
   pet_id: string;
@@ -54,6 +65,8 @@ const toPet = (r: PetRow): Pet => ({
   name: r.name,
   appearance: parseAppearance(r.species, r.appearance_json),
   createdAt: r.created_at,
+  birthDate: r.birth_date ?? null,
+  adoptionDate: r.adoption_date ?? null,
 });
 
 const toEvent = (r: EventRow): CareEvent => ({
@@ -96,7 +109,16 @@ export type NewPetInput = {
   name: string;
   appearance?: Appearance;
   plan?: Plan;
+  birthDate?: string | null;
+  adoptionDate?: string | null;
 };
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+function validDate(d: string | null | undefined, label: string): string | null {
+  if (!d) return null;
+  if (!DATE_RE.test(d)) throw new ValidationError(`${label} isn't a valid date.`);
+  return d;
+}
 
 export function validatePetName(name: string): string {
   const trimmed = name.trim().replace(/\s+/g, ' ');
@@ -110,28 +132,39 @@ export async function createPet(db: Db, input: NewPetInput, now = Date.now()): P
   const id = newId();
   const appearance = input.appearance ?? defaultAppearance(input.species);
   const plan = input.plan ?? defaultPlan(input.species);
+  const birthDate = validDate(input.birthDate, 'Birthday');
+  const adoptionDate = validDate(input.adoptionDate, 'Adoption date');
   await db.withTransactionAsync(async () => {
     await db.runAsync(
-      'INSERT INTO pets (id, species, name, appearance_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-      [id, input.species, name, JSON.stringify(appearance), now, now],
+      'INSERT INTO pets (id, species, name, appearance_json, birth_date, adoption_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [id, input.species, name, JSON.stringify(appearance), birthDate, adoptionDate, now, now],
     );
     await writePlan(db, id, input.species, plan);
     await setSetting(db, 'activePetId', id);
   });
-  return { id, species: input.species, name, appearance, createdAt: now };
+  return { id, species: input.species, name, appearance, createdAt: now, birthDate, adoptionDate };
 }
 
 export async function listPets(db: Db): Promise<Pet[]> {
   const rows = await db.getAllAsync<PetRow>(
-    'SELECT id, species, name, appearance_json, created_at FROM pets WHERE archived_at IS NULL ORDER BY created_at',
+    `SELECT ${PET_COLS} FROM pets WHERE archived_at IS NULL ORDER BY created_at`,
     [],
   );
   return rows.map(toPet);
 }
 
+export async function listArchivedPets(db: Db): Promise<Pet[]> {
+  const rows = await db.getAllAsync<PetRow>(`SELECT ${PET_COLS} FROM pets WHERE archived_at IS NOT NULL ORDER BY archived_at DESC`, []);
+  return rows.map(toPet);
+}
+
+export async function unarchivePet(db: Db, id: string, now = Date.now()): Promise<void> {
+  await db.runAsync('UPDATE pets SET archived_at = NULL, updated_at = ? WHERE id = ?', [now, id]);
+}
+
 export async function getPet(db: Db, id: string): Promise<Pet | null> {
   const r = await db.getFirstAsync<PetRow>(
-    'SELECT id, species, name, appearance_json, created_at FROM pets WHERE id = ? AND archived_at IS NULL',
+    `SELECT ${PET_COLS} FROM pets WHERE id = ? AND archived_at IS NULL`,
     [id],
   );
   return r ? toPet(r) : null;
@@ -150,9 +183,15 @@ export async function getActivePet(db: Db): Promise<Pet | null> {
 export async function updatePet(
   db: Db,
   id: string,
-  patch: { name?: string; appearance?: Appearance },
+  patch: { name?: string; appearance?: Appearance; birthDate?: string | null; adoptionDate?: string | null },
   now = Date.now(),
 ): Promise<void> {
+  if (patch.birthDate !== undefined) {
+    await db.runAsync('UPDATE pets SET birth_date = ?, updated_at = ? WHERE id = ?', [validDate(patch.birthDate, 'Birthday'), now, id]);
+  }
+  if (patch.adoptionDate !== undefined) {
+    await db.runAsync('UPDATE pets SET adoption_date = ?, updated_at = ? WHERE id = ?', [validDate(patch.adoptionDate, 'Adoption date'), now, id]);
+  }
   if (patch.name !== undefined) {
     const name = validatePetName(patch.name);
     await db.runAsync('UPDATE pets SET name = ?, updated_at = ? WHERE id = ?', [name, now, id]);
@@ -163,6 +202,48 @@ export async function updatePet(
       now,
       id,
     ]);
+  }
+}
+
+export async function setActivePet(db: Db, id: string): Promise<void> {
+  await setSetting(db, 'activePetId', id);
+}
+
+/** Archive keeps every record but hides the pet. */
+export async function archivePet(db: Db, id: string, now = Date.now()): Promise<void> {
+  await db.runAsync('UPDATE pets SET archived_at = ?, updated_at = ? WHERE id = ?', [now, now, id]);
+  const active = await getSetting(db, 'activePetId');
+  if (active === id) {
+    const next = (await listPets(db))[0];
+    if (next) await setSetting(db, 'activePetId', next.id);
+    else await db.runAsync("DELETE FROM settings WHERE key = 'activePetId'", []);
+  }
+}
+
+/** Every stored file (attachments, moment photos) that belongs to a pet — to clean up on delete. */
+export async function petFileUris(db: Db, id: string): Promise<string[]> {
+  const a = await db.getAllAsync<{ uri: string }>(
+    "SELECT a.uri AS uri FROM attachments a JOIN records r ON r.id = a.owner_id WHERE a.owner_type = 'record' AND r.pet_id = ?",
+    [id],
+  );
+  const m = await db.getAllAsync<{ uri: string }>('SELECT photo_uri AS uri FROM memories WHERE pet_id = ? AND photo_uri IS NOT NULL', [id]);
+  return [...a, ...m].map((r) => r.uri);
+}
+
+/** Permanently deletes the pet and everything about it (cascades). */
+export async function deletePet(db: Db, id: string): Promise<void> {
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      "DELETE FROM attachments WHERE owner_type = 'record' AND owner_id IN (SELECT id FROM records WHERE pet_id = ?)",
+      [id],
+    );
+    await db.runAsync('DELETE FROM pets WHERE id = ?', [id]);
+  });
+  const active = await getSetting(db, 'activePetId');
+  if (active === id) {
+    const next = (await listPets(db))[0];
+    if (next) await setSetting(db, 'activePetId', next.id);
+    else await db.runAsync("DELETE FROM settings WHERE key = 'activePetId'", []);
   }
 }
 
@@ -284,6 +365,8 @@ export async function voidEvent(db: Db, id: string, now = Date.now()): Promise<v
     now,
     id,
   ]);
+  // a voided log no longer confirms a scheduled occurrence: reopen it
+  await db.runAsync("DELETE FROM schedule_marks WHERE event_id = ? AND status = 'done'", [id]);
 }
 
 export async function restoreEvent(db: Db, id: string, now = Date.now()): Promise<void> {
@@ -333,11 +416,61 @@ export async function exportAll(db: Db): Promise<string> {
     'SELECT * FROM care_events WHERE voided_at IS NULL ORDER BY occurred_at',
     [],
   );
-  return JSON.stringify({ app: 'pavurio', exportedAt: new Date().toISOString(), pets, plans, events }, null, 2);
+  const t = (sql: string) => db.getAllAsync<Record<string, unknown>>(sql, []);
+  const schedules = await t('SELECT * FROM schedules');
+  const scheduleMarks = await t('SELECT * FROM schedule_marks');
+  const appointments = await t('SELECT * FROM appointments ORDER BY at');
+  const measurements = await t('SELECT * FROM measurements ORDER BY at');
+  const records = await t('SELECT * FROM records ORDER BY date');
+  const attachments = await t('SELECT * FROM attachments');
+  const memories = await t('SELECT * FROM memories ORDER BY date');
+  return JSON.stringify(
+    {
+      app: 'pavurio',
+      schema: 2,
+      exportedAt: new Date().toISOString(),
+      pets,
+      plans,
+      events,
+      schedules,
+      scheduleMarks,
+      appointments,
+      measurements,
+      records,
+      attachments,
+      memories,
+    },
+    null,
+    2,
+  );
+}
+
+/** Spreadsheet-friendly export of the care log. */
+export async function exportCareCsv(db: Db): Promise<string> {
+  const rows = await db.getAllAsync<{ pet: string; type: string; occurred_at: number; amount: number | null; unit: string | null; note: string | null }>(
+    `SELECT p.name AS pet, e.type, e.occurred_at, e.amount, e.unit, e.note
+     FROM care_events e JOIN pets p ON p.id = e.pet_id WHERE e.voided_at IS NULL ORDER BY e.occurred_at`,
+    [],
+  );
+  const esc = (v: unknown) => {
+    const s = v == null ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = ['pet,care,date,time,amount,unit,note'];
+  for (const r of rows) {
+    const d = new Date(r.occurred_at);
+    const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    lines.push([r.pet, r.type, date, time, r.amount, r.unit, r.note].map(esc).join(','));
+  }
+  return lines.join('\n');
 }
 
 export async function resetAll(db: Db): Promise<void> {
   await db.withTransactionAsync(async () => {
+    for (const t of ['schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memories']) {
+      await db.runAsync(`DELETE FROM ${t}`, []);
+    }
     await db.runAsync('DELETE FROM care_events', []);
     await db.runAsync('DELETE FROM care_plans', []);
     await db.runAsync('DELETE FROM pets', []);

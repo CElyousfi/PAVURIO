@@ -7,7 +7,26 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.pavurio.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Take a photo of a vet document or a moment with your pet.",
+        "NSPhotoLibraryUsageDescription": "Attach photos to records and moments.",
+        "NSPhotoLibraryAddUsageDescription": "Save your pet's story images to Photos.",
+        "CFBundleAllowMixedLocalizations": true
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -16,7 +35,19 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.pavurio.app",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.CAMERA"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -34,12 +65,46 @@
           "imageWidth": 200
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "color": "#14B8C4",
+          "defaultChannel": "care-reminders"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Attach photos to records and moments.",
+          "cameraPermission": "Take a photo of a vet document or a moment with your pet.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Attach photos to records and moments.",
+          "savePhotosPermission": "Save your pet's story images to Photos.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
+      "expo-document-picker"
     ],
     "scheme": "pavurio",
     "backgroundColor": "#FFFFFF",
     "experiments": {
       "typedRoutes": false
+    },
+    "locales": {
+      "fr": "./locales/fr.json"
+    },
+    "extra": {
+      "eas": {}
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

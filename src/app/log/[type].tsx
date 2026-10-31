@@ -8,6 +8,7 @@ import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, pars
 import { newId } from '../../domain/ids';
 import { CareEvent, ValidationError, getEvent, logCare, updateEvent, voidEvent } from '../../data/repo';
 import { useApp } from '../../state/AppState';
+import { confirmOccurrence } from '../../features/careLink';
 import { CareIcon } from '../../ui/CareIcon';
 import { CircleButton, Icon, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
@@ -38,8 +39,8 @@ function timeOptions(dayKey: string, now: Date): TimeOption[] {
 }
 
 export default function LogCard() {
-  const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string }>();
-  const { pet, db, bump, signalLogged } = useApp();
+  const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string; scheduleId?: string; occ?: string }>();
+  const { pet, db, bump, signalLogged, schedules } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -120,7 +121,11 @@ export default function LogCard() {
         note: showNote ? note : null,
         mutationId: mutationId.current,
       });
-      // 2) … only then refresh UI and allow the celebration.
+      // 2) tick the matching scheduled occurrence (never blocks the save) …
+      await confirmOccurrence(db, schedules, saved, params.occ && params.scheduleId ? { scheduleId: params.scheduleId, key: params.occ } : null).catch((e) =>
+        console.warn('[pavurio] could not link log to schedule', e),
+      );
+      // 3) … only then refresh UI and allow the celebration.
       bump();
       signalLogged({ eventId: saved.id, type });
       router.back();

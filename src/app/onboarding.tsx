@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
 import { PetRig } from '../animation/PetRig';
@@ -15,16 +15,37 @@ import { ART } from '../ui/art';
 import { CareIcon } from '../ui/CareIcon';
 import { colors, font, shadow } from '../ui/theme';
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { createSchedule } from '../data/careRepo';
+import { requestPermission } from '../native/notifications';
+import { DateField, TimeField, Toggle } from '../ui/forms';
+import { dayKeyOf } from '../domain/time';
+import { KindIcon } from '../features/routines';
 
-type Step = 'welcome' | 'species' | 'name' | 'look' | 'plan';
-const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'plan'];
+type Suggestion = { key: string; type: string; title: string; times: string[]; on: boolean };
+function suggestions(species: Species, plan: Plan): Suggestion[] {
+  const out: Suggestion[] = [];
+  const meals = plan.meal ?? 0;
+  if (meals > 0) out.push({ key: 'meal', type: 'meal', title: meals === 1 ? 'Dinner' : 'Meals', times: meals === 1 ? ['18:00'] : meals === 2 ? ['08:00', '18:00'] : ['08:00', '13:00', '18:00'], on: true });
+  if (species === 'dog' && (plan.walk ?? 0) > 0) out.push({ key: 'walk', type: 'walk', title: 'Walk', times: (plan.walk ?? 0) >= 2 ? ['07:30', '18:30'] : ['18:30'], on: true });
+  if (species === 'cat' && (plan.litter ?? 0) > 0) out.push({ key: 'litter', type: 'litter', title: 'Scoop the litter', times: ['09:00'], on: true });
+  out.push({ key: 'medication', type: 'medication', title: 'Medication', times: ['20:00'], on: false });
+  return out;
+}
+
+type Step = 'welcome' | 'species' | 'name' | 'look' | 'dates' | 'plan' | 'reminders';
+const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'dates', 'plan', 'reminders'];
 
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
   const { db, reload, reduceMotion } = useApp();
-  const [step, setStep] = useState<Step>('welcome');
+  const params = useLocalSearchParams<{ add?: string }>();
+  const adding = params.add === '1';
+  const [step, setStep] = useState<Step>(adding ? 'species' : 'welcome');
+  const [birthDate, setBirthDate] = useState<string | null>(null);
+  const [adoptionDate, setAdoptionDate] = useState<string | null>(null);
+  const [routines, setRoutines] = useState<Suggestion[]>([]);
   const [species, setSpecies] = useState<Species>('dog');
   const [name, setName] = useState('');
   const [appearance, setAppearance] = useState<Appearance>(defaultAppearance('dog'));
@@ -54,6 +75,7 @@ export default function Onboarding() {
   };
   const back = () => {
     const i = ORDER.indexOf(step);
+    if (adding && step === 'species') return router.back();
     if (i > 0) go(ORDER[i - 1]);
   };
 
@@ -80,10 +102,14 @@ export default function Onboarding() {
     setSaving(true);
     setError(null);
     try {
-      await createPet(db, { species, name, appearance, plan });
+      const pet = await createPet(db, { species, name, appearance, plan, birthDate, adoptionDate });
+      const chosen = routines.filter((r) => r.on);
+      for (const r of chosen) await createSchedule(db, { petId: pet.id, type: r.type, title: r.title, times: r.times, remind: true });
+      if (chosen.length) await requestPermission().catch(() => null);
       successFeedback();
       await reload();
-      router.replace('/');
+      if (adding) router.dismissTo('/');
+      else router.replace('/');
     } catch (e) {
       setError(e instanceof ValidationError ? e.message : 'Something went wrong while saving. Please try again.');
       errorFeedback();
@@ -189,7 +215,7 @@ export default function Onboarding() {
           </View>
           <LookPicker species={species} appearance={appearance} onChange={setAppearance} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label="LOOKS RIGHT" onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
+            <Pill label="LOOKS RIGHT" onPress={() => go('dates')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
           </View>
         </Animated.View>
       )}
@@ -206,7 +232,67 @@ export default function Onboarding() {
           </ScrollView>
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label="LET'S GO" onPress={finish} loading={saving} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="finish" />
+            <Pill
+              label="NEXT"
+              onPress={() => {
+                setRoutines(suggestions(species, plan));
+                go('reminders');
+              }}
+              style={{ alignSelf: 'stretch', marginHorizontal: 24 }}
+              testID="plan-next"
+            />
+          </View>
+        </Animated.View>
+      )}
+      {step === 'dates' && (
+        <Animated.View key="dates" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+          <T weight="black" style={styles.h2}>
+            Special days
+          </T>
+          <T style={styles.sub}>Optional. We'll celebrate {displayName}'s birthday and your anniversary together.</T>
+          <View style={{ alignSelf: 'stretch', paddingHorizontal: 24, gap: 16, marginTop: 24 }}>
+            <DateField label="Birthday" value={birthDate} onChange={setBirthDate} allowClear maxDay={dayKeyOf(new Date())} placeholder="Not sure? Skip it" />
+            <DateField label="Adoption day" value={adoptionDate} onChange={setAdoptionDate} allowClear maxDay={dayKeyOf(new Date())} placeholder="When they came home" />
+          </View>
+          <View style={styles.hero}>
+            <PetRig species={species} appearance={appearance} size={petSize * 0.6} reduceMotion={reduceMotion} />
+          </View>
+          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
+            <Pill label={birthDate || adoptionDate ? 'NEXT' : 'SKIP FOR NOW'} onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="dates-next" />
+          </View>
+        </Animated.View>
+      )}
+
+      {step === 'reminders' && (
+        <Animated.View key="reminders" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+          <T weight="black" style={styles.h2}>
+            Gentle reminders
+          </T>
+          <T style={styles.sub}>A nudge at the times you choose. Nothing is ever ticked off for you — you log it when it's done.</T>
+          <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 16, gap: 12 }}>
+            {routines.map((r, i) => (
+              <View key={r.key} style={styles.routine}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <KindIcon type={r.type} size={42} />
+                  <View style={{ flex: 1 }}>
+                    <Toggle label={r.title} value={r.on} onChange={(v) => setRoutines(routines.map((x, j) => (j === i ? { ...x, on: v } : x)))} />
+                  </View>
+                </View>
+                {r.on ? (
+                  <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
+                    {r.times.map((t, ti) => (
+                      <View key={ti} style={{ flex: 1 }}>
+                        <TimeField label="" value={t} onChange={(v) => setRoutines(routines.map((x, j) => (j === i ? { ...x, times: x.times.map((y, k) => (k === ti ? v : y)) } : x)))} />
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+              </View>
+            ))}
+          </ScrollView>
+          {error ? <T style={styles.error}>{error}</T> : null}
+          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18, gap: 8 }]}>
+            <Pill label={routines.some((r) => r.on) ? "LET'S GO" : 'NO REMINDERS · FINISH'} onPress={finish} loading={saving} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="finish" />
           </View>
         </Animated.View>
       )}
@@ -250,5 +336,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.line,
     marginBottom: 6,
   },
+  routine: { backgroundColor: colors.canvasWarm, borderRadius: 20, padding: 12, borderWidth: 1.5, borderColor: colors.line },
   error: { color: colors.danger, marginTop: 6, textAlign: 'center', paddingHorizontal: 24 },
 });

@@ -4,18 +4,20 @@ import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { PetRig, PetClipName } from '../animation/PetRig';
-import { useBursts } from '../animation/Burst';
-import { PetAvatar } from '../animation/PetAvatar';
-import { CARE, CareType, HOME_ROW_SIZE, SPECIES_CARE, formatAmount } from '../domain/care';
-import { progressSentence } from '../domain/progress';
-import { dayKeyOf, formatClock } from '../domain/time';
-import { voidEvent } from '../data/repo';
-import { useApp, useDay } from '../state/AppState';
-import { CircleButton, Icon, Label, T } from '../ui/primitives';
-import { CareIcon } from '../ui/CareIcon';
-import { colors, font, radius, softShadow } from '../ui/theme';
-import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { PetRig, PetClipName } from '../../animation/PetRig';
+import { useBursts } from '../../animation/Burst';
+import { PetAvatar } from '../../animation/PetAvatar';
+import { CARE, CareType, HOME_ROW_SIZE, SPECIES_CARE, formatAmount } from '../../domain/care';
+import { progressSentence } from '../../domain/progress';
+import { dayKeyOf, formatClock } from '../../domain/time';
+import { voidEvent } from '../../data/repo';
+import { useApp, useDay, useOccurrences } from '../../state/AppState';
+import { OccurrenceRow } from '../../features/routines';
+import { nextUp } from '../../domain/schedule';
+import { CircleButton, Icon, Label, T } from '../../ui/primitives';
+import { CareIcon } from '../../ui/CareIcon';
+import { colors, font, radius, softShadow } from '../../ui/theme';
+import { petFeedback, successFeedback, tapFeedback } from '../../native/haptics';
 
 export default function Home() {
   const { pet, ready } = useApp();
@@ -44,6 +46,9 @@ function HomeScreen() {
   const focused = useIsFocused();
   const todayKey = useTodayKey();
   const { events, progress, loading } = useDay(todayKey);
+  const occ = useOccurrences(todayKey);
+  const next = nextUp(occ);
+  const openCount = occ.filter((o) => o.status !== 'done' && o.status !== 'skipped').length;
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
@@ -178,41 +183,56 @@ function HomeScreen() {
           ))}
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open today's care timeline"
-          onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })}
-          style={({ pressed }) => [styles.peek, softShadow, { paddingBottom: insets.bottom + 18, transform: [{ translateY: pressed ? 2 : 0 }] }]}
-        >
-          <View style={styles.peekHandle} />
-          {last ? (
-            <View style={styles.peekRow}>
-              <CareIcon type={last.type} size={34} />
-              <T weight="xbold" style={[styles.peekTitle, { color: CARE[last.type].color }]}>
-                {CARE[last.type].label}
-              </T>
-              <T style={styles.peekMeta}>
-                {formatAmount(last.type, last.amount)} · {formatClock(last.occurredAt)}
-              </T>
-              <View style={{ flex: 1 }} />
-              <T weight="xbold" style={styles.peekLink}>
-                {events.length} today
-              </T>
+        <View style={[styles.peek, softShadow]}>
+          {next ? (
+            <View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: -2 }}>
+                <Label style={{ flex: 1 }}>Next up</Label>
+                <Pressable accessibilityRole="button" accessibilityLabel="Open care schedule" onPress={() => router.navigate('/care')} hitSlop={8}>
+                  <T weight="xbold" style={styles.peekLink}>
+                    {openCount > 1 ? `${openCount - 1} more today` : 'Schedule'}
+                  </T>
+                </Pressable>
+              </View>
+              <OccurrenceRow o={next} db={db} species={pet.species} bump={bump} compact />
             </View>
           ) : (
-            <View style={styles.peekRow}>
-              <T weight="xbold" style={[styles.peekTitle, { color: colors.brand }]}>
-                Today's care
-              </T>
-              <View style={{ flex: 1 }} />
-              <T style={styles.peekMeta}>Nothing logged yet</T>
-            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open today's care timeline"
+              onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })}
+              style={styles.peekRow}
+            >
+              {last ? (
+                <>
+                  <CareIcon type={last.type} size={34} />
+                  <T weight="xbold" style={[styles.peekTitle, { color: CARE[last.type].color }]}>
+                    {CARE[last.type].label}
+                  </T>
+                  <T style={styles.peekMeta}>
+                    {formatAmount(last.type, last.amount)} · {formatClock(last.occurredAt)}
+                  </T>
+                  <View style={{ flex: 1 }} />
+                  <T weight="xbold" style={styles.peekLink}>
+                    {events.length} today
+                  </T>
+                </>
+              ) : (
+                <>
+                  <T weight="xbold" style={[styles.peekTitle, { color: colors.brand }]}>
+                    Today's care
+                  </T>
+                  <View style={{ flex: 1 }} />
+                  <T style={styles.peekMeta}>{occ.length ? 'All done for today' : 'Nothing logged yet'}</T>
+                </>
+              )}
+            </Pressable>
           )}
-        </Pressable>
+        </View>
       </View>
 
       {snack ? (
-        <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: insets.bottom + 12 }]}>
+        <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: 14 }]}>
           <T weight="xbold" style={styles.snackText}>
             {CARE[snack.type].label} saved
           </T>
@@ -319,8 +339,7 @@ const styles = StyleSheet.create({
   avatarBubble: { width: 62, height: 62, borderRadius: 31, backgroundColor: '#FFF4E3', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   plus: { position: 'absolute', bottom: -4, alignSelf: 'center', width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 2.5, borderColor: '#FFFFFF' },
   count: { position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: '#FFFFFF', borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  peek: { backgroundColor: colors.canvasWarm, borderTopLeftRadius: radius.card, borderTopRightRadius: radius.card, paddingHorizontal: 22, paddingTop: 10, marginHorizontal: 12 },
-  peekHandle: { alignSelf: 'center', width: 38, height: 5, borderRadius: 3, backgroundColor: colors.line, marginBottom: 10 },
+  peek: { backgroundColor: colors.canvasWarm, borderRadius: radius.card - 6, paddingHorizontal: 18, paddingVertical: 12, marginHorizontal: 12, marginBottom: 10, minHeight: 62, justifyContent: 'center' },
   peekRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   peekTitle: { fontSize: 18 },
   peekMeta: { fontSize: 15, color: colors.muted },
