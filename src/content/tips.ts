@@ -3,7 +3,7 @@
  * never a diagnosis; anything health-related points to the vet.
  */
 import { Species } from '../domain/care';
-import { lang } from '../i18n/core';
+import { pickL } from '../i18n/core';
 
 type L = { en: string; fr: string };
 export type Tip = { id: string; species: Species[]; color: string; tint: string; kicker: L; title: L; slides: { title: L; body: L }[]; pro: boolean };
@@ -83,4 +83,4 @@ export const TIPS: Tip[] = [
   },
 ];
 
-export const tipText = (l: L) => (lang() === 'fr' ? l.fr : l.en);
+export const tipText = (l: L) => pickL(l);

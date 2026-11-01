@@ -23,6 +23,24 @@ const SETS = {
     ['fr_dog/09_records', 'Rendez-vous et dossiers', 'au même endroit', '#FFF3DC'],
     ['fr_cat/01_home', 'Pour les chiens', 'et les chats', '#DDF6F7'],
   ],
+  es: [
+    ['es_dog/01_home', 'Tu mascota se colorea', 'mientras la cuidas', '#FFF3DC'],
+    ['es_dog/02_log', 'Registra un cuidado', 'con un toque', '#DDF6F7'],
+    ['es_dog/04_care', 'Recordatorios amables', 'para cada rutina', '#EAF7DF'],
+    ['es_dog/05_achievements', 'Rachas, retos', 'e insignias', '#FDEBF1'],
+    ['es_dog/08_summary', 'Cada semana', 'de un vistazo', '#ECE8FD'],
+    ['es_dog/09_records', 'Veterinario e historial', 'en un solo lugar', '#FFF3DC'],
+    ['es_cat/01_home', 'Para perros', 'y gatos', '#DDF6F7'],
+  ],
+  pt: [
+    ['pt_dog/01_home', 'Seu pet se colore', 'enquanto você cuida', '#FFF3DC'],
+    ['pt_dog/02_log', 'Registre um cuidado', 'com um toque', '#DDF6F7'],
+    ['pt_dog/04_care', 'Lembretes gentis', 'para cada rotina', '#EAF7DF'],
+    ['pt_dog/05_achievements', 'Sequências, desafios', 'e conquistas', '#FDEBF1'],
+    ['pt_dog/08_summary', 'Cada semana', 'num relance', '#ECE8FD'],
+    ['pt_dog/09_records', 'Veterinário e fichas', 'em um só lugar', '#FFF3DC'],
+    ['pt_cat/01_home', 'Para cães', 'e gatos', '#DDF6F7'],
+  ],
 };
 const html = (W, H, img, l1, l2, bg) => {
   const pad = Math.round(W * 0.085), shotW = W - pad * 2, top = Math.round(H * 0.2);

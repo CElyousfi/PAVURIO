@@ -194,6 +194,8 @@ In RevenueCat:
 
 ## Google Play (Android)
 
+> The Google Play text for all five locales (en-US, fr-FR, es-ES, pt-BR, pt-PT) is in `listings.json` and is pushed with `tools/store/play-listing.mjs`. Keyword strategy: `ASO.md`.
+
 **Settings**
 
 - **Package:** com.pavurio.app

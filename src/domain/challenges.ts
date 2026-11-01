@@ -7,7 +7,7 @@ import { CareType, Species } from './care';
 import { Plan } from './progress';
 import { DayLogs, dayComplete } from './streak';
 import { addDays } from './time';
-import { lang } from '../i18n/core';
+import { pickL } from '../i18n/core';
 
 type L = { en: string; fr: string };
 export type ChallengeDef = {
@@ -35,7 +35,7 @@ export const CHALLENGES: ChallengeDef[] = [
   { key: 'walk30', species: ['dog'], rule: { kind: 'care', type: 'walk' }, days: 30, grace: 5, pro: true, color: '#3E8E17', tint: '#E6F7DA', title: { en: 'Month of Walks', fr: 'Un mois de balades' }, blurb: { en: 'Walk on 30 days within five weeks.', fr: 'Baladez-vous 30 jours sur cinq semaines.' } },
 ];
 
-export const pick = (l: L) => (lang() === 'fr' ? l.fr : l.en);
+export const pick = (l: L) => pickL(l);
 export const challengeDef = (key: string) => CHALLENGES.find((c) => c.key === key) ?? null;
 
 export type ChallengeRun = { id: string; key: string; startDay: string; completedAt: number | null; abandonedAt: number | null };

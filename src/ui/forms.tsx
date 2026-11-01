@@ -15,7 +15,7 @@ export function formatDateLong(key: string | null | undefined): string {
   if (!key) return '—';
   const d = parseDayKey(key);
   const mon = monthNamesShort()[d.getMonth()];
-  if (lang() === 'fr') return `${d.getDate()} ${mon} ${d.getFullYear()}`;
+  if (lang() !== 'en') return `${d.getDate()} ${mon} ${d.getFullYear()}`;
   return `${mon} ${d.getDate()}, ${d.getFullYear()}`;
 }
 

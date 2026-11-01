@@ -17,12 +17,13 @@
 | RevenueCat project **Pavurio** (`proj97e73396`): iOS + Android apps, entitlement `pro`, offering `default` (Annual, Monthly, Lifetime), 6 products | ✅ Public SDK keys are in `eas.json` |
 | **RevenueCat ↔ stores credentials** | ✅ Google Play: service account connected and validated. ❌ App Store Connect: In-App Purchase key (.p8) + App Store Connect API key, once the Apple developer account is approved |
 | **The 3 products in the stores** | ✅ **Google Play: all three ACTIVE** — yearly €34.99 (+ `trial7` 7-day free trial), monthly €5.99, lifetime €79.99; USD/GBP/MAD set exactly, RevenueCat reads them (store status ok). ❌ App Store Connect: subscription group "Pavurio Pro" with `pavurio_pro_yearly` (7-day free trial) and `pavurio_pro_monthly`, plus non-consumable `pavurio_pro_lifetime`. Play: subscriptions `pavurio_pro_yearly` (base plan `yearly`, free trial offer) and `pavurio_pro_monthly` (base plan `monthly`), plus one-time product `pavurio_pro_lifetime` |
-| **Website / legal pages** (privacy, terms, support, account deletion, EN+FR) | ✅ Live on Render (`pavurio-site`, auto-deploys from `main`, build `python3 tools/site/build.py`, publish `site/dist`). DNS at Hostinger points pavurio.com → Render. ⏳ Add `pavurio.com` + `www.pavurio.com` as custom domains in the Render dashboard (Settings → Custom Domains) so TLS is issued |
-| **Play store listing** (EN + FR text, icon, feature graphics, 7 screenshots each, contact email/website) | ✅ Uploaded via the Play API |
+| **Website pavurio.com** (landing in en/fr/es/pt + privacy, terms, support, account deletion; hreflang, JSON-LD, sitemap) | ✅ Live. `tools/site/build.py` → Render static site `pavurio-site` (auto-deploys from `main`) → proxied by Vercel project `pavurio`, which holds the domain (`pavurio.com`; `www` → 308). DNS at Hostinger: `@` A 76.76.21.21, `www` CNAME cname.vercel-dns.com |
+| **Languages** | ✅ App UI in English, French, Spanish, Portuguese (`src/i18n/{fr,es,pt}.ts`, 963 keys each); code emails in 4 languages; Play listings in en-US, fr-FR, es-ES, pt-BR, pt-PT |
+| **App icon** | ✅ Paw + dog & cat icon: `assets/icon.png`, adaptive set, Play 512 + App Store 1024 in `docs/store/graphics` |
+| **Play store listing** (5 locales: text, icon, feature graphic, 8 screenshots each) | ✅ Uploaded with `tools/store/play-listing.mjs` from `docs/store/listings.json`. Keyword strategy: `docs/store/ASO.md` |
 | **Play closed test** (`alpha`, version code 2) | ⏳ Saved as a **draft** release: Play keeps it a draft until the dashboard tasks (content rating, data safety, target audience, privacy URL, app access, ads) are answered in the console. Then roll it out and add 12 testers → 14 days → apply for production |
 | Google Play Real-time developer notifications → RevenueCat | ⏳ RevenueCat → Android app → "Connect to Google", paste the topic in Play Console → Monetization setup |
 | Play App Signing SHA-1/256 in Firebase | ✅ Added; `google-services.json` updated |
-| GitHub Pages (privacy / terms / support / deletion) | ✅ Live at https://pavurio.com/ (EN + FR, all 200) |
 | Art: `records` scene with the cat v2 | ⏳ ChatGPT |
 | Cat clips batch 2 (drink, play, groom, litter, hello, sleep, idle2) | ⏳ Gemini |
 

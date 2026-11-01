@@ -61,10 +61,24 @@ const T = {
     resetLead: 'Saisissez ce code pour choisir un nouveau mot de passe pour votre compte Pavurio :',
     expires: 'Il expire dans 10 minutes. Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail.',
   },
+  es: {
+    verifySubject: (c: string) => `${c} es tu código de Pavurio`,
+    resetSubject: (c: string) => `${c} es tu código para cambiar la contraseña de Pavurio`,
+    verifyLead: 'Usa este código para confirmar tu correo y mantener a tus mascotas a salvo en tu cuenta de Pavurio:',
+    resetLead: 'Usa este código para elegir una nueva contraseña para tu cuenta de Pavurio:',
+    expires: 'Caduca en 10 minutos. Si no lo has pedido, puedes ignorar este correo.',
+  },
+  pt: {
+    verifySubject: (c: string) => `${c} é o seu código Pavurio`,
+    resetSubject: (c: string) => `${c} é o seu código para redefinir a senha do Pavurio`,
+    verifyLead: 'Use este código para confirmar o seu e-mail e manter os seus pets seguros na sua conta Pavurio:',
+    resetLead: 'Use este código para escolher uma nova senha para a sua conta Pavurio:',
+    expires: 'Ele expira em 10 minutos. Se você não pediu este código, pode ignorar este e-mail.',
+  },
 };
 
 export function codeEmail(kind: 'verify' | 'reset', code: string, lang: unknown) {
-  const t = lang === 'fr' ? T.fr : T.en;
+  const t = lang === 'fr' || lang === 'es' || lang === 'pt' ? T[lang] : T.en;
   const subject = kind === 'verify' ? t.verifySubject(code) : t.resetSubject(code);
   const lead = kind === 'verify' ? t.verifyLead : t.resetLead;
   const html = `<!doctype html><html><body style="margin:0;background:#FFF6E6;font-family:Nunito,Helvetica,Arial,sans-serif;color:#23304A">

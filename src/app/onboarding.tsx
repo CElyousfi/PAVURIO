@@ -25,7 +25,9 @@ import { reminderCopy, requestPermission } from '../native/notifications';
 import { dayKeyOf } from '../domain/time';
 import { formatHM } from '../i18n/dates';
 import { newId } from '../domain/ids';
-import { t } from '../i18n';
+import { LANGS, LANG_NAMES, Lang, t } from '../i18n';
+
+const LANG_FLAG: Record<Lang, string> = { en: '🇬🇧 EN', fr: '🇫🇷 FR', es: '🇪🇸 ES', pt: '🇵🇹 PT' };
 
 type Suggestion = { key: string; type: string; title: string; times: string[]; on: boolean };
 function suggestions(species: Species, plan: Plan): Suggestion[] {
@@ -177,7 +179,7 @@ export default function Onboarding() {
           bottomInset={insets.bottom}
           reduceMotion={reduceMotion}
           language={language}
-          onLanguage={() => setLanguage(language === 'fr' ? 'en' : 'fr')}
+          onLanguage={() => setLanguage(LANGS[(LANGS.indexOf(language) + 1) % LANGS.length])}
           onStart={() => setUnitsOpen(true)}
         />
       )}
@@ -446,7 +448,7 @@ function ReminderPreview({ pet }: { pet: Pet }) {
   );
 }
 
-function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onStart }: { width: number; bottomInset: number; reduceMotion: boolean; language: string; onLanguage: () => void; onStart: () => void }) {
+function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onStart }: { width: number; bottomInset: number; reduceMotion: boolean; language: Lang; onLanguage: () => void; onStart: () => void }) {
   const [page, setPage] = useState(0);
   const [fill, setFill] = useState(0.15);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
@@ -539,9 +541,9 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
         ))}
       </View>
       <View style={[styles.welcomeBottom, { paddingBottom: bottomInset + 18 }]}>
-        <Bouncy onPress={onLanguage} style={styles.lang} accessibilityRole="button" accessibilityLabel={language === 'fr' ? 'English' : 'Français'}>
+        <Bouncy onPress={onLanguage} style={styles.lang} accessibilityRole="button" accessibilityLabel={LANG_NAMES[LANGS[(LANGS.indexOf(language) + 1) % LANGS.length]]}>
           <T weight="black" style={{ fontSize: 14 }}>
-            {language === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN'}
+            {LANG_FLAG[language]}
           </T>
         </Bouncy>
         <Pill label={t('GET STARTED')} onPress={onStart} style={{ flex: 1 }} testID="get-started" />

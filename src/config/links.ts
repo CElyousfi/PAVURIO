@@ -1,8 +1,8 @@
 import { lang } from '../i18n/core';
 
-/** Public pages (site/ → GitHub Pages, gh-pages branch). Override with EXPO_PUBLIC_* once a custom domain exists. */
+/** Public pages (site/ → pavurio.com). Override with EXPO_PUBLIC_*. */
 const SITE = 'https://pavurio.com';
-const fr = () => (lang() === 'fr' ? '/fr' : '');
+const fr = () => (lang() === 'en' ? '' : `/${lang()}`);
 export const LEGAL = {
   get privacy() {
     return process.env.EXPO_PUBLIC_PRIVACY_URL || `${SITE}${fr()}/privacy.html`;
