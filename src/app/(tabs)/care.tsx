@@ -151,7 +151,7 @@ export default function CareTab() {
         </View>
 
         {/* agenda */}
-        <Card>
+        <Card enter={0}>
           <Label>{t('Agenda')}</Label>
           {occ.length === 0 && dayAppts.length === 0 ? (
             <View style={{ paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -197,7 +197,7 @@ export default function CareTab() {
         <View>
           <SectionHead title={t('Routines')} action={t('New')} onAction={() => router.push('/schedule')} />
           {schedules.length === 0 ? (
-            <Card onPress={() => router.push('/schedule')} accessibilityLabel={t('Create a routine')}>
+            <Card enter={1} onPress={() => router.push('/schedule')} accessibilityLabel={t('Create a routine')}>
               <T weight="black" style={{ fontSize: 16 }}>
                 {t('Set up a routine')}
               </T>
@@ -206,7 +206,7 @@ export default function CareTab() {
               </T>
             </Card>
           ) : (
-            <Card style={{ paddingVertical: 6 }}>
+            <Card enter={1} style={{ paddingVertical: 6 }}>
               {schedules.map((s, i) => (
                 <Bouncy
                   key={s.id}
@@ -242,7 +242,7 @@ export default function CareTab() {
         <View>
           <SectionHead title={t('Upcoming visits')} action={t('Add')} onAction={() => router.push('/appointment')} />
           {upcoming.length === 0 ? (
-            <Card onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
+            <Card enter={2} onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
                 {ART.scenes.appointments ? <Scene source={ART.scenes.appointments} width={78} height={66} radius={16} /> : null}
                 <T style={{ color: colors.muted, lineHeight: 20, flex: 1 }}>{t('Vet, groomer or sitter — add a visit and get reminded the day before.')}</T>
@@ -279,7 +279,7 @@ export default function CareTab() {
         {/* weight */}
         <View>
           <SectionHead title={t('Weight')} action={t('Log')} onAction={() => router.push({ pathname: '/weight', params: { add: '1' } })} />
-          <Card onPress={() => router.push('/weight')} accessibilityLabel={t('Open weight history')}>
+          <Card enter={3} onPress={() => router.push('/weight')} accessibilityLabel={t('Open weight history')}>
             {latest ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <View style={{ flex: 1 }}>

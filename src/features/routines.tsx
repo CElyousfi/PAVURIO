@@ -1,7 +1,8 @@
 /** Shared pieces for scheduled care: kind metadata, icons, occurrence rows and their actions. */
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Bouncy } from '../ui/motion';
+import Animated, { FadeIn, LinearTransition, ZoomIn } from 'react-native-reanimated';
+import { Bouncy, motionReduced } from '../ui/motion';
 import { router } from 'expo-router';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import type { Db } from '../data/db';
@@ -126,8 +127,9 @@ export function OccurrenceRow({
     o.status === 'snoozed' && o.snoozeUntil
       ? t('Snoozed to {time}', { time: formatTime24to12(`${new Date(o.snoozeUntil).getHours()}:${String(new Date(o.snoozeUntil).getMinutes()).padStart(2, '0')}`) })
       : formatTime24to12(o.time);
+  const anim = !motionReduced();
   return (
-    <View style={[styles.row, closed && { opacity: 0.62 }]} accessibilityLabel={`${o.title}, ${when}, ${STATUS_LABEL[o.status]()}`}>
+    <Animated.View layout={anim ? LinearTransition.springify().damping(18).stiffness(200) : undefined} style={[styles.row, closed && { opacity: 0.62 }]} accessibilityLabel={`${o.title}, ${when}, ${STATUS_LABEL[o.status]()}`}>
       <KindIcon type={o.type} size={compact ? 40 : 44} />
       <View style={{ flex: 1 }}>
         <T weight="black" style={[styles.title, closed && o.status === 'skipped' && { textDecorationLine: 'line-through' }]} numberOfLines={1}>
@@ -142,13 +144,15 @@ export function OccurrenceRow({
         </View>
       </View>
       {closed ? (
-        <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Reopen {title}', { title: o.title })} onPress={() => reopenOccurrence(db, o, bump)} style={styles.ghost} hitSlop={6}>
-          <T weight="black" style={styles.ghostText}>
-            {t('REOPEN')}
-          </T>
-        </Bouncy>
+        <Animated.View entering={anim ? ZoomIn.springify().damping(14) : undefined}>
+          <Bouncy scaleTo={0.93} accessibilityRole="button" accessibilityLabel={t('Reopen {title}', { title: o.title })} onPress={() => reopenOccurrence(db, o, bump)} style={styles.ghost} hitSlop={6}>
+            <T weight="black" style={styles.ghostText}>
+              {t('REOPEN')}
+            </T>
+          </Bouncy>
+        </Animated.View>
       ) : (
-        <View style={{ flexDirection: 'row', gap: 6 }}>
+        <Animated.View entering={anim ? FadeIn.duration(200) : undefined} style={{ flexDirection: 'row', gap: 6 }}>
           {!future ? (
             <Bouncy accessibilityRole="button" accessibilityLabel={t('Snooze {title} 30 minutes', { title: o.title })} onPress={() => snoozeOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
               <Svg width={20} height={20} viewBox="0 0 24 24">
@@ -172,9 +176,9 @@ export function OccurrenceRow({
               <Icon name="check" size={18} color="#FFFFFF" />
             </Bouncy>
           ) : null}
-        </View>
+        </Animated.View>
       )}
-    </View>
+    </Animated.View>
   );
 }
 

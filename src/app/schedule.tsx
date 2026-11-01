@@ -180,7 +180,7 @@ export default function ScheduleEditor() {
               <TimeField label="" value={tm} onChange={(v) => setTimes(times.map((x, j) => (j === i ? v : x)))} />
             </View>
             {times.length > 1 ? (
-              <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Remove time')} onPress={() => setTimes(times.filter((_, j) => j !== i))} style={styles.remove} hitSlop={6}>
+              <Bouncy scaleTo={0.85} accessibilityRole="button" accessibilityLabel={t('Remove time')} onPress={() => setTimes(times.filter((_, j) => j !== i))} style={styles.remove} hitSlop={6}>
                 <Icon name="close" size={18} color={colors.inkSoft} />
               </Bouncy>
             ) : null}

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Bouncy } from '../ui/motion';
+import { Bouncy, Pop } from '../ui/motion';
 import { CARE, SPECIES_CARE, Species } from '../domain/care';
 import { ACCESSORIES, Appearance, PALETTES } from '../domain/appearance';
 import { Plan } from '../domain/progress';
@@ -81,15 +81,15 @@ export function PlanEditor({ species, plan, onChange }: { species: Species; plan
               </T>
               <T style={{ color: colors.muted, fontSize: 14 }}>{n === 0 ? t('Not in the daily plan') : t('{n}× a day', { n })}</T>
             </View>
-            <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Fewer {label}', { label: CARE[ct].label })} onPress={() => set(n - 1)} style={styles.stepBtn} hitSlop={6}>
+            <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Fewer {label}', { label: CARE[ct].label })} onPress={() => set(n - 1)} style={styles.stepBtn} hitSlop={6}>
               <T weight="black" style={styles.stepTxt}>
                 −
               </T>
             </Bouncy>
-            <T weight="black" style={{ width: 22, textAlign: 'center', fontSize: 20 }}>
-              {n}
-            </T>
-            <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('More {label}', { label: CARE[ct].label })} onPress={() => set(n + 1)} style={styles.stepBtn} hitSlop={6}>
+            <Pop trigger={n} amount={0.35} style={{ width: 22, alignItems: 'center' }}>
+              <T weight="black" style={{ fontSize: 20 }}>{n}</T>
+            </Pop>
+            <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('More {label}', { label: CARE[ct].label })} onPress={() => set(n + 1)} style={styles.stepBtn} hitSlop={6}>
               <Icon name="plus" size={18} />
             </Bouncy>
           </View>

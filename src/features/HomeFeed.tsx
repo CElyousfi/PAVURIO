@@ -19,7 +19,7 @@ import { Medal } from './Medal';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
-import { Bouncy, Enter, Pulse } from '../ui/motion';
+import { Bouncy, Enter, Pop, PopIn, Pulse } from '../ui/motion';
 import { Icon, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { formatDateLong } from '../ui/forms';
@@ -102,9 +102,11 @@ export function HomeFeed({ width }: { width: number }) {
               </T>
             </View>
             <View style={{ alignItems: 'center' }}>
-              <T weight="black" style={{ fontSize: 18, color: colors.inkSoft }}>
-                {streak.best}
-              </T>
+              <Pop trigger={streak.best}>
+                <T weight="black" style={{ fontSize: 18, color: colors.inkSoft }}>
+                  {streak.best}
+                </T>
+              </Pop>
               <T weight="xbold" style={{ fontSize: 11, color: colors.muted }}>
                 {t('BEST')}
               </T>
@@ -117,7 +119,11 @@ export function HomeFeed({ width }: { width: number }) {
               return (
                 <View key={k} style={{ alignItems: 'center', gap: 4 }}>
                   <View style={[styles.weekDot, done && { backgroundColor: '#FF8A1F' }, isT && !done && { borderColor: '#FF8A1F', borderWidth: 2.5 }]}>
-                    {done ? <Icon name="check" size={14} color="#FFFFFF" /> : null}
+                    {done ? (
+                      <PopIn delay={isT ? 250 : 0}>
+                        <Icon name="check" size={14} color="#FFFFFF" />
+                      </PopIn>
+                    ) : null}
                   </View>
                   <T weight="black" style={{ fontSize: 11, color: isT ? colors.ink : colors.muted }}>
                     {days[parseDayKey(k).getDay()]}

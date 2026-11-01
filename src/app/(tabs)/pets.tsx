@@ -79,7 +79,7 @@ export default function PetsTab() {
                   </T>
                 ) : null}
               </View>
-              <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: p.name })} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
+              <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: p.name })} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
                 <Icon name="more" size={20} color={colors.inkSoft} />
               </Bouncy>
             </Card>
@@ -126,7 +126,7 @@ export default function PetsTab() {
           </View>
         ) : null}
 
-        <Card onPress={() => router.push('/settings')} accessibilityLabel={t('Open settings')} style={[styles.pet, { marginTop: 16 }]}>
+        <Card enter={pets.length + 1} onPress={() => router.push('/settings')} accessibilityLabel={t('Open settings')} style={[styles.pet, { marginTop: 16 }]}>
           <View style={[styles.av, { backgroundColor: colors.line, width: 48, height: 48 }]}>
             <Icon name="menu" size={22} color={colors.inkSoft} />
           </View>
