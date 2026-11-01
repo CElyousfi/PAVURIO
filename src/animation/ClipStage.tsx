@@ -5,13 +5,25 @@
  * - Actions (`celebrate`, `eat`, `drink`) play once, crossfading in and out of idle.
  * - Every clip is drawn twice, a gray sketch and the real coat, and the coat is revealed from the
  *   bottom by the day's progress (the Waterllama-style color-in), so it stays consistent in every state.
- * - Frames come from 12-frame WebP sheets. Playback is clock-based: when the JS thread is busy,
- *   frames are skipped rather than the clip slowing down. Only the current and the next sheet are
- *   mounted; an action starts only after its first sheets have loaded, so there is no blank frame.
+ * - Frames come from 12-frame WebP sheets (24 fps for idle/sleep/idle2/celebrate, 12 fps for the
+ *   long actions). The frame clock runs on the UI thread (Reanimated frame callback): each frame only
+ *   moves a sheet window in an animated style, so a busy JS thread never makes the pet stutter.
+ *   React re-renders only when playback crosses into the next sheet (every 0.5–1 s), to mount the
+ *   upcoming sheet ahead of time. An action starts only after its first sheets have loaded.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
-import Animated, { Easing, SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  SharedValue,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useFrameCallback,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import type { FrameInfo } from 'react-native-reanimated';
 import Svg, { Ellipse } from 'react-native-svg';
 import { CareRug } from './CareRug';
 import { BurstLayer } from './Burst';
@@ -56,40 +68,103 @@ export type ClipKit = {
 const ASPECT = 1.05;
 const PAWS = 0.9; // paw line, fraction of stage height
 
-const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+/**
+ * Sheets to keep decoded for a layer. Short clips keep all; ping-pong loops keep both neighbours (they
+ * play back and forth); actions keep the current sheet and the next. A paused clock keeps only the
+ * sheet it is showing (an idle under a playing action, a pet on a page that isn't on screen).
+ */
+function sheetsToKeep(c: ClipMeta, chunk: number, running: boolean): number[] {
+  const last = c.chunks - 1;
+  const k = Math.max(0, Math.min(last, chunk));
+  if (!running) return [k];
+  if (c.chunks <= 3) return [...Array(c.chunks).keys()];
+  if (c.loop) return Array.from(new Set([Math.max(0, k - 1), k, Math.min(last, k + 1)]));
+  return Array.from(new Set([k, Math.min(last, k + 1)]));
+}
 
-/** Clock-driven frame index. Calls setState only when the frame actually changes. */
-function useFrameClock(kit: ClipKit, name: string, running: boolean, onEnd?: () => void) {
+/**
+ * UI-thread frame clock. The current frame is a shared value (no React render per frame); the sheet
+ * window that is mounted follows React state, which changes every `per` frames. The worklet never
+ * steps outside the mounted sheets: if JS is late mounting the next one, the pet holds its frame
+ * (and catches up by time) instead of going blank.
+ * `run` identifies one playback (clip + nonce): sheet state from a previous run is never reused.
+ */
+function useFrameClock(kit: ClipKit, name: string, run: string, running: boolean, onEnd?: () => void) {
   const c = kit.clips[name];
-  const [frame, setFrame] = useState(0);
+  const frame = useSharedValue(0);
+  const t0 = useSharedValue(-1);
+  const ended = useSharedValue(false);
+  const lo = useSharedValue(0);
+  const hi = useSharedValue(0);
+  const runId = useSharedValue(0);
+  const runRef = useRef(0);
+  const [state, setState] = useState<{ run: string; k: number }>({ run, k: 0 });
+  const chunk = state.run === run ? state.k : 0;
+  const keep = sheetsToKeep(c, chunk, running);
+  const keepLo = Math.min(...keep);
+  const keepHi = Math.max(...keep);
   const endRef = useRef(onEnd);
   endRef.current = onEnd;
-  useEffect(() => {
-    if (!running) return;
-    let raf = 0;
-    let last = -1;
-    const t0 = now();
-    const n = c.frames;
-    const period = c.pingpong ? Math.max(1, 2 * n - 2) : n;
-    const tick = () => {
-      let i = Math.floor(((now() - t0) / 1000) * c.fps);
-      if (c.loop) {
+  // an end from an earlier run (queued on the UI thread just before a restart) is ignored
+  const fireEnd = useCallback((id: number) => {
+    if (id === runRef.current) endRef.current?.();
+  }, []);
+  const n = c.frames;
+  const fps = c.fps;
+  const loop = c.loop;
+  const pingpong = c.pingpong;
+  const per = c.per;
+  const tick = useCallback(
+    (info: FrameInfo) => {
+      'worklet';
+      if (t0.value < 0) t0.value = info.timestamp;
+      let i = Math.floor(((info.timestamp - t0.value) / 1000) * fps);
+      if (loop) {
+        const period = pingpong ? Math.max(1, 2 * n - 2) : n;
         i %= period;
-        if (c.pingpong && i >= n) i = period - i;
+        if (pingpong && i >= n) i = period - i;
       } else if (i >= n) {
-        endRef.current?.();
+        if (!ended.value && Math.floor((n - 1) / per) <= hi.value) {
+          ended.value = true;
+          frame.value = n - 1;
+          runOnJS(fireEnd)(runId.value);
+        }
         return;
       }
-      if (i !== last) {
-        last = i;
-        setFrame(i);
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [name, running, c]);
-  return frame;
+      // stay inside the mounted sheets
+      const k = Math.floor(i / per);
+      if (k > hi.value) i = Math.min(n - 1, (hi.value + 1) * per - 1);
+      else if (k < lo.value) i = lo.value * per;
+      if (i !== frame.value) frame.value = i;
+    },
+    [n, fps, loop, pingpong, per, frame, t0, ended, lo, hi, runId, fireEnd],
+  );
+  const cb = useFrameCallback(tick, false);
+  // publish the mounted window to the worklet once React has committed it
+  useEffect(() => {
+    lo.value = keepLo;
+    hi.value = keepHi;
+  }, [keepLo, keepHi, lo, hi]);
+  useEffect(() => {
+    // every start or stop is a new run: restart from frame 0 (the worklet clamps to mounted sheets)
+    runRef.current += 1;
+    runId.value = runRef.current;
+    if (running) {
+      t0.value = -1;
+      ended.value = false;
+      setState({ run, k: 0 });
+    }
+    cb.setActive(running);
+    return () => cb.setActive(false);
+  }, [running, run, cb, t0, ended, runId]);
+  useAnimatedReaction(
+    () => Math.floor(frame.value / per),
+    (k, prev) => {
+      if (k !== prev) runOnJS(setState)({ run, k });
+    },
+    [per, run],
+  );
+  return { frame, keep };
 }
 
 type Geo = { w: number; h: number };
@@ -112,54 +187,37 @@ function frameRect(kit: ClipKit, name: string, g: Geo) {
   };
 }
 
-/** One sheet layer of a clip: current chunk visible, the upcoming chunk mounted invisibly. */
-function SheetLayer({
-  kit,
-  name,
-  sheets,
-  frame,
-  s,
-  onLoaded,
-}: {
-  kit: ClipKit;
-  name: string;
-  sheets: number[];
-  frame: number;
-  s: number;
-  onLoaded?: () => void;
-}) {
+/** One sheet image of a clip: shows its frame when the clock is inside this sheet, else hides. */
+function SheetImage({ c, k, source, frame, s, onLoad }: { c: ClipMeta; k: number; source: number; frame: SharedValue<number>; s: number; onLoad?: () => void }) {
+  const inChunk = Math.min(c.per, c.frames - k * c.per);
+  const rows = Math.ceil(inChunk / c.cols);
+  const fw = c.fw * s;
+  const fh = c.fh * s;
+  const style = useAnimatedStyle(() => {
+    const f = frame.value;
+    const visible = Math.floor(f / c.per) === k;
+    if (!visible) return { opacity: 0, transform: [{ translateX: 0 }, { translateY: 0 }] };
+    const local = f % c.per;
+    return { opacity: 1, transform: [{ translateX: -(local % c.cols) * fw }, { translateY: -Math.floor(local / c.cols) * fh }] };
+  });
+  return (
+    <Animated.Image
+      source={source}
+      fadeDuration={0}
+      onLoad={onLoad}
+      style={[{ position: 'absolute', width: c.cols * fw, height: rows * fh, left: -2, top: -2 }, style]}
+    />
+  );
+}
+
+/** One layer of a clip (sketch, coat or accessory): the sheets the clock has asked to keep. */
+function SheetLayer({ kit, name, sheets, frame, keep, s, onLoaded }: { kit: ClipKit; name: string; sheets: number[]; frame: SharedValue<number>; keep: number[]; s: number; onLoaded?: () => void }) {
   const c = kit.clips[name];
-  const chunk = Math.floor(frame / c.per);
-  const local = frame % c.per;
-  const col = local % c.cols;
-  const row = Math.floor(local / c.cols);
-  // chunks to keep mounted: current + the one we will need next
-  const nextFrame = c.loop && c.pingpong ? frame : Math.min(c.frames - 1, frame + 3);
-  const upcoming = Math.floor(nextFrame / c.per);
-  const keep = c.chunks <= 2 ? [...Array(c.chunks).keys()] : Array.from(new Set([chunk, upcoming, Math.min(c.chunks - 1, chunk + 1)]));
   return (
     <>
-      {keep.map((k) => {
-        const inChunk = Math.min(c.per, c.frames - k * c.per);
-        const rows = Math.ceil(inChunk / c.cols);
-        const visible = k === chunk;
-        return (
-          <Image
-            key={k}
-            source={sheets[k]}
-            fadeDuration={0}
-            onLoad={k === 0 ? onLoaded : undefined}
-            style={{
-              position: 'absolute',
-              width: c.cols * c.fw * s,
-              height: rows * c.fh * s,
-              left: (visible ? -col * c.fw * s : 0) - 2,
-              top: (visible ? -row * c.fh * s : 0) - 2,
-              opacity: visible ? 1 : 0,
-            }}
-          />
-        );
-      })}
+      {keep.map((k) =>
+        sheets[k] != null ? <SheetImage key={k} c={c} k={k} source={sheets[k]} frame={frame} s={s} onLoad={k === 0 ? onLoaded : undefined} /> : null,
+      )}
     </>
   );
 }
@@ -168,6 +226,7 @@ function ClipView({
   kit,
   name,
   frame,
+  keep,
   palette,
   bandana,
   fill,
@@ -176,7 +235,8 @@ function ClipView({
 }: {
   kit: ClipKit;
   name: string;
-  frame: number;
+  frame: SharedValue<number>;
+  keep: number[];
   palette: string;
   bandana: string;
   fill: SharedValue<number>;
@@ -198,33 +258,35 @@ function ClipView({
   return (
     <>
       <View pointerEvents="none" style={box}>
-        <SheetLayer kit={kit} name={name} sheets={sheets.sketch} frame={frame} s={r.s} onLoaded={markLoaded} />
+        <SheetLayer kit={kit} name={name} sheets={sheets.sketch} frame={frame} keep={keep} s={r.s} onLoaded={markLoaded} />
       </View>
       <FillClip fill={fill} geo={geo} petH={kit.petH}>
-        <View style={{ position: 'absolute', left: geo.w, width: geo.w, bottom: 0, height: geo.h }}>
-          <View pointerEvents="none" style={box}>
-            <SheetLayer kit={kit} name={name} sheets={sheets[palette] ?? sheets[kit.palettes[0]]} frame={frame} s={r.s} onLoaded={markLoaded} />
-            {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} s={r.s} onLoaded={markLoaded} /> : null}
+        {(main) => (
+          <View style={{ position: 'absolute', left: geo.w, width: geo.w, bottom: 0, height: geo.h }}>
+            <View pointerEvents="none" style={box}>
+              <SheetLayer kit={kit} name={name} sheets={sheets[palette] ?? sheets[kit.palettes[0]]} frame={frame} keep={keep} s={r.s} onLoaded={main ? markLoaded : undefined} />
+              {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} keep={keep} s={r.s} onLoaded={main ? markLoaded : undefined} /> : null}
+            </View>
           </View>
-        </View>
+        )}
       </FillClip>
     </>
   );
 }
 
-/** Bottom-anchored reveal window, 3× stage width so props beside the dog (bowls) are not cut off. */
-function FillClip({ fill, geo, petH, children }: { fill: SharedValue<number>; geo: Geo; petH: number; children: React.ReactNode }) {
+/** Bottom-anchored reveal window, 3× stage width so props beside the pet (bowls) are not cut off. */
+function FillClip({ fill, geo, petH, children }: { fill: SharedValue<number>; geo: Geo; petH: number; children: (main: boolean) => React.ReactNode }) {
   const h = geo.h;
   const FILL_TOP = PAWS - petH * 1.08;
   const style = useAnimatedStyle(() => {
     const f = Math.max(0, Math.min(1, fill.value));
     // below the paws is always "colored"; then rise to just above the head
-    const reveal = (1 - PAWS) + (PAWS - FILL_TOP) * f;
+    const reveal = 1 - PAWS + (PAWS - FILL_TOP) * f;
     return { height: reveal * h + (f >= 1 ? h : 0) };
   });
   return (
     <Animated.View pointerEvents="none" style={[styles.clip, { left: -geo.w, width: geo.w * 3 }, style]}>
-      {children}
+      {children(true)}
     </Animated.View>
   );
 }
@@ -260,7 +322,7 @@ export function ClipStage({
       fill.value = progress;
       return;
     }
-    fill.value = withTiming(progress, { duration: 1100, easing: Easing.inOut(Easing.cubic) });
+    fill.value = withTiming(progress, { duration: 800, easing: Easing.bezier(0.2, 0, 0, 1) });
   }, [progress, fill]);
 
   // ---- action state (external request via `clip`, or a tap)
@@ -313,8 +375,13 @@ export function ClipStage({
     }
   }, [active, action, mix, clearAction]);
 
+  // once per action: a late second "ready" (fallback timer, then the real onLoad) must not cancel the
+  // closing fade, or the action would freeze on its last frame
+  const readyFor = useRef(-1);
   const onActionReady = useCallback(() => {
-    setActionReady((was) => was || true);
+    if (readyFor.current === current.current) return;
+    readyFor.current = current.current;
+    setActionReady(true);
     mix.value = withTiming(1, { duration: 140, easing: Easing.out(Easing.quad) });
   }, [mix]);
 
@@ -326,7 +393,7 @@ export function ClipStage({
   }, [action, actionReady, onActionReady]);
 
   const idleRunning = active && !reduceMotion && !(action && actionReady);
-  const idleFrame = useFrameClock(kit, base, idleRunning);
+  const idle = useFrameClock(kit, base, base, idleRunning);
 
   // ambient variety: now and then look around / wag (daytime, only while nothing else plays)
   useEffect(() => {
@@ -334,7 +401,7 @@ export function ClipStage({
     const timer = setTimeout(() => start('idle2', Date.now()), 14_000 + Math.random() * 12_000);
     return () => clearTimeout(timer);
   }, [ambient, rest, active, reduceMotion, action, start]);
-  const actionFrame = useFrameClock(kit, action?.name ?? base, !!action && actionReady && active, finish);
+  const act = useFrameClock(kit, action ? action.name : base, action ? `${action.name}:${action.nonce}` : `none:${base}`, !!action && actionReady && active && !reduceMotion, finish);
 
   const idleStyle = useAnimatedStyle(() => ({ opacity: 1 - mix.value }));
   const actionStyle = useAnimatedStyle(() => ({ opacity: mix.value }));
@@ -371,14 +438,15 @@ export function ClipStage({
         <Shadow geo={geo} />
       )}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, idleStyle]}>
-        <ClipView kit={kit} key={base} name={base} frame={idleFrame} palette={palette} bandana={bandana} fill={fill} geo={geo} />
+        <ClipView kit={kit} key={base} name={base} frame={idle.frame} keep={idle.keep} palette={palette} bandana={bandana} fill={fill} geo={geo} />
       </Animated.View>
       {action ? (
         <Animated.View key={action.nonce} pointerEvents="none" style={[StyleSheet.absoluteFill, actionStyle]}>
           <ClipView
             kit={kit}
             name={action.name}
-            frame={actionFrame}
+            frame={act.frame}
+            keep={act.keep}
             palette={palette}
             bandana={bandana}
             fill={fill}

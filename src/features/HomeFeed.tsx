@@ -28,7 +28,7 @@ import { t, tn } from '../i18n';
 export const TIP_ICON: Record<string, CareType> = { water: 'water', 'walk-sniff': 'walk', 'cat-play': 'play', brush: 'grooming', meals: 'meal', weigh: 'meal', litter: 'litter', calm: 'play' };
 
 export function Flame({ size = 34, color = '#FF7A1A', lit = true }: { size?: number; color?: string; lit?: boolean }) {
-  if (ART.ui.streak) return <Image source={ART.ui.streak} style={{ width: size, height: size, opacity: lit ? 1 : 0.35 }} />;
+  if (ART.ui.streak) return <Image source={ART.ui.streak} style={{ width: size, height: size, tintColor: lit ? undefined : '#F3D9BF' }} />;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path d="M12 2.5c.6 3.2 4.8 5.4 4.8 10.3A4.8 4.8 0 0 1 12 21.5a4.8 4.8 0 0 1-4.8-4.8c0-2.4 1.3-3.8 2.4-5 .2 1.4.9 2.4 1.9 2.8-.6-3.5.4-6.6.5-8.9z" fill={lit ? color : '#D7DBE1'} />

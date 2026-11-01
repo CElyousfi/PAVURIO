@@ -264,4 +264,5 @@ export const FR2: Record<string, string> = {
   "Units": "Unités",
   "That's not here any more": "Ce n’est plus là",
   "It may have been removed, or the link is out of date.": "Il a peut-être été supprimé, ou le lien n’est plus à jour.",
+  "now": "maintenant",
 };

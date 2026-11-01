@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { Easing, FadeIn, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { CARE, CareType, careAllowedFor, clampAmount, isCareType } from '../../domain/care';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
@@ -91,7 +91,7 @@ export default function LogCard() {
   const [placed, setPlaced] = useState(!hasOrigin);
   // no origin (opened from the timeline or a notification): a soft pop instead of a flight
   useEffect(() => {
-    if (!hasOrigin && !motionReduced()) fly.value = withSpring(1, { damping: 15, stiffness: 170, mass: 0.9 });
+    if (!hasOrigin && !motionReduced()) fly.value = withTiming(1, { duration: 260, easing: Easing.bezier(0.2, 0, 0, 1) });
   }, [hasOrigin, fly]);
   const objRef = useRef<React.ComponentRef<typeof View>>(null);
   const measured = useRef(false);
@@ -107,7 +107,7 @@ export default function LogCard() {
     if (measured.current) return;
     measured.current = true;
     setPlaced(true);
-    fly.value = withSpring(1, { damping: 17, stiffness: 150, mass: 0.9 });
+    fly.value = withTiming(1, { duration: 260, easing: Easing.bezier(0.2, 0, 0, 1) });
   };
   const onObjLayout = () => {
     if (!hasOrigin || measured.current) return;
@@ -136,9 +136,11 @@ export default function LogCard() {
     const run = () => {
       if (!gone.current) then();
     };
-    fly.value = withTiming(0, { duration: 230, easing: Easing.in(Easing.cubic) }, (done) => {
+    // a small dip first (anticipation), then the object drops back into the icon
+    pop.value = withTiming(0.95, { duration: 70, easing: Easing.out(Easing.quad) });
+    fly.value = withDelay(70, withTiming(0, { duration: 210, easing: Easing.in(Easing.cubic) }, (done) => {
       if (done) runOnJS(run)();
-    });
+    }));
   };
   const nudge = (dir: 1 | -1) => {
     if (!spec || !type) return;

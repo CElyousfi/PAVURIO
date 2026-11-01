@@ -2,7 +2,7 @@
  * Streak, challenges and achievements for the active pet, recomputed after every data change.
  * Also detects newly finished challenges / newly earned badges so the UI can celebrate them once.
  */
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { listEventsBetween } from '../data/repo';
 import { badgeStats, completeChallenge, listChallengeRuns, markSeen, seenSet } from '../data/engageRepo';
 import { BadgeStats, earnedBadges } from '../domain/badges';
@@ -42,10 +42,16 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
     return () => clearInterval(i);
   }, []);
 
+  // the first load runs at once; later ones (after a save) wait a beat so the save animation and
+  // the pet's reaction get the JS thread first — celebrations are held longer than this anyway
+  const loadedOnce = useRef(false);
+  const lastPet = useRef<string | null>(null);
+  // runs never overlap: two runs reading "not seen yet" at once could queue the same badge twice
+  const chain = useRef<Promise<void>>(Promise.resolve());
   useEffect(() => {
     if (!pet) return;
     let alive = true;
-    (async () => {
+    const run = async () => {
       const today = dayKeyOf(new Date());
       const from = parseDayKey(addDays(today, -HISTORY_DAYS)).getTime();
       const events = await listEventsBetween(db, pet.id, from, Date.now() + 60_000);
@@ -84,9 +90,20 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
       const completedChallengeKeys = challenges.filter((c) => c.run.completedAt).map((c) => c.def.key);
       setState({ loaded: true, byDay, streak, challenges, completedChallengeKeys, stats, earned });
       if (changed) bump();
-    })().catch((e) => console.warn('[pavurio] engagement load failed', e));
+    };
+    // immediate on first load and when the pet changes (never show one pet's streak under another)
+    const immediate = !loadedOnce.current || lastPet.current !== pet.id;
+    lastPet.current = pet.id;
+    const timer = setTimeout(
+      () => {
+        loadedOnce.current = true;
+        chain.current = chain.current.then(() => (alive ? run() : undefined)).catch((e) => console.warn('[pavurio] engagement load failed', e));
+      },
+      immediate ? 0 : 450,
+    );
     return () => {
       alive = false;
+      clearTimeout(timer);
     };
   }, [db, pet, plan, version, tick, bump]);
 
