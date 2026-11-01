@@ -3,8 +3,6 @@ import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 're
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown } from 'react-native-reanimated';
-
-const APressable = Animated.createAnimatedComponent(Pressable);
 import { PetRig, PetClipName } from '../../animation/PetRig';
 import { catClip } from '../../animation/CatStage';
 import { useBursts } from '../../animation/Burst';
@@ -23,6 +21,8 @@ import { petFeedback, successFeedback, tapFeedback } from '../../native/haptics'
 import { t } from '../../i18n';
 import { CountUp, Pop, Ring, Splash, usePress } from '../../ui/motion';
 import { HomeFeed } from '../../features/HomeFeed';
+
+const APressable = Animated.createAnimatedComponent(Pressable);
 
 export default function Home() {
   const { pet, ready } = useApp();
