@@ -10,7 +10,9 @@ import { confirmOccurrence } from '../features/careLink';
 import { bumpCounter } from '../data/engageRepo';
 import { useApp } from '../state/AppState';
 import { ScreenHeader } from '../ui/forms';
+import Animated, { FadeInDown, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { Label, Pill, SoftPill, T } from '../ui/primitives';
+import { Pulse } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { errorFeedback, tapFeedback } from '../native/haptics';
 import { confirmAsync } from '../ui/confirm';
@@ -152,15 +154,19 @@ export default function WalkTimer() {
             </T>
           ) : null}
           {!timer ? (
-            <Pill label={t('START WALK')} color="#58C322" onPress={start} testID="walk-start" />
+            <Animated.View key="start" entering={reduceMotion ? undefined : FadeInDown.springify().damping(16)}>
+              <Pulse amount={0.03} period={1600}>
+                <Pill label={t('START WALK')} color="#58C322" onPress={start} testID="walk-start" />
+              </Pulse>
+            </Animated.View>
           ) : (
-            <>
+            <Animated.View key="going" entering={reduceMotion ? undefined : FadeInUp.springify().damping(16)} layout={reduceMotion ? undefined : LinearTransition.springify()} style={{ gap: 10 }}>
               <Pill label={t('FINISH · {n} MIN', { n: Math.max(1, Math.round(ms / 60_000)) })} color="#58C322" onPress={finish} loading={saving} testID="walk-finish" />
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <SoftPill label={running ? t('Pause') : t('Resume')} color="#3E8E17" tint="#E6F7DA" onPress={pause} style={{ flex: 1 }} />
                 <SoftPill label={t('Discard')} color={colors.danger} tint={colors.dangerSoft} onPress={discard} style={{ flex: 1 }} />
               </View>
-            </>
+            </Animated.View>
           )}
           <T style={{ color: colors.muted, textAlign: 'center', fontSize: 13 }}>{t('The timer keeps going if you close the app.')}</T>
         </View>
