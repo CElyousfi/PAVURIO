@@ -1,7 +1,7 @@
 import { lang } from '../i18n/core';
 
 /** Public pages (site/ → GitHub Pages, gh-pages branch). Override with EXPO_PUBLIC_* once a custom domain exists. */
-const SITE = 'https://celyousfi.github.io/PAVURIO';
+const SITE = 'https://pavurio.com';
 const fr = () => (lang() === 'fr' ? '/fr' : '');
 export const LEGAL = {
   get privacy() {

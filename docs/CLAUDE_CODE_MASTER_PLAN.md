@@ -81,7 +81,7 @@ The codes must come from a Pavurio domain. Don't use `syndicup.pro`.
    ```
 
    If the API refuses, the owner does it in Settings → Pages.
-2. Check that these return 200: https://celyousfi.github.io/PAVURIO/, `/privacy.html`, `/terms.html`, `/support.html`, `/delete-account.html`, plus the same pages under `/fr/`.
+2. Check that these return 200: https://pavurio.com/, `/privacy.html`, `/terms.html`, `/support.html`, `/delete-account.html`, plus the same pages under `/fr/`.
 3. Optional, if the owner bought a domain:
    - Point `www` or the apex to GitHub Pages (CNAME `celyousfi.github.io`) and add a `CNAME` file on `gh-pages`.
    - Update `SITE` in `src/config/links.ts` and `BASE` in `tools/site/build.py`.
