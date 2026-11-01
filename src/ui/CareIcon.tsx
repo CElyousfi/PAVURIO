@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { motionReduced } from './motion';
 import { ART } from './art';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { CARE, CareType } from '../domain/care';
@@ -49,23 +50,23 @@ export function CareIcon({ type, size, level = 0.7, ring = false }: { type: Care
 
 /** When the art changes (empty → half → full) the new image fades in over the old one (200 ms, like a pour). */
 function ArtSwap({ source, style }: { source: number; style: object }) {
+  // previous-value-in-state pattern: the old art is known in the same render the new one appears,
+  // so there is never a frame with the new art at full opacity before the fade starts
+  const [cur, setCur] = useState(source);
   const [prev, setPrev] = useState<number | null>(null);
-  const last = useRef(source);
-  const v = useSharedValue(1);
+  if (source !== cur) {
+    setPrev(cur);
+    setCur(source);
+  }
   useEffect(() => {
-    if (last.current === source) return;
-    setPrev(last.current);
-    last.current = source;
-    v.value = 0;
-    v.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.quad) });
-    const t = setTimeout(() => setPrev(null), 230);
+    if (prev == null) return;
+    const t = setTimeout(() => setPrev(null), 240);
     return () => clearTimeout(t);
-  }, [source, v]);
-  const a = useAnimatedStyle(() => ({ opacity: v.value }));
+  }, [prev, cur]);
   return (
     <>
       {prev != null ? <Image source={prev} style={style} fadeDuration={0} /> : null}
-      <Animated.Image source={source} style={[style, a]} fadeDuration={0} />
+      <Animated.Image key={cur} entering={prev != null && !motionReduced() ? FadeIn.duration(200) : undefined} source={cur} style={style} fadeDuration={0} />
     </>
   );
 }

@@ -41,3 +41,16 @@ expo-notifications).
 ## Deliverables
 - `motion-output/motion-spec.md` — measured numbers, tokens, choreography.
 - `motion-output/preview.mp4` / `preview.gif` — Waterllama vs PAVURIO, same move, side by side.
+
+## Independent review → fixed before merge
+- The UI-thread clock never steps onto a sheet that isn't mounted (holds its frame and catches up by
+  time) — no blank pet when JS is late or a long loop restarts.
+- Sheet state is scoped to each playback (clip + nonce): an interrupted or replayed action never
+  reuses the previous run's sheet window.
+- An end queued by a previous run is ignored; a late second "ready" can't cancel the closing fade.
+- Memory: actions keep 2 decoded sheets per layer, a paused clock keeps 1; welcome-carousel pets on
+  pages that aren't showing pause.
+- Reduce motion stops an action already playing.
+- Art crossfade can't flash the new image for a frame; engagement loads immediately on pet switch and
+  runs never overlap (no duplicate badge); the notification banner is one accessible element and
+  keeps its space on the carousel (no layout jump).

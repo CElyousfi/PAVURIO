@@ -12,24 +12,27 @@ import { t } from '../i18n';
 
 const APP_ICON = require('../../assets/icon.png');
 
-export function NotifPreview({ title, body, when, delay = 250, style }: { title: string; body: string; when?: string; delay?: number; style?: StyleProp<ViewStyle> }) {
+/** `play`: when it becomes true the banner drops in; while false it keeps its space but stays hidden. */
+export function NotifPreview({ title, body, when, delay = 250, play = true, style }: { title: string; body: string; when?: string; delay?: number; play?: boolean; style?: StyleProp<ViewStyle> }) {
   const p = useSharedValue(motionReduced() ? 1 : 0);
-  useEffect(() => {
-    if (motionReduced()) return;
-    // banner physics: quick drop with a hint of overshoot, opacity leads slightly
-    p.value = withDelay(delay, withSpring(1, { damping: 16, stiffness: 230, mass: 0.8 }));
-  }, [delay, p]);
   const fade = useSharedValue(motionReduced() ? 1 : 0);
   useEffect(() => {
     if (motionReduced()) return;
+    if (!play) {
+      p.value = 0;
+      fade.value = 0;
+      return;
+    }
+    // banner physics: quick drop with a hint of overshoot, opacity leads slightly
+    p.value = withDelay(delay, withSpring(1, { damping: 16, stiffness: 230, mass: 0.8 }));
     fade.value = withDelay(delay, withTiming(1, { duration: 180, easing: Easing.out(Easing.quad) }));
-  }, [delay, fade]);
+  }, [play, delay, p, fade]);
   const a = useAnimatedStyle(() => ({
     opacity: fade.value,
     transform: [{ translateY: (1 - p.value) * -28 }, { scale: 0.94 + 0.06 * p.value }],
   }));
   return (
-    <Animated.View style={[styles.card, style, a]} accessibilityRole="text" accessibilityLabel={`${title}. ${body}`}>
+    <Animated.View style={[styles.card, style, a]} accessible accessibilityRole="text" accessibilityLabel={`${title}. ${body}`}>
       <Image source={APP_ICON} style={styles.icon} accessibilityIgnoresInvertColors />
       <View style={{ flex: 1 }}>
         <View style={styles.head}>

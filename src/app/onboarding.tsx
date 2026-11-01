@@ -504,20 +504,17 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
             </View>
             <View style={styles.hero}>
               {i === 0 ? (
-                <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} reduceMotion={reduceMotion} interactive />
+                <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} reduceMotion={reduceMotion} interactive active={page === 0} />
               ) : i === 1 ? (
                 <View style={{ alignItems: 'center' }}>
-                  {page === 1 ? (
-                    <NotifPreview
-                      title={t('Fresh water for {name} 💧', { name: 'Mochi' })}
-                      body={t('Tap Done when it’s done')}
-                      delay={300}
-                      style={{ marginBottom: 10, width: size + 20 }}
-                    />
-                  ) : (
-                    <View style={{ height: 76, marginBottom: 10 }} />
-                  )}
-                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={1} reduceMotion={reduceMotion} />
+                  <NotifPreview
+                    title={t('Fresh water for {name} 💧', { name: 'Mochi' })}
+                    body={t('Tap Done when it’s done')}
+                    delay={300}
+                    play={page === 1}
+                    style={{ marginBottom: 10, width: size + 20 }}
+                  />
+                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={1} reduceMotion={reduceMotion} active={page === 1} />
                 </View>
               ) : (
                 <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={1} clip={page === 2 ? clip : null} onClipEnd={() => setClip(page === 2 ? { name: 'celebrate', nonce: Date.now() } : null)} reduceMotion={reduceMotion} active={page === 2} />
