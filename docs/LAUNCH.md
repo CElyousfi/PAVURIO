@@ -22,7 +22,7 @@
 | **App icon** | ✅ Paw + dog & cat icon: `assets/icon.png`, adaptive set, Play 512 + App Store 1024 in `docs/store/graphics` |
 | **Play store listing** (5 locales: text, icon, feature graphic, 8 screenshots each) | ✅ Uploaded with `tools/store/play-listing.mjs` from `docs/store/listings.json`. Keyword strategy: `docs/store/ASO.md` |
 | **Play closed test** (`alpha`, version code 2) | ⏳ Saved as a **draft** release: Play keeps it a draft until the dashboard tasks (content rating, data safety, target audience, privacy URL, app access, ads) are answered in the console. Then roll it out and add 12 testers → 14 days → apply for production |
-| Google Play Real-time developer notifications → RevenueCat | ⏳ RevenueCat → Android app → "Connect to Google", paste the topic in Play Console → Monetization setup |
+| Google Play Real-time developer notifications → RevenueCat | ✅ Topic `projects/pavurio/topics/Play-Store-Notifications`, Google Play has Pub/Sub Publisher, test notification OK, saved in Monetization setup |
 | Play App Signing SHA-1/256 in Firebase | ✅ Added; `google-services.json` updated |
 | Art: `records` scene with the cat v2 | ⏳ ChatGPT |
 | Cat clips batch 2 (drink, play, groom, litter, hello, sleep, idle2) | ⏳ Gemini |
