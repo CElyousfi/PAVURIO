@@ -177,11 +177,13 @@ Notifications are local reminders for routines the user creates.
 
 **In-app purchases to create.** Use the same IDs in RevenueCat and on Google Play.
 
-| Product ID | Type | Suggested price | Notes |
+| Product ID | Type | Price (EUR / USD / GBP / MAD) | Notes |
 |---|---|---|---|
-| `pavurio_pro_yearly` | Auto-renewable subscription, group "Pavurio Pro" | €29.99 / $29.99 | Introductory offer: 7-day free trial. On Play: base plan ID `yearly` + a 7-day free-trial offer |
-| `pavurio_pro_monthly` | Auto-renewable subscription, same group | €4.99 / $4.99 | On Play: base plan ID `monthly` |
-| `pavurio_pro_lifetime` | Non-consumable | €59.99 / $59.99 | |
+| `pavurio_pro_yearly` | Auto-renewable subscription, group "Pavurio Pro" | €34.99 / $39.99 / £29.99 / 229 MAD | 7-day free trial. On Play: base plan `yearly` + offer `trial7` (P7D, free) — **live and ACTIVE** |
+| `pavurio_pro_monthly` | Auto-renewable subscription, same group | €5.99 / $6.99 / £4.99 / 39 MAD | On Play: base plan `monthly` — **live and ACTIVE** |
+| `pavurio_pro_lifetime` | Non-consumable | €79.99 / $89.99 / £69.99 / 549 MAD | On Play: purchase option `buy` — **live and ACTIVE** |
+
+Prices come from the elasticity study (revenue is flat between €25 and €45 for the yearly plan, so the yearly sits at the low end of the plateau; monthly is ~2× the yearly's per-month rate; lifetime ≈ 2.3 years of yearly). Other countries use Google's automatic conversion from the EUR/USD base. Mirror these exact amounts on the App Store when the Apple account is ready.
 
 In RevenueCat:
 
