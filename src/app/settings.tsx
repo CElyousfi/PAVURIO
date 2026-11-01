@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { Alert, Image, Linking, Platform, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plan } from '../domain/progress';
@@ -97,7 +98,7 @@ export default function Settings() {
           {cloudState.enabled ? (
             <>
               <Label style={styles.section}>{t('Account')}</Label>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('Account')} onPress={() => router.push('/account')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="account-row">
+              <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Account')} onPress={() => router.push('/account')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="account-row">
                 {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 17 }}>
@@ -108,7 +109,7 @@ export default function Settings() {
                   </T>
                 </View>
                 <Icon name="chevR" size={18} color={colors.faint} />
-              </Pressable>
+              </Bouncy>
             </>
           ) : null}
 
@@ -196,7 +197,7 @@ export default function Settings() {
           </View>
 
           <Label style={styles.section}>Pavurio Pro</Label>
-          <Pressable accessibilityRole="button" accessibilityLabel="Pavurio Pro" onPress={() => router.push('/paywall')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+          <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel="Pavurio Pro" onPress={() => router.push('/paywall')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
             {ART.icons.gem ? <Image source={ART.icons.gem} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="xbold" style={{ fontSize: 17 }}>
@@ -205,7 +206,7 @@ export default function Settings() {
               <T style={{ color: colors.muted, fontSize: 13 }}>{pro ? t('Thank you for supporting Pavurio.') : t('Restore a purchase or see plans')}</T>
             </View>
             <Icon name="chevR" size={18} color={colors.faint} />
-          </Pressable>
+          </Bouncy>
 
           <Label style={styles.section}>{t('Your data')}</Label>
           <View style={[styles.card, softShadow]}>
@@ -232,7 +233,7 @@ export default function Settings() {
               { label: t('Privacy policy'), body: cloudState.enabled ? t('What we keep and why') : t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.icons.shield },
               { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms), icon: ART.icons.calendar },
             ].map((r, i) => (
-              <Pressable key={r.label} accessibilityRole="button" accessibilityLabel={r.label} onPress={r.go} style={[styles.linkRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.line }]}>
+              <Bouncy scaleTo={0.975} key={r.label} accessibilityRole="button" accessibilityLabel={r.label} onPress={r.go} style={[styles.linkRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.line }]}>
                 {r.icon ? <Image source={r.icon} style={{ width: 30, height: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 16 }}>
@@ -241,7 +242,7 @@ export default function Settings() {
                   <T style={{ color: colors.muted, fontSize: 13 }}>{r.body}</T>
                 </View>
                 <Icon name="chevR" size={18} color={colors.faint} />
-              </Pressable>
+              </Bouncy>
             ))}
           </View>
 

@@ -1,6 +1,7 @@
 /** Shared pieces for scheduled care: kind metadata, icons, occurrence rows and their actions. */
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import type { Db } from '../data/db';
@@ -141,26 +142,26 @@ export function OccurrenceRow({
         </View>
       </View>
       {closed ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={t('Reopen {title}', { title: o.title })} onPress={() => reopenOccurrence(db, o, bump)} style={styles.ghost} hitSlop={6}>
+        <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Reopen {title}', { title: o.title })} onPress={() => reopenOccurrence(db, o, bump)} style={styles.ghost} hitSlop={6}>
           <T weight="black" style={styles.ghostText}>
             {t('REOPEN')}
           </T>
-        </Pressable>
+        </Bouncy>
       ) : (
         <View style={{ flexDirection: 'row', gap: 6 }}>
           {!future ? (
-            <Pressable accessibilityRole="button" accessibilityLabel={t('Snooze {title} 30 minutes', { title: o.title })} onPress={() => snoozeOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
+            <Bouncy accessibilityRole="button" accessibilityLabel={t('Snooze {title} 30 minutes', { title: o.title })} onPress={() => snoozeOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
               <Svg width={20} height={20} viewBox="0 0 24 24">
                 <Circle cx={12} cy={13} r={7.5} stroke={colors.inkSoft} strokeWidth={2.2} fill="none" />
                 <Path d="M12 9.5V13l2.3 1.6M4.5 5.5 7 3.5M19.5 5.5 17 3.5" stroke={colors.inkSoft} strokeWidth={2.2} strokeLinecap="round" fill="none" />
               </Svg>
-            </Pressable>
+            </Bouncy>
           ) : null}
-          <Pressable accessibilityRole="button" accessibilityLabel={t('Skip {title}', { title: o.title })} onPress={() => skipOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
+          <Bouncy accessibilityRole="button" accessibilityLabel={t('Skip {title}', { title: o.title })} onPress={() => skipOccurrence(db, o, bump)} style={styles.round} hitSlop={4}>
             <Icon name="close" size={18} color={colors.inkSoft} />
-          </Pressable>
+          </Bouncy>
           {!future ? (
-            <Pressable
+            <Bouncy
               accessibilityRole="button"
               accessibilityLabel={t('Mark {title} done', { title: o.title })}
               onPress={() => completeOccurrence(db, species, o, bump)}
@@ -169,7 +170,7 @@ export function OccurrenceRow({
               testID={`occ-done-${o.key}`}
             >
               <Icon name="check" size={18} color="#FFFFFF" />
-            </Pressable>
+            </Bouncy>
           ) : null}
         </View>
       )}

@@ -21,8 +21,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { T } from './primitives';
+import { springs } from './springs';
 import { colors } from './theme';
 import { tapFeedback } from '../native/haptics';
+
+export { springs, usePress } from './springs';
 
 let reduceMotionCache = false;
 AccessibilityInfo.isReduceMotionEnabled?.()
@@ -30,6 +33,43 @@ AccessibilityInfo.isReduceMotionEnabled?.()
   .catch(() => {});
 export const setMotionReduced = (v: boolean) => (reduceMotionCache = v);
 export const motionReduced = () => reduceMotionCache;
+
+/** Bumps its children (scale up and settle) every time `trigger` changes. For numbers and counts that just changed. */
+export function Pop({ trigger, children, style, amount = 0.18 }: { trigger: unknown; children: React.ReactNode; style?: StyleProp<ViewStyle>; amount?: number }) {
+  const s = useSharedValue(1);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    if (motionReduced()) return;
+    s.value = withSequence(withTiming(1 + amount, { duration: 110, easing: Easing.out(Easing.quad) }), withSpring(1, springs.pop));
+  }, [trigger, amount, s]);
+  const a = useAnimatedStyle(() => ({ transform: [{ scale: s.value }] }));
+  return <Animated.View style={[style, a]}>{children}</Animated.View>;
+}
+
+/** Scale+fade in from a point (used for the log card's object growing out of the tapped icon). */
+export function FlyIn({ from, children, style, delay = 0 }: { from: { dx: number; dy: number; scale: number } | null; children: React.ReactNode; style?: StyleProp<ViewStyle>; delay?: number }) {
+  const v = useSharedValue(from && !motionReduced() ? 0 : 1);
+  useEffect(() => {
+    if (!from || motionReduced()) {
+      v.value = 1;
+      return;
+    }
+    v.value = withDelay(delay, withSpring(1, { damping: 16, stiffness: 150, mass: 0.9 }));
+  }, [from, delay, v]);
+  const a = useAnimatedStyle(() => {
+    const p = v.value;
+    const f = from ?? { dx: 0, dy: 0, scale: 1 };
+    return {
+      opacity: Math.min(1, p * 2.5),
+      transform: [{ translateX: f.dx * (1 - p) }, { translateY: f.dy * (1 - p) }, { scale: f.scale + (1 - f.scale) * p }],
+    };
+  });
+  return <Animated.View style={[style, a]}>{children}</Animated.View>;
+}
 
 /** Number that counts from its previous value to the new one. */
 export function CountUp({ value, format = (n) => String(Math.round(n)), duration = 700, style, weight = 'black' }: { value: number; format?: (n: number) => string; duration?: number; style?: StyleProp<any>; weight?: 'bold' | 'xbold' | 'black' }) {
@@ -80,11 +120,11 @@ export function Bouncy({ children, onPress, style, scaleTo = 0.95, haptic = true
       {...rest}
       style={outer as ViewStyle}
       onPressIn={(e) => {
-        s.value = withSpring(scaleTo, { damping: 15, stiffness: 400 });
+        s.value = withSpring(scaleTo, springs.pressIn);
         rest.onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        s.value = withSpring(1, { damping: 9, stiffness: 300 });
+        s.value = withSpring(1, springs.pressOut);
         rest.onPressOut?.(e);
       }}
       onPress={(e) => {
@@ -231,6 +271,53 @@ export function ConfettiRain({ fireKey, colorsList = ['#14B8C4', '#FFC83D', '#FF
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {pieces.map((p) => (
         <ConfettiPiece key={p.id} p={p} height={height} clock={clock} />
+      ))}
+    </View>
+  );
+}
+
+// ------------------------------------------------------------- splash (droplets above an icon after a save)
+
+type Drop = { id: number; dx: number; dy: number; size: number; delay: number; color: string };
+
+function SplashDrop({ d, clock }: { d: Drop; clock: SharedValue<number> }) {
+  const a = useAnimatedStyle(() => {
+    const p = Math.max(0, Math.min(1, (clock.value * 700 - d.delay) / 520));
+    const up = Math.sin(p * Math.PI); // rises then falls back
+    return {
+      opacity: p <= 0 ? 0 : 1 - p * p,
+      transform: [{ translateX: d.dx * p }, { translateY: -d.dy * up + p * p * 14 }, { scale: 0.6 + 0.4 * up }],
+    };
+  });
+  return <Animated.View style={[{ position: 'absolute', width: d.size, height: d.size, borderRadius: d.size / 2, backgroundColor: d.color }, a]} />;
+}
+
+/** A little fountain of droplets centred in its parent; re-fire by changing `fireKey`. The parent should be `overflow: visible`. */
+export function Splash({ fireKey, color, count = 7 }: { fireKey: number | null; color: string; count?: number }) {
+  const [drops, setDrops] = useState<Drop[]>([]);
+  const clock = useSharedValue(0);
+  useEffect(() => {
+    if (!fireKey || motionReduced()) return;
+    setDrops(
+      Array.from({ length: count }, (_, i) => ({
+        id: fireKey * 100 + i,
+        dx: (i - (count - 1) / 2) * 9 + (Math.random() - 0.5) * 8,
+        dy: 26 + Math.random() * 22,
+        size: 5 + Math.random() * 4,
+        delay: Math.random() * 90,
+        color,
+      })),
+    );
+    clock.value = 0;
+    clock.value = withTiming(1, { duration: 700, easing: Easing.linear });
+    const timer = setTimeout(() => setDrops([]), 760);
+    return () => clearTimeout(timer);
+  }, [fireKey, count, color, clock]);
+  if (!drops.length) return null;
+  return (
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'flex-start', top: -4 }]}>
+      {drops.map((d) => (
+        <SplashDrop key={d.id} d={d} clock={clock} />
       ))}
     </View>
   );

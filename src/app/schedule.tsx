@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Bouncy } from '../ui/motion';
 import { router, useLocalSearchParams } from 'expo-router';
 import { createSchedule, deleteSchedule, listSchedules, updateSchedule } from '../data/careRepo';
 import { ValidationError } from '../data/repo';
@@ -139,7 +140,7 @@ export default function ScheduleEditor() {
             const on = k === type;
             const m = kindMeta(k);
             return (
-              <Pressable
+              <Bouncy
                 key={k}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: on }}
@@ -154,7 +155,7 @@ export default function ScheduleEditor() {
                 <T weight="black" style={{ fontSize: 12, color: on ? m.color : colors.inkSoft }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
                   {m.label}
                 </T>
-              </Pressable>
+              </Bouncy>
             );
           })}
         </View>
@@ -179,14 +180,14 @@ export default function ScheduleEditor() {
               <TimeField label="" value={tm} onChange={(v) => setTimes(times.map((x, j) => (j === i ? v : x)))} />
             </View>
             {times.length > 1 ? (
-              <Pressable accessibilityRole="button" accessibilityLabel={t('Remove time')} onPress={() => setTimes(times.filter((_, j) => j !== i))} style={styles.remove} hitSlop={6}>
+              <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Remove time')} onPress={() => setTimes(times.filter((_, j) => j !== i))} style={styles.remove} hitSlop={6}>
                 <Icon name="close" size={18} color={colors.inkSoft} />
-              </Pressable>
+              </Bouncy>
             ) : null}
           </View>
         ))}
         {times.length < 12 ? (
-          <Pressable
+          <Bouncy
             accessibilityRole="button"
             accessibilityLabel={t('Add a time')}
             onPress={() => {
@@ -201,7 +202,7 @@ export default function ScheduleEditor() {
             <T weight="black" style={{ color, fontSize: 15 }}>
               {t('Add a time')}
             </T>
-          </Pressable>
+          </Bouncy>
         ) : null}
       </View>
 
@@ -211,7 +212,7 @@ export default function ScheduleEditor() {
           {weekdayInitials().map((d, i) => {
             const on = activeDays.includes(i);
             return (
-              <Pressable
+              <Bouncy
                 key={i}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: on }}
@@ -222,7 +223,7 @@ export default function ScheduleEditor() {
                 <T weight="black" style={{ color: on ? '#FFFFFF' : colors.inkSoft, fontSize: 15 }}>
                   {d}
                 </T>
-              </Pressable>
+              </Bouncy>
             );
           })}
         </View>

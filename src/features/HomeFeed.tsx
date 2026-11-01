@@ -1,6 +1,6 @@
 /** The cards under the pet on Home (Waterllama's feed): streak, challenges, tips, story, badges, Pro, visits. */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { PetAvatar } from '../animation/PetAvatar';
@@ -45,11 +45,11 @@ function Section({ title, action, onAction, children }: { title: string; action?
           {title}
         </T>
         {action && onAction ? (
-          <Pressable accessibilityRole="button" accessibilityLabel={action} onPress={onAction} hitSlop={8}>
+          <Bouncy accessibilityRole="button" accessibilityLabel={action} onPress={onAction} hitSlop={8}>
             <T weight="black" style={{ color: colors.brand, fontSize: 14 }}>
               {action}
             </T>
-          </Pressable>
+          </Bouncy>
         ) : null}
       </View>
       {children}
@@ -237,7 +237,7 @@ export function HomeFeed({ width }: { width: number }) {
       {/* account: guests are backed up, but only a saved account survives a new phone */}
       {cloudState.enabled && cloudState.user?.anonymous ? (
         <Enter index={7}>
-          <Pressable onPress={() => router.push('/account')} style={[styles.save, softShadow]} accessibilityRole="button" testID="feed-save-account">
+          <Bouncy scaleTo={0.975} onPress={() => router.push('/account')} style={[styles.save, softShadow]} accessibilityRole="button" testID="feed-save-account">
             {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 54, height: 54 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ fontSize: 17 }}>
@@ -246,7 +246,7 @@ export function HomeFeed({ width }: { width: number }) {
               <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18, marginTop: 2 }}>{t('Save your account to get your pets back on a new phone.')}</T>
             </View>
             <Icon name="chevR" size={18} color={colors.faint} />
-          </Pressable>
+          </Bouncy>
         </Enter>
       ) : null}
 

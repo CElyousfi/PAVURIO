@@ -1,9 +1,13 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, TextProps, TextStyle, View, ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { colors, font, radius, shadow } from './theme';
 import { tapFeedback } from '../native/haptics';
+import { usePress } from './springs';
 import { t } from '../i18n';
+
+const APressable = Animated.createAnimatedComponent(Pressable);
 
 export function T({ style, weight = 'bold', ...rest }: TextProps & { weight?: 'bold' | 'xbold' | 'black' }) {
   return <Text {...rest} style={[{ fontFamily: font[weight], color: colors.ink }, style]} />;
@@ -23,8 +27,10 @@ type PillProps = {
 
 /** Big rounded CTA pill (dark navy by default, or a care color). */
 export function Pill({ label, onPress, color = colors.ink, textColor = '#FFFFFF', disabled, loading, style, accessibilityHint, testID }: PillProps) {
+  const press = usePress(0.96);
   return (
-    <Pressable
+    <APressable
+      {...press.handlers}
       testID={testID}
       accessibilityRole="button"
       accessibilityLabel={label.replace('+ ', t('Add '))}
@@ -35,31 +41,29 @@ export function Pill({ label, onPress, color = colors.ink, textColor = '#FFFFFF'
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [
-        styles.pill,
-        { backgroundColor: color, opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] },
-        style,
-      ]}
+      style={[styles.pill, { backgroundColor: color, opacity: disabled ? 0.45 : 1 }, style, press.style]}
     >
       {loading ? <ActivityIndicator color={textColor} /> : <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.pillText, { color: textColor }, label.length > 16 && { fontSize: 17, letterSpacing: 0.6 }]}>{label}</Text>}
-    </Pressable>
+    </APressable>
   );
 }
 
 /** Soft tinted pill (secondary actions like "Delete / Edit"). */
 export function SoftPill({ label, onPress, color = colors.brand, tint = colors.brandSoft, style, small }: { label: string; onPress: () => void; color?: string; tint?: string; style?: StyleProp<ViewStyle>; small?: boolean }) {
+  const press = usePress(0.95);
   return (
-    <Pressable
+    <APressable
+      {...press.handlers}
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={() => {
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [styles.soft, small && styles.softSmall, { backgroundColor: tint, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
+      style={[styles.soft, small && styles.softSmall, { backgroundColor: tint }, style, press.style]}
     >
       <Text style={[styles.softText, small && { fontSize: 14 }, { color }]}>{label}</Text>
-    </Pressable>
+    </APressable>
   );
 }
 
@@ -87,8 +91,10 @@ export function Icon({ name, size = 22, color = colors.ink }: { name: IconName; 
 
 /** White floating circle button with soft shadow (close, settings, back). */
 export function CircleButton({ icon, onPress, label, size = 52, children, style }: { icon?: IconName; onPress: () => void; label: string; size?: number; children?: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+  const press = usePress(0.9);
   return (
-    <Pressable
+    <APressable
+      {...press.handlers}
       accessibilityRole="button"
       accessibilityLabel={label}
       hitSlop={8}
@@ -96,15 +102,10 @@ export function CircleButton({ icon, onPress, label, size = 52, children, style 
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [
-        styles.circle,
-        shadow,
-        { width: size, height: size, borderRadius: size / 2, transform: [{ scale: pressed ? 0.94 : 1 }] },
-        style,
-      ]}
+      style={[styles.circle, shadow, { width: size, height: size, borderRadius: size / 2 }, style, press.style]}
     >
       {children ?? (icon ? <Icon name={icon} /> : null)}
-    </Pressable>
+    </APressable>
   );
 }
 
