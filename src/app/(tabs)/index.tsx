@@ -19,8 +19,10 @@ import { CareIcon } from '../../ui/CareIcon';
 import { colors, font, radius, softShadow } from '../../ui/theme';
 import { petFeedback, successFeedback, tapFeedback } from '../../native/haptics';
 import { t } from '../../i18n';
-import { CountUp, Ring } from '../../ui/motion';
+import { CountUp, Pop, Ring, Splash, usePress } from '../../ui/motion';
 import { HomeFeed } from '../../features/HomeFeed';
+
+const APressable = Animated.createAnimatedComponent(Pressable);
 
 export default function Home() {
   const { pet, ready } = useApp();
@@ -66,6 +68,8 @@ function HomeScreen() {
   const openCount = occ.filter((o) => o.status !== 'done' && o.status !== 'skipped').length;
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
+  // droplets over the care icon that was just logged (the Waterllama "sip")
+  const [splash, setSplash] = useState<{ type: CareType; key: number } | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
   const night = useNight();
   // a wave the first time Home is opened in this session (not at night, not over a celebration)
@@ -111,6 +115,7 @@ function HomeScreen() {
       successFeedback();
     }, 380);
     setSnack({ eventId, type });
+    setSplash({ type, key: Date.now() });
     if (snackTimer.current) clearTimeout(snackTimer.current);
     snackTimer.current = setTimeout(() => setSnack(null), 6000);
   }, [logged, focused, clearLogged, fire, pet, reduceMotion]);
@@ -151,16 +156,16 @@ function HomeScreen() {
       >
       <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 64 }]}>
 
-        <View style={styles.header}>
+        <View style={styles.header} accessibilityRole="header" accessibilityLabel={`${big} · ${progressSentence(progress)}`}>
           <Label style={{ marginBottom: 2 }}>{t("{name}'s day", { name: pet.name })}</Label>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={big}>
+          <Pop trigger={progress.planned > 0 ? progress.done : events.length} amount={0.12} style={{ flexDirection: 'row', alignItems: 'baseline' }}>
             <CountUp value={progress.planned > 0 ? progress.done : events.length} style={styles.big} />
             {progress.planned > 0 ? (
               <T weight="black" style={styles.big}>
                 /{progress.planned}
               </T>
             ) : null}
-          </View>
+          </Pop>
           <T style={styles.subtitle}>{progressSentence(progress)}</T>
         </View>
 
@@ -212,9 +217,10 @@ function HomeScreen() {
               label={CARE[ct].label}
               color={CARE[ct].color}
               count={progress.counts[ct] ?? 0}
-              onPress={() => router.push({ pathname: '/log/[type]', params: { type: ct, day: todayKey } })}
+              onPress={(origin) => router.push({ pathname: '/log/[type]', params: { type: ct, day: todayKey, ...origin } })}
               accessibilityLabel={t('Log {label}', { label: CARE[ct].label })}
               icon={<CareIcon type={ct} size={62} />}
+              splashKey={splash?.type === ct ? splash.key : null}
               testID={`quick-${ct}`}
             />
           ))}
@@ -308,6 +314,8 @@ function HomeScreen() {
   );
 }
 
+type Origin = { ox: string; oy: string; os: string };
+
 function RowItem({
   label,
   icon,
@@ -315,28 +323,37 @@ function RowItem({
   count,
   onPress,
   accessibilityLabel,
+  splashKey = null,
   testID,
 }: {
   label: string;
   icon: React.ReactNode;
   color?: string;
   count?: number;
-  onPress: () => void;
+  /** receives the icon's on-screen centre so the next screen can grow out of it */
+  onPress: (origin: Origin | undefined) => void;
   accessibilityLabel: string;
+  splashKey?: number | null;
   testID?: string;
 }) {
+  const press = usePress(0.9);
+  const iconRef = useRef<React.ComponentRef<typeof View>>(null);
+  const go = () => {
+    tapFeedback();
+    const node = iconRef.current;
+    if (!node || typeof node.measureInWindow !== 'function') return onPress(undefined);
+    let done = false;
+    const fire = (origin?: Origin) => {
+      if (done) return;
+      done = true;
+      onPress(origin);
+    };
+    node.measureInWindow((x: number, y: number, w: number, h: number) => fire({ ox: String(Math.round(x + w / 2)), oy: String(Math.round(y + h / 2)), os: String(Math.round(w)) }));
+    setTimeout(() => fire(undefined), 60); // measurement never answered (shouldn't happen): open anyway
+  };
   return (
-    <Pressable
-      testID={testID}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      onPress={() => {
-        tapFeedback();
-        onPress();
-      }}
-      style={({ pressed }) => [styles.item, { transform: [{ scale: pressed ? 0.92 : 1 }] }]}
-    >
-      <View>
+    <APressable {...press.handlers} testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={go} style={[styles.item, press.style]}>
+      <View ref={iconRef} collapsable={false}>
         {icon}
         {color ? (
           <View style={[styles.plus, { backgroundColor: color }]}>
@@ -344,17 +361,18 @@ function RowItem({
           </View>
         ) : null}
         {count ? (
-          <View style={[styles.count, { borderColor: color }]}>
+          <Pop trigger={count} amount={0.5} style={[styles.count, { borderColor: color }]}>
             <T weight="black" style={{ fontSize: 11, color }}>
               {count}
             </T>
-          </View>
+          </Pop>
         ) : null}
+        {color ? <Splash fireKey={splashKey} color={color} /> : null}
       </View>
       <T weight="black" style={styles.itemLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
         {label.toUpperCase()}
       </T>
-    </Pressable>
+    </APressable>
   );
 }
 

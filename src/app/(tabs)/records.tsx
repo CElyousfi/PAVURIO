@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Bouncy } from '../../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -62,7 +63,7 @@ export default function RecordsTab() {
             {due.slice(0, 4).map((r) => {
               const late = r.dueDate! < today;
               return (
-                <Pressable key={r.id} accessibilityRole="button" accessibilityLabel={t('{title} due {date}', { title: r.title, date: formatDateLong(r.dueDate) })} onPress={() => router.push({ pathname: '/record', params: { id: r.id } })} style={styles.dueRow}>
+                <Bouncy scaleTo={0.975} key={r.id} accessibilityRole="button" accessibilityLabel={t('{title} due {date}', { title: r.title, date: formatDateLong(r.dueDate) })} onPress={() => router.push({ pathname: '/record', params: { id: r.id } })} style={styles.dueRow}>
                   <View style={[styles.kindDot, { backgroundColor: recordKind(r.kind).color }]} />
                   <T weight="xbold" style={{ flex: 1, fontSize: 15 }} numberOfLines={1}>
                     {r.title}
@@ -71,7 +72,7 @@ export default function RecordsTab() {
                     {late ? `${t('Overdue')} · ` : ''}
                     {formatDateLong(r.dueDate)}
                   </T>
-                </Pressable>
+                </Bouncy>
               );
             })}
           </Card>

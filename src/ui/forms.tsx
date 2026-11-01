@@ -1,14 +1,18 @@
 /** Shared form & layout pieces for the care, records and moments screens. */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CircleButton, Icon, Label, Pill, T } from './primitives';
 import { colors, font, radius, softShadow } from './theme';
 import { tapFeedback } from '../native/haptics';
-import { Bouncy, Enter } from './motion';
+import { Bouncy, Enter, motionReduced } from './motion';
+import { springs, usePress } from './springs';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { lang, t } from '../i18n';
 import { capitalize, formatHM, monthNames, monthNamesShort, uses24h, weekdayInitials } from '../i18n/dates';
+
+const APressable = Animated.createAnimatedComponent(Pressable);
 
 /** "Oct 31, 2026" in English, "31 oct. 2026" in French. */
 export function formatDateLong(key: string | null | undefined): string {
@@ -55,8 +59,10 @@ export function Field({ label, style, ...rest }: TextInputProps & { label: strin
 }
 
 export function Chip({ label, on, onPress, color = colors.ink, tint = colors.line }: { label: string; on: boolean; onPress: () => void; color?: string; tint?: string }) {
+  const press = usePress(0.93);
   return (
-    <Pressable
+    <APressable
+      {...press.handlers}
       accessibilityRole="radio"
       accessibilityState={{ selected: on }}
       accessibilityLabel={label}
@@ -64,12 +70,12 @@ export function Chip({ label, on, onPress, color = colors.ink, tint = colors.lin
         tapFeedback();
         onPress();
       }}
-      style={[styles.chip, { backgroundColor: on ? color : tint }]}
+      style={[styles.chip, { backgroundColor: on ? color : tint }, press.style]}
     >
       <T weight="xbold" style={{ color: on ? '#FFFFFF' : color === colors.ink ? colors.inkSoft : color, fontSize: 15 }}>
         {label}
       </T>
-    </Pressable>
+    </APressable>
   );
 }
 
@@ -100,24 +106,47 @@ export function EmptyState({ title, body, action, onAction, art }: { title: stri
 /** Bottom sheet built on Modal: dims the screen, slides up, closes on backdrop tap. */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+  // the Modal stays mounted while the sheet slides out, so closing is as smooth as opening
+  const [mounted, setMounted] = useState(visible);
+  const p = useSharedValue(0); // 0 = hidden, 1 = shown
+  useEffect(() => {
+    if (visible) {
+      setMounted(true);
+      p.value = motionReduced() ? 1 : withSpring(1, springs.gentle);
+    } else if (mounted) {
+      if (motionReduced()) {
+        p.value = 0;
+        setMounted(false);
+      } else {
+        p.value = withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }, (done) => {
+          if (done) runOnJS(setMounted)(false);
+        });
+      }
+    }
+  }, [visible, mounted, p]);
+  const backdrop = useAnimatedStyle(() => ({ opacity: p.value }));
+  const panel = useAnimatedStyle(() => ({ transform: [{ translateY: (1 - p.value) * 420 }] }));
+  if (!mounted) return null;
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel={t('Close')} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
-        <View style={styles.sheetHandle} />
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-          <T weight="black" style={{ fontSize: 20, flex: 1 }}>
-            {title}
-          </T>
-          <CircleButton icon="close" label={t('Close')} onPress={onClose} size={40} />
-        </View>
-        {children}
+    <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+      <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdrop]}>
+        <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Close')} accessibilityRole="button" />
+      </Animated.View>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
+        <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }, panel]}>
+          <View style={styles.sheetHandle} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <T weight="black" style={{ fontSize: 20, flex: 1 }}>
+              {title}
+            </T>
+            <CircleButton icon="close" label={t('Close')} onPress={onClose} size={40} />
+          </View>
+          {children}
+        </Animated.View>
       </View>
     </Modal>
   );
 }
-
-// ------------------------------------------------------------- calendar month grid
 
 export function MonthGrid({
   month,
@@ -374,6 +403,12 @@ export function ModalScreen({
 }
 
 export function Toggle({ label, body, value, onChange }: { label: string; body?: string; value: boolean; onChange: (v: boolean) => void }) {
+  const on = useSharedValue(value ? 1 : 0);
+  useEffect(() => {
+    on.value = motionReduced() ? (value ? 1 : 0) : withSpring(value ? 1 : 0, { damping: 16, stiffness: 260 });
+  }, [value, on]);
+  const knob = useAnimatedStyle(() => ({ transform: [{ translateX: on.value * 20 }, { scaleX: 1 + Math.sin(on.value * Math.PI) * 0.25 }] }));
+  const track = useAnimatedStyle(() => ({ backgroundColor: on.value > 0.5 ? colors.brand : colors.faint }));
   return (
     <Pressable
       accessibilityRole="switch"
@@ -391,9 +426,9 @@ export function Toggle({ label, body, value, onChange }: { label: string; body?:
         </T>
         {body ? <T style={{ color: colors.muted, fontSize: 14, marginTop: 2, lineHeight: 19 }}>{body}</T> : null}
       </View>
-      <View style={[styles.track, value && { backgroundColor: colors.brand }]}>
-        <View style={[styles.knob, value && { transform: [{ translateX: 20 }] }]} />
-      </View>
+      <Animated.View style={[styles.track, track]}>
+        <Animated.View style={[styles.knob, knob]} />
+      </Animated.View>
     </Pressable>
   );
 }
@@ -419,7 +454,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 14, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   card: { backgroundColor: colors.white, borderRadius: radius.card - 6, padding: 16 },
   empty: { alignItems: 'center', paddingVertical: 36, paddingHorizontal: 24 },
-  backdrop: { flex: 1, backgroundColor: 'rgba(20,26,40,0.35)' },
+  backdrop: { backgroundColor: 'rgba(20,26,40,0.4)' },
   sheet: { backgroundColor: colors.white, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 20, paddingTop: 10 },
   sheetHandle: { alignSelf: 'center', width: 40, height: 5, borderRadius: 3, backgroundColor: colors.line, marginBottom: 12 },
   weekRow: { flexDirection: 'row' },

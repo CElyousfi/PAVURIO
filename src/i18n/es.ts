@@ -963,4 +963,7 @@ export const ES: Record<string, string> = {
   "Complete a challenge.": "Completa un reto.",
   "Best friends": "Mejores amigos",
   "Care for 2 pets.": "Cuida de 2 mascotas.",
+  "Units": "Unidades",
+  "That's not here any more": "Eso ya no está aquí",
+  "It may have been removed, or the link is out of date.": "Puede que se haya eliminado o que el enlace esté desactualizado.",
 };

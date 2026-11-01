@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, ZoomIn, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { PetAvatar } from '../animation/PetAvatar';
 import { defaultAppearance } from '../domain/appearance';
@@ -225,6 +225,7 @@ export default function Paywall() {
                       style={[styles.plan, on ? styles.planOn : null]}
                       scaleTo={0.97}
                     >
+                      <SelectGlow on={on} />
                       {best && (saving || p.trialDays) ? (
                         <View style={styles.flag}>
                           <T weight="black" style={styles.flagText}>
@@ -232,7 +233,13 @@ export default function Paywall() {
                           </T>
                         </View>
                       ) : null}
-                      <View style={[styles.radio, on && { borderColor: '#FFFFFF', backgroundColor: '#FFFFFF' }]}>{on ? <Icon name="check" size={14} color={colors.brand} /> : null}</View>
+                      <View style={[styles.radio, on && { borderColor: '#FFFFFF', backgroundColor: '#FFFFFF' }]}>
+                        {on ? (
+                          <Animated.View entering={ZoomIn.springify().damping(12)}>
+                            <Icon name="check" size={14} color={colors.brand} />
+                          </Animated.View>
+                        ) : null}
+                      </View>
                       <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                           <T weight="black" style={{ fontSize: 18, color: on ? '#FFFFFF' : colors.ink }}>
@@ -420,6 +427,16 @@ export default function Paywall() {
   );
 }
 
+/** The selected plan's brand fill fades in under the content instead of snapping. */
+function SelectGlow({ on }: { on: boolean }) {
+  const v = useSharedValue(on ? 1 : 0);
+  useEffect(() => {
+    v.value = withSpring(on ? 1 : 0, { damping: 18, stiffness: 220 });
+  }, [on, v]);
+  const a = useAnimatedStyle(() => ({ opacity: v.value }));
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 22, backgroundColor: colors.brand }, a]} />;
+}
+
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
   top: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 18, height: 48, zIndex: 2 },
@@ -431,7 +448,7 @@ const styles = StyleSheet.create({
   h1: { fontSize: 29, lineHeight: 35, textAlign: 'center', marginTop: 4 },
   h2: { fontSize: 21, textAlign: 'center' },
   plan: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 18, borderRadius: 24, backgroundColor: '#EAF8F9', borderWidth: 2, borderColor: 'transparent' },
-  planOn: { backgroundColor: colors.brand, borderColor: colors.brand },
+  planOn: { borderColor: colors.brand },
   flag: { position: 'absolute', top: -10, right: 16, backgroundColor: '#FF4F8B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
   flagText: { color: '#FFFFFF', fontSize: 11, letterSpacing: 1 },
   radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: colors.faint, alignItems: 'center', justifyContent: 'center' },

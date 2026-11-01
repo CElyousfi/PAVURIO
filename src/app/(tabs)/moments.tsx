@@ -10,7 +10,7 @@ import { dayKeyOf, parseDayKey } from '../../domain/time';
 import { useApp } from '../../state/AppState';
 import { EmptyState, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, T } from '../../ui/primitives';
-import { Enter } from '../../ui/motion';
+import { Bouncy, Enter } from '../../ui/motion';
 import { ART } from '../../ui/art';
 import { Scene } from '../../ui/Scene';
 import { colors } from '../../ui/theme';
@@ -66,14 +66,15 @@ export default function MomentsTab() {
           </T>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             {(['week', 'month'] as StoryRange[]).map((r) => (
-              <Pressable
+              <Bouncy
                 key={r}
                 disabled={!ready[r]}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: !ready[r] }}
                 accessibilityLabel={r === 'week' ? t('Play this week story') : t('Play this month story')}
                 onPress={() => (r === 'month' && !pro ? router.push({ pathname: '/paywall', params: { reason: 'story' } }) : router.push({ pathname: '/story', params: { range: r } }))}
-                style={({ pressed }) => [styles.story, { opacity: ready[r] ? 1 : 0.5, transform: [{ scale: pressed ? 0.97 : 1 }] }, r === 'month' && { backgroundColor: '#FFE9D6' }]}
+                scaleTo={0.96}
+                style={[styles.story, { opacity: ready[r] ? 1 : 0.5 }, r === 'month' && { backgroundColor: '#FFE9D6' }]}
                 testID={`story-${r}`}
               >
                 <View style={[styles.ring, { borderColor: r === 'week' ? colors.brand : '#F59E0B' }]}>
@@ -83,7 +84,7 @@ export default function MomentsTab() {
                   {r === 'week' ? t('This week') : t('This month')}
                 </T>
                 <T style={{ fontSize: 12, color: colors.muted, textAlign: 'center' }}>{!ready[r] ? t('Log a few cares to unlock') : r === 'month' && !pro ? t('Pro · tap to see') : t('Tap to play')}</T>
-              </Pressable>
+              </Bouncy>
             ))}
           </View>
         </View>

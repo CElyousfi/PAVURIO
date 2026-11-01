@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator, Image, View } from 'react-native';
+import { Image, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Stack, router, type ErrorBoundaryProps } from 'expo-router';
 import { ART } from '../ui/art';
 import { Pill, T } from '../ui/primitives';
@@ -101,22 +102,17 @@ function Gate() {
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
-  if (!ready) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.canvas }}>
-        <ActivityIndicator color={colors.brand} />
-      </View>
-    );
-  }
+  // the native splash stays up until `ready`; this only shows for a few frames on web
+  if (!ready) return <View style={{ flex: 1, backgroundColor: colors.canvas }} />;
   return (
-    <React.Fragment key={language}>
+    <Animated.View key={language} entering={FadeIn.duration(260)} style={{ flex: 1 }}>
       <ReminderRouter />
       <CelebrationHost />
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas } }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false, animation: 'fade' }} />
-        <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 180 }} />
         <Stack.Screen name="day" options={{ presentation: 'modal' }} />
         <Stack.Screen name="studio" options={{ presentation: 'modal' }} />
         <Stack.Screen name="settings" />
@@ -124,18 +120,18 @@ function Gate() {
         <Stack.Screen name="schedule" options={{ presentation: 'modal' }} />
         <Stack.Screen name="appointment" options={{ presentation: 'modal' }} />
         <Stack.Screen name="weight" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="walk" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="walk" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
         <Stack.Screen name="record" options={{ presentation: 'modal' }} />
         <Stack.Screen name="memory" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 320 }} />
+        <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
         <Stack.Screen name="pet" options={{ presentation: 'modal' }} />
         <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
         <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="challenge" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom' }} />
+        <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
       </Stack>
-    </React.Fragment>
+    </Animated.View>
   );
 }
 

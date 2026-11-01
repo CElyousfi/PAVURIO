@@ -13,6 +13,7 @@ import { CircleButton, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
+import { Missing } from '../ui/Missing';
 
 export default function TipReader() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -21,7 +22,7 @@ export default function TipReader() {
   const { width } = useWindowDimensions();
   const [page, setPage] = useState(0);
   const pager = useRef<React.ComponentRef<typeof ScrollView>>(null);
-  if (!tip) return null;
+  if (!tip) return <Missing />;
   const W = Math.min(width, 560);
   const last = tip.slides.length - 1;
 

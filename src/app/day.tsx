@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -12,7 +12,7 @@ import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
 import { CircleButton, Label, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { tapFeedback } from '../native/haptics';
+import { Bouncy } from '../ui/motion';
 import { t } from '../i18n';
 
 export default function DayDetail() {
@@ -82,14 +82,12 @@ export default function DayDetail() {
             ) : null}
             {events.map((e, i) => (
               <Animated.View key={e.id} entering={FadeInDown.delay(i * 40)}>
-                <Pressable
+                <Bouncy
                   accessibilityRole="button"
                   accessibilityLabel={t('{label}, {amount}, at {time}. Edit', { label: CARE[e.type].label, amount: formatAmount(e.type, e.amount), time: formatClock(e.occurredAt) })}
-                  onPress={() => {
-                    tapFeedback();
-                    router.push({ pathname: '/log/[type]', params: { type: e.type, eventId: e.id } });
-                  }}
-                  style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]}
+                  onPress={() => router.push({ pathname: '/log/[type]', params: { type: e.type, eventId: e.id } })}
+                  scaleTo={0.97}
+                  style={styles.row}
                   testID={`event-${i}`}
                 >
                   <CareIcon type={e.type} size={46} />
@@ -109,7 +107,7 @@ export default function DayDetail() {
                   <T weight="xbold" style={styles.time}>
                     {formatClock(e.occurredAt)}
                   </T>
-                </Pressable>
+                </Bouncy>
               </Animated.View>
             ))}
           </View>
@@ -119,7 +117,7 @@ export default function DayDetail() {
             {picking ? (
               <Animated.View entering={FadeInDown} style={styles.picker}>
                 {SPECIES_CARE[pet.species].map((ct) => (
-                  <Pressable
+                  <Bouncy
                     key={ct}
                     accessibilityRole="button"
                     accessibilityLabel={t('Add missed {label}', { label: CARE[ct].label })}
@@ -127,11 +125,12 @@ export default function DayDetail() {
                       setPicking(false);
                       router.push({ pathname: '/log/[type]', params: { type: ct, day: dayKey } });
                     }}
+                    scaleTo={0.9}
                     style={styles.pickItem}
                   >
                     <CareIcon type={ct} size={44} />
                     <Label style={{ fontSize: 10, marginTop: 2 }}>{CARE[ct].label}</Label>
-                  </Pressable>
+                  </Bouncy>
                 ))}
               </Animated.View>
             ) : (

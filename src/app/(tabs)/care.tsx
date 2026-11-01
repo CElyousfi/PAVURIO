@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -13,8 +13,7 @@ import { useApp, useOccurrences } from '../../state/AppState';
 import { Card, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
-import { tapFeedback } from '../../native/haptics';
-import { Enter } from '../../ui/motion';
+import { Bouncy, Enter } from '../../ui/motion';
 import { ART } from '../../ui/art';
 import { Scene } from '../../ui/Scene';
 import { formatWeight, toUnit } from '../../features/weight';
@@ -105,7 +104,7 @@ export default function CareTab() {
             <T weight="black" style={{ fontSize: 17, flex: 1 }}>
               {day === today ? t('Today') : formatDateLong(day)}
             </T>
-            <Pressable
+            <Bouncy
               accessibilityRole="button"
               accessibilityLabel={t('Open month calendar')}
               onPress={() => {
@@ -118,7 +117,7 @@ export default function CareTab() {
               <T weight="black" style={{ color: colors.brand, fontSize: 13, letterSpacing: 1 }}>
                 {t('MONTH')}
               </T>
-            </Pressable>
+            </Bouncy>
           </View>
           <View style={styles.week}>
             <CircleButton icon="chevL" label={t('Previous week')} onPress={() => setDay(addDays(day, -7))} size={34} />
@@ -126,13 +125,12 @@ export default function CareTab() {
               const sel = k === day;
               const isT = k === today;
               return (
-                <Pressable
+                <Bouncy
                   key={k}
                   accessibilityRole="button"
                   accessibilityState={{ selected: sel }}
                   accessibilityLabel={formatDateLong(k)}
                   onPress={() => {
-                    tapFeedback();
                     setDay(k);
                   }}
                   style={[styles.wday, sel && { backgroundColor: colors.ink }]}
@@ -143,7 +141,7 @@ export default function CareTab() {
                   <T weight="black" style={{ fontSize: 17, color: sel ? '#FFFFFF' : isT ? colors.brand : colors.ink }}>
                     {Number(k.slice(8))}
                   </T>
-                </Pressable>
+                </Bouncy>
               );
             })}
             <CircleButton icon="chevR" label={t('Next week')} onPress={() => setDay(addDays(day, 7))} size={34} />
@@ -151,7 +149,7 @@ export default function CareTab() {
         </View>
 
         {/* agenda */}
-        <Card>
+        <Card enter={0}>
           <Label>{t('Agenda')}</Label>
           {occ.length === 0 && dayAppts.length === 0 ? (
             <View style={{ paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -164,7 +162,7 @@ export default function CareTab() {
             </View>
           ) : null}
           {dayAppts.map((a) => (
-            <Pressable key={a.id} accessibilityRole="button" accessibilityLabel={t('Appointment {title} at {time}', { title: a.title, time: formatClock(a.at) })} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={styles.apptRow}>
+            <Bouncy scaleTo={0.975} key={a.id} accessibilityRole="button" accessibilityLabel={t('Appointment {title} at {time}', { title: a.title, time: formatClock(a.at) })} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={styles.apptRow}>
               <View style={styles.apptIcon}>
                 <CalendarGlyph />
               </View>
@@ -179,25 +177,25 @@ export default function CareTab() {
                 </T>
               </View>
               <Icon name="chevR" size={18} color={colors.faint} />
-            </Pressable>
+            </Bouncy>
           ))}
           {occ.map((o, oi) => (
             <Enter key={o.key} index={oi}>
               <OccurrenceRow o={o} db={db} species={pet.species} bump={bump} />
             </Enter>
           ))}
-          <Pressable accessibilityRole="button" accessibilityLabel={t('Open care log for this day')} onPress={() => router.push({ pathname: '/day', params: { day } })} style={styles.logLink}>
+          <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Open care log for this day')} onPress={() => router.push({ pathname: '/day', params: { day } })} style={styles.logLink}>
             <T weight="xbold" style={{ color: colors.brand, fontSize: 14 }}>
               {logCount === 0 ? t('No care logged') : tn(logCount, '{n} care entry logged', '{n} care entries logged')} · {t('Open log')}
             </T>
-          </Pressable>
+          </Bouncy>
         </Card>
 
         {/* routines */}
         <View>
           <SectionHead title={t('Routines')} action={t('New')} onAction={() => router.push('/schedule')} />
           {schedules.length === 0 ? (
-            <Card onPress={() => router.push('/schedule')} accessibilityLabel={t('Create a routine')}>
+            <Card enter={1} onPress={() => router.push('/schedule')} accessibilityLabel={t('Create a routine')}>
               <T weight="black" style={{ fontSize: 16 }}>
                 {t('Set up a routine')}
               </T>
@@ -206,9 +204,9 @@ export default function CareTab() {
               </T>
             </Card>
           ) : (
-            <Card style={{ paddingVertical: 6 }}>
+            <Card enter={1} style={{ paddingVertical: 6 }}>
               {schedules.map((s, i) => (
-                <Pressable
+                <Bouncy
                   key={s.id}
                   accessibilityRole="button"
                   accessibilityLabel={t('Edit routine {title}', { title: s.title })}
@@ -232,7 +230,7 @@ export default function CareTab() {
                     <BellGlyph color={kindMeta(s.type).color} />
                   ) : null}
                   <Icon name="chevR" size={18} color={colors.faint} />
-                </Pressable>
+                </Bouncy>
               ))}
             </Card>
           )}
@@ -242,7 +240,7 @@ export default function CareTab() {
         <View>
           <SectionHead title={t('Upcoming visits')} action={t('Add')} onAction={() => router.push('/appointment')} />
           {upcoming.length === 0 ? (
-            <Card onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
+            <Card enter={2} onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
                 {ART.scenes.appointments ? <Scene source={ART.scenes.appointments} width={78} height={66} radius={16} /> : null}
                 <T style={{ color: colors.muted, lineHeight: 20, flex: 1 }}>{t('Vet, groomer or sitter — add a visit and get reminded the day before.')}</T>
@@ -251,7 +249,7 @@ export default function CareTab() {
           ) : (
             <Card style={{ paddingVertical: 6 }}>
               {upcoming.map((a, i) => (
-                <Pressable key={a.id} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: a.title })} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={[styles.routine, i > 0 && styles.divider]}>
+                <Bouncy scaleTo={0.975} key={a.id} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: a.title })} onPress={() => router.push({ pathname: '/appointment', params: { id: a.id } })} style={[styles.routine, i > 0 && styles.divider]}>
                   <View style={styles.dateBadge}>
                     <T weight="black" style={{ fontSize: 11, color: colors.brand }}>
                       {monthNamesShort()[new Date(a.at).getMonth()].replace('.', '').toUpperCase()}
@@ -270,7 +268,7 @@ export default function CareTab() {
                     </T>
                   </View>
                   <Icon name="chevR" size={18} color={colors.faint} />
-                </Pressable>
+                </Bouncy>
               ))}
             </Card>
           )}
@@ -279,7 +277,7 @@ export default function CareTab() {
         {/* weight */}
         <View>
           <SectionHead title={t('Weight')} action={t('Log')} onAction={() => router.push({ pathname: '/weight', params: { add: '1' } })} />
-          <Card onPress={() => router.push('/weight')} accessibilityLabel={t('Open weight history')}>
+          <Card enter={3} onPress={() => router.push('/weight')} accessibilityLabel={t('Open weight history')}>
             {latest ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <View style={{ flex: 1 }}>
@@ -323,13 +321,12 @@ export default function CareTab() {
           { label: t('Weight'), body: t("Log {name}'s weight today", { name: pet.name }), go: () => router.push({ pathname: '/weight', params: { add: '1' } }) },
           { label: t('Walk timer'), body: t('Time a walk and save it'), go: () => router.push('/walk') },
         ].map((o) => (
-          <Pressable
+          <Bouncy
             key={o.label}
             accessibilityRole="button"
             accessibilityLabel={o.label}
             onPress={() => {
               setAddOpen(false);
-              tapFeedback();
               setTimeout(o.go, 220);
             }}
             style={styles.addRow}
@@ -341,7 +338,7 @@ export default function CareTab() {
               <T style={{ color: colors.muted, fontSize: 14 }}>{o.body}</T>
             </View>
             <Icon name="chevR" size={20} color={colors.faint} />
-          </Pressable>
+          </Bouncy>
         ))}
       </Sheet>
     </View>
@@ -361,11 +358,11 @@ function SectionHead({ title, action, onAction }: { title: string; action?: stri
         {title}
       </T>
       {action && onAction ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={`${action} ${title}`} onPress={onAction} hitSlop={8} style={styles.monthBtn}>
+        <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={`${action} ${title}`} onPress={onAction} hitSlop={8} style={styles.monthBtn}>
           <T weight="black" style={{ color: colors.brand, fontSize: 13, letterSpacing: 1 }}>
             {action.toUpperCase()}
           </T>
-        </Pressable>
+        </Bouncy>
       ) : null}
     </View>
   );

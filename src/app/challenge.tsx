@@ -17,6 +17,7 @@ import { CircleButton, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
+import { Missing } from '../ui/Missing';
 
 export default function ChallengeScreen() {
   const { key } = useLocalSearchParams<{ key: string }>();
@@ -24,7 +25,7 @@ export default function ChallengeScreen() {
   const { db, pet, pro, bump } = useApp();
   const { challenges, completedChallengeKeys } = useEngagement();
   const insets = useSafeAreaInsets();
-  if (!def || !pet) return null;
+  if (!def || !pet) return <Missing />;
   const live = challenges.find((c) => c.def.key === def.key && c.progress.state === 'active');
   const doneBefore = completedChallengeKeys.includes(def.key);
   const locked = def.pro && !pro;

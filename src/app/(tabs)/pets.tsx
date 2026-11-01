@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Bouncy } from '../../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PetAvatar } from '../../animation/PetAvatar';
@@ -78,14 +79,14 @@ export default function PetsTab() {
                   </T>
                 ) : null}
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: p.name })} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
+              <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: p.name })} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
                 <Icon name="more" size={20} color={colors.inkSoft} />
-              </Pressable>
+              </Bouncy>
             </Card>
           );
         })}
 
-        <Pressable accessibilityRole="button" accessibilityLabel={t('Add a pet')} onPress={addPet} style={styles.add}>
+        <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Add a pet')} onPress={addPet} style={styles.add}>
           <Icon name="plus" size={20} color={colors.brand} />
           <T weight="black" style={{ color: colors.brand, fontSize: 16 }}>
             {t('Add a pet')}
@@ -97,7 +98,7 @@ export default function PetsTab() {
               </T>
             </View>
           ) : null}
-        </Pressable>
+        </Bouncy>
 
         {archived.length ? (
           <View style={{ marginTop: 14, gap: 8 }}>
@@ -125,7 +126,7 @@ export default function PetsTab() {
           </View>
         ) : null}
 
-        <Card onPress={() => router.push('/settings')} accessibilityLabel={t('Open settings')} style={[styles.pet, { marginTop: 16 }]}>
+        <Card enter={pets.length + 1} onPress={() => router.push('/settings')} accessibilityLabel={t('Open settings')} style={[styles.pet, { marginTop: 16 }]}>
           <View style={[styles.av, { backgroundColor: colors.line, width: 48, height: 48 }]}>
             <Icon name="menu" size={22} color={colors.inkSoft} />
           </View>

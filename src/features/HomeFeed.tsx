@@ -1,6 +1,6 @@
 /** The cards under the pet on Home (Waterllama's feed): streak, challenges, tips, story, badges, Pro, visits. */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { PetAvatar } from '../animation/PetAvatar';
@@ -19,7 +19,7 @@ import { Medal } from './Medal';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
-import { Bouncy, Enter, Pulse } from '../ui/motion';
+import { Bouncy, Enter, Pop, PopIn, Pulse } from '../ui/motion';
 import { Icon, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { formatDateLong } from '../ui/forms';
@@ -45,11 +45,11 @@ function Section({ title, action, onAction, children }: { title: string; action?
           {title}
         </T>
         {action && onAction ? (
-          <Pressable accessibilityRole="button" accessibilityLabel={action} onPress={onAction} hitSlop={8}>
+          <Bouncy accessibilityRole="button" accessibilityLabel={action} onPress={onAction} hitSlop={8}>
             <T weight="black" style={{ color: colors.brand, fontSize: 14 }}>
               {action}
             </T>
-          </Pressable>
+          </Bouncy>
         ) : null}
       </View>
       {children}
@@ -102,9 +102,11 @@ export function HomeFeed({ width }: { width: number }) {
               </T>
             </View>
             <View style={{ alignItems: 'center' }}>
-              <T weight="black" style={{ fontSize: 18, color: colors.inkSoft }}>
-                {streak.best}
-              </T>
+              <Pop trigger={streak.best}>
+                <T weight="black" style={{ fontSize: 18, color: colors.inkSoft }}>
+                  {streak.best}
+                </T>
+              </Pop>
               <T weight="xbold" style={{ fontSize: 11, color: colors.muted }}>
                 {t('BEST')}
               </T>
@@ -117,7 +119,11 @@ export function HomeFeed({ width }: { width: number }) {
               return (
                 <View key={k} style={{ alignItems: 'center', gap: 4 }}>
                   <View style={[styles.weekDot, done && { backgroundColor: '#FF8A1F' }, isT && !done && { borderColor: '#FF8A1F', borderWidth: 2.5 }]}>
-                    {done ? <Icon name="check" size={14} color="#FFFFFF" /> : null}
+                    {done ? (
+                      <PopIn delay={isT ? 250 : 0}>
+                        <Icon name="check" size={14} color="#FFFFFF" />
+                      </PopIn>
+                    ) : null}
                   </View>
                   <T weight="black" style={{ fontSize: 11, color: isT ? colors.ink : colors.muted }}>
                     {days[parseDayKey(k).getDay()]}
@@ -237,7 +243,7 @@ export function HomeFeed({ width }: { width: number }) {
       {/* account: guests are backed up, but only a saved account survives a new phone */}
       {cloudState.enabled && cloudState.user?.anonymous ? (
         <Enter index={7}>
-          <Pressable onPress={() => router.push('/account')} style={[styles.save, softShadow]} accessibilityRole="button" testID="feed-save-account">
+          <Bouncy scaleTo={0.975} onPress={() => router.push('/account')} style={[styles.save, softShadow]} accessibilityRole="button" testID="feed-save-account">
             {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 54, height: 54 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ fontSize: 17 }}>
@@ -246,7 +252,7 @@ export function HomeFeed({ width }: { width: number }) {
               <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18, marginTop: 2 }}>{t('Save your account to get your pets back on a new phone.')}</T>
             </View>
             <Icon name="chevR" size={18} color={colors.faint} />
-          </Pressable>
+          </Bouncy>
         </Enter>
       ) : null}
 

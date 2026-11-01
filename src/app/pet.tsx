@@ -12,6 +12,7 @@ import { Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, successFeedback } from '../native/haptics';
 import { t } from '../i18n';
+import { Missing } from '../ui/Missing';
 
 export default function PetEditor() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -34,7 +35,7 @@ export default function PetEditor() {
     });
   }, [db, params.id]);
 
-  if (!p) return null;
+  if (!p) return params.id ? null : <Missing />;
   const today = dayKeyOf(new Date());
 
   const save = async () => {

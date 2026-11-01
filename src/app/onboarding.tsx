@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { PetRig, PetClipName } from '../animation/PetRig';
 import { cloud } from '../cloud/firebase';
 import { PetAvatar } from '../animation/PetAvatar';
@@ -73,10 +73,14 @@ export default function Onboarding() {
     if (!adding && !created && step === 'welcome' && pets.length > 0) router.replace('/');
   }, [adding, created, step, pets.length]);
 
+  // steps slide in the direction of travel
+  const dir = useRef<1 | -1>(1);
   const go = (s: Step) => {
     setError(null);
+    dir.current = ORDER.indexOf(s) >= ORDER.indexOf(step) ? 1 : -1;
     setStep(s);
   };
+  const slide = () => (reduceMotion ? undefined : (dir.current > 0 ? FadeInRight : FadeInLeft).springify().damping(20).stiffness(180).mass(0.8));
   const back = () => {
     if (adding && step === 'species') return router.back();
     if (created) return; // the pet exists: no going back into setup
@@ -185,7 +189,7 @@ export default function Onboarding() {
       )}
 
       {step === 'species' && (
-        <Animated.View key="species" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+        <Animated.View key="species" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
             {t('Who are we caring for?')}
           </T>
@@ -206,7 +210,7 @@ export default function Onboarding() {
       )}
 
       {step === 'name' && (
-        <Animated.View key="name" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+        <Animated.View key="name" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
             {t("What's their name?")}
           </T>
@@ -237,7 +241,7 @@ export default function Onboarding() {
       )}
 
       {step === 'look' && (
-        <Animated.View key="look" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+        <Animated.View key="look" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
             {t('Make {name} look like {name}', { name: displayName })}
           </T>
@@ -252,7 +256,7 @@ export default function Onboarding() {
       )}
 
       {step === 'dates' && (
-        <Animated.View key="dates" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+        <Animated.View key="dates" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
             {t('Special days')}
           </T>
@@ -273,7 +277,7 @@ export default function Onboarding() {
       )}
 
       {step === 'plan' && (
-        <Animated.View key="plan" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+        <Animated.View key="plan" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
             {t("{name}'s daily plan", { name: displayName })}
           </T>
@@ -337,7 +341,7 @@ export default function Onboarding() {
       )}
 
       {step === 'reminders' && created && (
-        <Animated.View key="reminders" entering={FadeInDown.duration(260)} style={[styles.page, { width: W }]}>
+        <Animated.View key="reminders" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
             {t('Smart Reminders')}
           </T>

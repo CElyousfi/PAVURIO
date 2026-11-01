@@ -18,14 +18,25 @@ import { successFeedback } from '../native/haptics';
 import { maybeAskForReview } from '../native/review';
 import { t } from '../i18n';
 
+/** How long the pet's reaction to a log (clip + hearts) is left alone before a badge may pop. */
+const REACTION_MS = 3200;
+
 export function CelebrationHost() {
   const { queue, shift } = useEngagement();
-  const { db } = useApp();
+  const { db, lastLoggedAt } = useApp();
   const [fire, setFire] = useState<number | null>(null);
+  const [, setTick] = useState(0);
   const path = usePathname();
-  // don't interrupt onboarding or a purchase; the queue waits
+  // don't interrupt onboarding, a purchase, or the pet's reaction to the care that was just logged; the queue waits
   const blocked = path.startsWith('/onboarding') || path.startsWith('/paywall');
-  const head = blocked ? undefined : queue[0];
+  const holdUntil = lastLoggedAt + REACTION_MS;
+  const holding = Date.now() < holdUntil;
+  useEffect(() => {
+    if (!holding || !queue.length) return;
+    const timer = setTimeout(() => setTick((x) => x + 1), holdUntil - Date.now() + 20);
+    return () => clearTimeout(timer);
+  }, [holding, holdUntil, queue.length]);
+  const head = blocked || holding ? undefined : queue[0];
   useEffect(() => {
     if (!head) return;
     const timer = setTimeout(() => {

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { CARE, CareType, careAllowedFor, clampAmount, isCareType } from '../../domain/care';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
@@ -13,6 +13,7 @@ import { CareIcon } from '../../ui/CareIcon';
 import { CircleButton, Icon, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
 import { errorFeedback, tapFeedback } from '../../native/haptics';
+import { motionReduced, springs } from '../../ui/motion';
 import { t } from '../../i18n';
 
 type TimeOption = { label: string; at: number };
@@ -40,8 +41,8 @@ function timeOptions(dayKey: string, now: Date): TimeOption[] {
 }
 
 export default function LogCard() {
-  const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string; scheduleId?: string; occ?: string }>();
-  const { pet, db, bump, signalLogged, schedules } = useApp();
+  const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string; scheduleId?: string; occ?: string; ox?: string; oy?: string; os?: string }>();
+  const { pet, db, bump, signalLogged, markLogged, schedules } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -81,12 +82,69 @@ export default function LogCard() {
   }, [db, params.eventId]);
 
   const pop = useSharedValue(1);
-  const objStyle = useAnimatedStyle(() => ({ transform: [{ scale: pop.value }] }));
+
+  // ---- the object grows out of the icon that was tapped on Home, and shrinks back into it on save
+  const origin = params.ox && params.oy && params.os ? { x: Number(params.ox), y: Number(params.oy), s: Number(params.os) } : null;
+  const hasOrigin = !!origin && !motionReduced();
+  const fly = useSharedValue(motionReduced() ? 1 : 0); // 0 = at the icon (or small), 1 = in place
+  const from = useSharedValue({ dx: 0, dy: 0, scale: 0.82 });
+  const [placed, setPlaced] = useState(!hasOrigin);
+  // no origin (opened from the timeline or a notification): a soft pop instead of a flight
+  useEffect(() => {
+    if (!hasOrigin && !motionReduced()) fly.value = withSpring(1, { damping: 15, stiffness: 170, mass: 0.9 });
+  }, [hasOrigin, fly]);
+  const objRef = useRef<React.ComponentRef<typeof View>>(null);
+  const measured = useRef(false);
+  const gone = useRef(false);
+  useEffect(
+    () => () => {
+      gone.current = true;
+    },
+    [],
+  );
+  /** show the object: from the measured origin when we have it, otherwise a soft pop in place */
+  const place = () => {
+    if (measured.current) return;
+    measured.current = true;
+    setPlaced(true);
+    fly.value = withSpring(1, { damping: 17, stiffness: 150, mass: 0.9 });
+  };
+  const onObjLayout = () => {
+    if (!hasOrigin || measured.current) return;
+    const node = objRef.current;
+    if (!node || typeof node.measureInWindow !== 'function') return place();
+    node.measureInWindow((x: number, y: number, w: number, h: number) => {
+      if (measured.current) return;
+      from.value = { dx: origin!.x - (x + w / 2), dy: origin!.y - (y + h / 2), scale: origin!.s / Math.max(1, w) };
+      place();
+    });
+    setTimeout(place, 120); // measurement never answered: never leave the object invisible
+  };
+  const objStyle = useAnimatedStyle(() => {
+    const p = fly.value;
+    const f = from.value;
+    return {
+      opacity: Math.min(1, p * 2.5),
+      transform: [{ translateX: f.dx * (1 - p) }, { translateY: f.dy * (1 - p) }, { scale: (f.scale + (1 - f.scale) * p) * pop.value }],
+    };
+  });
+  /** shrink back into the Home icon, then leave (once; never after the screen was dismissed some other way) */
+  const [leaving, setLeaving] = useState(false);
+  const leave = (then: () => void) => {
+    if (!hasOrigin || !measured.current || motionReduced()) return then();
+    setLeaving(true);
+    const run = () => {
+      if (!gone.current) then();
+    };
+    fly.value = withTiming(0, { duration: 230, easing: Easing.in(Easing.cubic) }, (done) => {
+      if (done) runOnJS(run)();
+    });
+  };
   const nudge = (dir: 1 | -1) => {
     if (!spec || !type) return;
     tapFeedback();
     setAmount((a) => clampAmount(type, a + dir * spec.step));
-    pop.value = withSequence(withTiming(dir > 0 ? 1.05 : 0.96, { duration: 80 }), withSpring(1, { damping: 8 }));
+    pop.value = withSequence(withTiming(dir > 0 ? 1.06 : 0.95, { duration: 80 }), withSpring(1, springs.pop));
   };
 
   const options = useMemo(() => timeOptions(dayKey, new Date()), [dayKey]);
@@ -126,10 +184,13 @@ export default function LogCard() {
       await confirmOccurrence(db, schedules, saved, params.occ && params.scheduleId ? { scheduleId: params.scheduleId, key: params.occ } : null).catch((e) =>
         console.warn('[pavurio] could not link log to schedule', e),
       );
-      // 3) … only then refresh UI and allow the celebration.
+      // 3) … only then refresh UI. Badges wait for the pet's reaction (markLogged), which starts once Home is back.
+      markLogged();
       bump();
       signalLogged({ eventId: saved.id, type });
-      router.back();
+      leave(() => {
+        if (router.canGoBack()) router.back();
+      });
     } catch (e) {
       setError(e instanceof ValidationError ? e.message : t('Could not save. Your entry was not recorded — please try again.'));
       errorFeedback();
@@ -158,27 +219,28 @@ export default function LogCard() {
                 {pet.name} · {formatDayTitle(dayKey)}
               </T>
             </View>
-            <CircleButton icon="close" label={t('Close without saving')} onPress={() => router.back()} />
+            <CircleButton icon="close" label={t('Close without saving')} onPress={() => !leaving && router.back()} />
           </View>
 
           <T style={styles.hint}>{editing ? t('Edit {label}', { label: tpl.label.toLowerCase() }) : tpl.hint}</T>
 
           <View style={[styles.objectWrap, { height: objSize + 10 }]}>
-            <Animated.View style={objStyle}>
+            <Animated.View ref={objRef} collapsable={false} onLayout={onObjLayout} style={[objStyle, !placed && { opacity: 0 }]}>
               <CareIcon type={type} size={objSize} level={level} ring={minuteBased} />
             </Animated.View>
             {spec ? (
-              <View style={[styles.stepper, { backgroundColor: tpl.tint, top: objSize * 0.6 - 46, right: objSize * 0.02 }]}>
+              <Animated.View entering={motionReduced() ? undefined : FadeIn.delay(200).duration(220)} style={[styles.stepper, { backgroundColor: tpl.tint, top: objSize * 0.6 - 46, right: objSize * 0.02 }]}>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('More, add {n} {unit}', { n: spec.step, unit: spec.unit })} onPress={() => nudge(1)} hitSlop={8} style={styles.stepHit} testID="amount-up">
                   <Icon name="up" size={26} />
                 </Pressable>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('Less, remove {n} {unit}', { n: spec.step, unit: spec.unit })} onPress={() => nudge(-1)} hitSlop={8} style={styles.stepHit} testID="amount-down">
                   <Icon name="down" size={26} />
                 </Pressable>
-              </View>
+              </Animated.View>
             ) : null}
           </View>
 
+          <Animated.View entering={motionReduced() ? undefined : FadeInUp.delay(hasOrigin ? 120 : 60).duration(260).springify().damping(18)} style={{ alignSelf: 'stretch', alignItems: 'center' }}>
           {spec ? (
             <>
               <T weight="black" style={styles.amount} accessibilityLiveRegion="polite" testID="amount">
@@ -256,6 +318,7 @@ export default function LogCard() {
           {editing ? (
             <SoftPill label={t('Delete this entry')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} style={{ alignSelf: 'center', marginTop: 16 }} />
           ) : null}
+          </Animated.View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
