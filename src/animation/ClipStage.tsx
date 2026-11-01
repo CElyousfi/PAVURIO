@@ -10,20 +10,17 @@
  *   moves a sheet window in an animated style, so a busy JS thread never makes the pet stutter.
  *   React re-renders only when playback crosses into the next sheet (every 0.5–1 s), to mount the
  *   upcoming sheet ahead of time. An action starts only after its first sheets have loaded.
- * - The colour-in edge is feathered and breathes slightly, like a water line, instead of a hard cut.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   SharedValue,
-  cancelAnimation,
   runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
   useFrameCallback,
   useSharedValue,
-  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
 import type { FrameInfo } from 'react-native-reanimated';
@@ -201,8 +198,15 @@ function SheetLayer({
   onLoaded?: () => void;
 }) {
   const c = kit.clips[name];
-  // loops are short (≤3 sheets): keep them all; actions keep the current sheet and the next two
-  const keep = c.loop || c.chunks <= 3 ? [...Array(c.chunks).keys()] : Array.from(new Set([chunk, Math.min(c.chunks - 1, chunk + 1), Math.min(c.chunks - 1, chunk + 2)]));
+  // short clips keep every sheet; ping-pong loops keep both neighbours (they play back and forth);
+  // actions keep the current sheet and the next two. Never more than 3 decoded sheets per layer.
+  const last = c.chunks - 1;
+  const keep =
+    c.chunks <= 3
+      ? [...Array(c.chunks).keys()]
+      : c.loop
+        ? Array.from(new Set([Math.max(0, chunk - 1), chunk, Math.min(last, chunk + 1)]))
+        : Array.from(new Set([chunk, Math.min(last, chunk + 1), Math.min(last, chunk + 2)]));
   return (
     <>
       {keep.map((k) => (
@@ -264,50 +268,20 @@ function ClipView({
   );
 }
 
-/**
- * Bottom-anchored reveal window, 3× stage width so props beside the pet (bowls) are not cut off.
- * The edge is feathered: the coat is drawn again in two slightly taller, fainter windows, so the
- * line between sketch and colour reads as a soft water line. It breathes ±1.5 pt while partly filled.
- */
-const FEATHER = 0.045; // of stage height
-const FEATHER_STEPS = [
-  { at: 1, opacity: 0.22 },
-  { at: 0.5, opacity: 0.45 },
-] as const;
-
+/** Bottom-anchored reveal window, 3× stage width so props beside the pet (bowls) are not cut off. */
 function FillClip({ fill, geo, petH, children }: { fill: SharedValue<number>; geo: Geo; petH: number; children: (main: boolean) => React.ReactNode }) {
   const h = geo.h;
   const FILL_TOP = PAWS - petH * 1.08;
-  const bob = useSharedValue(0);
-  useEffect(() => {
-    bob.value = withRepeat(withTiming(1, { duration: 1300, easing: Easing.inOut(Easing.sin) }), -1, true);
-    return () => cancelAnimation(bob);
-  }, [bob]);
-  const reveal = (extra: number) => {
-    'worklet';
+  const style = useAnimatedStyle(() => {
     const f = Math.max(0, Math.min(1, fill.value));
-    if (f >= 1) return 2 * h;
-    const base = ((1 - PAWS) + (PAWS - FILL_TOP) * f) * h;
-    if (f <= 0) return base; // nothing coloured above the paws yet: no feather, no motion
-    const partial = Math.min(1, f * 12) * Math.min(1, (1 - f) * 12); // fade the edge effects in/out at 0 % and 100 %
-    return base + (extra * FEATHER * h + (bob.value - 0.5) * 3) * partial;
-  };
-  const main = useAnimatedStyle(() => ({ height: reveal(0) }));
-  const f1 = useAnimatedStyle(() => ({ height: reveal(FEATHER_STEPS[0].at), opacity: fill.value > 0 && fill.value < 1 ? FEATHER_STEPS[0].opacity : 0 }));
-  const f2 = useAnimatedStyle(() => ({ height: reveal(FEATHER_STEPS[1].at), opacity: fill.value > 0 && fill.value < 1 ? FEATHER_STEPS[1].opacity : 0 }));
-  const frame = { left: -geo.w, width: geo.w * 3 };
+    // below the paws is always "colored"; then rise to just above the head
+    const reveal = 1 - PAWS + (PAWS - FILL_TOP) * f;
+    return { height: reveal * h + (f >= 1 ? h : 0) };
+  });
   return (
-    <>
-      <Animated.View pointerEvents="none" style={[styles.clip, frame, f1]}>
-        {children(false)}
-      </Animated.View>
-      <Animated.View pointerEvents="none" style={[styles.clip, frame, f2]}>
-        {children(false)}
-      </Animated.View>
-      <Animated.View pointerEvents="none" style={[styles.clip, frame, main]}>
-        {children(true)}
-      </Animated.View>
-    </>
+    <Animated.View pointerEvents="none" style={[styles.clip, { left: -geo.w, width: geo.w * 3 }, style]}>
+      {children(true)}
+    </Animated.View>
   );
 }
 
