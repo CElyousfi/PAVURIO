@@ -12,7 +12,7 @@ import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
 import { configureNotifications, syncReminders } from '../native/notifications';
 import { isPro } from '../native/purchases';
 import { setMotionReduced } from '../ui/motion';
-import { Lang, deviceLanguage, setLang } from '../i18n';
+import { Lang, deviceLanguage, isLang, setLang } from '../i18n';
 
 export type WeightUnit = 'kg' | 'lb';
 export type Settings = { haptics: boolean; reduceMotion: boolean; weightUnit: WeightUnit };
@@ -77,7 +77,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setProState((await repo.getSetting(db, 'proCache')) === '1');
     if (!(await repo.getSetting(db, 'firstOpenAt'))) await repo.setSetting(db, 'firstOpenAt', String(Date.now()));
     const storedLang = await repo.getSetting(db, 'lang');
-    const l: Lang = storedLang === 'fr' || storedLang === 'en' ? storedLang : deviceLanguage();
+    const l: Lang = isLang(storedLang) ? storedLang : deviceLanguage();
     setLang(l);
     setLanguageState(l);
     setReady(true);

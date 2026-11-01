@@ -48,7 +48,7 @@ const TOP_LINE: Record<CareType, (n: number, name: string) => string> = {
 /** 'YYYY-MM-DD' → "10/24" (English) or "24/10" (French). */
 function shortDate(key: string): string {
   const [, m, d] = key.split('-');
-  return lang() === 'fr' ? `${d}/${m}` : `${m}/${d}`;
+  return lang() === 'en' ? `${m}/${d}` : `${d}/${m}`;
 }
 
 /** Returns null when there isn't enough logged to make an honest story (fewer than 3 logs). */

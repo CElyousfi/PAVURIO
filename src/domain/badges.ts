@@ -1,5 +1,5 @@
 /** Achievements, derived from the owner's own records (nothing stored except which ones were seen). */
-import { lang } from '../i18n/core';
+import { pickL } from '../i18n/core';
 import { CareType, Species } from './care';
 
 export type BadgeStats = {
@@ -50,7 +50,7 @@ export const BADGES: BadgeDef[] = [
   B('family', 'paw', '#9C36B5', { en: 'Best friends', fr: 'Meilleurs amis' }, { en: 'Care for 2 pets.', fr: 'Prenez soin de 2 animaux.' }, (s) => s.pets, 2),
 ];
 
-export const badgeText = (l: L) => (lang() === 'fr' ? l.fr : l.en);
+export const badgeText = (l: L) => pickL(l);
 export const earnedBadges = (s: BadgeStats) => BADGES.filter((b) => b.test(s)).map((b) => b.key);
 /** Badges that make sense for this species (no walk badge for cats). */
 export const badgesFor = (species: Species) => BADGES.filter((b) => !b.species || b.species.includes(species));

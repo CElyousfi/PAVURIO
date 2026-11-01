@@ -4,12 +4,14 @@
  * from `vars`. The language lives in ./core (module state) and AppState remounts the UI when it changes.
  */
 import { getLocales } from 'expo-localization';
+import { type Lang, isLang } from './core';
 
-export { type Lang, setLang, lang, t, tn } from './core';
+export { type Lang, LANGS, LANG_NAMES, isLang, setLang, lang, t, tn, pickL } from './core';
 
-export function deviceLanguage(): 'en' | 'fr' {
+export function deviceLanguage(): Lang {
   try {
-    return getLocales()[0]?.languageCode === 'fr' ? 'fr' : 'en';
+    const code = getLocales()[0]?.languageCode;
+    return isLang(code) ? code : 'en';
   } catch {
     return 'en';
   }

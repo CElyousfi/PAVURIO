@@ -17,7 +17,7 @@ import { PlanEditor } from '../features/PetEditors';
 import { CircleButton, Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
-import { t, tn } from '../i18n';
+import { LANGS, LANG_NAMES, t, tn } from '../i18n';
 
 export default function Settings() {
   const { pet, pets, plan, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
@@ -185,12 +185,13 @@ export default function Settings() {
               <Chip label="lb" on={settings.weightUnit === 'lb'} onPress={() => setWeightUnit('lb')} />
             </View>
             <View style={styles.sep} />
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <T weight="xbold" style={{ fontSize: 17, flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <T weight="xbold" style={{ fontSize: 17, flex: 1, minWidth: 100 }}>
                 {t('Language')}
               </T>
-              <Chip label="English" on={language === 'en'} onPress={() => setLanguage('en')} />
-              <Chip label="Français" on={language === 'fr'} onPress={() => setLanguage('fr')} />
+              {LANGS.map((l) => (
+                <Chip key={l} label={LANG_NAMES[l]} on={language === l} onPress={() => setLanguage(l)} />
+              ))}
             </View>
           </View>
 
