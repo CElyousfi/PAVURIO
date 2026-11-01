@@ -24,7 +24,6 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
               accessibilityState={{ selected: on }}
               accessibilityLabel={t('{name} coat', { name: p.name })}
               onPress={() => {
-                tapFeedback();
                 onChange({ ...appearance, paletteId: p.id });
               }}
               style={[styles.swatchWrap, on && { borderColor: colors.ink }]}
@@ -48,7 +47,6 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
               accessibilityState={{ selected: on }}
               accessibilityLabel={species === 'dog' ? t('{name} bandana', { name: a.name }) : t('{name} collar', { name: a.name })}
               onPress={() => {
-                tapFeedback();
                 onChange({ ...appearance, accessoryId: a.id });
               }}
               style={[styles.dotWrap, on && { borderColor: colors.ink }]}

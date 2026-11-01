@@ -42,7 +42,7 @@ function timeOptions(dayKey: string, now: Date): TimeOption[] {
 
 export default function LogCard() {
   const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string; scheduleId?: string; occ?: string; ox?: string; oy?: string; os?: string }>();
-  const { pet, db, bump, signalLogged, schedules } = useApp();
+  const { pet, db, bump, signalLogged, markLogged, schedules } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -95,17 +95,30 @@ export default function LogCard() {
   }, [hasOrigin, fly]);
   const objRef = useRef<React.ComponentRef<typeof View>>(null);
   const measured = useRef(false);
+  const gone = useRef(false);
+  useEffect(
+    () => () => {
+      gone.current = true;
+    },
+    [],
+  );
+  /** show the object: from the measured origin when we have it, otherwise a soft pop in place */
+  const place = () => {
+    if (measured.current) return;
+    measured.current = true;
+    setPlaced(true);
+    fly.value = withSpring(1, { damping: 17, stiffness: 150, mass: 0.9 });
+  };
   const onObjLayout = () => {
     if (!hasOrigin || measured.current) return;
     const node = objRef.current;
-    if (!node || typeof node.measureInWindow !== 'function') return setPlaced(true);
+    if (!node || typeof node.measureInWindow !== 'function') return place();
     node.measureInWindow((x: number, y: number, w: number, h: number) => {
       if (measured.current) return;
-      measured.current = true;
       from.value = { dx: origin!.x - (x + w / 2), dy: origin!.y - (y + h / 2), scale: origin!.s / Math.max(1, w) };
-      setPlaced(true);
-      fly.value = withSpring(1, { damping: 17, stiffness: 150, mass: 0.9 });
+      place();
     });
+    setTimeout(place, 120); // measurement never answered: never leave the object invisible
   };
   const objStyle = useAnimatedStyle(() => {
     const p = fly.value;
@@ -115,11 +128,16 @@ export default function LogCard() {
       transform: [{ translateX: f.dx * (1 - p) }, { translateY: f.dy * (1 - p) }, { scale: (f.scale + (1 - f.scale) * p) * pop.value }],
     };
   });
-  /** shrink back into the Home icon, then leave */
+  /** shrink back into the Home icon, then leave (once; never after the screen was dismissed some other way) */
+  const [leaving, setLeaving] = useState(false);
   const leave = (then: () => void) => {
-    if (!hasOrigin || !measured.current) return then();
+    if (!hasOrigin || !measured.current || motionReduced()) return then();
+    setLeaving(true);
+    const run = () => {
+      if (!gone.current) then();
+    };
     fly.value = withTiming(0, { duration: 230, easing: Easing.in(Easing.cubic) }, (done) => {
-      if (done) runOnJS(then)();
+      if (done) runOnJS(run)();
     });
   };
   const nudge = (dir: 1 | -1) => {
@@ -166,11 +184,12 @@ export default function LogCard() {
       await confirmOccurrence(db, schedules, saved, params.occ && params.scheduleId ? { scheduleId: params.scheduleId, key: params.occ } : null).catch((e) =>
         console.warn('[pavurio] could not link log to schedule', e),
       );
-      // 3) … only then refresh UI and allow the celebration.
+      // 3) … only then refresh UI. Badges wait for the pet's reaction (markLogged), which starts once Home is back.
+      markLogged();
       bump();
+      signalLogged({ eventId: saved.id, type });
       leave(() => {
-        signalLogged({ eventId: saved.id, type });
-        router.back();
+        if (router.canGoBack()) router.back();
       });
     } catch (e) {
       setError(e instanceof ValidationError ? e.message : t('Could not save. Your entry was not recorded — please try again.'));
@@ -200,7 +219,7 @@ export default function LogCard() {
                 {pet.name} · {formatDayTitle(dayKey)}
               </T>
             </View>
-            <CircleButton icon="close" label={t('Close without saving')} onPress={() => router.back()} />
+            <CircleButton icon="close" label={t('Close without saving')} onPress={() => !leaving && router.back()} />
           </View>
 
           <T style={styles.hint}>{editing ? t('Edit {label}', { label: tpl.label.toLowerCase() }) : tpl.hint}</T>

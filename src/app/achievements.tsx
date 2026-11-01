@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +20,9 @@ export default function Achievements() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState<BadgeDef | null>(null);
+  const lastOpen = useRef<BadgeDef | null>(null);
+  if (open) lastOpen.current = open;
+  const shown = open ?? lastOpen.current;
   if (!pet) return null;
   const W = Math.min(width, 560);
   const cols = 3;
@@ -98,22 +101,22 @@ export default function Achievements() {
         </ScrollView>
       </View>
 
-      <Sheet visible={!!open} onClose={() => setOpen(null)} title={open ? badgeText(open.title) : ''}>
-        {open ? (
+      <Sheet visible={!!open} onClose={() => setOpen(null)} title={shown ? badgeText(shown.title) : ''}>
+        {shown ? (
           <View style={{ alignItems: 'center', paddingBottom: 10 }}>
             <PopIn>
-              <Medal def={open} size={130} locked={!earned.includes(open.key)} />
+              <Medal def={shown} size={130} locked={!earned.includes(shown.key)} />
             </PopIn>
-            <T style={{ color: colors.inkSoft, fontSize: 16, marginTop: 14, textAlign: 'center' }}>{badgeText(open.how)}</T>
-            {!earned.includes(open.key) && stats ? (
+            <T style={{ color: colors.inkSoft, fontSize: 16, marginTop: 14, textAlign: 'center' }}>{badgeText(shown.how)}</T>
+            {!earned.includes(shown.key) && stats ? (
               <View style={{ alignSelf: 'stretch', marginTop: 16 }}>
-                <Bar value={open.goal(stats)[0] / open.goal(stats)[1]} color={open.color} height={12} />
-                <T weight="black" style={{ textAlign: 'center', marginTop: 6, color: open.color }}>
-                  {open.goal(stats)[0]} / {open.goal(stats)[1]}
+                <Bar value={shown.goal(stats)[0] / shown.goal(stats)[1]} color={shown.color} height={12} />
+                <T weight="black" style={{ textAlign: 'center', marginTop: 6, color: shown.color }}>
+                  {shown.goal(stats)[0]} / {shown.goal(stats)[1]}
                 </T>
               </View>
             ) : (
-              <T weight="black" style={{ color: open.color, marginTop: 12 }}>
+              <T weight="black" style={{ color: shown.color, marginTop: 12 }}>
                 ✓ {t('Earned')}
               </T>
             )}

@@ -146,7 +146,6 @@ export default function ScheduleEditor() {
                 accessibilityState={{ selected: on }}
                 accessibilityLabel={m.label}
                 onPress={() => {
-                  tapFeedback();
                   pickType(k);
                 }}
                 style={[styles.kind, on && { borderColor: m.color, backgroundColor: `${m.color}14` }]}
@@ -191,7 +190,6 @@ export default function ScheduleEditor() {
             accessibilityRole="button"
             accessibilityLabel={t('Add a time')}
             onPress={() => {
-              tapFeedback();
               const last = times[times.length - 1] ?? '08:00';
               const h = (Number(last.slice(0, 2)) + 4) % 24;
               setTimes([...times, `${String(h).padStart(2, '0')}:${last.slice(3)}`]);

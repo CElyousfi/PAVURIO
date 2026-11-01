@@ -21,7 +21,8 @@ export const springs = {
  */
 export function usePress(scaleTo = 0.95, opts?: { dim?: boolean }) {
   const s = useSharedValue(1);
-  const style = useAnimatedStyle(() => ({ transform: [{ scale: s.value }], opacity: opts?.dim ? 1 - (1 - s.value) * 2 : 1 }));
+  const dim = !!opts?.dim;
+  const style = useAnimatedStyle(() => (dim ? { transform: [{ scale: s.value }], opacity: 1 - (1 - s.value) * 2 } : { transform: [{ scale: s.value }] }));
   const handlers = {
     onPressIn: () => {
       s.value = withSpring(scaleTo, springs.pressIn);

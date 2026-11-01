@@ -13,7 +13,6 @@ import { useApp, useOccurrences } from '../../state/AppState';
 import { Card, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../../ui/forms';
 import { CircleButton, Icon, Label, T } from '../../ui/primitives';
 import { colors } from '../../ui/theme';
-import { tapFeedback } from '../../native/haptics';
 import { Bouncy, Enter } from '../../ui/motion';
 import { ART } from '../../ui/art';
 import { Scene } from '../../ui/Scene';
@@ -132,7 +131,6 @@ export default function CareTab() {
                   accessibilityState={{ selected: sel }}
                   accessibilityLabel={formatDateLong(k)}
                   onPress={() => {
-                    tapFeedback();
                     setDay(k);
                   }}
                   style={[styles.wday, sel && { backgroundColor: colors.ink }]}
@@ -329,7 +327,6 @@ export default function CareTab() {
             accessibilityLabel={o.label}
             onPress={() => {
               setAddOpen(false);
-              tapFeedback();
               setTimeout(o.go, 220);
             }}
             style={styles.addRow}

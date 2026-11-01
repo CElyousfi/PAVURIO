@@ -47,6 +47,8 @@ type Ctx = {
   clearLogged: () => void;
   /** when care was last logged (ms); lets celebrations wait for the pet's reaction to finish */
   lastLoggedAt: number;
+  /** start that wait now (call before `bump()` so no badge flashes in between) */
+  markLogged: () => void;
 };
 
 const AppCtx = createContext<Ctx | null>(null);
@@ -152,6 +154,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const [lastLoggedAt, setLastLoggedAt] = useState(0);
+  const markLogged = useCallback(() => setLastLoggedAt(Date.now()), []);
   const signalLogged = useCallback((s: Omit<LoggedSignal, 'nonce'>) => {
     const nonce = Date.now();
     setLastLoggedAt(nonce);
@@ -183,8 +186,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signalLogged,
       clearLogged,
       lastLoggedAt,
+      markLogged,
     }),
-    [db, ready, pet, pets, plan, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt],
+    [db, ready, pet, pets, plan, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt, markLogged],
   );
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }
