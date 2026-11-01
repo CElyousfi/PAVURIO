@@ -18,7 +18,7 @@
 | **RevenueCat ↔ stores credentials** | ✅ Google Play: service account connected and validated. ❌ App Store Connect: In-App Purchase key (.p8) + App Store Connect API key, once the Apple developer account is approved |
 | **The 3 products in the stores** | ✅ **Google Play: all three ACTIVE** — yearly €34.99 (+ `trial7` 7-day free trial), monthly €5.99, lifetime €79.99; USD/GBP/MAD set exactly, RevenueCat reads them (store status ok). ❌ App Store Connect: subscription group "Pavurio Pro" with `pavurio_pro_yearly` (7-day free trial) and `pavurio_pro_monthly`, plus non-consumable `pavurio_pro_lifetime`. Play: subscriptions `pavurio_pro_yearly` (base plan `yearly`, free trial offer) and `pavurio_pro_monthly` (base plan `monthly`), plus one-time product `pavurio_pro_lifetime` |
 | Play App Signing SHA-1/256 in Firebase | ✅ Added; `google-services.json` updated |
-| GitHub Pages (privacy / terms / support / deletion) | ✅ Live at https://celyousfi.github.io/PAVURIO/ (EN + FR, all 200) |
+| GitHub Pages (privacy / terms / support / deletion) | ✅ Live at https://pavurio.com/ (EN + FR, all 200) |
 | Art: `records` scene with the cat v2 | ⏳ ChatGPT |
 | Cat clips batch 2 (drink, play, groom, litter, hello, sleep, idle2) | ⏳ Gemini |
 
@@ -46,7 +46,7 @@ npx eas-cli update --channel production -m "…"          # JS-only hotfix to in
 
 1. Open GitHub → **CElyousfi/PAVURIO** → **Settings → Pages**.
 2. Under **Source**, choose **Deploy from a branch**, then branch `gh-pages`, folder `/ (root)`, and click **Save**.
-3. Within a minute, https://celyousfi.github.io/PAVURIO/ is live. The privacy, terms, support and account-deletion pages are in English and French. The app already links to them.
+3. Within a minute, https://pavurio.com/ is live. The privacy, terms, support and account-deletion pages are in English and French. The app already links to them.
 
 ## 2. Firebase: accounts, email codes, backup and crash reports (about 25 minutes)
 

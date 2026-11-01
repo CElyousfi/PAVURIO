@@ -7,15 +7,15 @@ Everything to paste into **App Store Connect** and **Google Play Console**. Scre
 - `graphics/play-feature-graphic-{en,fr}.png`: 1024×500.
 - `graphics/play-icon-512.png` and `graphics/app-store-icon-1024.png`.
 
-**URLs.** These work once GitHub Pages is switched on: Settings → Pages → Branch `gh-pages` / root.
+**URLs.** The site is hosted on Vercel at pavurio.com (deployed from `site/dist`; rebuild with `python3 tools/site/build.py`).
 
 | | |
 |---|---|
-| Marketing / website | https://celyousfi.github.io/PAVURIO/ |
-| Support | https://celyousfi.github.io/PAVURIO/support.html |
-| Privacy policy | https://celyousfi.github.io/PAVURIO/privacy.html |
-| Terms (EULA) | https://celyousfi.github.io/PAVURIO/terms.html |
-| Account deletion (Google Play) | https://celyousfi.github.io/PAVURIO/delete-account.html |
+| Marketing / website | https://pavurio.com/ |
+| Support | https://pavurio.com/support.html |
+| Privacy policy | https://pavurio.com/privacy.html |
+| Terms (EULA) | https://pavurio.com/terms.html |
+| Account deletion (Google Play) | https://pavurio.com/delete-account.html |
 | French versions | same URLs under `/fr/` |
 | Contact email | lesepavistespro@gmail.com |
 
@@ -84,8 +84,8 @@ Unlock every challenge and tip, more pets, monthly stories and your full history
 
 Payment is charged to your Apple ID account at confirmation of purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period; your account is charged for renewal within 24 hours before the end of the current period. Manage or cancel in your App Store account settings. Any unused part of a free trial is forfeited when you buy a subscription.
 
-Terms: https://celyousfi.github.io/PAVURIO/terms.html
-Privacy: https://celyousfi.github.io/PAVURIO/privacy.html
+Terms: https://pavurio.com/terms.html
+Privacy: https://pavurio.com/privacy.html
 
 Pavurio helps you keep track of the care you give. It does not give veterinary advice.
 ```
@@ -143,8 +143,8 @@ Débloquez tous les défis et conseils, plus d'animaux, les histoires du mois et
 
 Le paiement est débité sur votre compte Apple à la confirmation de l'achat. L'abonnement se renouvelle automatiquement sauf résiliation au moins 24 heures avant la fin de la période en cours ; le renouvellement est débité dans les 24 heures précédant la fin de la période. Gérez ou résiliez l'abonnement dans les réglages de votre compte App Store. Toute partie inutilisée d'un essai gratuit est perdue lors de l'achat d'un abonnement.
 
-Conditions : https://celyousfi.github.io/PAVURIO/fr/terms.html
-Confidentialité : https://celyousfi.github.io/PAVURIO/fr/privacy.html
+Conditions : https://pavurio.com/fr/terms.html
+Confidentialité : https://pavurio.com/fr/privacy.html
 
 Pavurio vous aide à suivre les soins que vous donnez. L'app ne donne pas d'avis vétérinaire.
 ```
@@ -234,7 +234,7 @@ L'abonnement se renouvelle automatiquement sauf résiliation. Gérez-le ou rési
 **Do you provide a way for users to request that their data is deleted?** Yes:
 
 - in the app: Settings → Account → Delete account;
-- on the web: https://celyousfi.github.io/PAVURIO/delete-account.html
+- on the web: https://pavurio.com/delete-account.html
 
 **Data types collected:**
 
@@ -251,7 +251,7 @@ Everything else is not collected. Photos stay on the device, and there is no loc
 
 **Is data processed ephemerally?** No.
 
-**Account deletion URL** (asked separately in App content → Data deletion): https://celyousfi.github.io/PAVURIO/delete-account.html
+**Account deletion URL** (asked separately in App content → Data deletion): https://pavurio.com/delete-account.html
 
 **App access** (App content → App access): All functionality is available without special access. No login is needed, because a guest account is created automatically.
 

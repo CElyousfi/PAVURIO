@@ -3,7 +3,7 @@ Usage (repo root): python3 tools/site/build.py   (needs: pip install markdown)""
 import os, shutil, markdown
 from PIL import Image
 
-ROOT = 'site'; OUT = f'{ROOT}/dist'; BASE = 'https://celyousfi.github.io/PAVURIO'
+ROOT = 'site'; OUT = f'{ROOT}/dist'; BASE = 'https://pavurio.com'
 shutil.rmtree(OUT, ignore_errors=True); os.makedirs(f'{OUT}/fr'); os.makedirs(f'{OUT}/img')
 Image.open('assets/icon.png').convert('RGBA').resize((256, 256), Image.LANCZOS).save(f'{OUT}/img/icon.png')
 Image.open('assets/icon.png').convert('RGBA').resize((64, 64), Image.LANCZOS).save(f'{OUT}/favicon.png')
