@@ -64,7 +64,8 @@ export default function WeightScreen() {
         )
       }
     >
-      <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'flex-end' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <Label style={{ flex: 1 }}>{t('Units')}</Label>
         <Chip label="kg" on={unit === 'kg'} onPress={() => setWeightUnit('kg')} />
         <Chip label="lb" on={unit === 'lb'} onPress={() => setWeightUnit('lb')} />
       </View>

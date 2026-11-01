@@ -45,6 +45,8 @@ type Ctx = {
   logged: LoggedSignal | null;
   signalLogged: (s: Omit<LoggedSignal, 'nonce'>) => void;
   clearLogged: () => void;
+  /** when care was last logged (ms); lets celebrations wait for the pet's reaction to finish */
+  lastLoggedAt: number;
 };
 
 const AppCtx = createContext<Ctx | null>(null);
@@ -149,7 +151,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [db, reload],
   );
 
-  const signalLogged = useCallback((s: Omit<LoggedSignal, 'nonce'>) => setLogged({ ...s, nonce: Date.now() }), []);
+  const [lastLoggedAt, setLastLoggedAt] = useState(0);
+  const signalLogged = useCallback((s: Omit<LoggedSignal, 'nonce'>) => {
+    const nonce = Date.now();
+    setLastLoggedAt(nonce);
+    setLogged({ ...s, nonce });
+  }, []);
   const clearLogged = useCallback(() => setLogged(null), []);
 
   const value = useMemo<Ctx>(
@@ -175,8 +182,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       logged,
       signalLogged,
       clearLogged,
+      lastLoggedAt,
     }),
-    [db, ready, pet, pets, plan, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged],
+    [db, ready, pet, pets, plan, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt],
   );
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

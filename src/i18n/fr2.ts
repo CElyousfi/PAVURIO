@@ -261,4 +261,7 @@ export const FR2: Record<string, string> = {
   'That code has expired. Ask for a new one.': 'Ce code a expiré. Demandez-en un nouveau.',
   'Too many tries. Ask for a new code.': 'Trop d’essais. Demandez un nouveau code.',
   'Ask for a code first.': 'Demandez d’abord un code.',
+  "Units": "Unités",
+  "That's not here any more": "Ce n’est plus là",
+  "It may have been removed, or the link is out of date.": "Il a peut-être été supprimé, ou le lien n’est plus à jour.",
 };
