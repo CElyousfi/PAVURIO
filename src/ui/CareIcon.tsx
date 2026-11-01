@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ART } from './art';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { CARE, CareType } from '../domain/care';
@@ -29,7 +30,7 @@ export function CareIcon({ type, size, level = 0.7, ring = false }: { type: Care
             <TimeRing color={c} level={l} />
           </Svg>
         ) : null}
-        <Image source={art} style={{ position: 'absolute', left: size * 0.06, top: size * 0.06, width: size * 0.88, height: size * 0.88 }} fadeDuration={0} />
+        <ArtSwap source={art} style={{ position: 'absolute', left: size * 0.06, top: size * 0.06, width: size * 0.88, height: size * 0.88 }} />
       </View>
     );
   }
@@ -43,6 +44,29 @@ export function CareIcon({ type, size, level = 0.7, ring = false }: { type: Care
       {type === 'grooming' && <Groom c={c} />}
       {type === 'litter' && <Litter c={c} />}
     </Svg>
+  );
+}
+
+/** When the art changes (empty → half → full) the new image fades in over the old one (200 ms, like a pour). */
+function ArtSwap({ source, style }: { source: number; style: object }) {
+  const [prev, setPrev] = useState<number | null>(null);
+  const last = useRef(source);
+  const v = useSharedValue(1);
+  useEffect(() => {
+    if (last.current === source) return;
+    setPrev(last.current);
+    last.current = source;
+    v.value = 0;
+    v.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.quad) });
+    const t = setTimeout(() => setPrev(null), 230);
+    return () => clearTimeout(t);
+  }, [source, v]);
+  const a = useAnimatedStyle(() => ({ opacity: v.value }));
+  return (
+    <>
+      {prev != null ? <Image source={prev} style={style} fadeDuration={0} /> : null}
+      <Animated.Image source={source} style={[style, a]} fadeDuration={0} />
+    </>
   );
 }
 

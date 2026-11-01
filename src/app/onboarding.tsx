@@ -17,6 +17,7 @@ import { LookPicker, PlanEditor } from '../features/PetEditors';
 import { KindIcon } from '../features/routines';
 import { ART } from '../ui/art';
 import { CareIcon } from '../ui/CareIcon';
+import { NotifPreview } from '../ui/NotifPreview';
 import { colors, font, shadow } from '../ui/theme';
 import { DateField, Sheet, TimeField, Toggle } from '../ui/forms';
 import { Bouncy, ConfettiRain, Float, Pulse } from '../ui/motion';
@@ -424,20 +425,7 @@ function ReminderPreview({ pet }: { pet: Pet }) {
   const copy = reminderCopy('meal', t('Meals'), pet.name);
   return (
     <View style={styles.previewCard}>
-      <Animated.View entering={FadeInDown.delay(300).springify().damping(14)} style={styles.notif}>
-        <View style={styles.notifIcon}>
-          <PetAvatar species={pet.species} appearance={pet.appearance} size={40} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <T weight="black" style={{ fontSize: 15 }} numberOfLines={1}>
-            {copy.title}
-          </T>
-          <T style={{ fontSize: 13, color: colors.inkSoft }} numberOfLines={1}>
-            {copy.body}
-          </T>
-        </View>
-        <T style={{ fontSize: 12, color: colors.muted }}>{formatHM(8, 0)}</T>
-      </Animated.View>
+      <NotifPreview title={copy.title} body={copy.body} when={formatHM(8, 0)} delay={350} />
       {!ART.ui.remindersHero ? <View style={styles.previewGround} /> : null}
       {ART.ui.remindersHero ? (
         <Float style={{ alignSelf: 'center', marginTop: 4, zIndex: -1 }} amount={6} period={2200}>
@@ -519,17 +507,16 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
                 <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} reduceMotion={reduceMotion} interactive />
               ) : i === 1 ? (
                 <View style={{ alignItems: 'center' }}>
-                  <Animated.View entering={FadeInDown.delay(200)} style={[styles.notif, { marginBottom: 10, width: size + 20 }]}>
-                    <View style={styles.notifIcon}>
-                      <PetAvatar species="cat" appearance={defaultAppearance('cat')} size={40} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <T weight="black" style={{ fontSize: 14 }} numberOfLines={1}>
-                        {t('Fresh water for {name} 💧', { name: 'Mochi' })}
-                      </T>
-                      <T style={{ fontSize: 12, color: colors.inkSoft }}>{t('Tap Done when it’s done')}</T>
-                    </View>
-                  </Animated.View>
+                  {page === 1 ? (
+                    <NotifPreview
+                      title={t('Fresh water for {name} 💧', { name: 'Mochi' })}
+                      body={t('Tap Done when it’s done')}
+                      delay={300}
+                      style={{ marginBottom: 10, width: size + 20 }}
+                    />
+                  ) : (
+                    <View style={{ height: 76, marginBottom: 10 }} />
+                  )}
                   <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={1} reduceMotion={reduceMotion} />
                 </View>
               ) : (
@@ -606,8 +593,6 @@ const styles = StyleSheet.create({
   routine: { backgroundColor: colors.canvasWarm, borderRadius: 20, padding: 12, borderWidth: 1.5, borderColor: colors.line },
   previewCard: { height: 330, borderRadius: 34, backgroundColor: '#BFEFF3', overflow: 'hidden', padding: 16 },
   previewGround: { position: 'absolute', left: -30, right: -30, bottom: -60, height: 110, borderRadius: 60, backgroundColor: '#7FD6A0' },
-  notif: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: 20, padding: 12, ...(shadow as object) },
-  notifIcon: { width: 44, height: 44, borderRadius: 11, backgroundColor: '#FFF4E3', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   unit: { height: 60, borderRadius: 30, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   error: { color: colors.danger, marginTop: 6, textAlign: 'center', paddingHorizontal: 24 },
 });

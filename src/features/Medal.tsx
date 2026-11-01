@@ -30,17 +30,21 @@ function Glyph({ icon, color, size }: { icon: BadgeDef['icon']; color: string; s
   );
 }
 
+const LOCKED_TINT = '#E3E8EE';
+
 /** Achievement medal: GPT art when provided, otherwise a ring in the badge colour around its icon. */
 export function Medal({ def, size, locked }: { def: BadgeDef; size: number; locked?: boolean }) {
   const art = ART.badges[def.key];
   if (art)
     return (
       <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-        <Image source={art} style={{ width: size, height: size, opacity: locked ? 0.28 : 1 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        {/* locked: a clean flat silhouette of the medal (like an uncollected character), never a faded copy */}
+        <Image source={art} style={{ width: size, height: size, tintColor: locked ? LOCKED_TINT : undefined }} resizeMode="contain" accessibilityIgnoresInvertColors />
         {locked ? (
-          <View style={{ position: 'absolute', width: size * 0.34, height: size * 0.34, borderRadius: size * 0.17, backgroundColor: '#FFFFFFE6', alignItems: 'center', justifyContent: 'center' }}>
-            <Svg width={size * 0.18} height={size * 0.18} viewBox="0 0 24 24">
-              <Path d="M7 11V8a5 5 0 0 1 10 0v3M5.5 11h13v9.5h-13z" stroke="#9AA1AE" strokeWidth={2.6} fill="none" strokeLinejoin="round" />
+          <View style={{ position: 'absolute', width: size * 0.36, height: size * 0.36, borderRadius: size * 0.18, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+            <Svg width={size * 0.19} height={size * 0.19} viewBox="0 0 24 24">
+              <Path d="M7.5 11V8.2a4.5 4.5 0 0 1 9 0V11" stroke="#AEB6C2" strokeWidth={2.6} fill="none" strokeLinecap="round" />
+              <Path d="M5.5 11.5a1.5 1.5 0 0 1 1.5-1.5h10a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5H7a1.5 1.5 0 0 1-1.5-1.5z" fill="#AEB6C2" />
             </Svg>
           </View>
         ) : null}

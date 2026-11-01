@@ -73,7 +73,8 @@
         "expo-notifications",
         {
           "color": "#14B8C4",
-          "defaultChannel": "care-reminders"
+          "defaultChannel": "care-reminders",
+          "icon": "./assets/notification-icon.png"
         }
       ],
       [

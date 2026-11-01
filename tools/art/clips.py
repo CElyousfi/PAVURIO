@@ -6,6 +6,9 @@ import cv2, numpy as np, json, os, sys, math, subprocess
 from PIL import Image
 OUT=sys.argv[1]; os.makedirs(OUT,exist_ok=True)
 FPS=12
+# clips on screen most of the time (idle loops, the tap reaction) keep the source's 24 fps; long
+# one-off actions stay at 12 fps to keep the app small. Playback is clock-driven on the UI thread.
+FPS24={'idle','sleep','idle2','celebrate'}
 # Source videos and the time ranges (seconds) to keep. Celebrate skips 3.25–7.45 s where the
 # generated video morphs the ears into bunny ears.
 V='docs/art/gpt-dog/videos'
@@ -33,11 +36,11 @@ if SPECIES=='cat':
      'celebrate':(f'{V}/celebrate.mp4',[(0.25,9.6)]),
      'eat':(f'{V}/eat.mp4',[(0.0,9.9)]),
     }
-def frames(path,segs):
+def frames(path,segs,fps=FPS):
     out=[]
     for a,b in segs:
         tmp='/tmp/clipfr'; os.system(f'rm -rf {tmp}; mkdir -p {tmp}')
-        subprocess.run(['ffmpeg','-v','error','-ss',str(a),'-to',str(b),'-i',path,'-vf',f'fps={FPS}',f'{tmp}/%04d.png'],check=True)
+        subprocess.run(['ffmpeg','-v','error','-ss',str(a),'-to',str(b),'-i',path,'-vf',f'fps={fps}',f'{tmp}/%04d.png'],check=True)
         out+=[np.array(Image.open(f'{tmp}/{f}').convert('RGB')) for f in sorted(os.listdir(tmp))]
     return out
 def key(rgb):
@@ -66,6 +69,19 @@ def key(rgb):
         line[cv2.dilate(thick,np.ones((7,7),np.uint8))>0]=0
     line=cv2.dilate(line,np.ones((5,3),np.uint8))
     keep[line>0]=0
+    if FLOOR is not None:
+        # the drawn ground line is a long, thin, dark brownish stroke on the floor row: drop it
+        # wherever no paw stands on it (a paw keeps its own bottom outline)
+        dl=((mx-mn)<45)&(mx<200)&(mx>40)
+        run=cv2.morphologyEx(dl.astype(np.uint8),cv2.MORPH_OPEN,np.ones((1,45),np.uint8))
+        y0f,y1f=max(0,FLOOR-4),min(keep.shape[0],FLOOR+6)
+        # a column is free when nothing of the dog sits just above the line there (no paw)
+        free=keep[max(0,FLOOR-9):max(1,FLOOR-5)].max(0)==0
+        seg=run[y0f:y1f]>0
+        keep[y0f:y1f][seg&free[None,:]]=0
+        # soft floor shadow just under the line
+        sh=((mx-mn)<20)&(mx<240)&(mx>150)
+        keep[y1f:y1f+12][sh[y1f:y1f+12]]=0
     # enclosed checkerboard patches painted inside the character
     n2,lab2,st2,_=cv2.connectedComponentsWithStats(bgc.astype(np.uint8),connectivity=4)
     V=mx.astype(np.float32)
@@ -182,8 +198,11 @@ def collar_overlay(rgb,alpha,t):
     return o, (np.minimum(m,alpha/255)*255).astype(np.uint8)
 CAT_COLLARS={'teal':(88,1.0,0.95),'leaf':(48,1.0,0.95),'sun':(22,1.1,1.1),'berry':(136,0.85,1.0)}
 def sketch(rgb):
-    r=rgb.astype(np.float32); L=0.3*r[:,:,0]+0.59*r[:,:,1]+0.11*r[:,:,2]
-    g=np.clip(226+(L-190)*0.16,214,246); g=np.where(L<115,72+L*0.25,g)
+    r=rgb.astype(np.float32); L=0.3*r[:,:,0]+0.59*r[:,:,1]+0.11*r[:,:,2]; V=r.max(2)
+    coat=np.clip(232+(L-200)*0.09,224,244)          # soft, nearly flat light gray
+    line=118+V*0.12                                    # outlines: mid gray, never black
+    w=1-smooth(V,92,128)                               # only truly dark strokes count as outline
+    g=coat*(1-w)+line*w
     return np.stack([g,g,np.clip(g+3,0,255)],-1).astype(np.uint8)
 BAND={'coral':(176,0.82,1.12),'leaf':(48,1.0,0.95),'sun':(22,1.15,1.15),'berry':(136,0.8,1.0)}
 def band_overlay(rgb,alpha,t):
@@ -202,9 +221,11 @@ if ONLY:
 for name,(path,segs) in CLIPS.items():
     if ONLY and name not in ONLY:
         manifest[name]=old[name]; continue
-    fr=frames(path,segs)
-    if SPECIES=='cat':
-        g0=fr[0].astype(int); gl=((g0.max(2)-g0.min(2))<24)&(g0.max(2)<200)&(g0.max(2)>70)
+    fps=24 if name in FPS24 else FPS
+    fr=frames(path,segs,fps)
+    if True:  # both species: locate the drawn ground line so keying can drop it
+        g0=fr[0].astype(int)
+        gl=((g0.max(2)-g0.min(2))<(45 if SPECIES=='dog' else 24))&(g0.max(2)<200)&(g0.max(2)>(40 if SPECIES=='dog' else 70))
         thin=cv2.morphologyEx(gl.astype(np.uint8),cv2.MORPH_OPEN,np.ones((1,45),np.uint8))
         thin[cv2.dilate(cv2.morphologyEx(gl.astype(np.uint8),cv2.MORPH_OPEN,np.ones((9,9),np.uint8)),np.ones((5,5),np.uint8))>0]=0
         rowsum=thin.sum(1)
@@ -237,9 +258,19 @@ for name,(path,segs) in CLIPS.items():
         propbox[max(0,y-80):y+h+10, max(0,x-10):x+w+10]=True
     if name!='eat': propbox[:]=False
     print(name,'props',int(propbox.sum()),flush=True)
+    bowl_top=None
+    if propbox.any():
+        ys_=np.where(core.any(1))[0]; bowl_top=int(ys_.min()) if len(ys_) else None
     def is_prop(frame):
         d=np.abs(frame.astype(np.int16)-med).sum(2)
-        return propbox & medA & (d<40)
+        m=propbox & medA & (d<40)
+        if bowl_top is not None:
+            hsv=cv2.cvtColor(frame,cv2.COLOR_RGB2HSV)
+            kibble=(hsv[:,:,2]<165)&(hsv[:,:,1]>110)&(hsv[:,:,0]<=22)   # dark brown pieces
+            bowl=(hsv[:,:,0]>=4)&(hsv[:,:,0]<=20)&(hsv[:,:,1]>165)&(hsv[:,:,2]>120)  # the saturated orange bowl
+            bowl=cv2.dilate(bowl.astype(np.uint8),np.ones((5,5),np.uint8))>0     # + its anti-aliased rim
+            m&=(bowl|kibble)
+        return m
     PROPS=[is_prop(f) for f in fr]
     n=len(fr); PER=12; COLS=4; ROWS=3
     sc=min(1.0, 2000/(COLS*fw), 1500/(ROWS*fh))
@@ -269,7 +300,7 @@ for name,(path,segs) in CLIPS.items():
         for pal in ['honey','cocoa','snow','midnight']: sheet(lambda x,p=pal: recolor(x,p), pal)
         sheet(sketch,'sketch')
         for bnd,t in BAND.items(): sheet(lambda x:x, f'band_{bnd}', lambda rgb,A,t=t: band_overlay(rgb,A,t))
-    manifest[name]={'origin':[int(x0),int(y0)],'sc':float(sc),'native':{'cx':float(x0+ref['cx']/sc),'bottom':float(y0+ref['bottom']/sc),'height':float((ref['bottom']-ref['top'])/sc)},'loop':name in LOOPS,'pingpong':name in LOOPS,'frames':n,'fps':FPS,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
+    manifest[name]={'origin':[int(x0),int(y0)],'sc':float(sc),'native':{'cx':float(x0+ref['cx']/sc),'bottom':float(y0+ref['bottom']/sc),'height':float((ref['bottom']-ref['top'])/sc)},'loop':name in LOOPS,'pingpong':name in LOOPS,'frames':n,'fps':fps,'per':PER,'cols':COLS,'chunks':chunks,'fw':tw,'fh':th,'ref':ref}
     print(name,n,'frames',tw,'x',th,'chunks',chunks,sizes,flush=True)
 # all videos share Gemini's framing (bandana width 221–229 px in each), so one anchor fits all:
 # the sitting idle dog defines where the paws and the head centre are and how tall the dog is.

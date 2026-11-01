@@ -112,7 +112,7 @@ function Gate() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false, animation: 'fade' }} />
-        <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 180 }} />
+        <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 150 }} />
         <Stack.Screen name="day" options={{ presentation: 'modal' }} />
         <Stack.Screen name="studio" options={{ presentation: 'modal' }} />
         <Stack.Screen name="settings" />

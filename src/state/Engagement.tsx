@@ -2,7 +2,7 @@
  * Streak, challenges and achievements for the active pet, recomputed after every data change.
  * Also detects newly finished challenges / newly earned badges so the UI can celebrate them once.
  */
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { listEventsBetween } from '../data/repo';
 import { badgeStats, completeChallenge, listChallengeRuns, markSeen, seenSet } from '../data/engageRepo';
 import { BadgeStats, earnedBadges } from '../domain/badges';
@@ -42,10 +42,13 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
     return () => clearInterval(i);
   }, []);
 
+  // the first load runs at once; later ones (after a save) wait a beat so the save animation and
+  // the pet's reaction get the JS thread first — celebrations are held longer than this anyway
+  const loadedOnce = useRef(false);
   useEffect(() => {
     if (!pet) return;
     let alive = true;
-    (async () => {
+    const run = async () => {
       const today = dayKeyOf(new Date());
       const from = parseDayKey(addDays(today, -HISTORY_DAYS)).getTime();
       const events = await listEventsBetween(db, pet.id, from, Date.now() + 60_000);
@@ -84,9 +87,17 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
       const completedChallengeKeys = challenges.filter((c) => c.run.completedAt).map((c) => c.def.key);
       setState({ loaded: true, byDay, streak, challenges, completedChallengeKeys, stats, earned });
       if (changed) bump();
-    })().catch((e) => console.warn('[pavurio] engagement load failed', e));
+    };
+    const timer = setTimeout(
+      () => {
+        loadedOnce.current = true;
+        run().catch((e) => console.warn('[pavurio] engagement load failed', e));
+      },
+      loadedOnce.current ? 450 : 0,
+    );
     return () => {
       alive = false;
+      clearTimeout(timer);
     };
   }, [db, pet, plan, version, tick, bump]);
 
