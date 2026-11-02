@@ -96,6 +96,23 @@ describe('walk timer', () => {
     expect(r.walk.durationMs).toBe(15 * MIN);
   });
 
+  it('a Pause + Resume made on the lock screen (app closed) still counts as paused time', async () => {
+    const { db, pet } = await setup();
+    const t0 = at(2026, 4, 10, 17);
+    const w = await startWalk(db, pet.id, null, t0);
+    // the lock screen reports: walking again, 10 minutes paused in total
+    await applyLockScreenState(db, w.id, { status: 'active', pausedAt: null, pausedMs: 10 * MIN }, t0 + 40 * MIN);
+    const r = await finishWalk(db, w.id, { now: t0 + 40 * MIN });
+    expect(r.walk.durationMs).toBe(30 * MIN);
+  });
+
+  it('one walk at a time across pets', async () => {
+    const { db, pet } = await setup();
+    const other = await createPet(db, { species: 'dog', name: 'Max' });
+    await startWalk(db, pet.id, null, 1000);
+    await expect(startWalk(db, other.id, null, 2000)).rejects.toThrow();
+  });
+
   it('a discarded walk saves nothing', async () => {
     const { db, pet } = await setup();
     const w = await startWalk(db, pet.id, null, 1000);

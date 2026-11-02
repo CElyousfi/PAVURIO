@@ -1,8 +1,10 @@
 /**
  * iOS: a Live Activity on the Lock Screen and in the Dynamic Island. The elapsed time is a SwiftUI timer
  * (`Text` with `timerInterval`), so it ticks on its own with no updates from the app; `pauseTime` freezes it
- * while paused. Pause / Resume / Finish buttons update the activity's props on the device and notify the
- * app, which applies them to the walk.
+ * while paused. Pause / Resume / Finish buttons send an interaction event to the app (expo-widgets runs them
+ * as App Intents); the app applies it to the walk and updates the activity. Tapping the activity opens the walk.
+ * Known limit: if iOS has fully terminated Pavurio, a button press may not reach it — the walk keeps timing
+ * and can be paused or finished in the app.
  */
 import React from 'react';
 import { Button, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
@@ -32,15 +34,9 @@ const WalkActivity = createLiveActivity<WalkLiveProps>('PavurioWalk', (props: Wa
       <Button
         target={paused ? 'resume' : 'pause'}
         label={paused ? props.resume : props.pause}
-        onPress={
-          (() =>
-            paused
-              ? { status: 'active', pausedAt: null, pausedMs: props.pausedMs + Math.max(0, Date.now() - (props.pausedAt ?? Date.now())) }
-              : { status: 'paused', pausedAt: Date.now() }) as unknown as () => void
-        }
         modifiers={[buttonStyle('bordered'), tint('#14B8C4')]}
       />
-      <Button target="finish" label={props.finish} onPress={(() => ({ status: 'finished', finishAt: Date.now() })) as unknown as () => void} modifiers={[buttonStyle('borderedProminent'), tint('#14B8C4')]} />
+      <Button target="finish" label={props.finish} modifiers={[buttonStyle('borderedProminent'), tint('#14B8C4')]} />
     </HStack>
   );
   return {
@@ -118,10 +114,10 @@ export async function readWalkLive(_walkId: string): Promise<WalkLiveProps | nul
 
 export function onWalkLiveAction(cb: (action: WalkLiveAction, walkId: string, at: number) => void): () => void {
   const sub = addUserInteractionListener((e) => {
-    if (e.source !== 'PavurioWalk' || !lastProps) return;
+    if (e.source !== 'PavurioWalk') return;
     const action: WalkLiveAction | null = e.target === 'finish' ? 'finish' : e.target === 'pause' ? 'pause' : e.target === 'resume' ? 'resume' : null;
     if (!action) return;
-    cb(action, lastProps.walkId, e.timestamp);
+    cb(action, lastProps?.walkId ?? '', e.timestamp);
   });
   return () => sub.remove();
 }

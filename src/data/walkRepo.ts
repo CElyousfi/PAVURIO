@@ -103,6 +103,8 @@ export async function listWalks(db: Db, petId: string): Promise<Walk[]> {
 export async function startWalk(db: Db, petId: string, weather: WeatherSnapshot | null, now = Date.now()): Promise<Walk> {
   const live = await getLiveWalk(db, petId);
   if (live) return live;
+  // one walk at a time across pets (the lock screen shows one)
+  if (await getAnyLiveWalk(db)) throw new ValidationError(t('Another walk is already in progress. Finish it first.'));
   const pet = await getPet(db, petId);
   if (!pet) throw new ValidationError(t('This pet no longer exists.'));
   const id = newId();
@@ -168,7 +170,18 @@ function memoryTitle(name: string, ms: number) {
  * a key derived from the walk id, then the walk becomes completed. Re-running a `completing` walk (after a
  * crash) finishes the job without duplicates. `endAt` lets a lock-screen Finish keep its real time.
  */
-export async function finishWalk(db: Db, id: string, opts: { now?: number; endAt?: number; durationMs?: number } = {}): Promise<FinishResult> {
+const finishing = new Map<string, Promise<FinishResult>>();
+
+export function finishWalk(db: Db, id: string, opts: { now?: number; endAt?: number; durationMs?: number } = {}): Promise<FinishResult> {
+  // one finish per walk at a time: a second caller (double tap, lock screen + app) waits for the first
+  const running = finishing.get(id);
+  if (running) return running.then((r) => ({ walk: r.walk, newBadges: [] }));
+  const p = finishOnce(db, id, opts).finally(() => finishing.delete(id));
+  finishing.set(id, p);
+  return p;
+}
+
+async function finishOnce(db: Db, id: string, opts: { now?: number; endAt?: number; durationMs?: number }): Promise<FinishResult> {
   const now = opts.now ?? Date.now();
   let w = await getWalk(db, id);
   if (!w) throw new ValidationError(t('This walk no longer exists.'));
@@ -201,9 +214,17 @@ export async function finishWalk(db: Db, id: string, opts: { now?: number; endAt
 }
 
 /** Finishes any walk left in `completing` (the app closed mid-save). Safe to call on every start. */
-export async function recoverWalks(db: Db): Promise<void> {
+export async function recoverWalks(db: Db): Promise<FinishResult[]> {
   const rows = await db.getAllAsync<Row>("SELECT * FROM walks WHERE status = 'completing'", []);
-  for (const r of rows) await finishWalk(db, r.id).catch((e) => console.warn('[pavurio] walk recovery failed', e));
+  const out: FinishResult[] = [];
+  for (const r of rows) {
+    try {
+      out.push(await finishWalk(db, r.id));
+    } catch (e) {
+      console.warn('[pavurio] walk recovery failed', e);
+    }
+  }
+  return out;
 }
 
 export type WalkBadge = { badge: AdventureBadgeId; walkId: string | null; unlockedAt: number; ruleVersion: number };
@@ -297,11 +318,26 @@ export function walkIdFromMemory(memoryId: string): string | null {
  */
 export async function applyLockScreenState(db: Db, id: string, s: { status: 'active' | 'paused'; pausedAt: number | null; pausedMs: number }, now = Date.now()): Promise<Walk | null> {
   const w = await getWalk(db, id);
-  if (!w) return null;
-  if (s.status === 'paused' && w.status === 'active' && s.pausedAt != null) {
-    await db.runAsync("UPDATE walks SET status = 'paused', paused_at = ?, updated_at = ? WHERE id = ? AND status = 'active'", [Math.min(now, Math.max(w.startedAt, s.pausedAt)), now, id]);
-  } else if (s.status === 'active' && w.status === 'paused' && s.pausedMs >= w.pausedMs) {
-    await db.runAsync("UPDATE walks SET status = 'active', paused_at = NULL, paused_ms = ?, updated_at = ? WHERE id = ? AND status = 'paused'", [s.pausedMs, now, id]);
+  if (!w || (w.status !== 'active' && w.status !== 'paused')) return w;
+  // pauses taken on the lock screen only ever add paused time (a Pause + Resume there grows pausedMs)
+  const pausedMs = Math.max(w.pausedMs, Math.max(0, s.pausedMs));
+  if (s.status === 'paused' && s.pausedAt != null) {
+    if (w.status === 'active') {
+      await db.runAsync("UPDATE walks SET status = 'paused', paused_at = ?, paused_ms = ?, updated_at = ? WHERE id = ? AND status = 'active'", [
+        Math.min(now, Math.max(w.startedAt, s.pausedAt)),
+        pausedMs,
+        now,
+        id,
+      ]);
+    } else if (pausedMs > w.pausedMs) {
+      await db.runAsync('UPDATE walks SET paused_ms = ?, updated_at = ? WHERE id = ?', [pausedMs, now, id]);
+    }
+  } else if (s.status === 'active') {
+    if (w.status === 'paused' && s.pausedMs >= w.pausedMs) {
+      await db.runAsync("UPDATE walks SET status = 'active', paused_at = NULL, paused_ms = ?, updated_at = ? WHERE id = ? AND status = 'paused'", [s.pausedMs, now, id]);
+    } else if (w.status === 'active' && pausedMs > w.pausedMs) {
+      await db.runAsync('UPDATE walks SET paused_ms = ?, updated_at = ? WHERE id = ?', [pausedMs, now, id]);
+    }
   }
   return getWalk(db, id);
 }

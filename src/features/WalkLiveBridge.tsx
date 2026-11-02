@@ -11,7 +11,7 @@ import { AppState } from 'react-native';
 import { router } from 'expo-router';
 import { useApp } from '../state/AppState';
 import { getAnyLiveWalk, getWalk, pauseWalk, recoverWalks, resumeWalk } from '../data/walkRepo';
-import { applyLive, mirrorWalk, reconcileLockScreen } from './walkSession';
+import { afterWalkFinished, applyLive, mirrorWalk, reconcileLockScreen } from './walkSession';
 import { onWalkLiveAction } from '../native/walkLive';
 
 export function WalkLiveBridge() {
@@ -24,14 +24,14 @@ export function WalkLiveBridge() {
     const sync = async () => {
       const { db, pets, bump } = ref.current;
       try {
-        await recoverWalks(db);
+        for (const r of await recoverWalks(db)) await afterWalkFinished(db, r);
         const w = await getAnyLiveWalk(db);
         if (!w || !alive) return;
         const name = pets.find((p) => p.id === w.petId)?.name ?? '';
         const r = await reconcileLockScreen(db, w.id);
         if (r.finished) {
           bump();
-          router.navigate({ pathname: '/walk', params: { done: r.finished.walk.id } });
+          router.navigate({ pathname: '/walk', params: { done: r.finished.walk.id, badges: r.finished.newBadges.join(',') } });
           return;
         }
         await mirrorWalk(r.walk, name);
@@ -44,12 +44,14 @@ export function WalkLiveBridge() {
     const sub = AppState.addEventListener('change', (s) => s === 'active' && void sync());
     const off = onWalkLiveAction(async (action, walkId, at) => {
       const { db, bump, pets } = ref.current;
-      const w = await getWalk(db, walkId);
+      // iOS doesn't know the walk id in the event: the walk in progress is the one
+      const w = walkId ? await getWalk(db, walkId) : await getAnyLiveWalk(db);
       if (!w) return;
+      walkId = w.id;
       if (action === 'finish') {
         const r = await applyLive(db, walkId, { status: 'finished', finishAt: at, pausedAt: w.pausedAt, pausedMs: w.pausedMs });
         bump();
-        if (r.finished) router.navigate({ pathname: '/walk', params: { done: walkId } });
+        if (r.finished) router.navigate({ pathname: '/walk', params: { done: walkId, badges: r.finished.newBadges.join(',') } });
         return;
       }
       const next = action === 'pause' ? await pauseWalk(db, walkId, at) : await resumeWalk(db, walkId, at);

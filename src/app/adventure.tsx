@@ -73,7 +73,9 @@ export default function Adventure() {
     setSaving(true);
     setErr(null);
     try {
-      const next = await editWalk(db, w.id, { durationMs: minutes * 60_000, note, photoUri: photo });
+      // only a changed duration is written (a note or photo edit never rounds the walk's real time)
+      const timeChanged = minutes !== Math.max(1, Math.round((w.durationMs ?? 0) / 60_000));
+      const next = await editWalk(db, w.id, { durationMs: timeChanged ? minutes * 60_000 : undefined, note, photoUri: photo });
       setW(next);
       bump();
       successFeedback();

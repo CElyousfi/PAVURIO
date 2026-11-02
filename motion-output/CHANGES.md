@@ -97,3 +97,25 @@ all of its own features.
   - In the log card (`Vessel`), the picture fills with the amount: the smallest amount gives a sliver and the biggest preset fills it. The chevron control and drag still work.
 - Lists (day, care agenda, routines, plan, story, medals) show the pictures in full colour.
 - In the menu hub, Care uses the calendar, Records the clipboard and Pets the sleeping duo. Medication routines use the medication picture, and the empty reminders state uses the calendar.
+
+# Pass 4 — goals, medicine, reminders, Adventures, lock-screen walk, icon
+
+- **Goals from the owner's plan.** The plan step sets how many times a day and how much each time (`care_plans.portion`, migration v4).
+  - Every picture fills toward its daily goal, times × portion: the log card (already given today plus this amount), the Home row, and the pet's bands (one usual portion = one band).
+- **Medicine** is a care type: doses (half steps), with the medicine illustration. It isn't in anyone's plan until the owner adds it.
+- **Reminders**
+  - Sync runs right after permission is granted and every time the app comes back to the foreground. A background refresh (expo-background-task) keeps the window filled.
+  - Android: Done / In 15 min work from the notification without opening the app.
+  - One follow-up 30 min after an unticked meal or medicine.
+  - Medicine uses its own high-priority channel and is delivered as an alarm clock when exact alarms are allowed; Settings offers "Allow on-time reminders".
+  - Portions appear in the reminder text, and a "still walking?" nudge goes out after 3 h.
+- **Adventures** (`src/app/walk.tsx`, `passport.tsx`, `adventure.tsx`; `src/data/walkRepo.ts`; `src/domain/walks.ts`, `weather.ts`; `src/native/weather.ts`)
+  - Open-Meteo weather for a town picked once, cached 20 min.
+  - The timer is computed from stored timestamps, through a state machine.
+  - Finishing is idempotent: one care event, one memory and the passport stamps (8 rules, v1) are derived from the walk.
+  - Edit and delete keep all of these in step. 14 new tests.
+- **Lock screen** (`src/native/walkLive/*`, expo-widgets)
+  - iOS: a Live Activity with a self-ticking timer and Pause / Resume / Finish buttons.
+  - Android: an ongoing notification with the same buttons, handled natively and applied with their real times when the app runs (`WalkLiveBridge`).
+- **Launcher icon.** The adaptive background is now the store icon fitted to the visible zone, over a soft extension; the foreground is transparent. Installed icons now match the Play Store icon.
+- **New dependencies:** expo-widgets 58.0.x, @expo/ui 58.0.x, expo-background-task 58.0.x, expo-task-manager 58.0.x.

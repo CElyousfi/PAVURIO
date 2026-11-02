@@ -14,13 +14,12 @@ import { PetRig, PetClipName } from '../animation/PetRig';
 import { useApp } from '../state/AppState';
 import { careAllowedFor } from '../domain/care';
 import { WeatherSnapshot, formatTemp, placeOnlySnapshot, weatherArt, walkGreeting, conditionLabel, Place } from '../domain/weather';
-import { AdventureBadgeId, LONG_WALK_MS, Walk, adventureBadge, clockText, durationText, elapsedMs, timeOfDay, timeOfDayLabel, walkEnd } from '../domain/walks';
+import { ADVENTURE_BADGES, AdventureBadgeId, LONG_WALK_MS, Walk, adventureBadge, clockText, durationText, elapsedMs, timeOfDay, timeOfDayLabel, walkEnd } from '../domain/walks';
 import { discardWalk, finishWalk, getLiveWalk, getWalk, listWalks, pauseWalk, resumeWalk, setWalkWeather, startWalk, type FinishResult } from '../data/walkRepo';
 import { currentWeather, getPlace, savePlace } from '../native/weather';
-import { mirrorWalk, reconcileLockScreen } from '../features/walkSession';
-import { confirmOccurrence } from '../features/careLink';
-import { getEvent, ValidationError } from '../data/repo';
-import { bumpCounter } from '../data/engageRepo';
+import { afterWalkFinished, mirrorWalk, reconcileLockScreen } from '../features/walkSession';
+import { endWalkLive } from '../native/walkLive';
+import { ValidationError } from '../data/repo';
 import { PlacePicker, Stamp, TIME_ART, WEATHER_ART, WeatherCard } from '../features/adventures';
 import { CircleButton, Pill, SoftPill, T } from '../ui/primitives';
 import { ConfettiRain, Pulse } from '../ui/motion';
@@ -33,8 +32,8 @@ import { t } from '../i18n';
 const GREEN = '#14B8C4';
 
 export default function WalkScreen() {
-  const params = useLocalSearchParams<{ done?: string }>();
-  const { pet, db, bump, schedules, signalLogged, markLogged, reduceMotion, settings } = useApp();
+  const params = useLocalSearchParams<{ done?: string; badges?: string }>();
+  const { pet, db, bump, signalLogged, markLogged, reduceMotion, settings } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const unit = settings.weightUnit === 'lb' ? 'F' : 'C';
@@ -57,11 +56,15 @@ export default function WalkScreen() {
   // ---- load the walk in progress (or the one just finished), and pick up lock-screen presses
   const load = useCallback(async () => {
     if (!pet) return;
+    try {
     if (params.done) {
       const w = await getWalk(db, params.done);
       if (w && w.status === 'completed') {
-        setDone({ walk: w, newBadges: [] });
+        // finished from the lock screen: the stamps it unlocked come along in the link
+        const badges = (params.badges ?? '').split(',').filter((b): b is AdventureBadgeId => (ADVENTURE_BADGES as string[]).includes(b));
+        setDone({ walk: w, newBadges: badges });
         setCount((await listWalks(db, pet.id)).length);
+        if (badges.length && !reduceMotion) setCheer(Date.now());
       }
     }
     let w = await getLiveWalk(db, pet.id);
@@ -78,8 +81,12 @@ export default function WalkScreen() {
       w = null;
     }
     setWalk(w && (w.status === 'active' || w.status === 'paused') ? w : null);
-    setNow(Date.now());
-    setLoaded(true);
+    } catch (e) {
+      console.warn('[pavurio] walk load failed', e);
+    } finally {
+      setNow(Date.now());
+      setLoaded(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db, pet, params.done]);
 
@@ -121,9 +128,9 @@ export default function WalkScreen() {
     else setClip(null);
   }, [running, reduceMotion, done]);
 
-  // lock screen mirrors the walk
+  // lock screen mirrors the walk in progress (ended explicitly on finish / discard, never by another pet's screen)
   useEffect(() => {
-    if (!loaded || !pet) return;
+    if (!loaded || !pet || !walk) return;
     void mirrorWalk(walk, pet.name);
   }, [walk, loaded, pet]);
 
@@ -141,11 +148,8 @@ export default function WalkScreen() {
 
   async function afterFinish(r: FinishResult) {
     if (!pet) return;
-    if (r.walk.eventId) {
-      const ev = await getEvent(db, r.walk.eventId);
-      if (ev) await confirmOccurrence(db, schedules, ev).catch(() => null);
-    }
-    await bumpCounter(db, `walksTimed:${pet.id}`).catch(() => null);
+    await afterWalkFinished(db, r).catch(() => null);
+    void endWalkLive();
     setCount((await listWalks(db, pet.id)).length);
     setDone(r);
     setWalk(null);
@@ -167,6 +171,7 @@ export default function WalkScreen() {
       const w = await startWalk(db, pet.id, snap);
       setWalk(w);
       setNow(Date.now());
+      bump(); // reminders re-plan (the "still walking?" nudge) and Home shows the walk
       // weather that was still loading is attached when it lands
       if (!weather?.available && place) {
         currentWeather(db).then((s) => s && setWalkWeather(db, w.id, s)).catch(() => null);
@@ -184,6 +189,7 @@ export default function WalkScreen() {
     const next = walk.status === 'active' ? await pauseWalk(db, walk.id) : await resumeWalk(db, walk.id);
     if (next) setWalk(next);
     setNow(Date.now());
+    bump();
   };
   const finish = async () => {
     if (!walk || finishing.current) return;
@@ -205,7 +211,9 @@ export default function WalkScreen() {
     if (!walk) return;
     if (!(await confirmAsync(t('Discard this walk?'), t('Nothing will be saved.'), t('Discard')))) return;
     await discardWalk(db, walk.id);
+    void endWalkLive();
     setWalk(null);
+    bump();
   };
   const pickPlace = async (p: Place) => {
     setPicking(false);
