@@ -65,7 +65,7 @@ export const ART = {
     /** assets/art/ui/welcome_badge.png — small icon above the welcome headline, 512×512 transparent */
     welcomeBadge: require('../../assets/art/ui/welcome_badge.png') as Img,
     /** assets/art/ui/empty_day.png — pet next to an empty bowl, hopeful and happy, 1024×1024 transparent */
-    emptyDay: null as Img,
+    emptyDay: require('../../assets/art/stickers/dog_please.webp') as Img,
     /** assets/art/ui/plan_header.png — dog and cat looking at a checklist, 1536×1024 transparent */
     planHeader: null as Img,
     /** Honey & Tabby hugging, transparent (ChatGPT duo hero, 1024 px) — Smart Reminders card */

@@ -7,6 +7,7 @@ import { PetRig, PetClipName } from '../animation/PetRig';
 import { catClip } from '../animation/CatStage';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
+import { Sticker, careSticker, moodSticker } from '../ui/Sticker';
 import { CARE, CareType, SPECIES_CARE } from '../domain/care';
 import { careFill, fillStack, progressSentence } from '../domain/progress';
 import { dayKeyOf, formatClock } from '../domain/time';
@@ -238,7 +239,7 @@ function HomeScreen() {
             <Animated.View entering={reduceMotion ? undefined : FadeInUp.delay(300).springify().damping(15)} style={styles.celebrateWrap}>
               <Bouncy onPress={() => router.push('/summary')} accessibilityRole="button" accessibilityLabel={t('Celebrate my day!')} style={styles.celebrate} testID="celebrate-day">
                 <View style={styles.poster}>
-                  <PetAvatar species={pet.species} appearance={pet.appearance} size={40} />
+                  <PetAvatar species={pet.species} size={40} mood="party" />
                 </View>
                 <T weight="black" style={styles.celebrateText}>
                   {t('Celebrate my day!')}
@@ -325,6 +326,7 @@ function HomeScreen() {
               </T>
             ) : null}
           </View>
+          <Sticker name={next ? careSticker(next.type, pet.species) : occ.length ? moodSticker(pet.species, 'party') : moodSticker(pet.species, 'happy')} size={58} style={{ marginVertical: -10 }} />
           <Icon name="chevR" size={18} color={occ.length ? '#E8879E' : '#7FD3DA'} />
         </Bouncy>
       </View>

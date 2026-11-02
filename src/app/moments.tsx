@@ -3,7 +3,7 @@ import { Image, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } f
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { walkIdFromMemory } from '../data/walkRepo';
-import { PetAvatar } from '../animation/PetAvatar';
+import { Sticker, moodSticker } from '../ui/Sticker';
 import { Memory, listMemories } from '../data/recordsRepo';
 import { listEventsBetween } from '../data/repo';
 import { StoryRange, storyWindow } from '../domain/stories';
@@ -78,9 +78,7 @@ export default function MomentsTab() {
                 style={[styles.story, { opacity: ready[r] ? 1 : 0.5 }, r === 'month' && { backgroundColor: '#FFE9D6' }]}
                 testID={`story-${r}`}
               >
-                <View style={[styles.ring, { borderColor: r === 'week' ? colors.brand : '#F59E0B' }]}>
-                  <PetAvatar species={pet.species} appearance={pet.appearance} size={60} />
-                </View>
+                <Sticker name={r === 'week' ? 'duo_hug' : moodSticker(pet.species, 'party')} size={86} />
                 <T weight="black" style={{ fontSize: 16, marginTop: 8 }}>
                   {r === 'week' ? t('This week') : t('This month')}
                 </T>
@@ -122,7 +120,7 @@ export default function MomentsTab() {
                     <Image source={{ uri: m.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                   ) : (
                     <View style={[StyleSheet.absoluteFill, { backgroundColor: m.kind === 'milestone' ? '#FFF4E3' : m.kind === 'adventure' ? '#E6F4DE' : colors.brandSoft, alignItems: 'center', justifyContent: 'center' }]}>
-                      <PetAvatar species={pet.species} appearance={pet.appearance} size={tile * 0.5} />
+                      <Sticker name={m.kind === 'adventure' ? 'dog_trot' : m.kind === 'milestone' ? moodSticker(pet.species, 'trophy') : moodSticker(pet.species, 'love')} size={tile * 0.7} />
                     </View>
                   )}
                   <View style={styles.tileFoot}>

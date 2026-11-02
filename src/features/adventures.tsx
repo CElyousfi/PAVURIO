@@ -10,6 +10,7 @@ import { Bouncy } from '../ui/motion';
 import { colors, font } from '../ui/theme';
 import { ART } from '../ui/art';
 import { FillArt } from '../ui/FillArt';
+import { Sticker, weatherSticker } from '../ui/Sticker';
 import { Advice, Place, TempUnit, WeatherArt, WeatherSnapshot, conditionLabel, formatTemp, walkAdvice, weatherArt } from '../domain/weather';
 import { AdventureBadgeId, TimeOfDay } from '../domain/walks';
 import { searchPlaces } from '../native/weather';
@@ -106,6 +107,8 @@ export function WeatherCard({
             <T style={[styles.muted, { textDecorationLine: 'underline' }]}>{place.name}</T>
           </Pressable>
         </View>
+        {/* Honey or Tabby dressed for the weather */}
+        {weatherSticker(art) ? <Sticker name={weatherSticker(art)!} size={84} style={{ marginVertical: -8 }} /> : null}
       </View>
       {!loading ? (
         <Animated.View entering={FadeIn.duration(200)} style={[styles.advice, { backgroundColor: tint.bg }]} accessibilityRole="text" testID={`advice-${advice.level}`}>

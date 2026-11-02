@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Stack, router, type ErrorBoundaryProps } from 'expo-router';
-import { ART } from '../ui/art';
 import { Pill, T } from '../ui/primitives';
 import { t } from '../i18n';
 import * as SplashScreen from 'expo-splash-screen';
@@ -23,6 +22,7 @@ import { SNOOZE_MS, onReminderTap } from '../native/notifications';
 import { EngagementProvider } from '../state/Engagement';
 import { CelebrationHost } from '../features/CelebrationHost';
 import { WalkLiveBridge } from '../features/WalkLiveBridge';
+import { Sticker } from '../ui/Sticker';
 import { CARE, careAllowedFor, isCareType } from '../domain/care';
 import { portionOf } from '../domain/progress';
 import { getPortions, logCare } from '../data/repo';
@@ -153,7 +153,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   useEffect(() => cloud.crash.record(error, 'screen crashed'), [error]);
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-      {ART.icons.error ? <Image source={ART.icons.error} style={{ width: 170, height: 130 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+      <Sticker name="cat_curious" size={160} />
       <T weight="black" style={{ fontSize: 24, textAlign: 'center', marginTop: 18 }}>
         {t('Something went wrong')}
       </T>

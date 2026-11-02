@@ -13,6 +13,7 @@ import { MonthGrid, MonthNav } from '../ui/forms';
 import { Bouncy, CountUp, Ring, motionReduced } from '../ui/motion';
 import { CircleButton, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
+import { Sticker, moodSticker } from '../ui/Sticker';
 import { tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
@@ -169,7 +170,10 @@ export default function Summary() {
             </View>
             <View style={styles.legend}>
               {legend.length === 0 ? (
-                <T style={{ color: colors.muted }}>{t('Nothing logged in this period yet.')}</T>
+                <View style={{ alignItems: 'center' }}>
+                  <Sticker name={moodSticker(pet?.species ?? 'dog', 'sleep')} size={110} />
+                  <T style={{ color: colors.muted }}>{t('Nothing logged in this period yet.')}</T>
+                </View>
               ) : (
                 legend.map((l) => (
                   <View key={l.type} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
