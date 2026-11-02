@@ -9,9 +9,14 @@ MAP = {
     'f37ddd04-image.png': 'play', '2077921e-image.png': 'grooming', '9e7b11bb-image.png': 'sleep',
     '1e7ffacf-image.png': 'litter', '951278c6-image.png': 'medication', '33fa3c76-image.png': 'records',
     'ad1b1f73-image.png': 'calendar',
+    # second batch (2 Nov): paw prints are the walk, the medicine scene is medication
+    '41fa554f-image.png': 'walk', '96629b93-image.png': 'medication',
 }
+# the leash from the first batch stays available as walk_leash
+RENAME = {('d4adf5f2-image.png', 'walk'): 'walk_leash'}
 src, out = sys.argv[1], sys.argv[2]
 for f, name in MAP.items():
+    name = RENAME.get((f, name), name)
     im = Image.open(f'{src}/{f}').convert('RGBA')
     px = im.load()
     w, h = im.size

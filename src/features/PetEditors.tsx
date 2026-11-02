@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Bouncy, Pop } from '../ui/motion';
-import { CARE, SPECIES_CARE, Species } from '../domain/care';
+import { CARE, SPECIES_CARE, Species, formatAmount } from '../domain/care';
 import { ACCESSORIES, Appearance, PALETTES } from '../domain/appearance';
-import { Plan } from '../domain/progress';
+import { Plan, Portions, portionOf } from '../domain/progress';
 import { Icon, Label, T } from '../ui/primitives';
 import { CareIcon } from '../ui/CareIcon';
 import { colors } from '../ui/theme';
@@ -60,36 +60,84 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
   );
 }
 
-export function PlanEditor({ species, plan, onChange }: { species: Species; plan: Plan; onChange: (p: Plan) => void }) {
+/**
+ * The owner's daily plan: how many times a day, and how much each time. Together they are the goal each
+ * care's picture fills toward (2 × 100 g = a full bowl at 200 g), so every pet fills up its own way.
+ */
+export function PlanEditor({
+  species,
+  plan,
+  portions,
+  onChange,
+}: {
+  species: Species;
+  plan: Plan;
+  portions: Portions;
+  onChange: (p: Plan, portions: Portions) => void;
+}) {
   const types = useMemo(() => SPECIES_CARE[species], [species]);
   return (
     <View style={{ gap: 10 }}>
       {types.map((ct) => {
         const n = plan[ct] ?? 0;
+        const spec = CARE[ct].amount;
+        const portion = portionOf(ct, portions);
         const set = (v: number) => {
           tapFeedback();
-          onChange({ ...plan, [ct]: Math.max(0, Math.min(8, v)) });
+          onChange({ ...plan, [ct]: Math.max(0, Math.min(8, v)) }, portions);
         };
+        const setPortion = (dir: 1 | -1) => {
+          if (!spec) return;
+          tapFeedback();
+          const next = Math.round((portion + dir * spec.step) * 100) / 100;
+          onChange(plan, { ...portions, [ct]: Math.max(spec.min, Math.min(spec.max, next)) });
+        };
+        const label = CARE[ct].label;
         return (
-          <View key={ct} style={[styles.planRow]}>
-            <CareIcon type={ct} size={44} />
-            <View style={{ flex: 1 }}>
-              <T weight="black" style={{ fontSize: 18, color: CARE[ct].color }}>
-                {CARE[ct].label}
-              </T>
-              <T style={{ color: colors.muted, fontSize: 14 }}>{n === 0 ? t('Not in the daily plan') : t('{n}× a day', { n })}</T>
+          <View key={ct} style={styles.planRow}>
+            <View style={styles.planTop}>
+              <CareIcon type={ct} size={44} />
+              <View style={{ flex: 1 }}>
+                <T weight="black" style={{ fontSize: 18, color: CARE[ct].color }}>
+                  {label}
+                </T>
+                <T style={{ color: colors.muted, fontSize: 14 }}>{n === 0 ? t('Not in the daily plan') : t('{n}× a day', { n })}</T>
+              </View>
+              <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Fewer {label}', { label })} onPress={() => set(n - 1)} style={styles.stepBtn} hitSlop={6}>
+                <T weight="black" style={styles.stepTxt}>
+                  −
+                </T>
+              </Bouncy>
+              <Pop trigger={n} amount={0.35} style={{ width: 22, alignItems: 'center' }}>
+                <T weight="black" style={{ fontSize: 20 }}>{n}</T>
+              </Pop>
+              <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('More {label}', { label })} onPress={() => set(n + 1)} style={styles.stepBtn} hitSlop={6}>
+                <Icon name="plus" size={18} />
+              </Bouncy>
             </View>
-            <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Fewer {label}', { label: CARE[ct].label })} onPress={() => set(n - 1)} style={styles.stepBtn} hitSlop={6}>
-              <T weight="black" style={styles.stepTxt}>
-                −
+            {spec && n > 0 ? (
+              <View style={styles.portionRow}>
+                <T weight="xbold" style={{ flex: 1, color: colors.muted, fontSize: 14 }}>
+                  {t('Each time')}
+                </T>
+                <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Less {label} each time', { label })} onPress={() => setPortion(-1)} style={styles.stepSmall} hitSlop={6}>
+                  <T weight="black" style={{ fontSize: 18, lineHeight: 20 }}>
+                    −
+                  </T>
+                </Bouncy>
+                <T weight="black" style={{ minWidth: 70, textAlign: 'center', fontSize: 16, color: CARE[ct].color }} accessibilityLiveRegion="polite">
+                  {formatAmount(ct, portion)}
+                </T>
+                <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('More {label} each time', { label })} onPress={() => setPortion(1)} style={styles.stepSmall} hitSlop={6}>
+                  <Icon name="plus" size={14} />
+                </Bouncy>
+              </View>
+            ) : null}
+            {spec && n > 0 ? (
+              <T style={styles.goal}>
+                {t('Daily goal: {goal}', { goal: formatAmount(ct, Math.round(n * portion * 100) / 100) })}
               </T>
-            </Bouncy>
-            <Pop trigger={n} amount={0.35} style={{ width: 22, alignItems: 'center' }}>
-              <T weight="black" style={{ fontSize: 20 }}>{n}</T>
-            </Pop>
-            <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('More {label}', { label: CARE[ct].label })} onPress={() => set(n + 1)} style={styles.stepBtn} hitSlop={6}>
-              <Icon name="plus" size={18} />
-            </Bouncy>
+            ) : null}
           </View>
         );
       })}
@@ -105,7 +153,11 @@ const styles = StyleSheet.create({
   swatchName: { fontSize: 12, color: colors.muted, marginTop: 4 },
   dotWrap: { padding: 4, borderRadius: 24, borderWidth: 2.5, borderColor: 'transparent' },
   dot: { width: 36, height: 36, borderRadius: 18 },
-  planRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 22, padding: 12, paddingRight: 14 },
+  planRow: { backgroundColor: colors.card, borderRadius: 22, padding: 12, paddingRight: 14, gap: 8 },
+  planTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  portionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFFFFF', borderRadius: 16, paddingVertical: 6, paddingLeft: 14, paddingRight: 8 },
+  stepSmall: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  goal: { fontSize: 12, color: colors.muted, paddingLeft: 4 },
   stepBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   stepTxt: { fontSize: 24, lineHeight: 26 },
 });

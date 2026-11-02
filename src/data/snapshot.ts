@@ -17,6 +17,8 @@ export const SNAPSHOT_TABLES = [
   'attachments',
   'memories',
   'challenge_runs',
+  'walks',
+  'walk_badges',
 ] as const;
 
 /** Settings that describe this device, not the owner's data: never backed up or restored. */

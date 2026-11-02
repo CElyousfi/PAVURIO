@@ -3,11 +3,13 @@ import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
-import { CARE, CareType, careAllowedFor, clampAmount, isCareType } from '../../domain/care';
+import { CARE, CareType, careAllowedFor, clampAmount, isCareType, unitLabel } from '../../domain/care';
+import { dailyGoal, givenToday, portionOf } from '../../domain/progress';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
-import { CareEvent, ValidationError, getEvent, logCare, updateEvent, voidEvent } from '../../data/repo';
-import { useApp } from '../../state/AppState';
+import { CareEvent, ValidationError, getEvent, logCare, updateEvent } from '../../data/repo';
+import { removeCareEvent, walkIdFromEvent } from '../../data/walkRepo';
+import { useApp, useDay } from '../../state/AppState';
 import { confirmOccurrence } from '../../features/careLink';
 import { Vessel } from '../../ui/Vessel';
 import { Sheet } from '../../ui/forms';
@@ -43,7 +45,7 @@ function timeOptions(dayKey: string, now: Date): TimeOption[] {
 
 export default function LogCard() {
   const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string; scheduleId?: string; occ?: string; ox?: string; oy?: string; os?: string }>();
-  const { pet, db, bump, signalLogged, markLogged, schedules } = useApp();
+  const { pet, db, bump, signalLogged, markLogged, schedules, plan, portions } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -54,7 +56,9 @@ export default function LogCard() {
   const tpl = type ? CARE[type] : null;
   const spec = tpl?.amount ?? null;
 
-  const [amount, setAmount] = useState<number>(spec?.default ?? 0);
+  // starts at the owner's usual portion (set with the plan), not a generic default
+  const [amount, setAmount] = useState<number>(type && spec ? portionOf(type, portions) : 0);
+  const { events: dayEvents } = useDay(dayKey);
   const [occurredAt, setOccurredAt] = useState<number>(() => defaultOccurredAt(dayKey));
   const [timeLabel, setTimeLabel] = useState<string>(isToday(dayKey) ? t('Now') : t('Noon'));
   const [note, setNote] = useState('');
@@ -69,6 +73,12 @@ export default function LogCard() {
     getEvent(db, params.eventId).then((e) => {
       if (!e || e.voidedAt) {
         router.back();
+        return;
+      }
+      // a timed walk is edited as its adventure (duration, note, photo stay in step everywhere)
+      const walkId = walkIdFromEvent(e);
+      if (walkId) {
+        router.replace({ pathname: '/adventure', params: { id: walkId } });
         return;
       }
       setEditing(e);
@@ -201,18 +211,25 @@ export default function LogCard() {
   const remove = async () => {
     if (!editing) return;
     setShowNote(false);
-    await voidEvent(db, editing.id);
+    await removeCareEvent(db, editing.id);
     bump();
     // let the sheet's Modal close before leaving the screen
     setTimeout(() => router.back(), 220);
   };
 
-  // picture level: the smallest amount shows a sliver of colour, the biggest preset fills it
-  const top = spec ? spec.presets[spec.presets.length - 1] : 1;
-  const level = spec ? Math.max(0.12, Math.min(1, 0.12 + 0.88 * (amount / top))) : 1;
+  // picture level: what's already been given today plus this amount, against the owner's own daily goal
+  // (times a day × their portion, from the plan) — never a generic scale
+  const others = type ? dayEvents.filter((e) => e.type === type && e.id !== editing?.id) : [];
+  const goal = type ? (spec ? dailyGoal(type, plan, portions) : Math.max(1, plan[type] ?? 0)) : 1;
+  const before = type ? givenToday(type, others, portions) : 0;
+  const after = before + (spec ? amount : 1);
+  const level = Math.max(0, Math.min(1, after / goal));
   const objSize = Math.min(W * 0.9, height * 0.46, 400);
-  const prevPreset = spec ? [...spec.presets].reverse().find((p) => p < amount) : undefined;
-  const nextPreset = spec ? spec.presets.find((p) => p > amount) : undefined;
+  const steps = spec && type ? [...new Set([...spec.presets, portionOf(type, portions)])].sort((a, b) => a - b) : [];
+  const prevPreset = spec ? [...steps].reverse().find((p) => p < amount) : undefined;
+  const nextPreset = spec ? steps.find((p) => p > amount) : undefined;
+  const u = (n: number) => (spec ? (spec.unit === 'min' ? ' min' : spec.unit === 'dose' ? ` ${unitLabel('dose', n)}` : spec.unit) : '');
+  const fmt = (n: number) => String(Math.round(n * 100) / 100);
   const showDay = !!editing || !isToday(dayKey);
 
   return (
@@ -240,20 +257,20 @@ export default function LogCard() {
         <Animated.View entering={motionReduced() ? undefined : FadeInUp.delay(hasOrigin ? 120 : 60).duration(260).springify().damping(18)} style={{ alignSelf: 'stretch', alignItems: 'center' }}>
           {spec ? (
             <View style={styles.amountRow}>
-              <Pressable accessibilityRole="button" accessibilityLabel={prevPreset != null ? `${prevPreset} ${spec.unit}` : ''} disabled={prevPreset == null} onPress={() => prevPreset != null && setAmount(prevPreset)} style={styles.side}>
+              <Pressable accessibilityRole="button" accessibilityLabel={prevPreset != null ? `${fmt(prevPreset)}${u(prevPreset)}` : ''} disabled={prevPreset == null} onPress={() => prevPreset != null && setAmount(prevPreset)} style={styles.side}>
                 <T weight="black" style={styles.sideText} numberOfLines={1}>
-                  {prevPreset != null ? `${prevPreset}${spec.unit === 'min' ? ' min' : spec.unit}` : ''}
+                  {prevPreset != null ? `${fmt(prevPreset)}${u(prevPreset)}` : ''}
                 </T>
               </Pressable>
               <T weight="black" style={styles.amount} accessibilityLiveRegion="polite" testID="amount">
-                {amount}
+                {fmt(amount)}
                 <T weight="black" style={styles.unit}>
-                  {spec.unit === 'min' ? ' min' : spec.unit}
+                  {u(amount)}
                 </T>
               </T>
-              <Pressable accessibilityRole="button" accessibilityLabel={nextPreset != null ? `${nextPreset} ${spec.unit}` : ''} disabled={nextPreset == null} onPress={() => nextPreset != null && setAmount(nextPreset)} style={styles.side}>
+              <Pressable accessibilityRole="button" accessibilityLabel={nextPreset != null ? `${fmt(nextPreset)}${u(nextPreset)}` : ''} disabled={nextPreset == null} onPress={() => nextPreset != null && setAmount(nextPreset)} style={styles.side}>
                 <T weight="black" style={styles.sideText} numberOfLines={1}>
-                  {nextPreset != null ? `${nextPreset}${spec.unit === 'min' ? ' min' : spec.unit}` : ''}
+                  {nextPreset != null ? `${fmt(nextPreset)}${u(nextPreset)}` : ''}
                 </T>
               </Pressable>
             </View>
@@ -263,6 +280,13 @@ export default function LogCard() {
             </T>
           )}
           <T style={styles.when}>{timeLabel === t('Now') ? formatClock(occurredAt) : `${timeLabel} · ${formatClock(occurredAt)}`}</T>
+          <View style={[styles.goalChip, { backgroundColor: tpl.tint }]} testID="goal">
+            <T weight="xbold" style={{ color: tpl.color, fontSize: 13 }}>
+              {spec
+                ? t('{given} of {goal} today', { given: `${fmt(after)}${u(after)}`.trim(), goal: `${fmt(goal)}${u(goal)}`.trim() })
+                : t('{given} of {goal} today', { given: String(after), goal: String(goal) })}
+            </T>
+          </View>
 
           {error ? (
             <T style={styles.error} accessibilityLiveRegion="assertive">
@@ -343,6 +367,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 8 },
   chip: { paddingHorizontal: 14, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   when: { color: colors.faint, marginTop: 2, fontSize: 14 },
+  goalChip: { marginTop: 8, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 12 },
   note: {
     alignSelf: 'stretch',
     marginTop: 14,

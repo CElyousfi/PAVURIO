@@ -100,7 +100,7 @@ export default function ScheduleEditor() {
       const input = { petId: pet.id, type, title, times, days, startDate, endDate, remind, enabled };
       if (params.id) await updateSchedule(db, params.id, input);
       else await createSchedule(db, input);
-      if (remind && perm === 'undetermined') setPerm(await requestPermission());
+      if (remind && perm === 'undetermined') setPerm(await requestPermission(db));
       successFeedback();
       bump();
       router.back();

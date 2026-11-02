@@ -19,11 +19,13 @@ import { AppProvider, useApp } from '../state/AppState';
 import { CloudProvider } from '../state/Cloud';
 import { cloud } from '../cloud/firebase';
 import { colors } from '../ui/theme';
-import { onReminderTap } from '../native/notifications';
+import { SNOOZE_MS, onReminderTap } from '../native/notifications';
 import { EngagementProvider } from '../state/Engagement';
 import { CelebrationHost } from '../features/CelebrationHost';
-import { careAllowedFor, isCareType } from '../domain/care';
-import { logCare } from '../data/repo';
+import { WalkLiveBridge } from '../features/WalkLiveBridge';
+import { CARE, careAllowedFor, isCareType } from '../domain/care';
+import { portionOf } from '../domain/progress';
+import { getPortions, logCare } from '../data/repo';
 import { setMark } from '../data/careRepo';
 import { confirmOccurrence } from '../features/careLink';
 import { dayKeyOf } from '../domain/time';
@@ -40,7 +42,7 @@ function ReminderRouter() {
         if (n.petId && n.petId !== cur?.id && all.some((p) => p.id === n.petId)) await sw(n.petId);
         const species = all.find((p) => p.id === (n.petId ?? cur?.id))?.species ?? cur?.species;
         if (n.action === 'snooze' && n.kind === 'care') {
-          await setMark(db, n.scheduleId, n.key, 'snoozed', { snoozeUntil: Date.now() + 30 * 60_000 });
+          await setMark(db, n.scheduleId, n.key, 'snoozed', { snoozeUntil: Date.now() + SNOOZE_MS });
           bump();
           return;
         }
@@ -48,7 +50,8 @@ function ReminderRouter() {
           // the owner confirmed it from the notification: record it (idempotent per occurrence)
           if (n.type && isCareType(n.type) && species && careAllowedFor(species, n.type) && n.petId) {
             try {
-              const saved = await logCare(db, { petId: n.petId, type: n.type, occurredAt: Date.now(), mutationId: `notif:${n.key}` });
+              const portion = CARE[n.type].amount ? portionOf(n.type, await getPortions(db, n.petId)) : undefined;
+              const saved = await logCare(db, { petId: n.petId, type: n.type, occurredAt: Date.now(), amount: portion, mutationId: `notif:${n.key}` });
               await confirmOccurrence(db, schedules, saved, { scheduleId: n.scheduleId, key: n.key });
               bump();
               router.navigate('/');
@@ -64,6 +67,9 @@ function ReminderRouter() {
         }
         if (n.kind === 'appointment') {
           router.push({ pathname: '/appointment', params: { id: n.key.replace(/^appt:/, '') } });
+        } else if (n.kind === 'care' && n.type === 'walk' && species === 'dog') {
+          // a walk reminder opens the Adventure, ready to start
+          router.push('/walk');
         } else if (n.kind === 'care' && n.type && isCareType(n.type)) {
           router.push({ pathname: '/log/[type]', params: { type: n.type, day: dayKeyOf(new Date()), scheduleId: n.scheduleId, occ: n.key } });
         } else if (n.kind === 'care') {
@@ -107,6 +113,7 @@ function Gate() {
   return (
     <Animated.View key={language} entering={FadeIn.duration(260)} style={{ flex: 1 }}>
       <ReminderRouter />
+      <WalkLiveBridge />
       <CelebrationHost />
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true }}>
@@ -125,6 +132,8 @@ function Gate() {
         <Stack.Screen name="appointment" options={{ presentation: 'modal' }} />
         <Stack.Screen name="weight" options={{ presentation: 'modal' }} />
         <Stack.Screen name="walk" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
+        <Stack.Screen name="passport" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="adventure" options={{ presentation: 'modal' }} />
         <Stack.Screen name="record" options={{ presentation: 'modal' }} />
         <Stack.Screen name="memory" options={{ presentation: 'modal' }} />
         <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 320 }} />

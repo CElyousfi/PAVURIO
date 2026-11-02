@@ -1,15 +1,17 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { AppState as RNAppState } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useReducedMotion } from 'react-native-reanimated';
 import type { Db } from '../data/db';
 import * as repo from '../data/repo';
-import { Plan, computeProgress } from '../domain/progress';
+import { Plan, Portions, computeProgress } from '../domain/progress';
 import { dayRange, parseDayKey } from '../domain/time';
 import { setHapticsEnabled } from '../native/haptics';
 import type { CareType } from '../domain/care';
 import { listSchedules, marksBetween } from '../data/careRepo';
 import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
 import { configureNotifications, syncReminders } from '../native/notifications';
+import { registerBackgroundTasks } from '../native/backgroundTasks';
 import { isPro } from '../native/purchases';
 import { setMotionReduced } from '../ui/motion';
 import { Lang, deviceLanguage, isLang, setLang } from '../i18n';
@@ -25,6 +27,8 @@ type Ctx = {
   pet: repo.Pet | null;
   pets: repo.Pet[];
   plan: Plan;
+  /** the owner's usual amount per care (the daily goal = times × portion) */
+  portions: Portions;
   schedules: Schedule[];
   settings: Settings;
   /** effective: user setting OR OS reduce-motion */
@@ -60,6 +64,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [pet, setPet] = useState<repo.Pet | null>(null);
   const [pets, setPets] = useState<repo.Pet[]>([]);
   const [plan, setPlanState] = useState<Plan>({});
+  const [portions, setPortions] = useState<Portions>({});
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [settings, setSettings] = useState<Settings>({ haptics: true, reduceMotion: false, weightUnit: 'kg' });
   const [version, setVersion] = useState(0);
@@ -72,6 +77,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPet(p);
     setPets(await repo.listPets(db));
     setPlanState(p ? await repo.getPlan(db, p.id) : {});
+    setPortions(p ? await repo.getPortions(db, p.id) : {});
     setSchedules(p ? await listSchedules(db, p.id) : []);
     const haptics = (await repo.getSetting(db, 'haptics')) !== '0';
     const reduceMotion = (await repo.getSetting(db, 'reduceMotion')) === '1';
@@ -100,6 +106,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const t = setTimeout(() => void syncReminders(db), 600);
     return () => clearTimeout(t);
   }, [db, version]);
+  // …and every time the app comes back (permissions may have changed in Settings, days may have passed)
+  useEffect(() => {
+    void registerBackgroundTasks();
+    const sub = RNAppState.addEventListener('change', (s) => {
+      if (s === 'active') void syncReminders(db);
+    });
+    return () => sub.remove();
+  }, [db]);
 
   const setPro = useCallback(
     async (v: boolean) => {
@@ -169,6 +183,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       pet,
       pets,
       plan,
+      portions,
       schedules,
       settings,
       reduceMotion: settings.reduceMotion || osReduce,
@@ -188,7 +203,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       lastLoggedAt,
       markLogged,
     }),
-    [db, ready, pet, pets, plan, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt, markLogged],
+    [db, ready, pet, pets, plan, portions, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt, markLogged],
   );
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }
@@ -201,7 +216,7 @@ export function useApp(): Ctx {
 
 /** Loads one local day of care for the active pet and recomputes when data changes. */
 export function useDay(dayKey: string) {
-  const { db, pet, plan, version } = useApp();
+  const { db, pet, plan, portions, version } = useApp();
   const [events, setEvents] = useState<repo.CareEvent[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -223,7 +238,7 @@ export function useDay(dayKey: string) {
       alive = false;
     };
   }, [db, pet, dayKey, version]);
-  const progress = useMemo(() => computeProgress(plan, events), [plan, events]);
+  const progress = useMemo(() => computeProgress(plan, events, portions), [plan, events, portions]);
   return { events, progress, loading };
 }
 

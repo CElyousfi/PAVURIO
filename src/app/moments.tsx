@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { walkIdFromMemory } from '../data/walkRepo';
 import { PetAvatar } from '../animation/PetAvatar';
 import { Memory, listMemories } from '../data/recordsRepo';
 import { listEventsBetween } from '../data/repo';
@@ -116,17 +117,17 @@ export default function MomentsTab() {
             <View style={styles.grid}>
               {items.map((m, mi) => (
                 <Enter key={m.id} index={mi}>
-                <Pressable accessibilityRole="button" accessibilityLabel={`${m.title}, ${formatDateLong(m.date)}`} onPress={() => router.push({ pathname: '/memory', params: { id: m.id } })} style={[styles.tile, { width: tile, height: tile * 1.25 }]}>
+                <Pressable accessibilityRole="button" accessibilityLabel={`${m.title}, ${formatDateLong(m.date)}`} onPress={() => (m.kind === 'adventure' && walkIdFromMemory(m.id) ? router.push({ pathname: '/adventure', params: { id: walkIdFromMemory(m.id)! } }) : router.push({ pathname: '/memory', params: { id: m.id } }))} style={[styles.tile, { width: tile, height: tile * 1.25 }]}>
                   {m.photoUri ? (
                     <Image source={{ uri: m.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                   ) : (
-                    <View style={[StyleSheet.absoluteFill, { backgroundColor: m.kind === 'milestone' ? '#FFF4E3' : colors.brandSoft, alignItems: 'center', justifyContent: 'center' }]}>
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: m.kind === 'milestone' ? '#FFF4E3' : m.kind === 'adventure' ? '#E6F4DE' : colors.brandSoft, alignItems: 'center', justifyContent: 'center' }]}>
                       <PetAvatar species={pet.species} appearance={pet.appearance} size={tile * 0.5} />
                     </View>
                   )}
                   <View style={styles.tileFoot}>
                     <T weight="black" style={{ color: '#FFFFFF', fontSize: 14 }} numberOfLines={1}>
-                      {m.kind === 'milestone' ? '★ ' : ''}
+                      {m.kind === 'milestone' ? '★ ' : m.kind === 'adventure' ? '🐾 ' : ''}
                       {m.title}
                     </T>
                     <T style={{ color: '#FFFFFFD0', fontSize: 11 }}>{formatDateLong(m.date)}</T>

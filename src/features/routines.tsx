@@ -1,6 +1,6 @@
 /** Shared pieces for scheduled care: kind metadata, icons, occurrence rows and their actions. */
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, LinearTransition, ZoomIn } from 'react-native-reanimated';
 import { Bouncy, motionReduced } from '../ui/motion';
 import { router } from 'expo-router';
@@ -11,7 +11,6 @@ import { CARE, CareType, Species, careAllowedFor, isCareType } from '../domain/c
 import { Occurrence, formatTime24to12 } from '../domain/schedule';
 import { dayKeyOf } from '../domain/time';
 import { CareIcon } from '../ui/CareIcon';
-import { ART } from '../ui/art';
 import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { successFeedback, tapFeedback } from '../native/haptics';
@@ -39,12 +38,11 @@ export function kindMeta(type: string): { label: string; color: string } {
 }
 
 export function routineKindsFor(species: Species): string[] {
-  return [...(Object.keys(CARE) as CareType[]).filter((c) => careAllowedFor(species, c)), 'medication', 'custom'];
+  return [...(Object.keys(CARE) as CareType[]).filter((c) => careAllowedFor(species, c)), 'custom'];
 }
 
 export function KindIcon({ type, size }: { type: string; size: number }) {
   if (isCareType(type)) return <CareIcon type={type} size={size} />;
-  if (type === 'medication') return <Image source={ART.section.medication} style={{ width: size, height: size }} resizeMode="contain" accessibilityIgnoresInvertColors />;
   const { color } = kindMeta(type);
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: `${color}1F`, alignItems: 'center', justifyContent: 'center' }}>

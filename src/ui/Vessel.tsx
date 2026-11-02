@@ -4,7 +4,7 @@
  * the care row, so everything fillable in the app reads the same way. The level eases to a new amount
  * in 200 ms (Waterllama's pour, measured at 60 fps). A round chevron control sits in the middle: tap its
  * top or bottom half, or drag anywhere on the picture, to change the amount. Care without an amount
- * (litter) shows full.
+ * (litter) fills by times against the plan.
  */
 import React, { useMemo, useRef } from 'react';
 import { PanResponder, Pressable, StyleSheet, View } from 'react-native';
@@ -74,7 +74,7 @@ export function Vessel({
   const cy = size * 0.56;
   return (
     <View style={{ width: size, height: size }} {...responder.panHandlers}>
-      {art != null ? <FillArt source={art} size={size} level={onStep ? level : 1} /> : <CareIcon type={type} size={size} level={level} />}
+      {art != null ? <FillArt source={art} size={size} level={level} /> : <CareIcon type={type} size={size} level={level} />}
       {onStep ? (
         <>
           <View pointerEvents="none" style={[styles.control, { left: cx - R, top: cy - R, width: 2 * R, height: 2 * R, borderRadius: R, backgroundColor: lighten(color, 0.55) }]}>

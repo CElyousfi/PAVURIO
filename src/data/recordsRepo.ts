@@ -143,11 +143,11 @@ export async function dueRecords(db: Db, petId: string, fromDay: string, toDay: 
 
 // ---------------------------------------------------------------- memories
 
-export type Memory = { id: string; petId: string; photoUri: string | null; title: string; caption: string | null; date: string; kind: 'moment' | 'milestone' };
-type MemRow = { id: string; pet_id: string; photo_uri: string | null; title: string; caption: string | null; date: string; kind: 'moment' | 'milestone' };
+export type Memory = { id: string; petId: string; photoUri: string | null; title: string; caption: string | null; date: string; kind: 'moment' | 'milestone' | 'adventure' };
+type MemRow = { id: string; pet_id: string; photo_uri: string | null; title: string; caption: string | null; date: string; kind: 'moment' | 'milestone' | 'adventure' };
 const toMem = (r: MemRow): Memory => ({ id: r.id, petId: r.pet_id, photoUri: r.photo_uri, title: r.title, caption: r.caption, date: r.date, kind: r.kind });
 
-export type MemoryInput = { petId: string; photoUri?: string | null; title: string; caption?: string | null; date: string; kind?: 'moment' | 'milestone' };
+export type MemoryInput = { petId: string; photoUri?: string | null; title: string; caption?: string | null; date: string; kind?: 'moment' | 'milestone' | 'adventure' };
 
 function validateMem(i: MemoryInput) {
   const title = i.title.trim();

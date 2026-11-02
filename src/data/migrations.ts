@@ -151,6 +151,42 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX IF NOT EXISTS idx_challenge_runs_pet ON challenge_runs (pet_id, created_at);
   `,
+  // v4 — the owner's usual portion per care (the daily goal = times × portion), and Adventures:
+  // timed walks as their own records (the source of truth for the care event, memory and passport)
+  `
+  ALTER TABLE care_plans ADD COLUMN portion REAL;
+
+  CREATE TABLE IF NOT EXISTS walks (
+    id TEXT PRIMARY KEY NOT NULL,
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    status TEXT NOT NULL CHECK (status IN ('active', 'paused', 'completing', 'completed', 'discarded')),
+    started_at INTEGER NOT NULL,
+    paused_at INTEGER,
+    paused_ms INTEGER NOT NULL DEFAULT 0,
+    finished_at INTEGER,
+    duration_ms INTEGER,
+    tz TEXT,
+    weather_json TEXT,
+    weather_at INTEGER,
+    photo_uri TEXT,
+    note TEXT,
+    event_id TEXT,
+    memory_id TEXT,
+    sync_status TEXT NOT NULL DEFAULT 'local',
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_walks_pet_time ON walks (pet_id, started_at);
+
+  CREATE TABLE IF NOT EXISTS walk_badges (
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    badge TEXT NOT NULL,
+    walk_id TEXT,
+    unlocked_at INTEGER NOT NULL,
+    rule_version INTEGER NOT NULL,
+    PRIMARY KEY (pet_id, badge)
+  );
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

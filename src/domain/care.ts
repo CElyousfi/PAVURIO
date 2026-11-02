@@ -6,7 +6,7 @@ import { t } from '../i18n/core';
 
 export type Species = 'dog' | 'cat';
 
-export type CareType = 'meal' | 'walk' | 'water' | 'play' | 'grooming' | 'litter';
+export type CareType = 'meal' | 'walk' | 'water' | 'play' | 'grooming' | 'litter' | 'medication';
 
 export type AmountSpec = {
   unit: string;
@@ -131,12 +131,30 @@ export const CARE: Record<CareType, CareTemplate> = {
       return t('Fresh and clean');
     },
   },
+  medication: {
+    type: 'medication',
+    get label() {
+      return t('Medicine');
+    },
+    get cta() {
+      return t('+ MEDICINE');
+    },
+    color: '#EF4E63',
+    tint: '#FDE7EA',
+    // doses as the vet prescribed them; half a tablet is common
+    amount: { unit: 'dose', default: 1, step: 0.5, min: 0.5, max: 10, presets: [0.5, 1, 2, 3] },
+    // not in anyone's plan until the owner adds it (only some pets take medicine)
+    defaultTarget: 0,
+    get hint() {
+      return t('Only as your vet prescribed');
+    },
+  },
 };
 
 /** Order of care types in the Home quick-add row, per species. */
 export const SPECIES_CARE: Record<Species, CareType[]> = {
-  dog: ['meal', 'walk', 'water', 'play', 'grooming'],
-  cat: ['meal', 'water', 'litter', 'play', 'grooming'],
+  dog: ['meal', 'walk', 'water', 'play', 'grooming', 'medication'],
+  cat: ['meal', 'water', 'litter', 'play', 'grooming', 'medication'],
 };
 
 /** Row on Home shows the first 4 (plus the pet avatar = 5 items, like the reference). */
@@ -150,15 +168,23 @@ export function careAllowedFor(species: Species, type: CareType): boolean {
   return SPECIES_CARE[species].includes(type);
 }
 
+/** The unit as shown to people ('dose' is translated and pluralised; g / ml / min stay as they are). */
+export function unitLabel(unit: string, n = 1): string {
+  if (unit === 'dose') return n > 1 ? t('doses') : t('dose');
+  return unit;
+}
+
 export function formatAmount(type: CareType, amount: number | null | undefined): string {
   const spec = CARE[type].amount;
   if (!spec || amount == null) return CARE[type].type === 'litter' ? t('Cleaned') : t('Done');
   const rounded = Number.isInteger(amount) ? String(amount) : amount.toFixed(1);
-  return `${rounded} ${spec.unit}`;
+  return `${rounded} ${unitLabel(spec.unit, amount)}`;
 }
 
 export function clampAmount(type: CareType, value: number): number {
   const spec = CARE[type].amount;
   if (!spec) return 0;
-  return Math.min(spec.max, Math.max(spec.min, Math.round(value)));
+  // whole units, except care measured in fractions of a step (half a tablet)
+  const v = spec.step < 1 ? Math.round(value / spec.step) * spec.step : Math.round(value);
+  return Math.min(spec.max, Math.max(spec.min, v));
 }

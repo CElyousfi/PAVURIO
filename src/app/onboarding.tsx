@@ -8,7 +8,7 @@ import { cloud } from '../cloud/firebase';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, defaultAppearance } from '../domain/appearance';
-import { Plan, computeProgress } from '../domain/progress';
+import { Plan, Portions, computeProgress, portionOf } from '../domain/progress';
 import { Pet, ValidationError, createPet, defaultPlan, logCare } from '../data/repo';
 import { createSchedule } from '../data/careRepo';
 import { useApp } from '../state/AppState';
@@ -37,7 +37,8 @@ function suggestions(species: Species, plan: Plan): Suggestion[] {
   if (meals > 0) out.push({ key: 'meal', type: 'meal', title: meals === 1 ? t('Dinner') : t('Meals'), times: meals === 1 ? ['18:00'] : meals === 2 ? ['08:00', '18:00'] : ['08:00', '13:00', '18:00'], on: true });
   if (species === 'dog' && (plan.walk ?? 0) > 0) out.push({ key: 'walk', type: 'walk', title: t('Walk'), times: (plan.walk ?? 0) >= 2 ? ['07:30', '18:30'] : ['18:30'], on: true });
   if (species === 'cat' && (plan.litter ?? 0) > 0) out.push({ key: 'litter', type: 'litter', title: t('Scoop the litter'), times: ['09:00'], on: true });
-  out.push({ key: 'medication', type: 'medication', title: t('Medication'), times: ['20:00'], on: false });
+  const meds = plan.medication ?? 0;
+  out.push({ key: 'medication', type: 'medication', title: t('Medicine'), times: meds >= 3 ? ['08:00', '14:00', '20:00'] : meds === 2 ? ['08:00', '20:00'] : ['20:00'], on: meds > 0 });
   return out;
 }
 
@@ -74,6 +75,7 @@ export default function Onboarding() {
   const [name, setName] = useState('');
   const [appearance, setAppearance] = useState<Appearance>(defaultAppearance('dog'));
   const [plan, setPlan] = useState<Plan>(defaultPlan('dog'));
+  const [portions, setPortions] = useState<Portions>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<Pet | null>(null);
@@ -123,7 +125,7 @@ export default function Onboarding() {
     setSaving(true);
     setError(null);
     try {
-      const pet = await createPet(db, { species, name, appearance, plan, birthDate, adoptionDate });
+      const pet = await createPet(db, { species, name, appearance, plan, portions, birthDate, adoptionDate });
       setCreated(pet);
       setRoutines(suggestions(species, plan));
       await reload();
@@ -141,7 +143,7 @@ export default function Onboarding() {
   const logFirst = async () => {
     if (!created || firstLogged) return;
     try {
-      await logCare(db, { petId: created.id, type: firstType, occurredAt: Date.now(), mutationId: newId() });
+      await logCare(db, { petId: created.id, type: firstType, occurredAt: Date.now(), amount: CARE[firstType].amount ? portionOf(firstType, portions) : undefined, mutationId: newId() });
       setFirstLogged(firstType);
       bump();
       successFeedback();
@@ -158,7 +160,7 @@ export default function Onboarding() {
     try {
       if (withReminders) {
         for (const r of routines.filter((x) => x.on)) await createSchedule(db, { petId: created.id, type: r.type, title: r.title, times: r.times, remind: true });
-        await requestPermission().catch(() => null);
+        await requestPermission(db).catch(() => null);
       }
       await reload();
       if (adding) router.dismissTo('/');
@@ -297,7 +299,15 @@ export default function Onboarding() {
           {ART.ui.planHeader != null ? <Image source={ART.ui.planHeader} style={{ width: 240, height: 160, marginTop: 6 }} resizeMode="contain" /> : null}
           <T style={styles.sub}>{t('You decide what a good day looks like. Each thing you log colors in a bit more of {name}.', { name: displayName })}</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
-            <PlanEditor species={species} plan={plan} onChange={setPlan} />
+            <PlanEditor
+              species={species}
+              plan={plan}
+              portions={portions}
+              onChange={(p, por) => {
+                setPlan(p);
+                setPortions(por);
+              }}
+            />
           </ScrollView>
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
@@ -321,7 +331,7 @@ export default function Onboarding() {
               species={created.species}
               appearance={created.appearance}
               size={petSize * 0.9}
-              progress={firstLogged ? Math.max(0.12, computeProgress(plan, [{ type: firstType, occurredAt: Date.now() }]).level) : 0}
+              progress={firstLogged ? Math.max(0.12, computeProgress(plan, [{ type: firstType, occurredAt: Date.now() }], portions).level) : 0}
               stack={[{ color: CARE[firstType].color, from: 0, to: 1 }]}
               clip={clip}
               onClipEnd={() => setClip(null)}

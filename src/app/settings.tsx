@@ -3,14 +3,14 @@ import { Alert, Image, Linking, Platform, ScrollView, Share, StyleSheet, Switch,
 import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plan } from '../domain/progress';
+import { Plan, Portions } from '../domain/progress';
 import { countAllEvents, exportAll, exportCareCsv, getSetting as getSettingRaw, resetAll, setPlan, setSetting as setSettingRaw } from '../data/repo';
 import * as StoreReview from 'expo-store-review';
 import { LEGAL } from '../config/links';
 import { ART } from '../ui/art';
 import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
-import { PermissionState, getPermission, requestPermission } from '../native/notifications';
+import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
 import { Chip, MenuRow } from '../ui/forms';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
@@ -21,13 +21,15 @@ import { successFeedback } from '../native/haptics';
 import { LANGS, LANG_NAMES, t, tn } from '../i18n';
 
 export default function Settings() {
-  const { pet, pets, plan, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
+  const { pet, pets, plan, portions, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
   const cloudState = useCloud();
   const [perm, setPerm] = useState<PermissionState>('undetermined');
+  const [exact, setExact] = useState(true);
   const [nudge, setNudge] = useState(true);
   const [nudgeTime, setNudgeTime] = useState('19:30');
   useEffect(() => {
     void getPermission().then(setPerm);
+    void exactAlarmsAllowed().then(setExact);
     void getSettingRaw(db, 'eveningNudge').then((v) => setNudge(v !== '0'));
     void getSettingRaw(db, 'eveningNudgeTime').then((v) => v && setNudgeTime(v));
   }, [db]);
@@ -44,19 +46,21 @@ export default function Settings() {
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
   const [draft, setDraft] = useState<Plan>(plan);
+  const [draftPortions, setDraftPortions] = useState<Portions>(portions);
   const [total, setTotal] = useState(0);
   const [savedPlan, setSavedPlan] = useState(false);
 
   useEffect(() => setDraft(plan), [plan]);
+  useEffect(() => setDraftPortions(portions), [portions]);
   useEffect(() => {
     if (pet) countAllEvents(db, pet.id).then(setTotal);
   }, [db, pet]);
 
   if (!pet) return null;
-  const planDirty = JSON.stringify(draft) !== JSON.stringify(plan);
+  const planDirty = JSON.stringify(draft) !== JSON.stringify(plan) || JSON.stringify(draftPortions) !== JSON.stringify(portions);
 
   const savePlan = async () => {
-    await setPlan(db, pet, draft);
+    await setPlan(db, pet, draft, draftPortions);
     successFeedback();
     setSavedPlan(true);
     bump();
@@ -102,6 +106,9 @@ export default function Settings() {
             <MenuRow icon={<Image source={ART.section.records} style={styles.menuArtBig} />} tint="#E8F6FF" label={t('Records')} value={t('Health file')} onPress={() => router.push('/records')} testID="menu-records" />
             <MenuRow icon={<Image source={ART.icons.gift} style={styles.menuArt} />} tint="#FFF4E0" label={t('Moments')} onPress={() => router.push('/moments')} testID="menu-moments" />
             <MenuRow icon={<Image source={ART.section.sleep} style={styles.menuArtBig} />} tint="#FFF1E4" label={t('Pets')} value={pets.length > 1 ? String(pets.length) : pet.name} onPress={() => router.push('/pets')} testID="menu-pets" />
+            {pet.species === 'dog' ? (
+              <MenuRow icon={<Image source={ART.care.walk!} style={styles.menuArtBig} />} tint="#E6F4DE" label={t('Paw Passport')} value={t('Adventures')} onPress={() => router.push('/passport')} testID="menu-passport" />
+            ) : null}
             <MenuRow icon={<Image source={ART.icons.trophy} style={styles.menuArt} />} tint="#F1ECFF" label={t('Achievements')} onPress={() => router.push('/achievements')} testID="menu-achievements" />
             <MenuRow icon={<Image source={ART.icons.chart} style={styles.menuArt} />} tint="#E6F7F8" label={t('Summary')} onPress={() => router.push('/summary')} testID="menu-summary" />
           </View>
@@ -126,7 +133,15 @@ export default function Settings() {
           ) : null}
 
           <Label style={styles.section}>{t("{name}'s daily plan", { name: pet.name })}</Label>
-          <PlanEditor species={pet.species} plan={draft} onChange={setDraft} />
+          <PlanEditor
+            species={pet.species}
+            plan={draft}
+            portions={draftPortions}
+            onChange={(p, por) => {
+              setDraft(p);
+              setDraftPortions(por);
+            }}
+          />
           <View style={{ marginTop: 12 }}>
             <Pill label={savedPlan ? t('SAVED ✓') : t('SAVE PLAN')} onPress={savePlan} disabled={!planDirty && !savedPlan} />
           </View>
@@ -157,7 +172,13 @@ export default function Settings() {
             <T style={{ color: colors.muted, fontSize: 13, marginTop: 2, lineHeight: 18 }}>
               {t('Routines you create in Care send a reminder at each time. Nothing is ever marked done for you.')}
             </T>
-            {perm === 'undetermined' ? <SoftPill label={t('Turn on reminders')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={async () => setPerm(await requestPermission())} /> : null}
+            {perm === 'undetermined' ? <SoftPill label={t('Turn on reminders')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={async () => setPerm(await requestPermission(db))} /> : null}
+            {perm === 'granted' && !exact ? (
+              <View style={{ marginTop: 12 }}>
+                <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18 }}>{t('Your phone may deliver reminders a few minutes late. Allow alarms & reminders so meals and medicine are on time.')}</T>
+                <SoftPill label={t('Allow on-time reminders')} small style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={async () => setExact(await requestExactAlarms(db))} />
+              </View>
+            ) : null}
             {perm === 'denied' && Platform.OS !== 'web' ? <SoftPill label={t('Open phone settings')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings()} /> : null}
             <View style={styles.sep} />
             <ToggleRow

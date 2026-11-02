@@ -8,9 +8,10 @@ import { catClip } from '../animation/CatStage';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, SPECIES_CARE } from '../domain/care';
-import { fillStack, progressSentence } from '../domain/progress';
-import { dayKeyOf } from '../domain/time';
-import { voidEvent } from '../data/repo';
+import { careFill, fillStack, progressSentence } from '../domain/progress';
+import { dayKeyOf, formatClock } from '../domain/time';
+import { getLiveWalk, removeCareEvent } from '../data/walkRepo';
+import type { Walk } from '../domain/walks';
 import { useApp, useDay, useOccurrences } from '../state/AppState';
 import { formatTime24to12, nextUp } from '../domain/schedule';
 import { useEngagement } from '../state/Engagement';
@@ -58,13 +59,23 @@ function useTodayKey() {
 }
 
 function HomeScreen() {
-  const { pet, db, bump, reduceMotion, logged, clearLogged, plan } = useApp();
+  const { pet, db, bump, reduceMotion, logged, clearLogged, plan, portions, version } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
   const focused = useIsFocused();
   const todayKey = useTodayKey();
   const { events, progress, loading } = useDay(todayKey);
+  // a walk running in the background shows as a banner (tap to get back to it)
+  const [liveWalk, setLiveWalk] = useState<Walk | null>(null);
+  useEffect(() => {
+    if (!pet || !focused) return;
+    let alive = true;
+    getLiveWalk(db, pet.id).then((w) => alive && setLiveWalk(w && (w.status === 'active' || w.status === 'paused') ? w : null));
+    return () => {
+      alive = false;
+    };
+  }, [db, pet, focused, version]);
   const occ = useOccurrences(todayKey);
   const next = nextUp(occ);
   const { bursts, fire } = useBursts(!reduceMotion);
@@ -143,7 +154,7 @@ function HomeScreen() {
     if (!snack) return;
     const id = snack.eventId;
     setSnack(null);
-    await voidEvent(db, id);
+    await removeCareEvent(db, id);
     bump();
     tapFeedback();
   }, [snack, db, bump]);
@@ -237,6 +248,15 @@ function HomeScreen() {
           ) : null}
         </View>
 
+        {liveWalk ? (
+          <Animated.View entering={FadeInDown.springify().damping(16)} style={{ paddingHorizontal: 20, marginBottom: 10 }}>
+            <Bouncy scaleTo={0.97} onPress={() => router.push('/walk')} accessibilityRole="button" accessibilityLabel={t('Walk in progress. Open it')} style={styles.walkLive} testID="home-walk-live">
+              <T weight="black" style={{ color: '#FFFFFF', fontSize: 15 }}>
+                {liveWalk.status === 'paused' ? t('🐾 Walk paused · tap to continue') : t('🐾 Walk in progress · started {time}', { time: formatClock(liveWalk.startedAt) })}
+              </T>
+            </Bouncy>
+          </Animated.View>
+        ) : null}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row} style={{ flexGrow: 0 }}>
           <RowItem
             width={itemW}
@@ -257,9 +277,12 @@ function HomeScreen() {
               label={CARE[ct].label}
               color={CARE[ct].color}
               count={progress.counts[ct] ?? 0}
-              onPress={(origin) => router.push({ pathname: '/log/[type]', params: { type: ct, day: todayKey, ...origin } })}
+              onPress={(origin) =>
+                // dogs' walks are timed Adventures; the log card stays one tap away from there
+                ct === 'walk' && pet.species === 'dog' ? router.push('/walk') : router.push({ pathname: '/log/[type]', params: { type: ct, day: todayKey, ...origin } })
+              }
               accessibilityLabel={t('Log {label}', { label: CARE[ct].label })}
-              icon={<FillArt source={ART.care[ct]!} size={66} level={rowLevel(plan[ct] ?? 0, progress.counts[ct] ?? 0)} />}
+              icon={<FillArt source={ART.care[ct]!} size={66} level={careFill(ct, plan, portions, events)} />}
               splashKey={splash?.type === ct ? splash.key : null}
               testID={`quick-${ct}`}
             />
@@ -428,18 +451,13 @@ function RowItem({
   );
 }
 
-/** how full a care's picture in the row is: its share of today's plan, or full once logged if it isn't planned */
-function rowLevel(planned: number, count: number) {
-  if (planned > 0) return Math.min(1, count / planned);
-  return count > 0 ? 1 : 0;
-}
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas, alignItems: 'center' },
   col: { flex: 1 },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 18, paddingTop: 4 },
   floating: { position: 'absolute', alignSelf: 'center' },
   headerBg: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.96)' },
+  walkLive: { backgroundColor: '#14B8C4', borderRadius: 22, paddingVertical: 12, paddingHorizontal: 16, alignItems: 'center' },
   backPill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 6, paddingRight: 14, height: 42, borderRadius: 21, backgroundColor: '#FFFFFF', ...(softShadow as object) },
   streakDisc: { width: 46, height: 46, borderRadius: 23, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
   header: { alignItems: 'center', marginTop: -8 },

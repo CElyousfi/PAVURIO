@@ -21,13 +21,38 @@ export const ART = {
     play: require('../../assets/art/care2/play.webp') as Img,
     grooming: require('../../assets/art/care2/grooming.webp') as Img,
     litter: require('../../assets/art/care2/litter.webp') as Img,
+    medication: require('../../assets/art/care2/medication.webp') as Img,
   },
+  /** Pavurio Adventures (tools/art/adventures.py; concept-sheet cuts, see docs/art/adventures/README.md) */
+  adventures: {
+    badge_cloud: require('../../assets/art/adventures/badge_cloud.webp'),
+    badge_early: require('../../assets/art/adventures/badge_early.webp'),
+    badge_first: require('../../assets/art/adventures/badge_first.webp'),
+    badge_five: require('../../assets/art/adventures/badge_five.webp'),
+    badge_golden: require('../../assets/art/adventures/badge_golden.webp'),
+    badge_spring: require('../../assets/art/adventures/badge_spring.webp'),
+    badge_ten: require('../../assets/art/adventures/badge_ten.webp'),
+    badge_together: require('../../assets/art/adventures/badge_together.webp'),
+    t_afternoon: require('../../assets/art/adventures/t_afternoon.webp'),
+    t_golden: require('../../assets/art/adventures/t_golden.webp'),
+    t_morning: require('../../assets/art/adventures/t_morning.webp'),
+    t_night: require('../../assets/art/adventures/t_night.webp'),
+    w_cloudy: require('../../assets/art/adventures/w_cloudy.webp'),
+    w_cold: require('../../assets/art/adventures/w_cold.webp'),
+    w_hot: require('../../assets/art/adventures/w_hot.webp'),
+    w_partly: require('../../assets/art/adventures/w_partly.webp'),
+    w_rainy: require('../../assets/art/adventures/w_rainy.webp'),
+    w_snow: require('../../assets/art/adventures/w_snow.webp'),
+    w_storm: require('../../assets/art/adventures/w_storm.webp'),
+    w_sunny: require('../../assets/art/adventures/w_sunny.webp'),
+  } as Record<string, number>,
   /** section illustrations from the same set */
   section: {
     calendar: require('../../assets/art/care2/calendar.webp'),
     records: require('../../assets/art/care2/records.webp'),
     medication: require('../../assets/art/care2/medication.webp'),
     sleep: require('../../assets/art/care2/sleep.webp'),
+    leash: require('../../assets/art/care2/walk_leash.webp'),
   },
   ui: {
     /** assets/art/ui/welcome_badge.png — small icon above the welcome headline, 512×512 transparent */

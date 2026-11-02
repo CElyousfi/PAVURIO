@@ -12,7 +12,7 @@ import { ART } from '../ui/art';
 import { CircleButton, Icon, SoftPill, T } from '../ui/primitives';
 import { formatDateLong } from '../ui/forms';
 import { confirmAsync } from '../ui/confirm';
-import { voidEvent } from '../data/repo';
+import { removeCareEvent } from '../data/walkRepo';
 import { colors } from '../ui/theme';
 import { Bouncy } from '../ui/motion';
 import { t } from '../i18n';
@@ -32,7 +32,7 @@ export default function DayDetail() {
 
   const remove = async (id: string, label: string) => {
     if (!(await confirmAsync(t('Delete {label}?', { label }), t('This entry will be removed from the day.'), t('Delete')))) return;
-    await voidEvent(db, id);
+    await removeCareEvent(db, id);
     bump();
   };
 

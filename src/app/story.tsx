@@ -30,6 +30,7 @@ const COUNT_NOUN: Record<CareType, (n: number) => string> = {
   play: (n) => tn(n, 'play', 'plays'),
   grooming: (n) => tn(n, 'grooming', 'groomings'),
   litter: (n) => tn(n, 'litter', 'litters'),
+  medication: (n) => tn(n, 'medicine', 'medicines'),
 };
 const DARK = new Set<StorySlide['kind']>(['cover', 'streak', 'photo', 'outro']);
 const BG: Record<StorySlide['kind'], string> = {
