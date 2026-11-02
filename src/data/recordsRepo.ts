@@ -3,6 +3,7 @@ import { Db } from './db';
 import { newId } from '../domain/ids';
 import { ValidationError } from './repo';
 import { t } from '../i18n/core';
+import { resolveUri } from './uris';
 
 export type RecordKind = 'vaccine' | 'vet_visit' | 'medication' | 'allergy' | 'other';
 export const RECORD_KINDS: { kind: RecordKind; label: string; color: string; tint: string }[] = [
@@ -145,7 +146,7 @@ export async function dueRecords(db: Db, petId: string, fromDay: string, toDay: 
 
 export type Memory = { id: string; petId: string; photoUri: string | null; title: string; caption: string | null; date: string; kind: 'moment' | 'milestone' | 'adventure' };
 type MemRow = { id: string; pet_id: string; photo_uri: string | null; title: string; caption: string | null; date: string; kind: 'moment' | 'milestone' | 'adventure' };
-const toMem = (r: MemRow): Memory => ({ id: r.id, petId: r.pet_id, photoUri: r.photo_uri, title: r.title, caption: r.caption, date: r.date, kind: r.kind });
+const toMem = (r: MemRow): Memory => ({ id: r.id, petId: r.pet_id, photoUri: resolveUri(r.photo_uri), title: r.title, caption: r.caption, date: r.date, kind: r.kind });
 
 export type MemoryInput = { petId: string; photoUri?: string | null; title: string; caption?: string | null; date: string; kind?: 'moment' | 'milestone' | 'adventure' };
 
@@ -190,7 +191,8 @@ export async function deleteMemory(db: Db, id: string): Promise<void> {
 }
 
 export async function listMemories(db: Db, petId: string): Promise<Memory[]> {
-  const rows = await db.getAllAsync<MemRow>('SELECT * FROM memories WHERE pet_id = ? ORDER BY date DESC, created_at DESC', [petId]);
+  // includes moments shared with this pet (memory_pets, schema v5)
+  const rows = await db.getAllAsync<MemRow>('SELECT m.id, m.pet_id, COALESCE(md.uri, m.photo_uri) AS photo_uri, m.title, m.caption, m.date, m.kind, m.created_at FROM memories m LEFT JOIN media md ON md.id = m.media_id WHERE m.id IN (SELECT memory_id FROM memory_pets WHERE pet_id = ?) ORDER BY m.date DESC, m.created_at DESC', [petId]);
   return rows.map(toMem);
 }
 

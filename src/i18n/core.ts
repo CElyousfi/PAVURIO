@@ -8,10 +8,11 @@ import { FR2 } from './fr2';
 import { ES as ES1 } from './es';
 import { PT as PT1 } from './pt';
 import { ES3, FR3, PT3 } from './adventures';
+import { ES4, FR4, PT4 } from './memories';
 
-const FR: Record<string, string> = { ...FR1, ...FR2, ...FR3 };
-const ES: Record<string, string> = { ...ES1, ...ES3 };
-const PT: Record<string, string> = { ...PT1, ...PT3 };
+const FR: Record<string, string> = { ...FR4, ...FR1, ...FR2, ...FR3 };
+const ES: Record<string, string> = { ...ES4, ...ES1, ...ES3 };
+const PT: Record<string, string> = { ...PT4, ...PT1, ...PT3 };
 
 export type Lang = 'en' | 'fr' | 'es' | 'pt';
 export const LANGS: Lang[] = ['en', 'fr', 'es', 'pt'];

@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { Appointment, Measurement, listAppointments, listMeasurements, upcomingAppointments } from '../data/careRepo';
 import { listEventsBetween } from '../data/repo';
+import { milestoneDays } from '../data/memoriesRepo';
+import { MEM_COLORS } from '../features/MemoriesKit';
 import { CARE } from '../domain/care';
 import { describeDays, formatTime24to12 } from '../domain/schedule';
 import { addDays, dayKeyOf, dayRange, formatClock, parseDayKey } from '../domain/time';
@@ -64,7 +66,9 @@ export default function CareTab() {
     const d = parseDayKey(month);
     const from = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
     const to = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
-    Promise.all([listEventsBetween(db, pet.id, from, to), listAppointments(db, pet.id, from, to)]).then(([ev, ap]) => {
+    const fromDay = dayKeyOf(new Date(from));
+    const toDay = dayKeyOf(new Date(to - 1));
+    Promise.all([listEventsBetween(db, pet.id, from, to), listAppointments(db, pet.id, from, to), milestoneDays(db, pet.id, fromDay, toDay)]).then(([ev, ap, ms]) => {
       const dots: Record<string, string[]> = {};
       for (const e of ev) {
         const k = dayKeyOf(new Date(e.occurredAt));
@@ -75,6 +79,23 @@ export default function CareTab() {
       for (const a of ap) {
         const k = dayKeyOf(new Date(a.at));
         dots[k] = [colors.ink, ...(dots[k] ?? [])];
+      }
+      // Memories: birthday, adoption anniversary and milestones (from the real dates the owner entered)
+      const mark = (k: string, c: string) => {
+        dots[k] = dots[k] ?? [];
+        if (!dots[k].includes(c)) dots[k].unshift(c);
+      };
+      for (const m of ms) mark(m.date, MEM_COLORS.star);
+      for (const [date, c] of [
+        [pet.birthDate, MEM_COLORS.pinkInk],
+        [pet.adoptionDate, MEM_COLORS.warmInk],
+      ] as const) {
+        if (!date) continue;
+        const [y, mo, dd] = date.split('-').map(Number);
+        if (mo - 1 !== d.getMonth() || d.getFullYear() < y) continue;
+        // Feb 29 shows on Feb 28 in other years
+        const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        mark(dayKeyOf(new Date(d.getFullYear(), d.getMonth(), Math.min(dd, last))), c);
       }
       setMonthDots(dots);
     });
@@ -312,6 +333,22 @@ export default function CareTab() {
             setMonthOpen(false);
           }}
         />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 14, marginTop: 12 }}>
+          {(
+            [
+              [MEM_COLORS.pinkInk, t('Birthday')],
+              [MEM_COLORS.warmInk, t('Adoption Anniversary')],
+              [MEM_COLORS.star, t('Milestones')],
+            ] as const
+          ).map(([c, label]) => (
+            <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c }} />
+              <T weight="xbold" style={{ fontSize: 12, color: colors.muted }}>
+                {label}
+              </T>
+            </View>
+          ))}
+        </View>
       </Sheet>
 
       <Sheet visible={addOpen} onClose={() => setAddOpen(false)} title={t('Add to care')}>

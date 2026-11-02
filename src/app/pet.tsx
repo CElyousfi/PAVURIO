@@ -5,6 +5,8 @@ import { PetAvatar } from '../animation/PetAvatar';
 import { Pet, ValidationError, archivePet, deletePet, getPet, listPets, petFileUris, updatePet } from '../data/repo';
 import { removeStoredFile } from '../native/files';
 import { dayKeyOf } from '../domain/time';
+import { detachPetMemories, fileStillReferenced } from '../data/memoriesRepo';
+import { deleteFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { confirmAsync } from '../ui/confirm';
 import { DateField, Field, ModalScreen } from '../ui/forms';
@@ -116,9 +118,12 @@ export default function PetEditor() {
           tint={colors.dangerSoft}
           onPress={async () => {
             if (!(await confirmAsync(t('Delete {name} forever?', { name: p.name }), t('All care logs, routines, records, photos and moments for this pet are erased. This cannot be undone.')))) return;
+            // moments shared with another pet stay with that pet; this pet's own photos are released
+            const memFiles = await detachPetMemories(db, p.id);
             const files = await petFileUris(db, p.id);
             await deletePet(db, p.id);
-            files.forEach(removeStoredFile);
+            for (const f of files) if (!(await fileStillReferenced(db, f))) removeStoredFile(f);
+            deleteFiles(memFiles);
             await leave();
           }}
         />

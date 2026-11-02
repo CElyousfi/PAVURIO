@@ -12,6 +12,7 @@ import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
 import { Chip, MenuRow } from '../ui/forms';
+import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
 import { PlanEditor } from '../features/PetEditors';
@@ -74,6 +75,7 @@ export default function Settings() {
   const confirmReset = () => {
     const run = async () => {
       await resetAll(db);
+      removeAllMemoryFiles();
       await reload();
       router.replace('/onboarding');
     };
@@ -104,7 +106,7 @@ export default function Settings() {
           <View style={{ marginTop: 18 }}>
             <MenuRow icon={<Image source={ART.section.calendar} style={styles.menuArtBig} />} tint="#FDECEF" label={t('Care')} value={t('Routines & visits')} onPress={() => router.push('/care')} testID="menu-care" />
             <MenuRow icon={<Image source={ART.section.records} style={styles.menuArtBig} />} tint="#E8F6FF" label={t('Records')} value={t('Health file')} onPress={() => router.push('/records')} testID="menu-records" />
-            <MenuRow icon={<Image source={ART.icons.gift} style={styles.menuArt} />} tint="#FFF4E0" label={t('Moments')} onPress={() => router.push('/moments')} testID="menu-moments" />
+            <MenuRow icon={<Image source={ART.icons.gift} style={styles.menuArt} />} tint="#FFF4E0" label={t('Memories')} onPress={() => router.push('/moments')} testID="menu-moments" />
             <MenuRow icon={<Image source={ART.section.sleep} style={styles.menuArtBig} />} tint="#FFF1E4" label={t('Pets')} value={pets.length > 1 ? String(pets.length) : pet.name} onPress={() => router.push('/pets')} testID="menu-pets" />
             {pet.species === 'dog' ? (
               <MenuRow icon={<Image source={ART.care.walk!} style={styles.menuArtBig} />} tint="#E6F4DE" label={t('Paw Passport')} value={t('Adventures')} onPress={() => router.push('/passport')} testID="menu-passport" />

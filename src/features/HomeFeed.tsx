@@ -16,6 +16,7 @@ import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
 import { Medal } from './Medal';
+import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
@@ -134,6 +135,12 @@ export function HomeFeed({ width }: { width: number }) {
           </View>
         </Bouncy>
       </Enter>
+
+      {/* Pavurio Memories: today's little moment + birthday / adoption prompt */}
+      <Enter index={1}>
+        <TodayMomentCard width={width - 40} />
+      </Enter>
+      <AnniversaryCard />
 
       {/* visits soon */}
       {visits.length ? (

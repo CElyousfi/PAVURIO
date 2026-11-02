@@ -71,11 +71,11 @@ export function TabTitle({ title, subtitle, right, onBack }: { title: string; su
   );
 }
 
-export function Field({ label, style, ...rest }: TextInputProps & { label: string; style?: StyleProp<ViewStyle> }) {
+export function Field({ label, style, ref, ...rest }: TextInputProps & { label: string; style?: StyleProp<ViewStyle>; ref?: React.Ref<React.ComponentRef<typeof TextInput>> }) {
   return (
     <View style={[{ gap: 6 }, style]}>
       <Label>{label}</Label>
-      <TextInput placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
+      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
     </View>
   );
 }

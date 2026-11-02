@@ -15,7 +15,9 @@ export const SNAPSHOT_TABLES = [
   'measurements',
   'records',
   'attachments',
+  'media',
   'memories',
+  'memory_pets',
   'challenge_runs',
   'walks',
   'walk_badges',
@@ -70,6 +72,13 @@ export async function restoreSnapshot(db: Db, snap: Snapshot): Promise<void> {
         );
       }
     }
+    // a backup from before Memories (schema < 5) has photos on memory rows only: give them media rows
+    await db.runAsync(
+      "INSERT OR IGNORE INTO media (id, uri, mime, created_at) SELECT 'legacy-' || id, photo_uri, 'image/jpeg', created_at FROM memories WHERE photo_uri IS NOT NULL AND media_id IS NULL AND kind != 'adventure'",
+      [],
+    );
+    await db.runAsync("UPDATE memories SET media_id = 'legacy-' || id WHERE photo_uri IS NOT NULL AND media_id IS NULL AND kind != 'adventure'", []);
+    await db.runAsync("UPDATE memories SET walk_id = substr(id, 6) WHERE kind = 'adventure' AND id LIKE 'walk-%' AND walk_id IS NULL", []);
     for (const s of snap.settings ?? []) {
       if (typeof s.key === 'string' && typeof s.value === 'string' && !isDeviceSetting(s.key)) {
         await db.runAsync('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)', [s.key, s.value]);

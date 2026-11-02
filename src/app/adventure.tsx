@@ -10,7 +10,10 @@ import { useApp } from '../state/AppState';
 import { deleteWalk, editWalk, getWalk } from '../data/walkRepo';
 import { Walk, durationText, timeOfDay, timeOfDayLabel, walkEnd } from '../domain/walks';
 import { conditionLabel, formatTemp, weatherArt } from '../domain/weather';
-import { formatClock } from '../domain/time';
+import { dayKeyOf, formatClock } from '../domain/time';
+import { Moment, addMoment, momentsForWalk, releaseMedia } from '../data/memoriesRepo';
+import { deleteFiles, importPhoto, pickPhotos } from '../native/media';
+import { MomentThumb } from '../features/MemoriesKit';
 import { persistFile, pickPhoto } from '../native/files';
 import { TimeArt, WEATHER_ART } from '../features/adventures';
 import { Missing } from '../ui/Missing';
@@ -24,7 +27,7 @@ import { t } from '../i18n';
 
 export default function Adventure() {
   const { id, edit } = useLocalSearchParams<{ id?: string; edit?: string }>();
-  const { db, bump, settings, pet } = useApp();
+  const { db, bump, settings, pet, version } = useApp();
   const insets = useSafeAreaInsets();
   const [w, setW] = useState<Walk | null | undefined>(undefined);
   const [minutes, setMinutes] = useState(0);
@@ -32,6 +35,11 @@ export default function Adventure() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [linked, setLinked] = useState<Moment[]>([]);
+  const [adding, setAdding] = useState(false);
+  useEffect(() => {
+    if (id) momentsForWalk(db, id).then(setLinked);
+  }, [db, id, version]);
   const unit = settings.weightUnit === 'lb' ? 'F' : 'C';
 
   useEffect(() => {
@@ -46,6 +54,33 @@ export default function Adventure() {
       }
     });
   }, [db, id]);
+
+  const addMoments = async () => {
+    if (!w || adding) return;
+    setErr(null);
+    try {
+      const picked = await pickPhotos('library');
+      if (!picked?.length) return;
+      setAdding(true);
+      const day = dayKeyOf(new Date(w.startedAt));
+      for (const p of picked) {
+        const media = await importPhoto(db, p);
+        try {
+          await addMoment(db, { petIds: [w.petId], mediaId: media.id, date: day, walkId: w.id, capturedAt: media.capturedAt });
+        } catch (e) {
+          deleteFiles(await releaseMedia(db, media.id));
+          throw e;
+        }
+      }
+      successFeedback();
+      bump();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : t('Could not save the moment.'));
+      errorFeedback();
+    } finally {
+      setAdding(false);
+    }
+  };
 
   if (w === undefined) return <View style={styles.root} />;
   if (!w) return <Missing />;
@@ -166,6 +201,24 @@ export default function Adventure() {
             <SoftPill label={photo ? t('Change photo') : t('Add a photo')} onPress={addPhoto} style={{ flex: 1 }} />
             {photo ? <SoftPill label={t('Remove')} color={colors.danger} tint={colors.dangerSoft} onPress={() => setPhoto(null)} style={{ flex: 1 }} /> : null}
           </View>
+        </View>
+
+        <View style={styles.card}>
+          <T weight="black" style={{ fontSize: 16 }}>
+            {t('Moments from this adventure')}
+          </T>
+          {linked.length ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+              {linked.map((m) => (
+                <Bouncy key={m.id} accessibilityRole="imagebutton" accessibilityLabel={t('Open moment')} onPress={() => router.push({ pathname: '/moment', params: { id: m.id } })}>
+                  <MomentThumb m={m} size={86} radius={16} species={pet?.species ?? 'dog'} />
+                </Bouncy>
+              ))}
+            </ScrollView>
+          ) : (
+            <T style={{ color: colors.muted, fontSize: 13.5 }}>{t('Add photos from the walk to keep them with it in Memories.')}</T>
+          )}
+          <SoftPill label={adding ? t('Saving…') : t('Add photos')} onPress={addMoments} />
         </View>
 
         {err ? (

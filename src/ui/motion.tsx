@@ -114,7 +114,11 @@ export function Bouncy({ children, onPress, style, scaleTo = 0.95, haptic = true
   const outer: Record<string, unknown> = {};
   const inner: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(flat)) ((OUTER_KEYS as readonly string[]).includes(k) ? outer : inner)[k] = v;
-  if (outer.flex != null || outer.flexGrow != null) inner.flex = 1;
+  if (outer.flex != null || outer.flexGrow != null) {
+    inner.flex = 1;
+    // a stretched inner view takes its size from the touch target: keep fixed heights there (web flex-basis)
+    for (const k of ['height', 'minHeight'] as const) if (inner[k] != null && outer[k] == null) outer[k] = inner[k];
+  }
   return (
     <Pressable
       {...rest}

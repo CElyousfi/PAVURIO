@@ -303,6 +303,8 @@ export async function deleteWalk(db: Db, id: string, now = Date.now()): Promise<
   if (!w) return;
   if (w.eventId) await voidEvent(db, w.eventId, now);
   if (w.memoryId) await db.runAsync('DELETE FROM memories WHERE id = ?', [w.memoryId]);
+  // photo moments linked to this adventure stay; only the link goes
+  await db.runAsync('UPDATE memories SET walk_id = NULL WHERE walk_id = ?', [id]);
   await db.runAsync('DELETE FROM walks WHERE id = ?', [id]);
   await syncBadges(db, w.petId, now);
 }

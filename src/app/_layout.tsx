@@ -136,6 +136,9 @@ function Gate() {
         <Stack.Screen name="adventure" options={{ presentation: 'modal' }} />
         <Stack.Screen name="record" options={{ presentation: 'modal' }} />
         <Stack.Screen name="memory" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="moment" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220 }} />
+        <Stack.Screen name="cards" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="card" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
         <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 320 }} />
         <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
         <Stack.Screen name="pet" options={{ presentation: 'modal' }} />
