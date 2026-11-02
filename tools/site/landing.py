@@ -590,4 +590,4 @@ def body(lang, up, play_url, legal, lang_links):
 <a class="dl-notify press-btn" href="mailto:lesepavistespro@gmail.com?subject={_u.quote(x['notify_subject'])}">{E(x['notify'])}</a></div></div>"""
     i18n = {k: x[k] for k in ('logged', 'all_done', 'paused', 'resume', 'walk_saved', 'routine_count', 'challenge_go', 'notifs', 'done_toast', 'snooze_toast', 'collected', 'streak_up', 'track', 'litter', 'goal_done', 'copied')}
     i18n.update(pause=t['pause'])
-    return '<main>' + hero + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9 + s10 + s11 + s12 + s13 + '</main>' + chrome + data('pv-i18n', i18n)
+    return '<main>' + hero + s2 + s3 + s5 + s6 + s7 + s8 + s9 + s10 + s11 + s12 + s13 + '</main>' + chrome + data('pv-i18n', i18n)
