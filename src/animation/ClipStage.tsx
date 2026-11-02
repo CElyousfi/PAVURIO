@@ -25,7 +25,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { FrameInfo } from 'react-native-reanimated';
 import Svg, { Ellipse } from 'react-native-svg';
-import { CareRug } from './CareRug';
 import { BurstLayer } from './Burst';
 import type { PetClipName, PetRigProps } from './PetRig';
 
@@ -188,7 +187,7 @@ function frameRect(kit: ClipKit, name: string, g: Geo) {
 }
 
 /** One sheet image of a clip: shows its frame when the clock is inside this sheet, else hides. */
-function SheetImage({ c, k, source, frame, s, onLoad }: { c: ClipMeta; k: number; source: number; frame: SharedValue<number>; s: number; onLoad?: () => void }) {
+function SheetImage({ c, k, source, frame, s, onLoad, tint }: { c: ClipMeta; k: number; source: number; frame: SharedValue<number>; s: number; onLoad?: () => void; tint?: string }) {
   const inChunk = Math.min(c.per, c.frames - k * c.per);
   const rows = Math.ceil(inChunk / c.cols);
   const fw = c.fw * s;
@@ -205,22 +204,27 @@ function SheetImage({ c, k, source, frame, s, onLoad }: { c: ClipMeta; k: number
       source={source}
       fadeDuration={0}
       onLoad={onLoad}
-      style={[{ position: 'absolute', width: c.cols * fw, height: rows * fh, left: -2, top: -2 }, style]}
+      style={[{ position: 'absolute', width: c.cols * fw, height: rows * fh, left: -2, top: -2 }, tint ? { tintColor: tint } : null, style]}
     />
   );
 }
 
 /** One layer of a clip (sketch, coat or accessory): the sheets the clock has asked to keep. */
-function SheetLayer({ kit, name, sheets, frame, keep, s, onLoaded }: { kit: ClipKit; name: string; sheets: number[]; frame: SharedValue<number>; keep: number[]; s: number; onLoaded?: () => void }) {
+function SheetLayer({ kit, name, sheets, frame, keep, s, onLoaded, tint }: { kit: ClipKit; name: string; sheets: number[]; frame: SharedValue<number>; keep: number[]; s: number; onLoaded?: () => void; tint?: string }) {
   const c = kit.clips[name];
   return (
     <>
       {keep.map((k) =>
-        sheets[k] != null ? <SheetImage key={k} c={c} k={k} source={sheets[k]} frame={frame} s={s} onLoad={k === 0 ? onLoaded : undefined} /> : null,
+        sheets[k] != null ? <SheetImage key={k} c={c} k={k} source={sheets[k]} frame={frame} s={s} tint={tint} onLoad={k === 0 ? onLoaded : undefined} /> : null,
       )}
     </>
   );
 }
+
+/** Flat silhouette colour of the not-yet-coloured pet (Waterllama's light gray). */
+export const SILHOUETTE = '#EEF0F3';
+
+type StackBand = { color: string; from: number; to: number };
 
 function ClipView({
   kit,
@@ -230,6 +234,7 @@ function ClipView({
   palette,
   bandana,
   fill,
+  stack,
   geo,
   onReady,
 }: {
@@ -240,14 +245,16 @@ function ClipView({
   palette: string;
   bandana: string;
   fill: SharedValue<number>;
+  stack?: StackBand[];
   geo: Geo;
   onReady?: () => void;
 }) {
   const sheets = kit.img[name];
   const r = useMemo(() => frameRect(kit, name, geo), [kit, name, geo]);
   const loaded = useRef(0);
-  const overlay = bandana !== kit.nativeAccessory;
-  const need = overlay ? 3 : 2;
+  const silhouette = !!stack;
+  const overlay = !silhouette && bandana !== kit.nativeAccessory;
+  const need = overlay ? 2 : 1;
   const markLoaded = useCallback(() => {
     loaded.current += 1;
     if (loaded.current === need) onReady?.();
@@ -255,38 +262,63 @@ function ClipView({
   // inset the window by 2px so rounding at small sizes never shows the neighbouring frame of the sheet
   const I = 2;
   const box = { position: 'absolute' as const, left: r.left + I, top: r.top + I, width: r.width - 2 * I, height: r.height - 2 * I, overflow: 'hidden' as const };
+  const coat = sheets[palette] ?? sheets[kit.palettes[0]];
+  if (!silhouette) {
+    // character view: the pet in its real colours
+    return (
+      <View pointerEvents="none" style={box}>
+        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} onLoaded={markLoaded} />
+        {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} keep={keep} s={r.s} onLoaded={markLoaded} /> : null}
+      </View>
+    );
+  }
+  // Waterllama view: a flat light silhouette, filled from the paws with flat colour bands
+  const alpha = sheets[kit.palettes[0]];
   return (
     <>
       <View pointerEvents="none" style={box}>
-        <SheetLayer kit={kit} name={name} sheets={sheets.sketch} frame={frame} keep={keep} s={r.s} onLoaded={markLoaded} />
+        <SheetLayer kit={kit} name={name} sheets={alpha} frame={frame} keep={keep} s={r.s} tint={SILHOUETTE} onLoaded={markLoaded} />
       </View>
-      <FillClip fill={fill} geo={geo} petH={kit.petH}>
-        {(main) => (
-          <View style={{ position: 'absolute', left: geo.w, width: geo.w, bottom: 0, height: geo.h }}>
-            <View pointerEvents="none" style={box}>
-              <SheetLayer kit={kit} name={name} sheets={sheets[palette] ?? sheets[kit.palettes[0]]} frame={frame} keep={keep} s={r.s} onLoaded={main ? markLoaded : undefined} />
-              {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} keep={keep} s={r.s} onLoaded={main ? markLoaded : undefined} /> : null}
-            </View>
+      {stack!.map((band, i) => (
+        <BandWindow key={i} band={band} first={i === 0} fill={fill} geo={geo} petH={kit.petH}>
+          <View pointerEvents="none" style={box}>
+            <SheetLayer kit={kit} name={name} sheets={alpha} frame={frame} keep={keep} s={r.s} tint={band.color} />
           </View>
-        )}
-      </FillClip>
+        </BandWindow>
+      ))}
     </>
   );
 }
 
-/** Bottom-anchored reveal window, 3× stage width so props beside the pet (bowls) are not cut off. */
-function FillClip({ fill, geo, petH, children }: { fill: SharedValue<number>; geo: Geo; petH: number; children: (main: boolean) => React.ReactNode }) {
+/**
+ * One band of colour: a window over the stage between the band's bottom and top (as fractions of the
+ * pet's height), cut at the current fill level so the band pours in as the level rises. The content
+ * inside stays fixed in stage coordinates. 3× stage width so props beside the pet (bowls) are included.
+ */
+function BandWindow({ band, first, fill, geo, petH, children }: { band: StackBand; first: boolean; fill: SharedValue<number>; geo: Geo; petH: number; children: React.ReactNode }) {
   const h = geo.h;
   const FILL_TOP = PAWS - petH * 1.08;
-  const style = useAnimatedStyle(() => {
+  const from = band.from;
+  const to = band.to;
+  const win = useAnimatedStyle(() => {
     const f = Math.max(0, Math.min(1, fill.value));
-    // below the paws is always "colored"; then rise to just above the head
-    const reveal = 1 - PAWS + (PAWS - FILL_TOP) * f;
-    return { height: reveal * h + (f >= 1 ? h : 0) };
+    const y = (v: number) => (PAWS - (PAWS - FILL_TOP) * v) * h;
+    const topF = Math.min(to, f);
+    if (topF <= from) return { top: 0, height: 0 };
+    // the first band also covers everything under the paw line; a full pet covers to the very top
+    const bottom = first ? h : y(from);
+    const top = topF >= 0.999 ? 0 : y(topF);
+    return { top, height: Math.max(0, bottom - top) };
+  });
+  const inner = useAnimatedStyle(() => {
+    const f = Math.max(0, Math.min(1, fill.value));
+    const topF = Math.min(to, f);
+    const top = topF >= 0.999 ? 0 : (PAWS - (PAWS - FILL_TOP) * topF) * h;
+    return { transform: [{ translateY: -top }] };
   });
   return (
-    <Animated.View pointerEvents="none" style={[styles.clip, { left: -geo.w, width: geo.w * 3 }, style]}>
-      {children(true)}
+    <Animated.View pointerEvents="none" style={[styles.band, { left: -geo.w, width: geo.w * 3 }, win]}>
+      <Animated.View style={[{ position: 'absolute', left: geo.w, top: 0, width: geo.w, height: h }, inner]}>{children}</Animated.View>
     </Animated.View>
   );
 }
@@ -298,7 +330,7 @@ export function ClipStage({
   progress = 1,
   interactive = false,
   onTap,
-  rug,
+  stack,
   bursts,
   accessibilityLabel,
   clip,
@@ -432,13 +464,9 @@ export function ClipStage({
       accessibilityHint={interactive ? 'Tap to say hello. This does not log any care.' : undefined}
       {...handlers}
     >
-      {rug ? (
-        <CareRug bands={rug.bands} planned={rug.planned} w={geo.w} h={geo.h} cy={PAWS * geo.h - geo.h * 0.005} rx={geo.w * 0.44} ry={geo.h * 0.06} />
-      ) : (
-        <Shadow geo={geo} />
-      )}
+      {stack ? null : <Shadow geo={geo} />}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, idleStyle]}>
-        <ClipView kit={kit} key={base} name={base} frame={idle.frame} keep={idle.keep} palette={palette} bandana={bandana} fill={fill} geo={geo} />
+        <ClipView kit={kit} key={base} name={base} frame={idle.frame} keep={idle.keep} palette={palette} bandana={bandana} fill={fill} stack={stack} geo={geo} />
       </Animated.View>
       {action ? (
         <Animated.View key={action.nonce} pointerEvents="none" style={[StyleSheet.absoluteFill, actionStyle]}>
@@ -450,6 +478,7 @@ export function ClipStage({
             palette={palette}
             bandana={bandana}
             fill={fill}
+            stack={stack}
             geo={geo}
             onReady={onActionReady}
           />
@@ -469,5 +498,5 @@ function Shadow({ geo }: { geo: Geo }) {
 }
 
 const styles = StyleSheet.create({
-  clip: { position: 'absolute', bottom: 0, overflow: 'hidden' },
+  band: { position: 'absolute', overflow: 'hidden' },
 });

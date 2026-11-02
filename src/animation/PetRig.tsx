@@ -12,12 +12,18 @@ export type PetRigProps = {
   appearance: Appearance;
   /** width in points; height follows the art's aspect ratio */
   size: number;
-  /** 0..1, how much of the pet is colored in today */
+  /** 0..1, how far the colour stack has risen (the top of the last band) */
   progress?: number;
   interactive?: boolean;
   /** visual only, never logs care */
   onTap?: () => void;
-  /** care rug under the pet (banded base, one stripe per planned care) */
+  /**
+   * Waterllama-style colour stack: when given, the pet is drawn as a flat silhouette filled from the
+   * paws with one flat band per care (fractions of its height, 0 = paws, 1 = top). Without it the pet
+   * is drawn in its real colours (character views: species picker, studio, walk).
+   */
+  stack?: { color: string; from: number; to: number }[];
+  /** @deprecated the rug under the pet was replaced by the colour stack */
   rug?: { bands: CareType[]; planned: number };
   bursts?: Burst[];
   accessibilityLabel?: string;

@@ -110,7 +110,11 @@ function Gate() {
       <CelebrationHost />
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true }}>
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="index" />
+        <Stack.Screen name="care" />
+        <Stack.Screen name="moments" />
+        <Stack.Screen name="records" />
+        <Stack.Screen name="pets" />
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false, animation: 'fade' }} />
         <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 150 }} />
         <Stack.Screen name="day" options={{ presentation: 'modal' }} />

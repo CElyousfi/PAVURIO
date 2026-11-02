@@ -14,6 +14,10 @@ export const colors = {
   danger: '#E5484D',
   dangerSoft: '#FDECEC',
   white: '#FFFFFF',
+  /** Waterllama's flat card gray (cards sit on white without shadows) */
+  card: '#F5F6F8',
+  /** flat silhouette of a pet that isn't coloured in yet */
+  silhouette: '#EEF0F3',
 };
 
 export const font = {

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Bouncy } from '../../ui/motion';
+import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PetAvatar } from '../../animation/PetAvatar';
-import { Pet, listArchivedPets, unarchivePet } from '../../data/repo';
-import { FREE_PET_LIMIT } from '../../native/purchases';
-import { useApp } from '../../state/AppState';
-import { Card, TabTitle } from '../../ui/forms';
-import { CircleButton, Icon, SoftPill, T } from '../../ui/primitives';
-import { colors } from '../../ui/theme';
-import { successFeedback } from '../../native/haptics';
-import { t, tn } from '../../i18n';
+import { PetAvatar } from '../animation/PetAvatar';
+import { Pet, listArchivedPets, unarchivePet } from '../data/repo';
+import { FREE_PET_LIMIT } from '../native/purchases';
+import { useApp } from '../state/AppState';
+import { Card, TabTitle } from '../ui/forms';
+import { CircleButton, Icon, SoftPill, T } from '../ui/primitives';
+import { colors } from '../ui/theme';
+import { successFeedback } from '../native/haptics';
+import { t, tn } from '../i18n';
 
 function ageLabel(birth: string | null): string | null {
   if (!birth) return null;

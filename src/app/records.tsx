@@ -1,21 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import { Bouncy } from '../../ui/motion';
+import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { PetRecord, RECORD_KINDS, RecordKind, listRecords, recordKind } from '../../data/recordsRepo';
-import { addDays, dayKeyOf } from '../../domain/time';
-import { buildCareSummary } from '../../features/summary';
-import { shareText } from '../../native/files';
-import { useApp } from '../../state/AppState';
-import { Card, Chip, EmptyState, TabTitle, formatDateLong } from '../../ui/forms';
-import { CircleButton, Icon, T } from '../../ui/primitives';
-import { KindGlyph } from '../../features/RecordGlyph';
-import { ART } from '../../ui/art';
-import { Scene } from '../../ui/Scene';
-import { colors } from '../../ui/theme';
-import { t, tn } from '../../i18n';
+import { PetRecord, RECORD_KINDS, RecordKind, listRecords, recordKind } from '../data/recordsRepo';
+import { addDays, dayKeyOf } from '../domain/time';
+import { buildCareSummary } from '../features/summary';
+import { shareText } from '../native/files';
+import { useApp } from '../state/AppState';
+import { Card, Chip, EmptyState, TabTitle, formatDateLong } from '../ui/forms';
+import { CircleButton, Icon, T } from '../ui/primitives';
+import { KindGlyph } from '../features/RecordGlyph';
+import { ART } from '../ui/art';
+import { Scene } from '../ui/Scene';
+import { colors } from '../ui/theme';
+import { t, tn } from '../i18n';
 
 export default function RecordsTab() {
   const { pet, db, version, settings } = useApp();

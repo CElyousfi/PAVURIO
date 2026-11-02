@@ -11,7 +11,7 @@ import { ART } from '../ui/art';
 import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, getPermission, requestPermission } from '../native/notifications';
-import { Chip } from '../ui/forms';
+import { Chip, MenuRow } from '../ui/forms';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
 import { PlanEditor } from '../features/PetEditors';
@@ -89,16 +89,28 @@ export default function Settings() {
         <View style={{ width: W, paddingHorizontal: 20 }}>
           <View style={styles.topRow}>
             <CircleButton icon="back" label={t('Back')} onPress={() => router.back()} />
-            <T weight="black" style={{ fontSize: 22 }} accessibilityRole="header">
-              {t('Settings')}
-            </T>
-            <View style={{ width: 52 }} />
+            <View />
+            <View style={styles.whatsNew}>
+              <T weight="black" style={{ fontSize: 13, letterSpacing: 1 }} accessibilityRole="header">
+                {pet.name.toUpperCase()}
+              </T>
+            </View>
           </View>
+
+          <View style={{ marginTop: 18 }}>
+            <MenuRow icon={<Image source={ART.icons.calendar} style={styles.menuArt} />} tint="#FDECEF" label={t('Care')} value={t('Routines & visits')} onPress={() => router.push('/care')} testID="menu-care" />
+            <MenuRow icon={<Image source={ART.icons.heart} style={styles.menuArt} />} tint="#E8F6FF" label={t('Records')} value={t('Health file')} onPress={() => router.push('/records')} testID="menu-records" />
+            <MenuRow icon={<Image source={ART.icons.gift} style={styles.menuArt} />} tint="#FFF4E0" label={t('Moments')} onPress={() => router.push('/moments')} testID="menu-moments" />
+            <MenuRow icon={<Image source={ART.icons.paw} style={styles.menuArt} />} tint="#FFF1E4" label={t('Pets')} value={pets.length > 1 ? String(pets.length) : pet.name} onPress={() => router.push('/pets')} testID="menu-pets" />
+            <MenuRow icon={<Image source={ART.icons.trophy} style={styles.menuArt} />} tint="#F1ECFF" label={t('Achievements')} onPress={() => router.push('/achievements')} testID="menu-achievements" />
+            <MenuRow icon={<Image source={ART.icons.chart} style={styles.menuArt} />} tint="#E6F7F8" label={t('Summary')} onPress={() => router.push('/summary')} testID="menu-summary" />
+          </View>
+          <View style={styles.divider} />
 
           {cloudState.enabled ? (
             <>
               <Label style={styles.section}>{t('Account')}</Label>
-              <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Account')} onPress={() => router.push('/account')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="account-row">
+              <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Account')} onPress={() => router.push('/account')} style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="account-row">
                 {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 17 }}>
@@ -120,7 +132,7 @@ export default function Settings() {
           </View>
 
           <Label style={styles.section}>{t('Experience')}</Label>
-          <View style={[styles.card, softShadow]}>
+          <View style={[styles.card]}>
             <ToggleRow label={t('Haptics')} value={settings.haptics} onChange={(v) => setSetting('haptics', v)} />
             <View style={styles.sep} />
             <ToggleRow
@@ -132,7 +144,7 @@ export default function Settings() {
           </View>
 
           <Label style={styles.section}>{t('Reminders')}</Label>
-          <View style={[styles.card, softShadow]}>
+          <View style={[styles.card]}>
             <T weight="xbold" style={{ fontSize: 17 }}>
               {perm === 'granted'
                 ? t('Notifications are on')
@@ -177,7 +189,7 @@ export default function Settings() {
           </View>
 
           <Label style={styles.section}>{t('Units & language')}</Label>
-          <View style={[styles.card, softShadow, { gap: 14 }]}>
+          <View style={[styles.card, { gap: 14 }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <T weight="xbold" style={{ fontSize: 17, flex: 1 }}>
                 {t('Weight')}
@@ -197,7 +209,7 @@ export default function Settings() {
           </View>
 
           <Label style={styles.section}>Pavurio Pro</Label>
-          <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel="Pavurio Pro" onPress={() => router.push('/paywall')} style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+          <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel="Pavurio Pro" onPress={() => router.push('/paywall')} style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
             {ART.icons.gem ? <Image source={ART.icons.gem} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="xbold" style={{ fontSize: 17 }}>
@@ -209,7 +221,7 @@ export default function Settings() {
           </Bouncy>
 
           <Label style={styles.section}>{t('Your data')}</Label>
-          <View style={[styles.card, softShadow]}>
+          <View style={[styles.card]}>
             <T style={{ color: colors.inkSoft }}>
               {cloudState.enabled
                 ? tn(total, '{n} care record for {name}, stored on this phone and backed up to your account.', '{n} care records for {name}, stored on this phone and backed up to your account.', { name: pet.name })
@@ -223,7 +235,7 @@ export default function Settings() {
           </View>
 
           <Label style={styles.section}>{t('Help & feedback')}</Label>
-          <View style={[styles.card, softShadow, { paddingVertical: 4 }]}>
+          <View style={[styles.card, { paddingVertical: 4 }]}>
             {[
               { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate, icon: ART.icons.heart },
               { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp, icon: ART.icons.gift },
@@ -272,10 +284,13 @@ function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: str
 }
 
 const styles = StyleSheet.create({
+  menuArt: { width: 28, height: 28, resizeMode: 'contain' },
+  divider: { alignSelf: 'center', width: 120, height: 3, borderRadius: 2, backgroundColor: colors.line, marginTop: 14, marginBottom: 6 },
+  whatsNew: { height: 46, paddingHorizontal: 18, borderRadius: 23, backgroundColor: '#FFFFFF', justifyContent: 'center', ...(softShadow as object) },
   root: { flex: 1, backgroundColor: colors.canvas },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   section: { marginTop: 26, marginBottom: 10 },
-  card: { backgroundColor: colors.white, borderRadius: 22, padding: 16 },
+  card: { backgroundColor: colors.card, borderRadius: 24, padding: 16 },
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
   sep: { height: 1, backgroundColor: colors.line, marginVertical: 12 },
 });

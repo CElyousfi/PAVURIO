@@ -967,4 +967,6 @@ export const PT: Record<string, string> = {
   "That's not here any more": "Isso já não está aqui",
   "It may have been removed, or the link is out of date.": "Pode ter sido removido ou o link está desatualizado.",
   "now": "agora",
+  "Summary": "Resumo",
+  "Routines & visits": "Rotinas e consultas",
 };
