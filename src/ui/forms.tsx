@@ -154,7 +154,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdrop]}>
         <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Close')} accessibilityRole="button" />
       </Animated.View>
-      <View style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
         <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }, panel]}>
           <View style={styles.sheetHandle} />
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
@@ -165,7 +165,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
           </View>
           {children}
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

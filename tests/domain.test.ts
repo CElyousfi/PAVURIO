@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeProgress, progressSentence } from '../src/domain/progress';
+import { computeProgress, fillStack, progressSentence } from '../src/domain/progress';
 import { addDays, dayRange, defaultOccurredAt, formatClock, formatDayTitle } from '../src/domain/time';
 import { formatAmount, clampAmount } from '../src/domain/care';
 
@@ -69,5 +69,31 @@ describe('care templates', () => {
     expect(formatAmount('meal', 120)).toBe('120 g');
     expect(formatAmount('litter', null)).toBe('Cleaned');
     expect(clampAmount('walk', 99999)).toBe(600);
+  });
+});
+
+describe('fill stack (the pet fills like the llama)', () => {
+  it('stacks one contiguous band per care in log order, topping out at the level', () => {
+    const p = computeProgress({ meal: 2, water: 1, walk: 1 }, [
+      { type: 'water', occurredAt: 2, amount: 250 },
+      { type: 'meal', occurredAt: 1 },
+    ]);
+    const s = fillStack(p);
+    expect(s.map((b) => b.type)).toEqual(['meal', 'water']);
+    expect(s[0].from).toBe(0);
+    expect(s[0].to).toBeCloseTo(s[1].from, 6);
+    expect(s[1].to).toBeCloseTo(p.level, 6);
+    expect(p.level).toBeLessThan(0.97);
+  });
+  it('a bigger amount gives a taller band, and a complete plan fills to the top', () => {
+    const small = computeProgress({ water: 2 }, [{ type: 'water', occurredAt: 1, amount: 150 }]);
+    const big = computeProgress({ water: 2 }, [{ type: 'water', occurredAt: 1, amount: 400 }]);
+    expect(big.level).toBeGreaterThan(small.level);
+    const done = computeProgress({ water: 1 }, [{ type: 'water', occurredAt: 1 }]);
+    expect(done.level).toBe(1);
+    expect(fillStack(done).at(-1)!.to).toBeCloseTo(1, 6);
+  });
+  it('nothing logged means an empty silhouette', () => {
+    expect(fillStack(computeProgress({ meal: 1 }, []))).toEqual([]);
   });
 });

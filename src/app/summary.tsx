@@ -37,11 +37,15 @@ function Column({ col, max, h, index }: { col: Col; max: number; h: number; inde
           </T>
         ) : null}
         <Animated.View style={[{ width: '74%', height, justifyContent: 'flex-end', gap: 3, transformOrigin: 'bottom' }, a]}>
-          {col.parts.flatMap((p) =>
-            Array.from({ length: p.n }, (_, k) => (
-              <View key={`${p.type}-${k}`} style={{ height: Math.max(3, height / Math.max(1, col.total) - 3), borderRadius: 7, backgroundColor: CARE[p.type].color }} />
-            )),
-          )}
+          {col.total * 9 <= h
+            ? // one pill per care while they fit (a day)
+              col.parts.flatMap((p) =>
+                Array.from({ length: p.n }, (_, k) => (
+                  <View key={`${p.type}-${k}`} style={{ height: Math.max(3, height / Math.max(1, col.total) - 3), borderRadius: 7, backgroundColor: CARE[p.type].color }} />
+                )),
+              )
+            : // busy weeks and months: one pill per care type, sized by its share
+              col.parts.map((p) => <View key={p.type} style={{ flex: p.n, minHeight: 3, borderRadius: 7, backgroundColor: CARE[p.type].color }} />)}
         </Animated.View>
       </View>
       <T weight="black" style={{ fontSize: 11, marginTop: 6, color: col.highlight ? colors.brand : colors.muted }}>

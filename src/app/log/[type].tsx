@@ -200,9 +200,11 @@ export default function LogCard() {
 
   const remove = async () => {
     if (!editing) return;
+    setShowNote(false);
     await voidEvent(db, editing.id);
     bump();
-    router.back();
+    // let the sheet's Modal close before leaving the screen
+    setTimeout(() => router.back(), 220);
   };
 
   // vessel level: the default amount sits a little under half, the biggest preset fills it

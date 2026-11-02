@@ -114,10 +114,13 @@ export function Vessel({
 
   // drag up / down on the vessel to change the amount, one step every ~16 pt
   const acc = useRef(0);
+  // the responder is created once (a new one mid-drag would restart dy at 0); it reads the latest callback
+  const stepRef = useRef(onStep);
+  stepRef.current = onStep;
   const responder = useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: (_e, g) => !!onStep && Math.abs(g.dy) > 6 && Math.abs(g.dy) > Math.abs(g.dx),
+        onMoveShouldSetPanResponder: (_e, g) => !!stepRef.current && Math.abs(g.dy) > 6 && Math.abs(g.dy) > Math.abs(g.dx),
         onPanResponderGrant: () => {
           acc.current = 0;
         },
@@ -125,15 +128,15 @@ export function Vessel({
           const steps = Math.trunc(-g.dy / 16);
           while (acc.current < steps) {
             acc.current += 1;
-            onStep?.(1);
+            stepRef.current?.(1);
           }
           while (acc.current > steps) {
             acc.current -= 1;
-            onStep?.(-1);
+            stepRef.current?.(-1);
           }
         },
       }),
-    [onStep],
+    [],
   );
 
   const deep = darken(color, 0.12);
