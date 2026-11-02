@@ -51,3 +51,4 @@ functions/lib/
 .firebase/
 *-debug.log
 __pycache__/
+site_preview/
