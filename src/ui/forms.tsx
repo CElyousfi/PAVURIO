@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 14, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   card: { backgroundColor: colors.card, borderRadius: radius.card - 4, padding: 16 },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.card, borderRadius: 24, paddingHorizontal: 16, height: 68, marginBottom: 10 },
-  menuIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  menuIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
   empty: { alignItems: 'center', paddingVertical: 36, paddingHorizontal: 24 },
   backdrop: { backgroundColor: 'rgba(20,26,40,0.4)' },
   sheet: { backgroundColor: colors.white, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 20, paddingTop: 10 },

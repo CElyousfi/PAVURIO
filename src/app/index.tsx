@@ -16,7 +16,8 @@ import { formatTime24to12, nextUp } from '../domain/schedule';
 import { useEngagement } from '../state/Engagement';
 import { capitalize, weekdayNames } from '../i18n/dates';
 import { CircleButton, Icon, T } from '../ui/primitives';
-import { CareIcon } from '../ui/CareIcon';
+import { FillArt } from '../ui/FillArt';
+import { ART } from '../ui/art';
 import { colors, font, softShadow } from '../ui/theme';
 import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
@@ -57,7 +58,7 @@ function useTodayKey() {
 }
 
 function HomeScreen() {
-  const { pet, db, bump, reduceMotion, logged, clearLogged } = useApp();
+  const { pet, db, bump, reduceMotion, logged, clearLogged, plan } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -258,7 +259,7 @@ function HomeScreen() {
               count={progress.counts[ct] ?? 0}
               onPress={(origin) => router.push({ pathname: '/log/[type]', params: { type: ct, day: todayKey, ...origin } })}
               accessibilityLabel={t('Log {label}', { label: CARE[ct].label })}
-              icon={<CareIcon type={ct} size={62} />}
+              icon={<FillArt source={ART.care[ct]!} size={66} level={rowLevel(plan[ct] ?? 0, progress.counts[ct] ?? 0)} />}
               splashKey={splash?.type === ct ? splash.key : null}
               testID={`quick-${ct}`}
             />
@@ -425,6 +426,12 @@ function RowItem({
       </T>
     </APressable>
   );
+}
+
+/** how full a care's picture in the row is: its share of today's plan, or full once logged if it isn't planned */
+function rowLevel(planned: number, count: number) {
+  if (planned > 0) return Math.min(1, count / planned);
+  return count > 0 ? 1 : 0;
 }
 
 const styles = StyleSheet.create({

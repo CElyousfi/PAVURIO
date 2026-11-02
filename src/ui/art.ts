@@ -9,27 +9,25 @@
 type Img = number | null;
 
 export const ART = {
+  /**
+   * Care illustrations (ChatGPT, Nov 2026; tools/art/careicons.py → assets/art/care2, 512 px webp).
+   * One picture per care: the log card and the Home row show it as a gray silhouette that fills
+   * with its real colours (FillArt), every list shows it in colour.
+   */
   care: {
-    /** assets/art/care/meal_empty.png, meal_half.png, meal_full.png — 1024×1024 transparent */
-    meal: {
-      empty: require('../../assets/art/care/meal_empty.png') as Img,
-      half: require('../../assets/art/care/meal_half.png') as Img,
-      full: require('../../assets/art/care/meal_full.png') as Img,
-    },
-    /** assets/art/care/water_low.png, water_half.png, water_full.png */
-    water: {
-      empty: require('../../assets/art/care/water_low.png') as Img,
-      half: require('../../assets/art/care/water_half.png') as Img,
-      full: require('../../assets/art/care/water_full.png') as Img,
-    },
-    /** assets/art/care/walk.png */
-    walk: require('../../assets/art/care/walk.png') as Img,
-    /** assets/art/care/play.png */
-    play: require('../../assets/art/care/play.png') as Img,
-    /** assets/art/care/grooming.png */
-    grooming: require('../../assets/art/care/grooming.png') as Img,
-    /** assets/art/care/litter.png */
-    litter: require('../../assets/art/care/litter.png') as Img,
+    meal: require('../../assets/art/care2/meal.webp') as Img,
+    water: require('../../assets/art/care2/water.webp') as Img,
+    walk: require('../../assets/art/care2/walk.webp') as Img,
+    play: require('../../assets/art/care2/play.webp') as Img,
+    grooming: require('../../assets/art/care2/grooming.webp') as Img,
+    litter: require('../../assets/art/care2/litter.webp') as Img,
+  },
+  /** section illustrations from the same set */
+  section: {
+    calendar: require('../../assets/art/care2/calendar.webp'),
+    records: require('../../assets/art/care2/records.webp'),
+    medication: require('../../assets/art/care2/medication.webp'),
+    sleep: require('../../assets/art/care2/sleep.webp'),
   },
   ui: {
     /** assets/art/ui/welcome_badge.png — small icon above the welcome headline, 512×512 transparent */

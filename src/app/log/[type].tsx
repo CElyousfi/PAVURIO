@@ -207,9 +207,9 @@ export default function LogCard() {
     setTimeout(() => router.back(), 220);
   };
 
-  // vessel level: the default amount sits a little under half, the biggest preset fills it
+  // picture level: the smallest amount shows a sliver of colour, the biggest preset fills it
   const top = spec ? spec.presets[spec.presets.length - 1] : 1;
-  const level = spec ? Math.max(0.16, Math.min(0.94, 0.2 + 0.74 * (amount / top))) : 0.62;
+  const level = spec ? Math.max(0.12, Math.min(1, 0.12 + 0.88 * (amount / top))) : 1;
   const objSize = Math.min(W * 0.9, height * 0.46, 400);
   const prevPreset = spec ? [...spec.presets].reverse().find((p) => p < amount) : undefined;
   const nextPreset = spec ? spec.presets.find((p) => p > amount) : undefined;

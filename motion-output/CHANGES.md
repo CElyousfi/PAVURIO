@@ -89,3 +89,11 @@ all of its own features.
 - **Celebrations.** A full-screen splash with an arch, the medal, an AWESOME pill and confetti.
 - **Onboarding.** Silhouette pets that fill with colour.
 - **Everywhere.** Flat gray cards and inputs with no shadows.
+
+## Pass 3b — the user's illustrations as the care buttons
+- `assets/art/care2/*.webp` were made with `tools/art/careicons.py`, which removes the halo, trims the image and outputs 512 px. The set covers meal, water, walk (leash), play (yarn and ball), grooming, litter, medication, sleep, records (clipboard) and calendar.
+- `src/ui/FillArt.tsx` is one fill mechanic shared by everything that fills. The picture starts as gray (a flat silhouette with its own shading on top) and its real colours pour in from the bottom, rising in 200 ms. It is the same look as the pet.
+  - In the Home care row, each picture fills by its share of today's plan (or fully once logged, if the care isn't in the plan).
+  - In the log card (`Vessel`), the picture fills with the amount: the smallest amount gives a sliver and the biggest preset fills it. The chevron control and drag still work.
+- Lists (day, care agenda, routines, plan, story, medals) show the pictures in full colour.
+- In the menu hub, Care uses the calendar, Records the clipboard and Pets the sleeping duo. Medication routines use the medication picture, and the empty reminders state uses the calendar.

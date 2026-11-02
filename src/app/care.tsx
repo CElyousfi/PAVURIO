@@ -153,7 +153,7 @@ export default function CareTab() {
           <Label>{t('Agenda')}</Label>
           {occ.length === 0 && dayAppts.length === 0 ? (
             <View style={{ paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-              {ART.icons.noReminders ? <Image source={ART.icons.noReminders} style={{ width: 64, height: 60 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+              {ART.section.calendar ? <Image source={ART.section.calendar} style={{ width: 72, height: 72 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
               <T style={{ color: colors.muted, lineHeight: 21, flex: 1 }}>
                 {schedules.length === 0
                   ? t("No routines yet. Add {name}'s meals, walks or medication and get a gentle reminder.", { name: pet.name })

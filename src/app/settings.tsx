@@ -98,10 +98,10 @@ export default function Settings() {
           </View>
 
           <View style={{ marginTop: 18 }}>
-            <MenuRow icon={<Image source={ART.icons.calendar} style={styles.menuArt} />} tint="#FDECEF" label={t('Care')} value={t('Routines & visits')} onPress={() => router.push('/care')} testID="menu-care" />
-            <MenuRow icon={<Image source={ART.icons.heart} style={styles.menuArt} />} tint="#E8F6FF" label={t('Records')} value={t('Health file')} onPress={() => router.push('/records')} testID="menu-records" />
+            <MenuRow icon={<Image source={ART.section.calendar} style={styles.menuArtBig} />} tint="#FDECEF" label={t('Care')} value={t('Routines & visits')} onPress={() => router.push('/care')} testID="menu-care" />
+            <MenuRow icon={<Image source={ART.section.records} style={styles.menuArtBig} />} tint="#E8F6FF" label={t('Records')} value={t('Health file')} onPress={() => router.push('/records')} testID="menu-records" />
             <MenuRow icon={<Image source={ART.icons.gift} style={styles.menuArt} />} tint="#FFF4E0" label={t('Moments')} onPress={() => router.push('/moments')} testID="menu-moments" />
-            <MenuRow icon={<Image source={ART.icons.paw} style={styles.menuArt} />} tint="#FFF1E4" label={t('Pets')} value={pets.length > 1 ? String(pets.length) : pet.name} onPress={() => router.push('/pets')} testID="menu-pets" />
+            <MenuRow icon={<Image source={ART.section.sleep} style={styles.menuArtBig} />} tint="#FFF1E4" label={t('Pets')} value={pets.length > 1 ? String(pets.length) : pet.name} onPress={() => router.push('/pets')} testID="menu-pets" />
             <MenuRow icon={<Image source={ART.icons.trophy} style={styles.menuArt} />} tint="#F1ECFF" label={t('Achievements')} onPress={() => router.push('/achievements')} testID="menu-achievements" />
             <MenuRow icon={<Image source={ART.icons.chart} style={styles.menuArt} />} tint="#E6F7F8" label={t('Summary')} onPress={() => router.push('/summary')} testID="menu-summary" />
           </View>
@@ -285,6 +285,7 @@ function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: str
 
 const styles = StyleSheet.create({
   menuArt: { width: 28, height: 28, resizeMode: 'contain' },
+  menuArtBig: { width: 46, height: 46, resizeMode: 'contain' },
   divider: { alignSelf: 'center', width: 120, height: 3, borderRadius: 2, backgroundColor: colors.line, marginTop: 14, marginBottom: 6 },
   whatsNew: { height: 46, paddingHorizontal: 18, borderRadius: 23, backgroundColor: '#FFFFFF', justifyContent: 'center', ...(softShadow as object) },
   root: { flex: 1, backgroundColor: colors.canvas },
