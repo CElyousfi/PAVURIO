@@ -198,7 +198,7 @@ function HomeScreen() {
           <PetRig
             species={pet.species}
             appearance={pet.appearance}
-            size={petSize}
+            size={complete ? petSize * 0.84 : petSize}
             progress={progress.planned > 0 ? progress.level : events.length > 0 ? 1 : 0}
             stack={progress.planned > 0 ? stack : events.length > 0 ? [{ color: colors.brand, from: 0, to: 1 }] : []}
             interactive
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
   stage: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   hint: { position: 'absolute', top: 6, backgroundColor: colors.ink, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 14 },
   hintText: { color: '#FFFFFF', fontSize: 14 },
-  celebrateWrap: { position: 'absolute', bottom: 4, alignSelf: 'center' },
+  celebrateWrap: { alignSelf: 'center', marginTop: -6, marginBottom: 6 },
   celebrate: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.ink, height: 62, borderRadius: 31, paddingLeft: 10, paddingRight: 26 },
   poster: { width: 44, height: 54, borderRadius: 8, backgroundColor: '#E8F7FA', borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-8deg' }], marginTop: -18, overflow: 'hidden' },
   celebrateText: { color: '#FFFFFF', fontSize: 17, lineHeight: 20 },

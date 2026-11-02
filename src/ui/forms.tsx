@@ -465,9 +465,7 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 54,
     borderRadius: 18,
-    backgroundColor: colors.canvasWarm,
-    borderWidth: 1.5,
-    borderColor: colors.line,
+    backgroundColor: colors.card,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontFamily: font.bold,

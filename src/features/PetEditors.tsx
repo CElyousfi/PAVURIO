@@ -6,7 +6,7 @@ import { ACCESSORIES, Appearance, PALETTES } from '../domain/appearance';
 import { Plan } from '../domain/progress';
 import { Icon, Label, T } from '../ui/primitives';
 import { CareIcon } from '../ui/CareIcon';
-import { colors, softShadow } from '../ui/theme';
+import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
@@ -71,7 +71,7 @@ export function PlanEditor({ species, plan, onChange }: { species: Species; plan
           onChange({ ...plan, [ct]: Math.max(0, Math.min(8, v)) });
         };
         return (
-          <View key={ct} style={[styles.planRow, softShadow]}>
+          <View key={ct} style={[styles.planRow]}>
             <CareIcon type={ct} size={44} />
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ fontSize: 18, color: CARE[ct].color }}>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   swatchName: { fontSize: 12, color: colors.muted, marginTop: 4 },
   dotWrap: { padding: 4, borderRadius: 24, borderWidth: 2.5, borderColor: 'transparent' },
   dot: { width: 36, height: 36, borderRadius: 18 },
-  planRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.white, borderRadius: 22, padding: 12, paddingRight: 14 },
+  planRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 22, padding: 12, paddingRight: 14 },
   stepBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   stepTxt: { fontSize: 24, lineHeight: 26 },
 });

@@ -54,3 +54,38 @@ expo-notifications).
 - Art crossfade can't flash the new image for a frame; engagement loads immediately on pet switch and
   runs never overlap (no duplicate badge); the notification banner is one accessible element and
   keeps its space on the carousel (no layout jump).
+
+# Pass 3 — Waterllama clone for pet care
+
+Reference: Waterllama (Refero, 111 screens across 19 flows, list in `work3/screens.json`) and the
+uploaded "how to use 2" video. PAVURIO now follows Waterllama's layout and mechanics while keeping
+all of its own features.
+
+## The core mechanic: the pet fills up like the llama
+- `src/domain/progress.ts`: each logged care is a band weighted by its amount (`amount / default`,
+  clamped 0.5–1.6). `fillStack()` stacks the bands in log order; the top equals today's level (100% only
+  when the plan is complete).
+- `src/animation/ClipStage.tsx`: in silhouette mode the pet is a light-gray silhouette. Each band is a
+  clip window holding the same animated frame tinted with the care's colour, and it rises 200 ms ease-out
+  as you log. The art's own shading is laid over the bands with a luminosity blend, so the face and fur
+  stay readable on the gray and in every colour.
+
+## Screens
+- **Navigation.** No tab bar. Home has a streak circle top-left and a waves menu top-right. The
+  menu hub lists Care, Records, Moments, Pets, Achievements and Summary as flat gray rows, with
+  settings below. Each section is a stack screen with a back circle.
+- **Home.** The big `done/planned` count, or "Wonderful Monday!" with confetti and a "Celebrate my
+  day!" pill once the day is complete. Below that sit the silhouette pet, a row of care items with
+  count badges, and a pastel "next up" card.
+- **Log card.** It works like Waterllama's cup. A vessel per care type (bowl for water and meal,
+  timer for walk, play and grooming, box for litter) fills with flat colour, with a wave or kibble.
+  The centre has a chevron control (tap or drag) and the amount sits between faded neighbouring
+  sizes. A coloured "+ CARE" pill saves; the "…" button sets time and note.
+- **Day.** A flat list with coloured names and pink minus buttons to delete entries.
+- **Summary.** A filled KPI disc, pill-stacked bars (one pill per care) and a chip legend.
+- **Achievements.** A collection grid of light-cyan tiles with the selected badge in the header.
+- **Tip reader.** Pastel slides, a LEAVE pill, segmented progress and a dark NEXT pill.
+- **Challenge.** A coloured header with a sticky START NOW pill.
+- **Celebrations.** A full-screen splash with an arch, the medal, an AWESOME pill and confetti.
+- **Onboarding.** Silhouette pets that fill with colour.
+- **Everywhere.** Flat gray cards and inputs with no shadows.

@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 export const colors = {
   canvas: '#FFFFFF',
-  canvasWarm: '#FBFAF7',
+  canvasWarm: '#F5F6F8',
   ink: '#23304A',
   inkSoft: '#3D4A63',
   muted: '#9AA1AE',

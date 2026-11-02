@@ -503,6 +503,6 @@ function Shadow({ geo }: { geo: Geo }) {
 }
 
 const styles = StyleSheet.create({
-  detail: { mixBlendMode: 'luminosity', opacity: 0.55 },
+  detail: { mixBlendMode: 'luminosity', opacity: 0.42 },
   band: { position: 'absolute', overflow: 'hidden' },
 });
