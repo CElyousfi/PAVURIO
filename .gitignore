@@ -50,3 +50,7 @@ functions/.env
 functions/lib/
 .firebase/
 *-debug.log
+__pycache__/
+
+__pycache__/
+site_preview/
