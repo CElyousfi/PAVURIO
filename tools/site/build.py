@@ -1,8 +1,10 @@
 """Pavurio website → site/dist (landing page in en/fr/es/pt + privacy, terms, support, account deletion).
 Usage (repo root): python3 tools/site/build.py   (needs: pip install markdown pillow)
 Hosted on Render (static site `pavurio-site`, auto-deploys from main) behind pavurio.com."""
-import json, os, shutil, markdown
+import json, os, shutil, sys, markdown
 from PIL import Image
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import landing as LP
 
 ROOT = 'site'; OUT = f'{ROOT}/dist'; BASE = 'https://pavurio.com'
 PLAY = 'https://play.google.com/store/apps/details?id=com.pavurio.app'
@@ -12,6 +14,9 @@ LEGAL = ['privacy', 'terms', 'support', 'delete-account']
 shutil.rmtree(OUT, ignore_errors=True)
 for l in LANGS[1:]: os.makedirs(f'{OUT}/{l}')
 shutil.copytree(f'{ROOT}/img', f'{OUT}/img')
+shutil.copytree(f'{ROOT}/fonts', f'{OUT}/fonts')  # Nunito (OFL), self-hosted
+FONTS = ''.join(f"@font-face{{font-family:Nunito;font-style:normal;font-weight:{w};font-display:swap;src:url(/fonts/nunito-{w}.woff2) format('woff2')}}" for w in (700, 800, 900))
+
 Image.open('assets/icon.png').convert('RGBA').resize((64, 64), Image.LANCZOS).save(f'{OUT}/favicon.png')
 
 S = {
@@ -172,32 +177,35 @@ def page(lang, slug, title, desc, body, jsonld=None):
 <meta property="og:type" content="website"><meta property="og:site_name" content="Pavurio"><meta property="og:title" content="{title}"><meta property="og:description" content="{desc}"><meta property="og:url" content="{url(lang, slug)}"><meta property="og:image" content="{BASE}/img/og.jpg"><meta property="og:locale" content="{ {'en':'en_US','fr':'fr_FR','es':'es_ES','pt':'pt_BR'}[lang] }">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#14B8C4">
 <link rel="icon" href="{up}favicon.png"><link rel="apple-touch-icon" href="{up}img/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
-<style>{CSS}</style>{ld}</head><body>
+<link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-900.woff2" crossorigin>
+<style>{FONTS}{CSS}</style>{ld}</head><body>
 <header><div class="bar"><a class="brand" href="{rel('index')}"><img src="{up}img/icon-192.png" alt="Pavurio" width="36" height="36">Pavurio</a><nav>{nav}{langs}</nav></div></header>
 <main>{body}</main>
 <footer><div class="bar"><span>© 2026 Pavurio · {t['footer_tag']}</span><nav>{nav}<a href="mailto:lesepavistespro@gmail.com">{t['contact']}</a></nav></div></footer>
 </body></html>"""
 
 def landing(lang):
+    """The one-page landing: full-screen colour bands (tools/site/landing.py), its own head (no site header)."""
     t = S[lang]; up = '' if lang == 'en' else '../'
-    img = lambda n: f'{up}img/{n.replace("{l}", "fr" if lang == "fr" else "en")}.webp'
-    feats = ''.join(f'<section class="feat"><div><h2>{h}</h2><p>{p}</p></div><div class="img"><img src="{img(n)}" alt="{alt}" loading="lazy" width="360" height="{640 if n.startswith("art") else 720}"></div></section>' for h, p, n, alt in t['sections'])
-    pro = f'<section class="pro"><div><h2>{t["pro_h"]}</h2><p>{t["pro_p"]}</p></div><ul>' + ''.join(f'<li>{i}</li>' for i in t['pro_items']) + '</ul></section>'
-    faq = f'<section class="faq"><h2>{t["faq_h"]}</h2>' + ''.join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in t['faq']) + '</section>'
-    body = f"""<section class="hero"><div><h1>{t['h1']}</h1><p class="sub">{t['sub']}</p>
-<div class="btns"><a class="btn" href="{PLAY}" rel="noopener">▶ {t['play']}</a><span class="btn soft"> {t['ios']}</span></div><p class="free">{t['free']}</p></div>
-<img src="{up}img/art-companion.webp" alt="Pavurio – {t['footer_tag']}" width="420" height="746" fetchpriority="high"></section>
-{feats}{pro}{faq}
-<section class="cta"><h2>{t['cta_h']}</h2><p>{t['cta_p']}</p><div class="btns" style="justify-content:center"><a class="btn" href="{PLAY}" rel="noopener">▶ {t['play']}</a></div></section>"""
-    ld = [
-      {'@context': 'https://schema.org', '@type': 'MobileApplication', 'name': 'Pavurio: Pet Care Tracker', 'operatingSystem': 'Android', 'applicationCategory': 'LifestyleApplication',
-       'description': t['seo_desc'], 'url': url(lang, 'index'), 'image': f'{BASE}/img/og.jpg', 'installUrl': PLAY, 'inLanguage': LANGS,
-       'offers': [{'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'}, {'@type': 'Offer', 'price': '34.99', 'priceCurrency': 'EUR', 'name': 'Pavurio Pro yearly'}],
-       'author': {'@type': 'Organization', 'name': 'Pavurio', 'url': BASE, 'email': 'lesepavistespro@gmail.com'}},
-      {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in t['faq']]},
-    ]
-    return page(lang, 'index', t['seo_title'], t['seo_desc'], body, ld)
+    slug = 'index'
+    alts = ''.join(f'<link rel="alternate" hreflang="{S[l]["hl"]}" href="{url(l, slug)}">' for l in LANGS) + f'<link rel="alternate" hreflang="x-default" href="{url("en", slug)}">'
+    legal = [(rel(s), t[k]) for s, k in TITLES.items()]
+    lang_links = ''.join(f'<a href="{url(l, slug)}" hreflang="{l}" class="{"on" if l == lang else ""}">{S[l]["name"]}</a>' for l in LANGS)
+    ld = {'@context': 'https://schema.org', '@type': 'MobileApplication', 'name': 'Pavurio: Pet Care Tracker', 'operatingSystem': 'Android', 'applicationCategory': 'LifestyleApplication',
+          'description': t['seo_desc'], 'url': url(lang, 'index'), 'image': f'{BASE}/img/og.jpg', 'installUrl': PLAY, 'inLanguage': LANGS,
+          'offers': [{'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'}],
+          'author': {'@type': 'Organization', 'name': 'Pavurio', 'url': BASE, 'email': 'lesepavistespro@gmail.com'}}
+    title, desc = t['seo_title'], t['seo_desc']
+    return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{title}</title><meta name="description" content="{desc}"><link rel="canonical" href="{url(lang, slug)}">{alts}
+<meta property="og:type" content="website"><meta property="og:site_name" content="Pavurio"><meta property="og:title" content="{title}"><meta property="og:description" content="{desc}"><meta property="og:url" content="{url(lang, slug)}"><meta property="og:image" content="{BASE}/img/og.jpg"><meta property="og:locale" content="{ {'en':'en_US','fr':'fr_FR','es':'es_ES','pt':'pt_BR'}[lang] }">
+<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#16B3D3">
+<link rel="icon" href="{up}favicon.png"><link rel="apple-touch-icon" href="{up}img/icon-192.png">
+<link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-900.woff2" crossorigin>
+<link rel="preload" as="image" href="{up}img/l/duo_hug.webp">
+<style>{FONTS}{LP.CSS}</style><script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script></head><body class="lp">
+{LP.body(lang, up, PLAY, legal, lang_links)}
+<script>{LP.JS}</script></body></html>"""
 
 for lang in LANGS:
     t = S[lang]; dest = OUT if lang == 'en' else f'{OUT}/{lang}'
