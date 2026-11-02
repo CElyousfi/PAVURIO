@@ -1,6 +1,7 @@
 """Pavurio website → site/dist (landing page in en/fr/es/pt + privacy, terms, support, account deletion).
 Usage (repo root): python3 tools/site/build.py   (needs: pip install markdown pillow)
-Hosted on Vercel (project `pavurio`, builds from main with vercel.json) at pavurio.com."""
+Hosted on Vercel only (project `pavurio`): .github/workflows/site.yml publishes site/dist to the
+`site-dist` branch; the Vercel deployment in tools/site/vercel/ serves that branch at pavurio.com."""
 import json, os, shutil, sys, markdown
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

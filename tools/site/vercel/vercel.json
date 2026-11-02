@@ -1,0 +1,9 @@
+{
+  "trailingSlash": true,
+  "rewrites": [
+    { "source": "/", "destination": "/api/serve?p=" },
+    { "source": "/:lang(fr|es|pt)/", "destination": "/api/serve?p=:lang/" },
+    { "source": "/:lang(fr|es|pt)", "destination": "/api/serve?p=:lang/" },
+    { "source": "/:path*", "destination": "/api/serve?p=:path*" }
+  ]
+}
