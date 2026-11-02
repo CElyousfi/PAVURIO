@@ -9,7 +9,7 @@ CSS = r"""
 body.lp{margin:0;font-family:Nunito,ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;background:#fff;line-height:1.5;font-size:18px;overflow-x:hidden}
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
-.band{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;overflow:hidden;padding:72px 0}
+.band{position:relative;min-height:calc(100vh - 80px);min-height:calc(100svh - 80px);display:flex;align-items:center;overflow:hidden;padding:72px 0}
 .wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;position:relative;z-index:1}
 .wrap.center{grid-template-columns:1fr;text-align:center;justify-items:center}
 h1,h2{font-weight:900;letter-spacing:-.015em;margin:0 0 18px;line-height:1.04}
@@ -185,19 +185,39 @@ h2{font-size:clamp(36px,4.6vw,60px)}
 # ---------------------------------------------------------------- interactive layer
 CSS += r"""
 button{font:inherit;color:inherit}
+body.lp{padding-bottom:80px}
+.store{position:relative}
+.free-badge{position:absolute;top:-16px;right:-18px;width:46px;height:46px;border-radius:50%;background:#FFD43B;color:#163A4A;font-weight:900;font-size:10.5px;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;transform:rotate(14deg);box-shadow:0 6px 14px rgba(0,0,0,.18);animation:wiggle 3.6s ease-in-out infinite}
+@keyframes wiggle{0%,86%,100%{transform:rotate(14deg)}90%{transform:rotate(-4deg) scale(1.1)}95%{transform:rotate(22deg)}}
+.hero .store:not(.soon){transform-origin:center;animation:glow 2.8s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}50%{box-shadow:0 0 0 10px rgba(255,255,255,0)}}
+.win-cta{display:inline-block;margin-top:16px;background:#fff;color:#163A4A;font-weight:900;text-decoration:none;border-radius:999px;padding:13px 22px;box-shadow:0 12px 28px rgba(0,0,0,.18);animation:pop .5s cubic-bezier(.3,1.8,.5,1)}
+.win-cta[hidden]{display:none}
+.goal .win-cta{display:block;text-align:center;background:#163A4A;color:#fff;margin:16px 0 0;font-size:15px}.goal .win-cta[hidden]{display:none}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.qr{display:flex;align-items:center;gap:16px;margin-top:26px;background:#fff;border-radius:22px;padding:12px 18px 12px 12px;box-shadow:0 10px 30px rgba(22,58,74,.1);width:max-content;max-width:100%}
+.qr img{width:112px;height:112px;border-radius:10px}
+.qr b{display:block;font-size:18px;font-weight:900;color:#163A4A;line-height:1.2}.qr small{display:block;font-weight:800;color:#7c8494;font-size:14px;margin-top:4px}
+.dlpanel{position:fixed;left:0;right:0;bottom:0;height:80px;background:rgba(242,242,246,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:.5px solid #C0C0C5;z-index:55;color:#163A4A}
+.dl-in{max-width:1280px;margin:0 auto;height:100%;display:flex;align-items:center;gap:12px;padding:0 20px 0 14px}
+.dl-logo{width:60px;height:60px;border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.dl-txt{flex:1;line-height:1.2;min-width:0}.dl-txt b{display:block;font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dl-txt small{display:block;font-size:13px;color:#8E8E92;font-weight:800}
+.dl-txt .dl-ios,.dl-notify{display:none}
+.dl-qr{width:58px;height:58px;border-radius:8px;background:#fff;padding:3px}
+.dl-play{padding:8px 16px 8px 12px}
+.dl-get{display:none;background:#0A84FF;color:#fff;font-weight:900;text-decoration:none;border-radius:999px;padding:7px 22px;font-size:16px;letter-spacing:.02em}
+.dl-notify{background:#163A4A;color:#fff;font-weight:900;text-decoration:none;border-radius:999px;padding:8px 18px;font-size:15px}
+@media (max-width:900px){.dl-qr,.dl-play{display:none}.dl-get{display:inline-block}.qr{display:none}}
+body.ios .dl-get,body.ios .dl-play,body.ios .dl-qr,body.ios .dl-txt .dl-sub{display:none}body.ios .dl-notify{display:inline-block}body.ios .dl-txt .dl-ios{display:block}
+body.mobile .qr{display:none}
 .hint{display:inline-flex;align-items:center;gap:8px;font-weight:900;font-size:14px;background:rgba(255,255,255,.18);border-radius:999px;padding:7px 14px;margin-top:18px}
 .hint::before{content:"";width:8px;height:8px;border-radius:50%;background:#FFD43B;box-shadow:0 0 0 0 rgba(255,212,59,.7);animation:ping 1.8s infinite}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,212,59,.7)}70%{box-shadow:0 0 0 10px rgba(255,212,59,0)}100%{box-shadow:0 0 0 0 rgba(255,212,59,0)}}
 .dark-hint{background:rgba(22,58,74,.08);color:#3d4a63}
 .press-btn{transition:transform .18s cubic-bezier(.3,1.6,.5,1)}.press-btn:active{transform:scale(.94)}
-/* progress + sticky bar + toast */
+/* progress + toast */
 .progress{position:fixed;left:0;top:0;height:4px;width:100%;background:#FFD43B;transform-origin:left;transform:scaleX(0);z-index:60}
-.sticky{position:fixed;left:50%;bottom:16px;transform:translate(-50%,140%);z-index:50;display:flex;align-items:center;gap:12px;background:#fff;color:#163A4A;border-radius:22px;padding:9px 10px 9px 9px;box-shadow:0 14px 40px rgba(14,30,60,.25);transition:transform .45s cubic-bezier(.2,1.2,.3,1);width:min(420px,calc(100% - 24px))}
-.sticky.on{transform:translate(-50%,0)}
-.sticky img{width:46px;height:46px;border-radius:12px}
-.sticky div{flex:1;line-height:1.15}.sticky b{font-weight:900;font-size:17px;display:block}.sticky small{font-weight:800;color:#7c8494;font-size:13px}
-.sticky a{background:#16B3D3;color:#fff;font-weight:900;border-radius:999px;padding:10px 20px;text-decoration:none;font-size:15px}
-.toast{width:max-content;position:fixed;left:50%;bottom:92px;transform:translate(-50%,20px);opacity:0;z-index:70;background:#163A4A;color:#fff;font-weight:900;border-radius:999px;padding:12px 22px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:all .35s cubic-bezier(.2,1.2,.3,1);pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast{width:max-content;position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;z-index:70;background:#163A4A;color:#fff;font-weight:900;border-radius:999px;padding:12px 22px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:all .35s cubic-bezier(.2,1.2,.3,1);pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .fx{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
 .fx i{position:absolute;width:9px;height:13px;border-radius:2px}
@@ -308,9 +328,7 @@ button{font:inherit;color:inherit}
 .cdots{display:flex;gap:6px;justify-content:center;margin-top:14px}.cdots button{width:9px;height:9px;padding:0;border-radius:50%;border:0;background:#d6d0c2;cursor:pointer}.cdots button.on{width:24px;border-radius:5px;background:#16B3D3}
 .tiltable{transition:transform .25s ease-out;will-change:transform}
 .copybtn{border:0;background:#fff;color:#163A4A;font-weight:900;border-radius:999px;padding:12px 20px;margin-left:10px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.06)}
-@media (min-width:901px){.sticky{left:auto;right:24px;transform:translateY(140%);width:340px}.sticky.on{transform:none}.toast{bottom:28px}}
-@media (max-width:900px){.sticky{bottom:10px}.scrolldown{display:none}
- #try .devices{flex-direction:column;min-height:0}
+@media (max-width:900px){ #try .devices{flex-direction:column;min-height:0}
  #try .live{position:relative;right:auto;bottom:auto;top:auto;margin:16px auto 0;width:min(300px,86vw)}
  #try .tile-icon{bottom:auto;top:46%}}
 @media (prefers-reduced-motion:reduce){.m-pet .col,.fillpet .col{transition:none}}
@@ -338,11 +356,14 @@ JS = r"""
  function hearts(el,ch){if(reduce||!el.animate)return;var r=el.getBoundingClientRect();for(var i=0;i<6;i++){var h=document.createElement('b');h.textContent=ch||'❤️';h.style.left=(r.left+r.width/2-10)+'px';h.style.top=(r.top+r.height/3)+'px';fx.appendChild(h);
   h.animate([{transform:'translate(0,0) scale(.4)',opacity:1},{transform:'translate('+(Math.random()*160-80)+'px,'+(-90-Math.random()*90)+'px) scale(1.1)',opacity:0}],{duration:1000+Math.random()*500,easing:'ease-out'}).onfinish=(function(q){return function(){q.remove()}})(h)}}
  // ---- progress bar, sticky bar
- var prog=$('.progress'),sticky=$('.sticky'),hero=$('.hero'),cta=$('.creamy'),press=$('.press'),ticking=false;
+ var prog=$('.progress'),ticking=false;
  function onScroll(){ticking=false;var h=document.documentElement,max=h.scrollHeight-h.clientHeight;prog.style.transform='scaleX('+(max>0?h.scrollTop/max:0)+')';
-  var hb=hero.getBoundingClientRect().bottom,cr=cta.getBoundingClientRect(),pr=press.getBoundingClientRect(),vh=window.innerHeight;
-  var hide=hb>80||(cr.top<vh*.7&&cr.bottom>vh*.3)||pr.top<vh*.6;sticky.classList.toggle('on',!hide)}
+}
  window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
+ // ---- device: iPhone visitors get "coming soon / notify me", phones get GET, desktops get the QR
+ var ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ if(ios)document.body.classList.add('ios');if(/Android|iPhone|iPad|iPod|Mobile/.test(ua)||ios)document.body.classList.add('mobile');
+ function win(sel){var a=$(sel);if(a&&a.hidden){a.hidden=false}}
  // ---- tilt
  if(!reduce&&window.matchMedia('(hover:hover)').matches){$$('.tiltable').forEach(function(el){var base=el.getAttribute('data-rot')||'0';
   el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(800px) rotate('+base+'deg) rotateY('+(x*14)+'deg) rotateX('+(-y*14)+'deg) translateY(-4px)'});
@@ -353,7 +374,7 @@ JS = r"""
  // ---- mini app: tap cares, Honey colours in
  var mini=$('#mini');if(mini){var cares=$$('.m-care',mini),n=0,cnt=$('[data-n]',mini),sub=$('[data-sub]',mini),col=$('.m-pet .col',mini),again=$('.m-again',mini),ring=$('.m-ring',mini);
   function paint(){var p=Math.round(n/cares.length*100);col.style.clipPath='inset('+(100-p)+'% 0 0 0)';cnt.textContent=n;sub.textContent=n===cares.length?T.all_done:fmt(T.logged,{p:p});again.hidden=n<cares.length;ring.textContent=n}
-  cares.forEach(function(b){b.addEventListener('click',function(){if(b.classList.contains('on'))return;b.classList.add('on');b.setAttribute('aria-pressed','true');n++;cnt.classList.add('pop');setTimeout(function(){cnt.classList.remove('pop')},300);paint();hearts(b,'✨');buzz();if(n===cares.length){confetti($('.m-pet',mini),60)}})});
+  cares.forEach(function(b){b.addEventListener('click',function(){if(b.classList.contains('on'))return;b.classList.add('on');b.setAttribute('aria-pressed','true');n++;cnt.classList.add('pop');setTimeout(function(){cnt.classList.remove('pop')},300);paint();hearts(b,'✨');buzz();if(n===cares.length){confetti($('.m-pet',mini),60);win('[data-cta=try_it]')}})});
   again.addEventListener('click',function(){n=0;cares.forEach(function(b){b.classList.remove('on');b.setAttribute('aria-pressed','false')});paint()});paint()}
  // ---- live walk card
  var live=$('.live');if(live){var clk=$('[data-clock]',live),st=$('.s',live),start=Date.now()-(18*60+42)*1000,pausedAt=0,timer;
@@ -383,11 +404,11 @@ JS = r"""
  var pool=JSON.parse(document.getElementById('pv-stickers').textContent),got=2,cc=$('.collect-count');
  function ccount(){cc.textContent=fmt(T.collected,{n:Math.min(got,12)})}ccount();
  $$('.pcard').forEach(function(card){card.addEventListener('click',function(){if(card.classList.contains('flip')){card.classList.remove('flip');return}
-  var img=$('.back img',card);img.src=pool[got%pool.length];card.classList.add('flip');got++;ccount();hearts(card,'⭐');buzz();if(got===12)confetti(card,60)})});
+  var img=$('.back img',card);img.src=pool[got%pool.length];card.classList.add('flip');got++;ccount();hearts(card,'⭐');buzz();if(got>=4)win('[data-cta=collect]');if(got===12)confetti(card,60)})});
  // ---- streak phone
  var sr=$$('.streak-ui .row'),sn=$('.streak-ui .ring b'),sc=$('.streak-ui .ring circle:last-child'),fl=$('.streak-ui .flame'),days=14,saved=false;
  sr.forEach(function(r){r.addEventListener('click',function(){var on=r.classList.toggle('on');r.setAttribute('aria-pressed',on);buzz();var all=sr.every(function(x){return x.classList.contains('on')});
-  if(all&&!saved){saved=true;days++;sn.textContent=days;sn.classList.add('pop');setTimeout(function(){sn.classList.remove('pop')},350);sc.style.strokeDashoffset='0';fl.classList.add('lit');confetti(fl,60);toast(fmt(T.streak_up,{n:days}))}
+  if(all&&!saved){saved=true;days++;sn.textContent=days;sn.classList.add('pop');setTimeout(function(){sn.classList.remove('pop')},350);sc.style.strokeDashoffset='0';fl.classList.add('lit');confetti(fl,60);toast(fmt(T.streak_up,{n:days}));win('[data-cta=streak]')}
   else if(!all&&saved){saved=false;days--;sn.textContent=days;sc.style.strokeDashoffset='70';fl.classList.remove('lit')}})});
  // ---- track phone: pet switch + detail panels
  var tp=$('.track-ui'),petBtns=$$('.pet-pick button',tp),det=$('.detail',tp),pet=0,TR=JSON.parse(document.getElementById('pv-track').textContent);
@@ -403,7 +424,7 @@ JS = r"""
  var g=$('.goal'),gs=$$('.segs i',g),gp=$$('.pets button',g),gcol=$('.fillpet .col',g),ggr=$('.fillpet .gray',g),gof=$('.hd em',g),state=[4,2],cur=0,GI=JSON.parse(document.getElementById('pv-goal').textContent);
  function gpaint(){var v=state[cur];gs.forEach(function(s,k){s.classList.toggle('f',k<v)});gcol.style.clipPath='inset('+(100-v*20)+'% 0 0 0)';gof.textContent=GI.of[v]+(v===5?' ✓':'');gof.classList.toggle('done',v===5)}
  gp.forEach(function(b,k){b.addEventListener('click',function(){cur=k;gp.forEach(function(x){x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b)});gcol.src=ggr.src=GI.img[k];gpaint();buzz()})});
- function setG(v){var was=state[cur];state[cur]=Math.max(0,Math.min(5,v));gpaint();buzz();if(state[cur]===5&&was<5){confetti(gcol,70);toast(T.goal_done)}}
+ function setG(v){var was=state[cur];state[cur]=Math.max(0,Math.min(5,v));gpaint();buzz();if(state[cur]===5&&was<5){confetti(gcol,70);toast(T.goal_done);win('[data-cta=goal]')}}
  gs.forEach(function(s,k){s.addEventListener('click',function(){setG(k+1)})});
  $('.goal .log').addEventListener('click',function(){setG(state[cur]+1)});$('.goal .ghost').addEventListener('click',function(){setG(0)});gpaint();
  // ---- cta screens cycle
@@ -432,9 +453,18 @@ def body(lang, up, play_url, legal, lang_links):
     I = lambda n: f'{up}img/l/{n}.webp'
     data = lambda id_, obj: f'<script type="application/json" id="{id_}">{_json.dumps(obj, ensure_ascii=False)}</script>'
 
-    def stores():
-        return (f'<div class="stores"><a class="store press-btn" href="{play_url}" rel="noopener">{GPLAY}<span><small>{E(t["play_small"])}</small><b>{t["play"]}</b></span></a>'
+    import urllib.parse as _u
+
+    def play(placement):
+        ref = _u.quote(f'utm_source=pavurio.com&utm_medium=website&utm_campaign=landing_{lang}&utm_content={placement}', safe='')
+        return f'{play_url}&referrer={ref}'
+
+    def stores(placement, badge=False):
+        fb = f'<span class="free-badge" aria-hidden="true">{E(x["free_badge"])}</span>' if badge else ''
+        return (f'<div class="stores"><a class="store press-btn" data-cta="{placement}" href="{play(placement)}" rel="noopener">{GPLAY}<span><small>{E(t["play_small"])}</small><b>{t["play"]}</b></span>{fb}</a>'
                 f'<span class="store soon" aria-disabled="true">{APPLE}<span><small>{E(t["ios_small"])}</small><b>{t["ios"]}</b></span></span></div>')
+
+    win = lambda placement: f'<a class="win-cta press-btn" data-cta="{placement}" href="{play(placement)}" rel="noopener" hidden>{E(x["win_cta"])} →</a>'
 
     laurels = ''.join(f'<div class="laurel">{LEAF}<span><b>{E(a)}</b><small>{E(b)}</small></span>{LEAF_R}</div>' for a, b in t['laurels'])
     ry = lambda style, c='#FFD43B', cls='float': RAYS.format(style=style, c=c, cls=cls)
@@ -442,7 +472,7 @@ def body(lang, up, play_url, legal, lang_links):
 
     hero = f"""<section class="band hero" id="top"><div class="wrap">
 <div class="reveal"><a class="logo" href="#top">{PAW}Pavurio</a><h1>{E(t['h1'])}</h1><p class="lead">{E(t['sub'])}</p>
-<div class="laurels">{laurels}</div>{stores()}</div>
+<div class="laurels">{laurels}</div>{stores('hero', True)}</div>
 <div class="art reveal d1" role="button" tabindex="0" aria-label="{E(t['img_alt'])}">{ry('left:-2%;top:30%;width:70px','#fff')}{ry('right:0;top:-2%;width:64px;transform:scaleX(-1)','#fff','float d2')}
 <img class="duo" src="{I('duo_hug')}" alt="{E(t['img_alt'])}" width="640" height="640" fetchpriority="high"><img class="heart" src="{I('ui_heart')}" alt=""></div>
 </div><a class="scrolldown" href="#try" aria-label="{E(x['scroll'])}">{E(x['scroll'])}<span aria-hidden="true">⌄</span></a>
@@ -461,7 +491,7 @@ def body(lang, up, play_url, legal, lang_links):
 <div class="live" role="group" aria-label="{E(t['live_title'])}"><div class="top"><img src="{I('app_icon')}" alt=""><div><div class="t">{E(t['live_title'])}</div><div class="s">{E(t['live_sub'])}</div></div></div>
 <div class="clock" data-clock aria-live="off">18:42</div><div class="saved">{E(x['walk_saved'])}</div>
 <div class="btns"><button class="p">{E(t['pause'])}</button><button class="f">{E(t['finish'])}</button><button class="n">{E(x['walk_new'])}</button></div></div></div>
-<div class="reveal d1"><h2>{E(t['s2_h'])}</h2><p class="lead">{E(t['s2_p'])}</p><div class="chips">{chips}</div>{hint(x['try_it'])}</div>
+<div class="reveal d1"><h2>{E(t['s2_h'])}</h2><p class="lead">{E(t['s2_p'])}</p><div class="chips">{chips}</div>{hint(x['try_it'])}{win('try_it')}</div>
 </div></section>"""
 
     tl = t['tiles']
@@ -494,13 +524,13 @@ def body(lang, up, play_url, legal, lang_links):
 <button class="pcard a" aria-label="{E(x['collect_hint'])}"><div class="flipper"><div class="face front"><img src="{I('dog_love')}" alt="Honey" loading="lazy"></div><div class="face back"><img src="{I('dog_party')}" alt="" loading="lazy">{E(x['new_sticker'])}</div></div></button>
 <button class="pcard b" aria-label="{E(x['collect_hint'])}"><div class="flipper"><div class="face front"><img src="{I('cat_happy')}" alt="Tabby" loading="lazy"></div><div class="face back"><img src="{I('cat_cheer')}" alt="" loading="lazy">{E(x['new_sticker'])}</div></div></button>
 <img class="mini-badge float" style="left:40%;bottom:-2%" src="{I('moment')}" alt="" loading="lazy"><img class="mini-badge float d2" style="right:-4%;top:-4%;width:20%" src="{I('streak7')}" alt="" loading="lazy"></div>
-<div class="reveal d1">{ry('right:8%;top:-40px;width:60px')}<h2>{E(t['s6_h'])}</h2><p class="lead">{E(t['s6_p'])}</p>{hint(x['collect_hint'])}<div class="count collect-count" aria-live="polite"></div></div>
+<div class="reveal d1">{ry('right:8%;top:-40px;width:60px')}<h2>{E(t['s6_h'])}</h2><p class="lead">{E(t['s6_p'])}</p>{hint(x['collect_hint'])}<div class="count collect-count" aria-live="polite"></div>{win('collect')}</div>
 </div></section>{data('pv-stickers', pool)}"""
 
     ring = '<svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="64" fill="none" stroke="#E6F7FA" stroke-width="12"/><circle cx="75" cy="75" r="64" fill="none" stroke="#16B3D3" stroke-width="12" stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="70" transform="rotate(-90 75 75)"/></svg>'
     srow = lambda img, label: f'<button class="row" aria-pressed="false"><img src="{I(img)}" alt="">{E(label)}<span class="ok" aria-hidden="true">✓</span></button>'
     s7 = f"""<section class="band blue"><div class="wrap">
-<div class="reveal"><h2>{E(t['s7_h'])}</h2><p class="lead">{E(t['s7_p'])}</p>{hint(x['streak_hint'])}</div>
+<div class="reveal"><h2>{E(t['s7_h'])}</h2><p class="lead">{E(t['s7_p'])}</p>{hint(x['streak_hint'])}{win('streak')}</div>
 <div class="devices reveal d1">{ry('right:6%;top:6%;width:66px;transform:scaleX(-1)')}<div class="phone"><div class="scr ui streak-ui"><h4>{E(t['streak'])}</h4>
 <div class="ring">{ring}<b aria-live="polite">14</b><small>{E(t['days'])}</small></div>
 {srow('meal', t['feed'])}{srow('walk', t['walk'])}{srow('water', t['water'])}<img class="flame" src="{I('flame')}" alt=""></div></div></div>
@@ -533,14 +563,14 @@ def body(lang, up, play_url, legal, lang_links):
 <div class="goal reveal d1"><div class="fillpet"><img class="gray" src="{I('dog_wave')}" alt=""><img class="col" src="{I('dog_wave')}" alt=""></div>
 <div class="pets"><button class="on" aria-pressed="true"><img src="{I('dog_wave')}" alt="">Honey</button><button aria-pressed="false"><img src="{I('cat_wave')}" alt="">Tabby</button></div>
 <div class="hd"><span>{E(t['goal'])}</span><em aria-live="polite">{E(t['goal_of'])}</em></div><div class="segs">{''.join('<i role="button" tabindex="0"></i>' for _ in range(5))}</div>
-<div class="acts"><button class="log press-btn">{E(x['log_care'])}</button><button class="ghost press-btn">↺ {E(x['reset'])}</button></div></div>
+{win('goal')}<div class="acts"><button class="log press-btn">{E(x['log_care'])}</button><button class="ghost press-btn">↺ {E(x['reset'])}</button></div></div>
 </div></section>{data('pv-goal', {'of': of, 'img': [I('dog_wave'), I('cat_wave')]})}"""
 
     cyc = ['home', 'log_meal', 'memories', 'card', 'care', 'achievements']
     imgs = ''.join(f'<img class="cyc{" on" if k == 0 else ""}" src="{I("app_" + n)}" alt="" loading="lazy">' for k, n in enumerate(cyc))
     cdots = ''.join(f'<button aria-label="{k + 1}"></button>' for k in range(len(cyc)))
     s12 = f"""<section class="band creamy"><div class="wrap">
-<div class="reveal"><div class="cta-logo"><img src="{I('app_icon')}" alt="Pavurio"><b>{PAW.replace('<svg', '<svg style="width:46px;height:46px;color:#16B3D3"')}Pavurio</b></div><p class="lead">{E(t['cta_p'])}</p>{stores()}<p class="note">{E(t['cta_note'])}</p></div>
+<div class="reveal"><div class="cta-logo"><img src="{I('app_icon')}" alt="Pavurio"><b>{PAW.replace('<svg', '<svg style="width:46px;height:46px;color:#16B3D3"')}Pavurio</b></div><p class="lead">{E(t['cta_p'])}</p>{stores('final', True)}<p class="note">{E(t['cta_note'])}</p><div class="qr"><img src="{up}img/l/qr_{lang}.svg" alt="QR code: Pavurio on Google Play" width="132" height="132"><div><b>{E(x['scan'])}</b><small>{E(x['scan_sub'])}</small></div></div></div>
 <div class="reveal d1" style="justify-self:center"><div style="position:relative">{ry('left:40%;top:-30px;width:60px')}<div class="phone tiltable" data-rot="-3"><div class="scr">{imgs}</div></div></div><div class="cdots">{cdots}</div></div>
 </div></section>"""
 
@@ -552,7 +582,12 @@ def body(lang, up, play_url, legal, lang_links):
 </div></section>"""
 
     chrome = f"""<div class="progress" aria-hidden="true"></div><div class="fx" aria-hidden="true"></div><div class="toast" role="status" aria-live="polite"></div>
-<div class="sticky" aria-label="Pavurio"><img src="{I('app_icon')}" alt=""><div><b>Pavurio</b><small>{E(x['free_bar'])}</small></div><a class="press-btn" href="{play_url}" rel="noopener">{E(x['get'])}</a></div>"""
+<div class="dlpanel" role="region" aria-label="{E(x['bar_title'])}"><div class="dl-in">
+<img class="dl-logo" src="{I('app_icon')}" alt="" width="60" height="60"><div class="dl-txt"><b>{E(x['bar_title'])}</b><small class="dl-sub">{E(x['bar_sub'])}</small><small class="dl-ios">{E(x['bar_ios'])}</small></div>
+<img class="dl-qr" src="{up}img/l/qr_{lang}.svg" alt="QR code: Pavurio on Google Play" width="58" height="58">
+<a class="dl-play store press-btn" data-cta="panel" href="{play('panel')}" rel="noopener">{GPLAY}<span><small>{E(t["play_small"])}</small><b>{t["play"]}</b></span></a>
+<a class="dl-get press-btn" data-cta="panel_get" href="{play('panel_get')}" rel="noopener">{E(x['get'])}</a>
+<a class="dl-notify press-btn" href="mailto:lesepavistespro@gmail.com?subject={_u.quote(x['notify_subject'])}">{E(x['notify'])}</a></div></div>"""
     i18n = {k: x[k] for k in ('logged', 'all_done', 'paused', 'resume', 'walk_saved', 'routine_count', 'challenge_go', 'notifs', 'done_toast', 'snooze_toast', 'collected', 'streak_up', 'track', 'litter', 'goal_done', 'copied')}
     i18n.update(pause=t['pause'])
     return '<main>' + hero + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9 + s10 + s11 + s12 + s13 + '</main>' + chrome + data('pv-i18n', i18n)

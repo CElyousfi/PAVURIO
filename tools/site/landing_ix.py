@@ -2,6 +2,9 @@
 
 X = {
  'en': dict(
+  bar_title='Pavurio pet-care app', bar_sub='Free on Google Play · No ads', bar_ios='Coming soon on iPhone', notify='Notify me', notify_subject='Tell me when Pavurio is on iPhone',
+  free_badge='FREE', scan='Scan to get Pavurio on your phone', scan_sub='Point your phone’s camera here',
+  win_cta='Do it for real with your pet — get Pavurio free', get_free='Get Pavurio free',
   try_it='Try it — tap a care to colour Honey in',
   care=['Meal', 'Water', 'Walk', 'Play', 'Groom', 'Meds'],
   logged='Care logged · {p}% of today’s plan',
@@ -41,6 +44,9 @@ X = {
   scroll='Scroll',
  ),
  'fr': dict(
+  bar_title='Pavurio, l’appli de soins', bar_sub='Gratuit sur Google Play · Sans pub', bar_ios='Bientôt sur iPhone', notify='Me prévenir', notify_subject='Prévenez-moi quand Pavurio arrive sur iPhone',
+  free_badge='GRATUIT', scan='Scannez pour installer Pavurio', scan_sub='Visez ce code avec l’appareil photo du téléphone',
+  win_cta='Faites-le pour de vrai avec votre animal — Pavurio est gratuit', get_free='Installer Pavurio gratuitement',
   try_it='Essayez — touchez un soin pour colorer Honey',
   care=['Repas', 'Eau', 'Balade', 'Jeu', 'Toilette', 'Soins'],
   logged='Soins notés · {p} % du programme du jour',
@@ -80,6 +86,9 @@ X = {
   scroll='Défiler',
  ),
  'es': dict(
+  bar_title='Pavurio, app de cuidado', bar_sub='Gratis en Google Play · Sin anuncios', bar_ios='Pronto en iPhone', notify='Avísame', notify_subject='Avisadme cuando Pavurio llegue a iPhone',
+  free_badge='GRATIS', scan='Escanea para instalar Pavurio', scan_sub='Apunta aquí con la cámara del móvil',
+  win_cta='Hazlo de verdad con tu mascota — Pavurio es gratis', get_free='Consigue Pavurio gratis',
   try_it='Pruébalo — toca un cuidado para colorear a Honey',
   care=['Comida', 'Agua', 'Paseo', 'Juego', 'Aseo', 'Medicina'],
   logged='Cuidados registrados · {p} % del plan de hoy',
@@ -119,6 +128,9 @@ X = {
   scroll='Desliza',
  ),
  'pt': dict(
+  bar_title='Pavurio, app de cuidados', bar_sub='Grátis no Google Play · Sem anúncios', bar_ios='Em breve no iPhone', notify='Avise-me', notify_subject='Quero saber quando o Pavurio chegar ao iPhone',
+  free_badge='GRÁTIS', scan='Escaneie para instalar o Pavurio', scan_sub='Aponte a câmera do celular para cá',
+  win_cta='Faça de verdade com o seu pet — o Pavurio é grátis', get_free='Baixe o Pavurio grátis',
   try_it='Experimente — toque num cuidado para colorir a Honey',
   care=['Refeição', 'Água', 'Passeio', 'Brincar', 'Higiene', 'Remédio'],
   logged='Cuidados registrados · {p}% do plano de hoje',
