@@ -90,11 +90,12 @@ export function Icon({ name, size = 22, color = colors.ink }: { name: IconName; 
 }
 
 /** White floating circle button with soft shadow (close, settings, back). */
-export function CircleButton({ icon, onPress, label, size = 52, children, style }: { icon?: IconName; onPress: () => void; label: string; size?: number; children?: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+export function CircleButton({ icon, onPress, label, size = 52, children, style, testID }: { icon?: IconName; onPress: () => void; label: string; size?: number; children?: React.ReactNode; style?: StyleProp<ViewStyle>; testID?: string }) {
   const press = usePress(0.9);
   return (
     <APressable
       {...press.handlers}
+      testID={testID}
       accessibilityRole="button"
       accessibilityLabel={label}
       hitSlop={8}

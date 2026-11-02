@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { PetRig } from '../animation/PetRig';
+import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 import { CARE, SPECIES_CARE, formatAmount } from '../domain/care';
 import { progressSentence } from '../domain/progress';
-import { addDays, dayKeyOf, formatClock, formatDayTitle, isToday } from '../domain/time';
+import { addDays, dayKeyOf, formatClock, isToday } from '../domain/time';
 import { useApp, useDay } from '../state/AppState';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
-import { CircleButton, Label, SoftPill, T } from '../ui/primitives';
+import { CircleButton, Icon, SoftPill, T } from '../ui/primitives';
+import { formatDateLong } from '../ui/forms';
+import { confirmAsync } from '../ui/confirm';
+import { voidEvent } from '../data/repo';
 import { colors } from '../ui/theme';
 import { Bouncy } from '../ui/motion';
 import { t } from '../i18n';
@@ -18,7 +20,7 @@ import { t } from '../i18n';
 export default function DayDetail() {
   const params = useLocalSearchParams<{ day?: string }>();
   const [dayKey, setDayKey] = useState(params.day ?? dayKeyOf(new Date()));
-  const { pet } = useApp();
+  const { pet, db, bump } = useApp();
   const { events, progress, loading } = useDay(dayKey);
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -28,35 +30,34 @@ export default function DayDetail() {
   if (!pet) return null;
   const today = isToday(dayKey);
 
+  const remove = async (id: string, label: string) => {
+    if (!(await confirmAsync(t('Delete {label}?', { label }), t('This entry will be removed from the day.'), t('Delete')))) return;
+    await voidEvent(db, id);
+    bump();
+  };
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: insets.bottom + 30 }}>
         <View style={{ width: W, paddingHorizontal: 20 }}>
           <View style={styles.topRow}>
-            <View style={styles.nav}>
-              <CircleButton icon="chevL" label={t('Previous day')} onPress={() => setDayKey((k) => addDays(k, -1))} size={44} />
-              <T weight="black" style={styles.dayTitle} accessibilityRole="header">
-                {formatDayTitle(dayKey)}
-              </T>
-              <CircleButton
-                icon="chevR"
-                label={t('Next day')}
-                onPress={() => !today && setDayKey((k) => addDays(k, 1))}
-                size={44}
-                style={{ opacity: today ? 0.3 : 1 }}
-              />
-            </View>
+            <View style={{ width: 52 }} />
             <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} />
           </View>
 
+          <View style={styles.titleRow}>
+            <Bouncy accessibilityRole="button" accessibilityLabel={t('Previous day')} onPress={() => setDayKey((k) => addDays(k, -1))} style={styles.arrow} scaleTo={0.85}>
+              <Icon name="chevL" size={20} color={colors.faint} />
+            </Bouncy>
+            <T weight="black" style={styles.dayTitle} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit>
+              {today ? t('Today') : formatDateLong(dayKey)}
+            </T>
+            <Bouncy accessibilityRole="button" accessibilityLabel={t('Next day')} onPress={() => !today && setDayKey((k) => addDays(k, 1))} style={[styles.arrow, today && { opacity: 0.25 }]} scaleTo={0.85}>
+              <Icon name="chevR" size={20} color={colors.faint} />
+            </Bouncy>
+          </View>
+
           <Animated.View key={dayKey} entering={FadeIn.duration(250)} style={{ alignItems: 'center' }}>
-            <PetRig
-              species={pet.species}
-              appearance={pet.appearance}
-              size={Math.min(200, W * 0.5)}
-              progress={progress.planned > 0 ? progress.ratio : events.length ? 1 : 0}
-              rug={{ bands: progress.bands, planned: progress.planned }}
-            />
             <T weight="black" style={styles.big}>
               {progress.planned > 0 ? `${progress.done}/${progress.planned}` : events.length}
             </T>
@@ -81,39 +82,43 @@ export default function DayDetail() {
               </View>
             ) : null}
             {events.map((e, i) => (
-              <Animated.View key={e.id} entering={FadeInDown.delay(i * 40)}>
-                <Bouncy
-                  accessibilityRole="button"
-                  accessibilityLabel={t('{label}, {amount}, at {time}. Edit', { label: CARE[e.type].label, amount: formatAmount(e.type, e.amount), time: formatClock(e.occurredAt) })}
-                  onPress={() => router.push({ pathname: '/log/[type]', params: { type: e.type, eventId: e.id } })}
-                  scaleTo={0.97}
-                  style={styles.row}
-                  testID={`event-${i}`}
-                >
-                  <CareIcon type={e.type} size={46} />
-                  <View style={{ flex: 1 }}>
-                    <T weight="black" style={{ fontSize: 18, color: CARE[e.type].color }}>
-                      {CARE[e.type].label}
-                    </T>
-                    <T weight="xbold" style={{ fontSize: 15 }}>
-                      {formatAmount(e.type, e.amount)}
-                    </T>
-                    {e.note ? (
-                      <T style={{ color: colors.muted, fontSize: 14 }} numberOfLines={2}>
-                        {e.note}
+              <Animated.View key={e.id} entering={FadeInDown.delay(i * 40)} layout={LinearTransition.springify().damping(18)}>
+                <View style={styles.row}>
+                  <Bouncy
+                    accessibilityRole="button"
+                    accessibilityLabel={t('{label}, {amount}, at {time}. Edit', { label: CARE[e.type].label, amount: formatAmount(e.type, e.amount), time: formatClock(e.occurredAt) })}
+                    onPress={() => router.push({ pathname: '/log/[type]', params: { type: e.type, eventId: e.id } })}
+                    scaleTo={0.97}
+                    style={styles.rowMain}
+                    testID={`event-${i}`}
+                  >
+                    <CareIcon type={e.type} size={46} />
+                    <View style={{ flex: 1 }}>
+                      <T weight="black" style={{ fontSize: 19, color: CARE[e.type].color }}>
+                        {CARE[e.type].label}
                       </T>
-                    ) : null}
-                  </View>
-                  <T weight="xbold" style={styles.time}>
-                    {formatClock(e.occurredAt)}
-                  </T>
-                </Bouncy>
+                      <T weight="black" style={{ fontSize: 15, color: colors.ink }}>
+                        {formatAmount(e.type, e.amount)}
+                      </T>
+                      {e.note ? (
+                        <T style={{ color: colors.muted, fontSize: 14 }} numberOfLines={2}>
+                          {e.note}
+                        </T>
+                      ) : null}
+                    </View>
+                    <T weight="xbold" style={styles.time}>
+                      {formatClock(e.occurredAt)}
+                    </T>
+                  </Bouncy>
+                  <Bouncy accessibilityRole="button" accessibilityLabel={t('Delete {label}?', { label: CARE[e.type].label })} onPress={() => remove(e.id, CARE[e.type].label)} style={styles.minus} scaleTo={0.85} testID={`event-delete-${i}`}>
+                    <View style={styles.minusBar} />
+                  </Bouncy>
+                </View>
               </Animated.View>
             ))}
           </View>
 
-          <View style={{ alignItems: 'center', gap: 12, marginTop: 10 }}>
-            {events.length > 0 ? <Label>{t('Tap an entry to edit or delete it')}</Label> : null}
+          <View style={{ alignItems: 'center', gap: 12, marginTop: 14 }}>
             {picking ? (
               <Animated.View entering={FadeInDown} style={styles.picker}>
                 {SPECIES_CARE[pet.species].map((ct) => (
@@ -128,8 +133,15 @@ export default function DayDetail() {
                     scaleTo={0.9}
                     style={styles.pickItem}
                   >
-                    <CareIcon type={ct} size={44} />
-                    <Label style={{ fontSize: 10, marginTop: 2 }}>{CARE[ct].label}</Label>
+                    <View>
+                      <CareIcon type={ct} size={50} />
+                      <View style={[styles.pickPlus, { backgroundColor: CARE[ct].color }]}>
+                        <Icon name="plus" size={11} color="#FFFFFF" />
+                      </View>
+                    </View>
+                    <T weight="black" style={styles.pickLabel}>
+                      {CARE[ct].label.toUpperCase()}
+                    </T>
                   </Bouncy>
                 ))}
               </Animated.View>
@@ -145,17 +157,22 @@ export default function DayDetail() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
-  nav: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  dayTitle: { fontSize: 18, minWidth: 96, textAlign: 'center' },
-  big: { fontSize: 44, lineHeight: 50, color: colors.brand, marginTop: 4 },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 6 },
+  arrow: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  dayTitle: { fontSize: 30, textAlign: 'center', flexShrink: 1 },
+  big: { fontSize: 46, lineHeight: 54, color: colors.brand, marginTop: 10 },
   sub: { color: colors.muted, fontSize: 16 },
   extra: { color: colors.brand, fontSize: 15, marginTop: 4 },
-  list: { marginTop: 22, gap: 6 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 10 },
-  time: { color: colors.muted, fontSize: 16 },
+  list: { marginTop: 26, gap: 4 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rowMain: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 10 },
+  time: { color: colors.faint, fontSize: 17 },
+  minus: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FDE4EA', alignItems: 'center', justifyContent: 'center' },
+  minusBar: { width: 14, height: 3, borderRadius: 2, backgroundColor: '#E64980' },
   empty: { alignItems: 'center', paddingVertical: 18 },
-  picker: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, backgroundColor: colors.canvasWarm, padding: 12, borderRadius: 24 },
-  pickItem: { alignItems: 'center', width: 64 },
+  picker: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6, backgroundColor: colors.card, paddingVertical: 16, paddingHorizontal: 8, borderRadius: 28 },
+  pickItem: { alignItems: 'center', width: 66 },
+  pickPlus: { position: 'absolute', bottom: -3, alignSelf: 'center', width: 18, height: 18, borderRadius: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FFFFFF' },
+  pickLabel: { fontSize: 10, letterSpacing: 1, color: colors.faint, marginTop: 6 },
 });
-

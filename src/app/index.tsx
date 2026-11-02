@@ -2,24 +2,25 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, ZoomIn } from 'react-native-reanimated';
 import { PetRig, PetClipName } from '../animation/PetRig';
 import { catClip } from '../animation/CatStage';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
-import { CARE, CareType, HOME_ROW_SIZE, SPECIES_CARE, formatAmount } from '../domain/care';
-import { progressSentence } from '../domain/progress';
-import { dayKeyOf, formatClock } from '../domain/time';
+import { CARE, CareType, SPECIES_CARE } from '../domain/care';
+import { fillStack, progressSentence } from '../domain/progress';
+import { dayKeyOf } from '../domain/time';
 import { voidEvent } from '../data/repo';
 import { useApp, useDay, useOccurrences } from '../state/AppState';
-import { OccurrenceRow } from '../features/routines';
-import { nextUp } from '../domain/schedule';
-import { CircleButton, Icon, Label, T } from '../ui/primitives';
+import { formatTime24to12, nextUp } from '../domain/schedule';
+import { useEngagement } from '../state/Engagement';
+import { capitalize, weekdayNames } from '../i18n/dates';
+import { CircleButton, Icon, T } from '../ui/primitives';
 import { CareIcon } from '../ui/CareIcon';
-import { colors, font, radius, softShadow } from '../ui/theme';
+import { colors, font, softShadow } from '../ui/theme';
 import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
-import { CountUp, Pop, Ring, Splash, usePress } from '../ui/motion';
+import { Bouncy, ConfettiRain, CountUp, Pop, Ring, Splash, usePress } from '../ui/motion';
 import { HomeFeed } from '../features/HomeFeed';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
@@ -65,13 +66,22 @@ function HomeScreen() {
   const { events, progress, loading } = useDay(todayKey);
   const occ = useOccurrences(todayKey);
   const next = nextUp(occ);
-  const openCount = occ.filter((o) => o.status !== 'done' && o.status !== 'skipped').length;
   const { bursts, fire } = useBursts(!reduceMotion);
   const [snack, setSnack] = useState<{ eventId: string; type: CareType } | null>(null);
   // droplets over the care icon that was just logged (the Waterllama "sip")
   const [splash, setSplash] = useState<{ type: CareType; key: number } | null>(null);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
   const night = useNight();
+  const { streak } = useEngagement();
+  // confetti the moment the plan is completed (never on opening an already-complete day)
+  const [cheer, setCheer] = useState<number | null>(null);
+  const wasComplete = useRef<boolean | null>(null);
+  const isComplete = progress.planned > 0 && progress.ratio >= 1;
+  useEffect(() => {
+    if (loading) return;
+    if (wasComplete.current === false && isComplete && focused && !reduceMotion) setCheer(Date.now());
+    wasComplete.current = isComplete;
+  }, [isComplete, loading, focused, reduceMotion]);
   // a wave the first time Home is opened in this session (not at night, not over a celebration)
   useEffect(() => {
     if (helloPlayed || !focused || reduceMotion || night || pet?.species !== 'dog') return;
@@ -138,11 +148,14 @@ function HomeScreen() {
   }, [snack, db, bump]);
 
   if (!pet) return null;
-  const row = SPECIES_CARE[pet.species].slice(0, HOME_ROW_SIZE);
-  const petSize = Math.min(W * 0.78, height * 0.4, 360);
-  const last = events[0];
+  const row = SPECIES_CARE[pet.species];
+  const petSize = Math.min(W * 0.8, height * 0.42, 380);
   const isEmptyDay = !loading && events.length === 0;
   const big = progress.planned > 0 ? `${progress.done}/${progress.planned}` : String(events.length);
+  const complete = progress.planned > 0 && progress.ratio >= 1;
+  const stack = fillStack(progress).map((b) => ({ color: CARE[b.type].color, from: b.from, to: b.to }));
+  const itemW = Math.floor((W - 16) / 5);
+  const doneOcc = occ.filter((o) => o.status === 'done').length;
 
   return (
     <View style={styles.root}>
@@ -154,19 +167,31 @@ function HomeScreen() {
         scrollEventThrottle={16}
         onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 40)}
       >
-      <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 64 }]}>
+      <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 70 }]}>
 
         <View style={styles.header} accessibilityRole="header" accessibilityLabel={`${big} · ${progressSentence(progress)}`}>
-          <Label style={{ marginBottom: 2 }}>{t("{name}'s day", { name: pet.name })}</Label>
-          <Pop trigger={progress.planned > 0 ? progress.done : events.length} amount={0.12} style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-            <CountUp value={progress.planned > 0 ? progress.done : events.length} style={styles.big} />
-            {progress.planned > 0 ? (
-              <T weight="black" style={styles.big}>
-                /{progress.planned}
+          {complete ? (
+            <Animated.View key="done" entering={reduceMotion ? undefined : ZoomIn.springify().damping(12)}>
+              <T weight="black" style={styles.cheer} numberOfLines={1} adjustsFontSizeToFit>
+                {t('Wonderful {day}!', { day: capitalize(weekdayNames()[new Date().getDay()]) })}
               </T>
-            ) : null}
-          </Pop>
-          <T style={styles.subtitle}>{progressSentence(progress)}</T>
+            </Animated.View>
+          ) : (
+            <Pop trigger={progress.planned > 0 ? progress.done : events.length} amount={0.12} style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+              <CountUp value={progress.planned > 0 ? progress.done : events.length} style={styles.big} />
+              {progress.planned > 0 ? (
+                <T weight="black" style={styles.big}>
+                  /{progress.planned}
+                </T>
+              ) : null}
+            </Pop>
+          )}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <T style={styles.subtitle}>{progressSentence(progress)}</T>
+            <View style={styles.dropChip}>
+              <Icon name="check" size={11} color={colors.brand} />
+            </View>
+          </View>
         </View>
 
         <View style={styles.stage}>
@@ -174,14 +199,13 @@ function HomeScreen() {
             species={pet.species}
             appearance={pet.appearance}
             size={petSize}
-            progress={progress.planned > 0 ? progress.ratio : events.length > 0 ? 1 : 0}
-           
+            progress={progress.planned > 0 ? progress.level : events.length > 0 ? 1 : 0}
+            stack={progress.planned > 0 ? stack : events.length > 0 ? [{ color: colors.brand, from: 0, to: 1 }] : []}
             interactive
             onTap={() => {
               petFeedback();
               fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']);
             }}
-            rug={{ bands: progress.bands, planned: progress.planned }}
             bursts={bursts}
             clip={clip}
             onClipEnd={() => setClip(null)}
@@ -198,10 +222,23 @@ function HomeScreen() {
               </T>
             </Animated.View>
           ) : null}
+          {complete ? (
+            <Animated.View entering={reduceMotion ? undefined : FadeInUp.delay(300).springify().damping(15)} style={styles.celebrateWrap}>
+              <Bouncy onPress={() => router.push('/summary')} accessibilityRole="button" accessibilityLabel={t('Celebrate my day!')} style={styles.celebrate} testID="celebrate-day">
+                <View style={styles.poster}>
+                  <PetAvatar species={pet.species} appearance={pet.appearance} size={40} />
+                </View>
+                <T weight="black" style={styles.celebrateText}>
+                  {t('Celebrate my day!')}
+                </T>
+              </Bouncy>
+            </Animated.View>
+          ) : null}
         </View>
 
-        <View style={styles.row}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row} style={{ flexGrow: 0 }}>
           <RowItem
+            width={itemW}
             label={pet.name}
             onPress={() => router.push('/studio')}
             accessibilityLabel={t("Open {name}'s look", { name: pet.name })}
@@ -210,10 +247,12 @@ function HomeScreen() {
                 <PetAvatar species={pet.species} appearance={pet.appearance} size={58} />
               </View>
             }
+            badge={<View style={[styles.plus, { backgroundColor: '#D6DAE0' }]}><Icon name="more" size={12} color="#FFFFFF" /></View>}
           />
           {row.map((ct) => (
             <RowItem
               key={ct}
+              width={itemW}
               label={CARE[ct].label}
               color={CARE[ct].color}
               count={progress.counts[ct] ?? 0}
@@ -224,65 +263,71 @@ function HomeScreen() {
               testID={`quick-${ct}`}
             />
           ))}
-        </View>
-
-        <View style={[styles.peek, softShadow]}>
-          {next ? (
-            <View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: -2 }}>
-                <Label style={{ flex: 1 }}>{t('Next up')}</Label>
-                <Pressable accessibilityRole="button" accessibilityLabel={t('Open care schedule')} onPress={() => router.navigate('/care')} hitSlop={8}>
-                  <T weight="xbold" style={styles.peekLink}>
-                    {openCount > 1 ? t('{n} more today', { n: openCount - 1 }) : t('Schedule')}
-                  </T>
-                </Pressable>
+          <RowItem
+            width={itemW}
+            label={t('Add or edit')}
+            onPress={() => router.push('/settings')}
+            accessibilityLabel={t("{name}'s daily plan", { name: pet.name })}
+            icon={
+              <View style={styles.addBubble}>
+                <View style={styles.addDot}>
+                  <Icon name="plus" size={18} color="#FFFFFF" />
+                </View>
               </View>
-              <OccurrenceRow o={next} db={db} species={pet.species} bump={bump} compact />
-            </View>
-          ) : (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t("Open today's care timeline")}
-              onPress={() => router.push({ pathname: '/day', params: { day: todayKey } })}
-              style={styles.peekRow}
-            >
-              {last ? (
-                <>
-                  <CareIcon type={last.type} size={34} />
-                  <T weight="xbold" style={[styles.peekTitle, { color: CARE[last.type].color }]}>
-                    {CARE[last.type].label}
-                  </T>
-                  <T style={styles.peekMeta}>
-                    {formatAmount(last.type, last.amount)} · {formatClock(last.occurredAt)}
-                  </T>
-                  <View style={{ flex: 1 }} />
-                  <T weight="xbold" style={styles.peekLink}>
-                    {t('{n} today', { n: events.length })}
-                  </T>
-                </>
-              ) : (
-                <>
-                  <T weight="xbold" style={[styles.peekTitle, { color: colors.brand }]}>
-                    {t("Today's care")}
-                  </T>
-                  <View style={{ flex: 1 }} />
-                  <T style={styles.peekMeta}>{occ.length ? t('All done for today') : t('Nothing logged yet')}</T>
-                </>
-              )}
-            </Pressable>
-          )}
-        </View>
+            }
+          />
+        </ScrollView>
+
+        <Bouncy
+          scaleTo={0.98}
+          accessibilityRole="button"
+          accessibilityLabel={next ? t('Next up') : t("Open today's care timeline")}
+          onPress={() => (occ.length ? router.push('/care') : router.push({ pathname: '/day', params: { day: todayKey } }))}
+          style={[styles.peek, { backgroundColor: occ.length ? '#FFE3E8' : '#E3F6F8' }]}
+          testID="home-peek"
+        >
+          <View style={[styles.peekChip, { backgroundColor: occ.length ? '#FFC9D4' : '#C2ECEF' }]}>
+            <T weight="black" style={{ fontSize: 15, color: occ.length ? '#D6336C' : colors.brand }}>
+              {occ.length ? `${doneOcc}/${occ.length}` : String(events.length)}
+            </T>
+          </View>
+          <View style={{ flex: 1 }}>
+            <T weight="black" style={[styles.peekTitle, { color: occ.length ? '#D6336C' : colors.brand }]} numberOfLines={1}>
+              {next ? next.title : occ.length ? t('All done for today') : t("Today's care")}
+            </T>
+            {next ? (
+              <T weight="xbold" style={styles.peekMeta} numberOfLines={1}>
+                {t('Next up')} · {formatTime24to12(next.time)}
+              </T>
+            ) : null}
+          </View>
+          <Icon name="chevR" size={18} color={occ.length ? '#E8879E' : '#7FD3DA'} />
+        </Bouncy>
       </View>
       <HomeFeed width={W} />
       </ScrollView>
 
+      <ConfettiRain fireKey={cheer} />
+
       {scrolled ? <Animated.View entering={FadeIn.duration(180)} exiting={FadeOut.duration(150)} pointerEvents="none" style={[styles.headerBg, { height: insets.top + 70 }]} /> : null}
       <View pointerEvents="box-none" style={[styles.topRow, styles.floating, { top: insets.top + 6, width: W }]}>
-        <CircleButton label={t("Today, {pct} percent colored in. Open your summary", { pct: Math.round(progress.ratio * 100) })} onPress={() => router.push('/summary')} size={54}>
-          <Ring size={54} stroke={4} value={progress.ratio}>
-            <T weight="black" style={{ fontSize: 18, color: colors.brand }}>
-              {new Date().getDate()}
-            </T>
+        <CircleButton
+          label={t('{n}-day streak. Open your summary', { n: streak.current })}
+          onPress={() => router.push('/summary')}
+          size={54}
+          style={{ backgroundColor: 'transparent' }}
+          testID="streak-circle"
+        >
+          <Ring size={58} stroke={4} value={progress.ratio} color="#7BDCE3" track="transparent">
+            <View style={styles.streakDisc}>
+              {complete ? (
+                <Icon name="check" size={22} color="#FFFFFF" />
+              ) : (
+                <T weight="black" style={{ fontSize: 19, color: '#FFFFFF' }}>
+                  {streak.current}
+                </T>
+              )}
+            </View>
           </Ring>
         </CircleButton>
         {scrolled ? (
@@ -295,7 +340,7 @@ function HomeScreen() {
             </Pressable>
           </Animated.View>
         ) : null}
-        <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} />
+        <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} testID="menu" />
       </View>
 
       {snack ? (
@@ -324,6 +369,8 @@ function RowItem({
   onPress,
   accessibilityLabel,
   splashKey = null,
+  width,
+  badge,
   testID,
 }: {
   label: string;
@@ -334,6 +381,8 @@ function RowItem({
   onPress: (origin: Origin | undefined) => void;
   accessibilityLabel: string;
   splashKey?: number | null;
+  width: number;
+  badge?: React.ReactNode;
   testID?: string;
 }) {
   const press = usePress(0.9);
@@ -352,14 +401,16 @@ function RowItem({
     setTimeout(() => fire(undefined), 60); // measurement never answered (shouldn't happen): open anyway
   };
   return (
-    <APressable {...press.handlers} testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={go} style={[styles.item, press.style]}>
+    <APressable {...press.handlers} testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={go} style={[styles.item, { width }, press.style]}>
       <View ref={iconRef} collapsable={false}>
         {icon}
         {color ? (
           <View style={[styles.plus, { backgroundColor: color }]}>
             <Icon name="plus" size={14} color="#FFFFFF" />
           </View>
-        ) : null}
+        ) : (
+          badge ?? null
+        )}
         {count ? (
           <Pop trigger={count} amount={0.5} style={[styles.count, { borderColor: color }]}>
             <T weight="black" style={{ fontSize: 11, color }}>
@@ -379,29 +430,36 @@ function RowItem({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas, alignItems: 'center' },
   col: { flex: 1 },
-  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 4 },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 18, paddingTop: 4 },
   floating: { position: 'absolute', alignSelf: 'center' },
-  headerBg: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.96)', borderBottomWidth: 1, borderBottomColor: colors.line },
-  backPill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 6, paddingRight: 14, height: 42, borderRadius: 21, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: colors.line },
-  header: { alignItems: 'center', marginTop: -6 },
-  big: { fontSize: 64, lineHeight: 72, color: colors.brand, letterSpacing: -1 },
-  subtitle: { fontSize: 17, color: colors.muted, marginTop: -2 },
+  headerBg: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.96)' },
+  backPill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 6, paddingRight: 14, height: 42, borderRadius: 21, backgroundColor: '#FFFFFF', ...(softShadow as object) },
+  streakDisc: { width: 46, height: 46, borderRadius: 23, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
+  header: { alignItems: 'center', marginTop: -8 },
+  big: { fontSize: 60, lineHeight: 68, color: colors.brand, letterSpacing: -1 },
+  cheer: { fontSize: 40, lineHeight: 50, color: colors.brand, letterSpacing: -0.5, textAlign: 'center', paddingHorizontal: 16 },
+  subtitle: { fontSize: 17, color: colors.muted },
+  dropChip: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   stage: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   hint: { position: 'absolute', top: 6, backgroundColor: colors.ink, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 14 },
   hintText: { color: '#FFFFFF', fontSize: 14 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 14 },
-  item: { alignItems: 'center', width: '20%' },
-  itemLabel: { fontSize: 11, letterSpacing: 1.2, color: colors.muted, marginTop: 6, fontFamily: font.black },
+  celebrateWrap: { position: 'absolute', bottom: 4, alignSelf: 'center' },
+  celebrate: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.ink, height: 62, borderRadius: 31, paddingLeft: 10, paddingRight: 26 },
+  poster: { width: 44, height: 54, borderRadius: 8, backgroundColor: '#E8F7FA', borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-8deg' }], marginTop: -18, overflow: 'hidden' },
+  celebrateText: { color: '#FFFFFF', fontSize: 17, lineHeight: 20 },
+  row: { paddingHorizontal: 8, marginBottom: 14 },
+  item: { alignItems: 'center' },
+  itemLabel: { fontSize: 11, letterSpacing: 1.2, color: colors.faint, marginTop: 6, fontFamily: font.black, textAlign: 'center' },
   avatarBubble: { width: 62, height: 62, borderRadius: 31, backgroundColor: '#FFF4E3', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  addBubble: { width: 62, height: 62, borderRadius: 31, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
+  addDot: { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
   plus: { position: 'absolute', bottom: -4, alignSelf: 'center', width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 2.5, borderColor: '#FFFFFF' },
   count: { position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: '#FFFFFF', borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  peek: { backgroundColor: colors.canvasWarm, borderRadius: radius.card - 6, paddingHorizontal: 18, paddingVertical: 12, marginHorizontal: 12, marginBottom: 10, minHeight: 62, justifyContent: 'center' },
-  peekRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  peekTitle: { fontSize: 18 },
-  peekMeta: { fontSize: 15, color: colors.muted },
-  peekLink: { fontSize: 14, color: colors.brand },
+  peek: { flexDirection: 'row', alignItems: 'center', gap: 14, borderTopLeftRadius: 40, borderTopRightRadius: 40, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, paddingHorizontal: 18, paddingVertical: 16, marginHorizontal: 18, marginBottom: 6, minHeight: 72 },
+  peekChip: { minWidth: 54, height: 40, borderRadius: 20, paddingHorizontal: 12, alignItems: 'center', justifyContent: 'center' },
+  peekTitle: { fontSize: 19 },
+  peekMeta: { fontSize: 13, color: colors.muted, marginTop: 1 },
   snack: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 18, backgroundColor: colors.ink, paddingHorizontal: 22, height: 52, borderRadius: 26 },
   snackText: { color: '#FFFFFF', fontSize: 16 },
   snackUndo: { color: '#7FE3EA', fontSize: 15, letterSpacing: 1.2 },
 });
-
