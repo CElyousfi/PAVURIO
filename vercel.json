@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "python3 -m venv /tmp/sitevenv && /tmp/sitevenv/bin/pip install -q markdown pillow",
+  "buildCommand": "/tmp/sitevenv/bin/python tools/site/build.py",
+  "outputDirectory": "site/dist",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- site tools/site vercel.json assets/icon.png",
+  "headers": [
+    { "source": "/(.*)", "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }] },
+    { "source": "/img/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] },
+    { "source": "/fonts/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }
+  ]
+}
