@@ -43,6 +43,7 @@ const TOP_LINE: Record<CareType, (n: number, name: string) => string> = {
   play: (n, p) => tn(n, '{n} play session with {name}.', '{n} play sessions with {name}.', { name: p }),
   grooming: (n, p) => tn(n, '{n} grooming session. Looking sharp, {name}.', '{n} grooming sessions. Looking sharp, {name}.', { name: p }),
   litter: (n) => tn(n, '{n} litter cleanup. Thank you!', '{n} litter cleanups. Thank you!'),
+  medication: (n, p) => tn(n, '{n} medicine given to {name}, right on time.', '{n} medicines given to {name}, right on time.', { name: p }),
 };
 
 /** 'YYYY-MM-DD' → "10/24" (English) or "24/10" (French). */

@@ -4,7 +4,7 @@ import { Db } from './db';
  * Forward-only migrations keyed by PRAGMA user_version.
  * Instants are UTC epoch milliseconds (INTEGER). Days are computed in local time by the domain.
  */
-const MIGRATIONS: string[] = [
+export const MIGRATIONS: string[] = [
   // v1 — first vertical slice
   `
   CREATE TABLE IF NOT EXISTS settings (
@@ -150,6 +150,89 @@ const MIGRATIONS: string[] = [
     created_at INTEGER NOT NULL
   );
   CREATE INDEX IF NOT EXISTS idx_challenge_runs_pet ON challenge_runs (pet_id, created_at);
+  `,
+  // v4 — the owner's usual portion per care (the daily goal = times × portion), and Adventures:
+  // timed walks as their own records (the source of truth for the care event, memory and passport)
+  `
+  ALTER TABLE care_plans ADD COLUMN portion REAL;
+
+  CREATE TABLE IF NOT EXISTS walks (
+    id TEXT PRIMARY KEY NOT NULL,
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    status TEXT NOT NULL CHECK (status IN ('active', 'paused', 'completing', 'completed', 'discarded')),
+    started_at INTEGER NOT NULL,
+    paused_at INTEGER,
+    paused_ms INTEGER NOT NULL DEFAULT 0,
+    finished_at INTEGER,
+    duration_ms INTEGER,
+    tz TEXT,
+    weather_json TEXT,
+    weather_at INTEGER,
+    photo_uri TEXT,
+    note TEXT,
+    event_id TEXT,
+    memory_id TEXT,
+    sync_status TEXT NOT NULL DEFAULT 'local',
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_walks_pet_time ON walks (pet_id, started_at);
+
+  CREATE TABLE IF NOT EXISTS walk_badges (
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    badge TEXT NOT NULL,
+    walk_id TEXT,
+    unlocked_at INTEGER NOT NULL,
+    rule_version INTEGER NOT NULL,
+    PRIMARY KEY (pet_id, badge)
+  );
+  `,
+  // v5 — Pavurio Memories: the existing memories table is extended (never replaced). Photos live as
+  // files; \`media\` holds their durable location, thumbnail and capture date. A memory can include
+  // several pets through \`memory_pets\` (one file, one memory — no duplicates per pet).
+  `
+  ALTER TABLE memories ADD COLUMN media_id TEXT;
+  ALTER TABLE memories ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE memories ADD COLUMN featured INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE memories ADD COLUMN milestone TEXT;
+  ALTER TABLE memories ADD COLUMN walk_id TEXT;
+  ALTER TABLE memories ADD COLUMN captured_at INTEGER;
+  ALTER TABLE memories ADD COLUMN updated_at INTEGER;
+
+  CREATE TABLE IF NOT EXISTS media (
+    id TEXT PRIMARY KEY NOT NULL,
+    uri TEXT NOT NULL,
+    thumb_uri TEXT,
+    width INTEGER,
+    height INTEGER,
+    mime TEXT,
+    captured_at INTEGER,
+    sync_status TEXT NOT NULL DEFAULT 'local',
+    created_at INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS memory_pets (
+    memory_id TEXT NOT NULL REFERENCES memories(id) ON DELETE CASCADE,
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    PRIMARY KEY (memory_id, pet_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_memory_pets_pet ON memory_pets (pet_id, memory_id);
+  CREATE INDEX IF NOT EXISTS idx_memories_media ON memories (media_id);
+  CREATE INDEX IF NOT EXISTS idx_memories_walk ON memories (walk_id);
+
+  -- every memory belongs to at least its primary pet, whoever inserts it (walks, restore, editor)
+  CREATE TRIGGER IF NOT EXISTS trg_memories_primary_pet AFTER INSERT ON memories
+  BEGIN
+    INSERT OR IGNORE INTO memory_pets (memory_id, pet_id) VALUES (NEW.id, NEW.pet_id);
+  END;
+
+  INSERT OR IGNORE INTO memory_pets (memory_id, pet_id) SELECT id, pet_id FROM memories;
+  INSERT OR IGNORE INTO media (id, uri, mime, created_at)
+    SELECT 'legacy-' || id, photo_uri, 'image/jpeg', created_at FROM memories WHERE photo_uri IS NOT NULL AND kind != 'adventure';
+  UPDATE memories SET media_id = 'legacy-' || id WHERE photo_uri IS NOT NULL AND kind != 'adventure';
+  UPDATE memories SET milestone = 'custom' WHERE kind = 'milestone';
+  UPDATE memories SET walk_id = substr(id, 6) WHERE kind = 'adventure' AND id LIKE 'walk-%';
+  UPDATE memories SET updated_at = created_at;
   `,
 ];
 

@@ -44,40 +44,34 @@ export default function ChallengeScreen() {
   };
 
   return (
-    <View style={[styles.root, { backgroundColor: def.color }]}>
-      <View style={[styles.top, { paddingTop: insets.top + 8 }]}>
-        <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={44} />
-      </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 30 }}>
-        <View style={styles.hero}>
-          <Float amount={8}>
+    <View style={styles.root}>
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 120 }} showsVerticalScrollIndicator={false}>
+        <View style={[styles.header, { backgroundColor: def.color, paddingTop: insets.top + 64 }]}>
+          <View style={{ flex: 1 }}>
+            <T weight="black" style={styles.kicker}>
+              {tn(def.days, '{n}-DAY CHALLENGE', '{n}-DAY CHALLENGE')}
+              {def.pro ? ' · PRO' : ''}
+            </T>
+            <T weight="black" style={styles.title}>
+              {pick(def.title)}
+            </T>
+          </View>
+          <Float amount={6}>
             <PopIn>
-              <View style={[styles.art, ART.challenges[def.key] ? { backgroundColor: 'transparent' } : null]}>
-                {ART.challenges[def.key] ? <Scene source={ART.challenges[def.key]!} width={190} height={240} border={6} tilt={-3} /> : <CareIcon type={def.rule.kind === 'care' ? def.rule.type : 'meal'} size={170} />}
-              </View>
+              {ART.challenges[def.key] ? <Scene source={ART.challenges[def.key]!} width={120} height={152} border={5} tilt={4} /> : <CareIcon type={def.rule.kind === 'care' ? def.rule.type : 'meal'} size={120} />}
             </PopIn>
           </Float>
         </View>
-        <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.sheet}>
-          <T weight="black" style={{ color: def.color, fontSize: 12, letterSpacing: 1.6 }}>
-            {tn(def.days, '{n}-DAY CHALLENGE', '{n}-DAY CHALLENGE')}
-            {def.pro ? ' · PRO' : ''}
-          </T>
-          <T weight="black" style={styles.title}>
-            {pick(def.title)}
-          </T>
-          <T style={styles.body}>{pick(def.blurb)}</T>
-          <T style={[styles.body, { color: colors.muted, fontSize: 14 }]}>
-            {def.grace ? tn(def.grace, 'You can miss up to {n} day.', 'You can miss up to {n} days.') : t('Miss a day and it starts over — no pressure, you can try again any time.')}
-          </T>
+        <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.body}>
+          <T style={styles.text}>{pick(def.blurb)}</T>
 
           {live ? (
             <View style={{ marginTop: 22 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-                <T weight="black" style={{ fontSize: 16 }}>
+                <T weight="black" style={[styles.h, { marginTop: 0, color: def.color }]}>
                   {t('Your progress')}
                 </T>
-                <T weight="black" style={{ fontSize: 16, color: def.color }}>
+                <T weight="black" style={{ fontSize: 18, color: def.color }}>
                   {live.progress.done}/{live.progress.target}
                 </T>
               </View>
@@ -91,40 +85,76 @@ export default function ChallengeScreen() {
                   </View>
                 ))}
               </View>
-              <Bouncy onPress={quit} style={styles.ghost} accessibilityRole="button">
-                <T weight="black" style={{ color: colors.muted, fontSize: 14 }}>
-                  {t('Stop challenge')}
-                </T>
-              </Bouncy>
             </View>
-          ) : (
-            <Bouncy onPress={start} style={[styles.cta, { backgroundColor: locked ? colors.ink : def.color }]} accessibilityRole="button" testID="challenge-start">
-              <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 0.5 }}>
-                {locked ? t('Unlock with Pro') : doneBefore ? t('Do it again') : t('Start challenge')}
+          ) : null}
+
+          <T weight="black" style={[styles.h, { color: def.color }]}>
+            {t('What to do')}
+          </T>
+          <View style={styles.step}>
+            <View style={[styles.num, { backgroundColor: def.color }]}>
+              <T weight="black" style={styles.numText}>
+                1
               </T>
-            </Bouncy>
-          )}
+            </View>
+            <T style={[styles.text, { flex: 1, marginTop: 0 }]}>{pick(def.blurb)}</T>
+          </View>
+          <View style={styles.step}>
+            <View style={[styles.num, { backgroundColor: def.color }]}>
+              <T weight="black" style={styles.numText}>
+                2
+              </T>
+            </View>
+            <T style={[styles.text, { flex: 1, marginTop: 0 }]}>
+              {def.grace ? tn(def.grace, 'You can miss up to {n} day.', 'You can miss up to {n} days.') : t('Miss a day and it starts over — no pressure, you can try again any time.')}
+            </T>
+          </View>
           {doneBefore && !live ? (
-            <T weight="black" style={{ textAlign: 'center', color: def.color, marginTop: 12 }}>
+            <T weight="black" style={{ color: def.color, marginTop: 18 }}>
               ✓ {t('Completed before')}
             </T>
           ) : null}
+          {live ? (
+            <Bouncy onPress={quit} style={styles.ghost} accessibilityRole="button">
+              <T weight="black" style={{ color: colors.muted, fontSize: 14 }}>
+                {t('Stop challenge')}
+              </T>
+            </Bouncy>
+          ) : null}
         </Animated.View>
       </ScrollView>
+
+      <View pointerEvents="box-none" style={[styles.top, { paddingTop: insets.top + 8 }]}>
+        <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={44} />
+      </View>
+      {!live ? (
+        <View pointerEvents="box-none" style={[styles.ctaWrap, { bottom: insets.bottom + 18 }]}>
+          <Bouncy onPress={start} style={styles.cta} accessibilityRole="button" testID="challenge-start">
+            <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 1 }}>
+              {locked ? t('Unlock with Pro') : doneBefore ? t('Do it again') : t('START NOW')}
+            </T>
+          </Bouncy>
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: colors.canvas },
   top: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 18, position: 'absolute', top: 0, left: 0, right: 0, zIndex: 3 },
-  hero: { height: 320, alignItems: 'center', justifyContent: 'center', paddingTop: 50 },
-  art: { width: 220, height: 220, borderRadius: 110, backgroundColor: '#FFFFFF33', alignItems: 'center', justifyContent: 'center' },
-  sheet: { backgroundColor: '#FFFFFF', borderRadius: 34, marginHorizontal: 12, padding: 24, maxWidth: 560, alignSelf: 'center', width: '94%' },
-  title: { fontSize: 30, lineHeight: 35, marginTop: 6 },
-  body: { fontSize: 16, color: colors.inkSoft, lineHeight: 22, marginTop: 8 },
+  header: { flexDirection: 'row', alignItems: 'flex-end', gap: 12, paddingHorizontal: 24, paddingBottom: 28, borderBottomLeftRadius: 34, borderBottomRightRadius: 34 },
+  kicker: { color: '#FFFFFFB0', fontSize: 12, letterSpacing: 1.6 },
+  title: { fontSize: 32, lineHeight: 37, marginTop: 6, color: '#FFFFFF' },
+  body: { paddingHorizontal: 24, paddingTop: 20, maxWidth: 560, alignSelf: 'center', width: '100%' },
+  h: { fontSize: 24, marginTop: 26 },
+  text: { fontSize: 16, color: colors.inkSoft, lineHeight: 23, marginTop: 6 },
+  step: { flexDirection: 'row', alignItems: 'flex-start', gap: 14, marginTop: 14 },
+  num: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  numText: { color: '#FFFFFF', fontSize: 15 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 },
   day: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  cta: { marginTop: 24, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
+  ctaWrap: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  cta: { height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.ink, paddingHorizontal: 44, minWidth: 220 },
   ghost: { marginTop: 18, alignSelf: 'center', paddingHorizontal: 18, paddingVertical: 10 },
 });

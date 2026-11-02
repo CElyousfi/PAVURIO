@@ -1,16 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { Easing, FadeIn, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
-import { CARE, CareType, careAllowedFor, clampAmount, isCareType } from '../../domain/care';
+import Animated, { Easing, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { CARE, CareType, careAllowedFor, clampAmount, isCareType, unitLabel } from '../../domain/care';
+import { dailyGoal, givenToday, portionOf } from '../../domain/progress';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
-import { CareEvent, ValidationError, getEvent, logCare, updateEvent, voidEvent } from '../../data/repo';
-import { useApp } from '../../state/AppState';
+import { CareEvent, ValidationError, getEvent, logCare, updateEvent } from '../../data/repo';
+import { removeCareEvent, walkIdFromEvent } from '../../data/walkRepo';
+import { useApp, useDay } from '../../state/AppState';
 import { confirmOccurrence } from '../../features/careLink';
-import { CareIcon } from '../../ui/CareIcon';
-import { CircleButton, Icon, Pill, SoftPill, T } from '../../ui/primitives';
+import { Vessel } from '../../ui/Vessel';
+import { Sheet } from '../../ui/forms';
+import { CircleButton, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
 import { errorFeedback, tapFeedback } from '../../native/haptics';
 import { motionReduced, springs } from '../../ui/motion';
@@ -42,7 +45,7 @@ function timeOptions(dayKey: string, now: Date): TimeOption[] {
 
 export default function LogCard() {
   const params = useLocalSearchParams<{ type: string; day?: string; eventId?: string; scheduleId?: string; occ?: string; ox?: string; oy?: string; os?: string }>();
-  const { pet, db, bump, signalLogged, markLogged, schedules } = useApp();
+  const { pet, db, bump, signalLogged, markLogged, schedules, plan, portions } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -53,7 +56,9 @@ export default function LogCard() {
   const tpl = type ? CARE[type] : null;
   const spec = tpl?.amount ?? null;
 
-  const [amount, setAmount] = useState<number>(spec?.default ?? 0);
+  // starts at the owner's usual portion (set with the plan), not a generic default
+  const [amount, setAmount] = useState<number>(type && spec ? portionOf(type, portions) : 0);
+  const { events: dayEvents } = useDay(dayKey);
   const [occurredAt, setOccurredAt] = useState<number>(() => defaultOccurredAt(dayKey));
   const [timeLabel, setTimeLabel] = useState<string>(isToday(dayKey) ? t('Now') : t('Noon'));
   const [note, setNote] = useState('');
@@ -70,14 +75,17 @@ export default function LogCard() {
         router.back();
         return;
       }
+      // a timed walk is edited as its adventure (duration, note, photo stay in step everywhere)
+      const walkId = walkIdFromEvent(e);
+      if (walkId) {
+        router.replace({ pathname: '/adventure', params: { id: walkId } });
+        return;
+      }
       setEditing(e);
       if (e.amount != null) setAmount(e.amount);
       setOccurredAt(e.occurredAt);
       setTimeLabel(formatClock(e.occurredAt));
-      if (e.note) {
-        setNote(e.note);
-        setShowNote(true);
-      }
+      if (e.note) setNote(e.note);
     });
   }, [db, params.eventId]);
 
@@ -168,7 +176,7 @@ export default function LogCard() {
     setError(null);
     try {
       if (editing) {
-        await updateEvent(db, editing.id, { amount: spec ? amount : undefined, occurredAt, note: showNote ? note : null });
+        await updateEvent(db, editing.id, { amount: spec ? amount : undefined, occurredAt, note: note.trim() ? note : null });
         bump();
         router.back();
         return;
@@ -179,7 +187,7 @@ export default function LogCard() {
         type,
         occurredAt,
         amount: spec ? amount : null,
-        note: showNote ? note : null,
+        note: note.trim() ? note : null,
         mutationId: mutationId.current,
       });
       // 2) tick the matching scheduled occurrence (never blocks the save) …
@@ -202,97 +210,83 @@ export default function LogCard() {
 
   const remove = async () => {
     if (!editing) return;
-    await voidEvent(db, editing.id);
+    setShowNote(false);
+    await removeCareEvent(db, editing.id);
     bump();
-    router.back();
+    // let the sheet's Modal close before leaving the screen
+    setTimeout(() => router.back(), 220);
   };
 
-  const level = spec ? amount / (spec.presets[spec.presets.length - 1] * 1.25) : 0.7;
-  const objSize = Math.min(W * 0.86, height * 0.4, 360);
-  const minuteBased = spec?.unit === 'min';
+  // picture level: what's already been given today plus this amount, against the owner's own daily goal
+  // (times a day × their portion, from the plan) — never a generic scale
+  const others = type ? dayEvents.filter((e) => e.type === type && e.id !== editing?.id) : [];
+  const goal = type ? (spec ? dailyGoal(type, plan, portions) : Math.max(1, plan[type] ?? 0)) : 1;
+  const before = type ? givenToday(type, others, portions) : 0;
+  const after = before + (spec ? amount : 1);
+  const level = Math.max(0, Math.min(1, after / goal));
+  const objSize = Math.min(W * 0.9, height * 0.46, 400);
+  const steps = spec && type ? [...new Set([...spec.presets, portionOf(type, portions)])].sort((a, b) => a - b) : [];
+  const prevPreset = spec ? [...steps].reverse().find((p) => p < amount) : undefined;
+  const nextPreset = spec ? steps.find((p) => p > amount) : undefined;
+  const u = (n: number) => (spec ? (spec.unit === 'min' ? ' min' : spec.unit === 'dose' ? ` ${unitLabel('dose', n)}` : spec.unit) : '');
+  const fmt = (n: number) => String(Math.round(n * 100) / 100);
+  const showDay = !!editing || !isToday(dayKey);
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.root}>
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
-        <View style={[styles.col, { width: W }]}>
-          <View style={styles.topRow}>
+      <View style={[styles.col, { width: W, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 22 }]}>
+        <View style={styles.topRow}>
+          {showDay ? (
             <View style={[styles.dayChip, { backgroundColor: tpl.tint }]}>
               <T weight="xbold" style={{ color: tpl.color, fontSize: 14 }}>
-                {pet.name} · {formatDayTitle(dayKey)}
+                {editing ? t('Edit {label}', { label: tpl.label.toLowerCase() }) : `${pet.name} · ${formatDayTitle(dayKey)}`}
               </T>
             </View>
-            <CircleButton icon="close" label={t('Close without saving')} onPress={() => !leaving && router.back()} />
-          </View>
+          ) : (
+            <View />
+          )}
+          <CircleButton icon="close" label={t('Close without saving')} onPress={() => !leaving && router.back()} />
+        </View>
 
-          <T style={styles.hint}>{editing ? t('Edit {label}', { label: tpl.label.toLowerCase() }) : tpl.hint}</T>
+        <View style={styles.objectWrap}>
+          <Animated.View ref={objRef} collapsable={false} onLayout={onObjLayout} style={[objStyle, !placed && { opacity: 0 }]} accessibilityLabel={tpl.hint}>
+            <Vessel type={type} color={tpl.color} level={level} size={objSize} onStep={spec ? nudge : undefined} />
+          </Animated.View>
+        </View>
 
-          <View style={[styles.objectWrap, { height: objSize + 10 }]}>
-            <Animated.View ref={objRef} collapsable={false} onLayout={onObjLayout} style={[objStyle, !placed && { opacity: 0 }]}>
-              <CareIcon type={type} size={objSize} level={level} ring={minuteBased} />
-            </Animated.View>
-            {spec ? (
-              <Animated.View entering={motionReduced() ? undefined : FadeIn.delay(200).duration(220)} style={[styles.stepper, { backgroundColor: tpl.tint, top: objSize * 0.6 - 46, right: objSize * 0.02 }]}>
-                <Pressable accessibilityRole="button" accessibilityLabel={t('More, add {n} {unit}', { n: spec.step, unit: spec.unit })} onPress={() => nudge(1)} hitSlop={8} style={styles.stepHit} testID="amount-up">
-                  <Icon name="up" size={26} />
-                </Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel={t('Less, remove {n} {unit}', { n: spec.step, unit: spec.unit })} onPress={() => nudge(-1)} hitSlop={8} style={styles.stepHit} testID="amount-down">
-                  <Icon name="down" size={26} />
-                </Pressable>
-              </Animated.View>
-            ) : null}
-          </View>
-
-          <Animated.View entering={motionReduced() ? undefined : FadeInUp.delay(hasOrigin ? 120 : 60).duration(260).springify().damping(18)} style={{ alignSelf: 'stretch', alignItems: 'center' }}>
+        <Animated.View entering={motionReduced() ? undefined : FadeInUp.delay(hasOrigin ? 120 : 60).duration(260).springify().damping(18)} style={{ alignSelf: 'stretch', alignItems: 'center' }}>
           {spec ? (
-            <>
+            <View style={styles.amountRow}>
+              <Pressable accessibilityRole="button" accessibilityLabel={prevPreset != null ? `${fmt(prevPreset)}${u(prevPreset)}` : ''} disabled={prevPreset == null} onPress={() => prevPreset != null && setAmount(prevPreset)} style={styles.side}>
+                <T weight="black" style={styles.sideText} numberOfLines={1}>
+                  {prevPreset != null ? `${fmt(prevPreset)}${u(prevPreset)}` : ''}
+                </T>
+              </Pressable>
               <T weight="black" style={styles.amount} accessibilityLiveRegion="polite" testID="amount">
-                {amount}
+                {fmt(amount)}
                 <T weight="black" style={styles.unit}>
-                  {' '}
-                  {spec.unit}
+                  {u(amount)}
                 </T>
               </T>
-              <View style={styles.chips}>
-                {spec.presets.map((p) => (
-                  <Chip key={p} label={`${p}`} on={p === amount} color={tpl.color} tint={tpl.tint} onPress={() => setAmount(p)} />
-                ))}
-              </View>
-            </>
+              <Pressable accessibilityRole="button" accessibilityLabel={nextPreset != null ? `${fmt(nextPreset)}${u(nextPreset)}` : ''} disabled={nextPreset == null} onPress={() => nextPreset != null && setAmount(nextPreset)} style={styles.side}>
+                <T weight="black" style={styles.sideText} numberOfLines={1}>
+                  {nextPreset != null ? `${fmt(nextPreset)}${u(nextPreset)}` : ''}
+                </T>
+              </Pressable>
+            </View>
           ) : (
-            <T weight="black" style={[styles.amount, { fontSize: 34 }]}>
+            <T weight="black" style={[styles.amount, { fontSize: 30, lineHeight: 38 }]}>
               {t('Litter box cleaned')}
             </T>
           )}
-
-          <View style={[styles.chips, { marginTop: 14 }]}>
-            {options.map((o) => (
-              <Chip
-                key={o.label}
-                label={o.label}
-                on={timeLabel === o.label}
-                color={colors.ink}
-                tint={colors.line}
-                onPress={() => {
-                  setOccurredAt(o.at);
-                  setTimeLabel(o.label);
-                }}
-              />
-            ))}
+          <T style={styles.when}>{timeLabel === t('Now') ? formatClock(occurredAt) : `${timeLabel} · ${formatClock(occurredAt)}`}</T>
+          <View style={[styles.goalChip, { backgroundColor: tpl.tint }]} testID="goal">
+            <T weight="xbold" style={{ color: tpl.color, fontSize: 13 }}>
+              {spec
+                ? t('{given} of {goal} today', { given: `${fmt(after)}${u(after)}`.trim(), goal: `${fmt(goal)}${u(goal)}`.trim() })
+                : t('{given} of {goal} today', { given: String(after), goal: String(goal) })}
+            </T>
           </View>
-          <T style={styles.when}>{t('at {time}', { time: formatClock(occurredAt) })}</T>
-
-          {showNote ? (
-            <TextInput
-              value={note}
-              onChangeText={setNote}
-              placeholder={t('Add a note (optional)')}
-              placeholderTextColor={colors.faint}
-              style={styles.note}
-              maxLength={500}
-              multiline
-              accessibilityLabel={t('Note')}
-            />
-          ) : null}
 
           {error ? (
             <T style={styles.error} accessibilityLiveRegion="assertive">
@@ -301,28 +295,41 @@ export default function LogCard() {
           ) : null}
 
           <View style={styles.ctaRow}>
-            <Pill
-              label={editing ? t('SAVE CHANGES') : tpl.cta}
-              color={tpl.color}
-              onPress={save}
-              loading={saving}
-              style={{ flex: 1, maxWidth: 300 }}
-              testID="save-care"
-            />
-            <CircleButton
-              icon="more"
-              label={showNote ? t('Hide note') : t('Add a note')}
-              onPress={() => setShowNote((s) => !s)}
-              size={56}
-              style={{ backgroundColor: tpl.tint }}
-            />
+            <Pill label={editing ? t('SAVE CHANGES') : tpl.cta} color={tpl.color} onPress={save} loading={saving} style={{ minWidth: 210 }} testID="save-care" />
+            <CircleButton icon="more" label={t('Time and note')} onPress={() => setShowNote(true)} size={52} style={{ backgroundColor: tpl.tint, shadowOpacity: 0, elevation: 0 }} testID="log-more" />
           </View>
-          {editing ? (
-            <SoftPill label={t('Delete this entry')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} style={{ alignSelf: 'center', marginTop: 16 }} />
-          ) : null}
-          </Animated.View>
+        </Animated.View>
+      </View>
+
+      <Sheet visible={showNote} onClose={() => setShowNote(false)} title={t('When and notes')}>
+        <View style={[styles.chips, { marginTop: 4 }]}>
+          {options.map((o) => (
+            <Chip
+              key={o.label}
+              label={o.label}
+              on={timeLabel === o.label}
+              color={colors.ink}
+              tint={colors.line}
+              onPress={() => {
+                setOccurredAt(o.at);
+                setTimeLabel(o.label);
+              }}
+            />
+          ))}
         </View>
-      </ScrollView>
+        <TextInput
+          value={note}
+          onChangeText={setNote}
+          placeholder={t('Add a note (optional)')}
+          placeholderTextColor={colors.faint}
+          style={styles.note}
+          maxLength={500}
+          multiline
+          accessibilityLabel={t('Note')}
+        />
+        <Pill label={t('Done')} onPress={() => setShowNote(false)} color={tpl.color} style={{ marginTop: 16 }} />
+        {editing ? <SoftPill label={t('Delete this entry')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} style={{ alignSelf: 'center', marginTop: 12 }} /> : null}
+      </Sheet>
     </KeyboardAvoidingView>
   );
 }
@@ -347,33 +354,31 @@ function Chip({ label, on, color, tint, onPress }: { label: string; on: boolean;
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
-  scroll: { flexGrow: 1, alignItems: 'center' },
+  root: { flex: 1, backgroundColor: colors.canvas, alignItems: 'center' },
   col: { flex: 1, alignItems: 'center', paddingHorizontal: 20 },
-  topRow: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  topRow: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52 },
   dayChip: { paddingHorizontal: 14, height: 36, borderRadius: 18, justifyContent: 'center' },
-  hint: { fontSize: 17, color: colors.muted, marginTop: 18 },
-  objectWrap: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginTop: 0 },
-  stepper: { position: 'absolute', borderWidth: 3, borderColor: '#FFFFFF', width: 64, height: 92, borderRadius: 32, alignItems: 'center', justifyContent: 'center', opacity: 0.96 },
-  stepHit: { width: 64, height: 46, alignItems: 'center', justifyContent: 'center' },
-  amount: { fontSize: 56, lineHeight: 64, color: colors.ink, marginTop: 4 },
-  unit: { fontSize: 30, color: colors.inkSoft, fontFamily: font.black },
+  objectWrap: { flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' },
+  amountRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
+  side: { flex: 1, alignItems: 'center', paddingVertical: 8 },
+  sideText: { fontSize: 22, color: colors.line },
+  amount: { fontSize: 52, lineHeight: 60, color: colors.ink },
+  unit: { fontSize: 52, color: colors.ink },
   chips: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 8 },
   chip: { paddingHorizontal: 14, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  when: { color: colors.muted, marginTop: 8, fontSize: 14 },
+  when: { color: colors.faint, marginTop: 2, fontSize: 14 },
+  goalChip: { marginTop: 8, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 12 },
   note: {
     alignSelf: 'stretch',
     marginTop: 14,
     minHeight: 56,
     borderRadius: 18,
-    backgroundColor: colors.canvasWarm,
-    borderWidth: 1.5,
-    borderColor: colors.line,
+    backgroundColor: colors.card,
     padding: 14,
     fontFamily: font.bold,
     fontSize: 16,
     color: colors.ink,
   },
   error: { color: colors.danger, marginTop: 12, textAlign: 'center' },
-  ctaRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 22, alignSelf: 'stretch', justifyContent: 'center' },
+  ctaRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 18, justifyContent: 'center' },
 });

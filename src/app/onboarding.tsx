@@ -8,7 +8,7 @@ import { cloud } from '../cloud/firebase';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, defaultAppearance } from '../domain/appearance';
-import { Plan, computeProgress } from '../domain/progress';
+import { Plan, Portions, computeProgress, portionOf } from '../domain/progress';
 import { Pet, ValidationError, createPet, defaultPlan, logCare } from '../data/repo';
 import { createSchedule } from '../data/careRepo';
 import { useApp } from '../state/AppState';
@@ -37,9 +37,22 @@ function suggestions(species: Species, plan: Plan): Suggestion[] {
   if (meals > 0) out.push({ key: 'meal', type: 'meal', title: meals === 1 ? t('Dinner') : t('Meals'), times: meals === 1 ? ['18:00'] : meals === 2 ? ['08:00', '18:00'] : ['08:00', '13:00', '18:00'], on: true });
   if (species === 'dog' && (plan.walk ?? 0) > 0) out.push({ key: 'walk', type: 'walk', title: t('Walk'), times: (plan.walk ?? 0) >= 2 ? ['07:30', '18:30'] : ['18:30'], on: true });
   if (species === 'cat' && (plan.litter ?? 0) > 0) out.push({ key: 'litter', type: 'litter', title: t('Scoop the litter'), times: ['09:00'], on: true });
-  out.push({ key: 'medication', type: 'medication', title: t('Medication'), times: ['20:00'], on: false });
+  const meds = plan.medication ?? 0;
+  out.push({ key: 'medication', type: 'medication', title: t('Medicine'), times: meds >= 3 ? ['08:00', '14:00', '20:00'] : meds === 2 ? ['08:00', '20:00'] : ['20:00'], on: meds > 0 });
   return out;
 }
+
+/** the welcome pet colours in band by band, like Waterllama's llama */
+const WELCOME_STACK = [
+  { color: CARE.meal.color, from: 0, to: 0.24 },
+  { color: CARE.water.color, from: 0.24, to: 0.46 },
+  { color: CARE.walk.color, from: 0.46, to: 0.7 },
+  { color: CARE.play.color, from: 0.7, to: 1 },
+];
+const WELCOME_STACK_CAT = [
+  { color: CARE.water.color, from: 0, to: 0.3 },
+  { color: CARE.meal.color, from: 0.3, to: 0.62 },
+];
 
 type Step = 'welcome' | 'species' | 'name' | 'look' | 'dates' | 'plan' | 'first' | 'reminders';
 const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'dates', 'plan', 'first', 'reminders'];
@@ -62,6 +75,7 @@ export default function Onboarding() {
   const [name, setName] = useState('');
   const [appearance, setAppearance] = useState<Appearance>(defaultAppearance('dog'));
   const [plan, setPlan] = useState<Plan>(defaultPlan('dog'));
+  const [portions, setPortions] = useState<Portions>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<Pet | null>(null);
@@ -111,7 +125,7 @@ export default function Onboarding() {
     setSaving(true);
     setError(null);
     try {
-      const pet = await createPet(db, { species, name, appearance, plan, birthDate, adoptionDate });
+      const pet = await createPet(db, { species, name, appearance, plan, portions, birthDate, adoptionDate });
       setCreated(pet);
       setRoutines(suggestions(species, plan));
       await reload();
@@ -129,7 +143,7 @@ export default function Onboarding() {
   const logFirst = async () => {
     if (!created || firstLogged) return;
     try {
-      await logCare(db, { petId: created.id, type: firstType, occurredAt: Date.now(), mutationId: newId() });
+      await logCare(db, { petId: created.id, type: firstType, occurredAt: Date.now(), amount: CARE[firstType].amount ? portionOf(firstType, portions) : undefined, mutationId: newId() });
       setFirstLogged(firstType);
       bump();
       successFeedback();
@@ -146,7 +160,7 @@ export default function Onboarding() {
     try {
       if (withReminders) {
         for (const r of routines.filter((x) => x.on)) await createSchedule(db, { petId: created.id, type: r.type, title: r.title, times: r.times, remind: true });
-        await requestPermission().catch(() => null);
+        await requestPermission(db).catch(() => null);
       }
       await reload();
       if (adding) router.dismissTo('/');
@@ -285,7 +299,15 @@ export default function Onboarding() {
           {ART.ui.planHeader != null ? <Image source={ART.ui.planHeader} style={{ width: 240, height: 160, marginTop: 6 }} resizeMode="contain" /> : null}
           <T style={styles.sub}>{t('You decide what a good day looks like. Each thing you log colors in a bit more of {name}.', { name: displayName })}</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
-            <PlanEditor species={species} plan={plan} onChange={setPlan} />
+            <PlanEditor
+              species={species}
+              plan={plan}
+              portions={portions}
+              onChange={(p, por) => {
+                setPlan(p);
+                setPortions(por);
+              }}
+            />
           </ScrollView>
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
@@ -309,7 +331,8 @@ export default function Onboarding() {
               species={created.species}
               appearance={created.appearance}
               size={petSize * 0.9}
-              progress={firstLogged ? Math.max(0.08, computeProgress(plan, [{ type: firstType, occurredAt: Date.now() }]).ratio) : 0}
+              progress={firstLogged ? Math.max(0.12, computeProgress(plan, [{ type: firstType, occurredAt: Date.now() }], portions).level) : 0}
+              stack={[{ color: CARE[firstType].color, from: 0, to: 1 }]}
               clip={clip}
               onClipEnd={() => setClip(null)}
               reduceMotion={reduceMotion}
@@ -504,7 +527,7 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
             </View>
             <View style={styles.hero}>
               {i === 0 ? (
-                <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} reduceMotion={reduceMotion} interactive active={page === 0} />
+                <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} stack={WELCOME_STACK} reduceMotion={reduceMotion} interactive active={page === 0} />
               ) : i === 1 ? (
                 <View style={{ alignItems: 'center' }}>
                   <NotifPreview
@@ -514,7 +537,7 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
                     play={page === 1}
                     style={{ marginBottom: 10, width: size + 20 }}
                   />
-                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={1} reduceMotion={reduceMotion} active={page === 1} />
+                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={0.62} stack={WELCOME_STACK_CAT} reduceMotion={reduceMotion} active={page === 1} />
                 </View>
               ) : (
                 <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={1} clip={page === 2 ? clip : null} onClipEnd={() => setClip(page === 2 ? { name: 'celebrate', nonce: Date.now() } : null)} reduceMotion={reduceMotion} active={page === 2} />

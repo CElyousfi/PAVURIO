@@ -1,0 +1,557 @@
+{
+"9f0d0dd8-9211-4c7e-a34c-1f80ace75da0": [
+"Hydration onboarding & first-sip flow",
+"Welcome carousel - screen 1",
+""
+],
+"29f9ae52-0d59-46dd-b46d-1acf091815c0": [
+"Hydration onboarding & first-sip flow",
+"Welcome carousel - screen 2",
+""
+],
+"970e1855-03e4-41e7-8d48-4794c1ec59f5": [
+"Hydration onboarding & first-sip flow",
+"Welcome carousel - screen 3 (confetti)",
+""
+],
+"e22082eb-e6f2-48bc-9a01-8a25709147eb": [
+"Hydration onboarding & first-sip flow",
+"Choose your units modal",
+""
+],
+"74a35ded-7210-4abc-84bc-26f880e574ff": [
+"Hydration onboarding & first-sip flow",
+"Add your first sip tutorial overlay",
+""
+],
+"e4818567-3a64-47b6-8846-6dd4d4d6fa90": [
+"Hydration onboarding & first-sip flow",
+"Cup volume control (initial)",
+""
+],
+"83059a82-5443-486f-ba4b-1dcbf3461e11": [
+"Hydration onboarding & first-sip flow",
+"Cup confirm animation",
+""
+],
+"a2964e29-198e-4baa-907f-fe3ca332f31a": [
+"Hydration onboarding & first-sip flow",
+"Illustration fills to reflect intake",
+""
+],
+"9b090ae7-37a6-475e-b26e-d673f9c5e418": [
+"Hydration onboarding & first-sip flow",
+"Smart Reminders intro",
+""
+],
+"cc0c4c57-c5d1-4d98-a70b-efeecafbbdb2": [
+"Hydration onboarding & first-sip flow",
+"iOS notifications permission prompt",
+""
+],
+"6daf43e9-4ecd-47ef-b168-7bdccdd13122": [
+"Hydration onboarding & first-sip flow",
+"Premium upsell header",
+""
+],
+"cbfdebb9-e2e4-4d73-8654-ab7d4931224c": [
+"Hydration onboarding & first-sip flow",
+"Feature carousel & benefits list",
+""
+],
+"aa251e86-6dcc-41f8-ab3f-315fdb3761c4": [
+"Hydration onboarding & first-sip flow",
+"Purchase loading / spinner",
+""
+],
+"611d6f8c-1de8-4230-b0e4-d0cd0d56cdd4": [
+"Hydration onboarding & first-sip flow",
+"Apple Pay / subscription confirmation",
+""
+],
+"9c88d0d0-2223-429c-b64d-7b9b958a3424": [
+"Hydration onboarding & first-sip flow",
+"Purchase success modal",
+""
+],
+"09a7e62a-dead-442a-9d93-0e1d4f9cfbbb": [
+"Hydration onboarding & first-sip flow",
+"Main hydration dashboard (first run)",
+""
+],
+"8dfa84fe-a157-463b-a359-2d47d7c8d587": [
+"Hydration onboarding & first-sip flow",
+"Beverage quick-add bar",
+""
+],
+"5d3bf9fc-3ffd-4500-86b9-8504093b2456": [
+"Hydration onboarding & first-sip flow",
+"Persistent controls & state",
+""
+],
+"934abc58-5332-4675-85fa-bff5ad845e5a": [
+"Hydration onboarding & first-sip flow",
+"Error / loading fallbacks (observed states)",
+""
+],
+"4bf28716-ec69-4e38-a695-9314b65180c8": [
+"Hydration onboarding & first-sip flow",
+"Post-onboarding home state",
+""
+],
+"c2e8418c-d4fd-4285-9974-0ba7eca3aa5f": [
+"Hydration Character Selector",
+"Character Detail Modal \u2014 Bear Bernard",
+""
+],
+"c0c72bce-b2cd-4c73-a555-3c8d01f2d11b": [
+"Hydration Character Selector",
+"Select Character \u2014 Giraffe Giovanni",
+""
+],
+"a8d9c97c-4db6-473c-807f-21f8565cbf75": [
+"Hydration Character Selector",
+"Dashboard with Applied Character",
+""
+],
+"9b6ee9af-626e-436f-bb02-bafc655e2215": [
+"Add beverage and set volume",
+"Drink Card \u2014 Default Volume",
+""
+],
+"a645fc4a-9c73-4ec0-ad2f-f656a39f541b": [
+"Add beverage and set volume",
+"Adjust Drink Volume (gesture)",
+""
+],
+"f7c565f0-7edf-4758-a932-a17c0079f429": [
+"Add beverage and set volume",
+"Custom Amount Entry",
+""
+],
+"484a97f5-dc64-4131-be74-1a6cea5c5b54": [
+"Add beverage and set volume",
+"Confirm & Update Home",
+""
+],
+"62815ae0-ea48-4331-a813-87832d3e4a90": [
+"Hydration Summary",
+"Daily Overview (Days tab)",
+""
+],
+"c6e77758-a6f5-47d2-98de-9c815e8a493a": [
+"Hydration Summary",
+"Weekly Overview (Weeks tab)",
+""
+],
+"6edfd3f1-add0-459b-a2b2-40696934efd2": [
+"Share celebration poster",
+"Celebration landing",
+""
+],
+"6cb923df-a504-4f55-9b3b-f0ab02deb7fb": [
+"Share celebration poster",
+"Poster preview (full-screen)",
+""
+],
+"48e5af9a-a2c1-45be-8d71-b9eccd9680b8": [
+"Share celebration poster",
+"Share target selector",
+""
+],
+"1dcdc290-49d0-49de-9b68-3c53fa4367bf": [
+"Share celebration poster",
+"External composer (Instagram)",
+""
+],
+"c0a471d8-0429-4ac1-a948-d30820365b9f": [
+"Hydration goal setup",
+"Calculate goal (summary)",
+""
+],
+"3a05b997-97b7-4cd7-aceb-06a325868def": [
+"Hydration goal setup",
+"Sex selection modal",
+""
+],
+"e9a56f94-9049-4636-b2c5-8b4cf48cb58c": [
+"Hydration goal setup",
+"Sex selected (return)",
+""
+],
+"e7837c1f-fde5-4254-8997-02700cba4aab": [
+"Hydration goal setup",
+"Weight picker modal",
+""
+],
+"99bc1fda-1c81-4600-b89e-c2247933ed35": [
+"Hydration goal setup",
+"Recommended goal recalculated",
+""
+],
+"b9096ef2-62f2-4d00-a445-a1822f818f14": [
+"Hydration goal setup",
+"Weather selection modal",
+""
+],
+"bbf0b4ad-f4e5-4a97-9527-d6d881a6bbdd": [
+"Hydration goal setup",
+"Recommendation animation update",
+""
+],
+"281e02d9-e9bf-4651-8653-a4ec6da10803": [
+"Hydration goal setup",
+"Custom goal numeric entry open",
+""
+],
+"20338931-935b-49a5-a1dd-66578db129ae": [
+"Hydration goal setup",
+"Custom value typed and saved",
+""
+],
+"da6e69e2-f963-464a-b2c5-041e2b8b9207": [
+"Hydration goal setup",
+"Main screen with final custom goal",
+""
+],
+"4e8a9ba9-835a-4d90-9cc2-4d43b5ecfded": [
+"Hydration goal setup",
+"Confirm and exit",
+""
+],
+"b22a31ef-2545-466d-8d8b-7f9d59f63517": [
+"Subscription Checkout & Confirmation",
+"Pricing options displayed",
+""
+],
+"38de8274-ecbb-4979-843d-93b1f56761af": [
+"Subscription Checkout & Confirmation",
+"Select free-trial option",
+""
+],
+"a67afcb3-c99d-4395-8a5f-9f33a2978415": [
+"Share Card to Social",
+"Share Options / Card Preview",
+""
+],
+"d9c3ecd0-422c-4b63-a3d8-0c1a1885568b": [
+"Share Card to Social",
+"iOS Messages Composer (example)",
+""
+],
+"d7efe4b5-995b-4e9a-b67a-522f95f12b52": [
+"Custom Beverage Creation",
+"Beverage Library",
+""
+],
+"84eb35a3-7bdb-493d-9c5e-cc1b28b17e60": [
+"Custom Beverage Creation",
+"New Beverage Editor",
+""
+],
+"dc7850f2-64fc-4ec8-b168-52066e602f33": [
+"Custom Beverage Creation",
+"Similar Beverage Selection",
+""
+],
+"f6c77e47-cd20-49b8-bff5-8b3456679974": [
+"Custom Beverage Creation",
+"Beverage Name Entry",
+""
+],
+"60e5eb05-7a66-41d7-8259-7e6f3b08faed": [
+"Custom Beverage Creation",
+"Name Confirmation",
+""
+],
+"28a59d1c-64ff-49c9-86a6-c34ee507c022": [
+"Custom Beverage Creation",
+"Editor With Custom Name",
+""
+],
+"d78589f6-ba81-4ad3-a23d-a9dfefa8c75b": [
+"Custom Beverage Creation",
+"Size Selection",
+""
+],
+"d531fbf1-c90c-489f-8cb3-a8cd20d7454e": [
+"Custom Beverage Creation",
+"Updated Beverage Details",
+""
+],
+"3d2957b8-618f-4bd8-bead-6ef7db8cf733": [
+"Custom Beverage Creation",
+"Icon Selection",
+""
+],
+"e1ffe43d-138b-48c0-a909-45264fe90087": [
+"Custom Beverage Creation",
+"Selected Beverage Icon",
+""
+],
+"714538e0-09e3-403b-93a9-d60139e0f809": [
+"Custom Beverage Creation",
+"Editor With New Icon",
+""
+],
+"1f542bfd-770a-4cb3-80f0-5ee5e75d8ab3": [
+"Custom Beverage Creation",
+"Color Selection",
+""
+],
+"f66893b0-2fe6-4f64-b6b0-559b74960f9c": [
+"Custom Beverage Creation",
+"Editor With Custom Color",
+""
+],
+"aac86787-34f7-41b9-bc9b-2f88534c94e1": [
+"Custom Beverage Creation",
+"Animation Selection",
+""
+],
+"a96c3235-23b8-4c70-b415-2da3048fd062": [
+"Custom Beverage Creation",
+"Hydration Selection",
+""
+],
+"b516c134-fdf8-438a-89c8-881339b340dc": [
+"Custom Beverage Creation",
+"Alcohol Selection",
+""
+],
+"58310b6f-e27b-4781-a784-9fdfd4442b95": [
+"Custom Beverage Creation",
+"Alcohol Information",
+""
+],
+"00d2d474-d031-4bd2-9787-6a03e3756fb7": [
+"Custom Beverage Creation",
+"Completed Beverage Editor",
+""
+],
+"c987702c-764b-4f5f-ba8f-18b519ed7311": [
+"Custom Beverage Creation",
+"Saved Beverage Library",
+""
+],
+"50452cd8-bc01-4f8a-aff6-24b853a4e79d": [
+"Custom Beverage Creation",
+"Final Beverage Record",
+""
+],
+"d61af236-d265-49e3-92ac-7913f4bc2b36": [
+"Add missed beverage",
+"Day detail (initial)",
+""
+],
+"ef4f43cb-eb75-4af8-9d98-20dd4d46b3a7": [
+"Add missed beverage",
+"Add modal \u2014 time picker + beverage list",
+""
+],
+"8f4d31f1-b590-4b5e-8a51-01d1291c1f17": [
+"Add missed beverage",
+"Change time and select drink",
+""
+],
+"ef50a767-558b-45ed-a16f-2e908589b5c3": [
+"Add missed beverage",
+"Beverage detail \u2014 size adjust",
+""
+],
+"65477e18-b119-4bfd-8344-a548d67094a6": [
+"Add missed beverage",
+"Day detail (updated)",
+""
+],
+"42107a9a-c91c-4c0d-a7e4-128e8b598837": [
+"Supporter donation & unlock",
+"Feed - Main / Cards",
+""
+],
+"eacbe235-840c-4039-8ba4-64305d5eedf2": [
+"Supporter donation & unlock",
+"Supporter Card - Options",
+""
+],
+"5cacd488-816c-4fa7-a6cc-78c7fdeb9811": [
+"Supporter donation & unlock",
+"Select Monthly Frequency",
+""
+],
+"851576b2-9cda-462c-a2ce-7742db098ca9": [
+"Supporter donation & unlock",
+"Adjust Slider - Higher Amount",
+""
+],
+"e28d5707-b533-497b-8689-f941d41850e6": [
+"Supporter donation & unlock",
+"Adjust Slider - Lower Amount",
+""
+],
+"db2ee95a-2ab4-43c6-8054-7181f588007d": [
+"Supporter donation & unlock",
+"Initiate Payment (CTA)",
+""
+],
+"064893a3-657f-4b84-93a6-99b14ca29263": [
+"Supporter donation & unlock",
+"Apple Pay / Purchase Sheet",
+""
+],
+"67eb42c4-b4d0-4be8-88ce-9e1de458933b": [
+"Supporter donation & unlock",
+"Purchase Success Modal",
+""
+],
+"f1514b89-4934-4ee5-9e49-7f66eda330f8": [
+"Supporter donation & unlock",
+"Unlocked Character Splash",
+""
+],
+"d4c919d9-549c-47e6-89f9-7b1a3cca4f85": [
+"Supporter donation & unlock",
+"Share / Collection Update",
+""
+],
+"e1996255-d261-41f1-b35e-c029a8b9a67f": [
+"Apple Health Sync Setup",
+"Settings - Health Row",
+""
+],
+"1ee352d9-8e77-41c5-9799-178039ec9e29": [
+"Apple Health Sync Setup",
+"In-app Intro Modal",
+""
+],
+"6c340a85-18ad-4dec-987a-cf458c486909": [
+"Apple Health Sync Setup",
+"Allow Health Access Instructions",
+""
+],
+"9ddeddaa-ab65-4b3a-bff2-371b883c6308": [
+"Apple Health Sync Setup",
+"iOS Health Permission Sheet",
+""
+],
+"a1efb7a3-8af7-4416-8617-d32165832183": [
+"Apple Health Sync Setup",
+"Sync Settings Screen",
+""
+],
+"8dd3d002-7e0e-421c-a86b-108b3f3b60bd": [
+"Apple Health Sync Setup",
+"Sync Progress Modal",
+""
+],
+"b0bcbc1f-6530-419a-a57b-f2f8b9ac37d7": [
+"Apple Health Sync Setup",
+"Sync Completion Confirmation",
+""
+],
+"4d982198-d7c9-4d01-ac6e-926526012afa": [
+"Beverage list reorder",
+"View Beverages list",
+""
+],
+"d9b82e17-2bf2-4951-8308-9db3285c72b4": [
+"Beverage list reorder",
+"Pick up item to move",
+""
+],
+"6e9e2008-54f7-4174-8221-32e2e35e73fb": [
+"Beverage Library and Selection",
+"Filtered category \u2014 Active",
+""
+],
+"08e7b84c-dd7f-4f34-ac64-45cbe0c741fa": [
+"Daily hydration details",
+"Daily hydration log",
+""
+],
+"306a3b4d-6794-42b9-8da7-c61b7b93b46d": [
+"Daily hydration details",
+"Delete confirmation modal",
+""
+],
+"8838dc1b-f7f8-4c3c-828f-c56ba1ddbd92": [
+"Daily hydration details",
+"Updated daily totals",
+""
+],
+"db24678c-5bc2-4f07-b158-9cfcd153b6db": [
+"Evening hydration tips",
+"Tips landing (card list)",
+""
+],
+"b33b40e1-9c98-4c5d-ba24-1d3586d5d6fd": [
+"Evening hydration tips",
+"Tip detail \u2014 intro slide",
+""
+],
+"4258ff77-e678-4475-80df-1585b4f5f38b": [
+"Evening hydration tips",
+"Tip detail \u2014 supporting slide",
+""
+],
+"92eb396c-ff2a-42c6-bec2-c6c52a61316c": [
+"Evening hydration tips",
+"Tip detail \u2014 final slide",
+""
+],
+"65a75cfe-3295-4598-99d4-d6d18c0225e2": [
+"Evening hydration tips",
+"Completion / celebration",
+""
+],
+"6d852b94-f74d-4001-a2a5-6f15d423b1b4": [
+"Evening hydration tips",
+"Landing (progress updated: 1/3)",
+""
+],
+"663ef940-bb70-4fe7-bdc0-6b00aee33527": [
+"Evening hydration tips",
+"Landing (all tips complete: 3/3)",
+""
+],
+"3517d729-bacc-4130-90c3-02715b2f6197": [
+"Hydration goal tracking",
+"Dashboard \u2014 initial low progress",
+""
+],
+"649325ce-2f60-422d-8971-7cd54877c359": [
+"Hydration goal tracking",
+"Dashboard \u2014 nearing goal",
+""
+],
+"b10e5589-9799-40bd-911e-ee45ea2993dc": [
+"Widget Appearance and Beverage Selection",
+"Widget Configuration (entry)",
+""
+],
+"e9cd0b39-8dcb-422f-9e42-6a775a68d40c": [
+"Widget Appearance and Beverage Selection",
+"Change Palette Color",
+""
+],
+"e02b20de-de4f-44fa-bfbe-5021b16301cb": [
+"Widget Appearance and Beverage Selection",
+"Open Beverage Slot",
+""
+],
+"9c5a860a-5444-48ff-b20f-c9efa5406489": [
+"Widget Appearance and Beverage Selection",
+"Select Beverage Option",
+""
+],
+"6bac7eeb-67b9-4b19-bfef-1e0d63863e58": [
+"Widget Appearance and Beverage Selection",
+"Review Updated Widget",
+""
+],
+"a1d77141-e98b-40b4-a2d9-db2e1a3dfeae": [
+"Widget Appearance and Beverage Selection",
+"Finish or Continue Editing",
+""
+]
+}

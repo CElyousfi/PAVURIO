@@ -3,8 +3,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { CircleButton, Icon, Label, Pill, T } from './primitives';
-import { colors, font, radius, softShadow } from './theme';
+import { colors, font, radius } from './theme';
 import { tapFeedback } from '../native/haptics';
 import { Bouncy, Enter, motionReduced } from './motion';
 import { springs, usePress } from './springs';
@@ -35,25 +36,46 @@ export function ScreenHeader({ title, onClose, onBack, right }: { title: string;
   );
 }
 
-export function TabTitle({ title, subtitle, right }: { title: string; subtitle?: string; right?: React.ReactNode }) {
+/** A Waterllama settings row: flat gray card, pastel icon, label, value on the right, chevron. */
+export function MenuRow({ icon, label, value, onPress, tint = '#FFFFFF', testID }: { icon: React.ReactNode; label: string; value?: string; onPress: () => void; tint?: string; testID?: string }) {
   return (
-    <View style={styles.tabTitle}>
-      <View style={{ flex: 1 }}>
-        <T weight="black" style={{ fontSize: 30 }} accessibilityRole="header">
-          {title}
+    <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={value ? `${label}, ${value}` : label} onPress={onPress} style={styles.menuRow} testID={testID}>
+      <View style={[styles.menuIcon, { backgroundColor: tint }]}>{icon}</View>
+      <T weight="xbold" style={{ flex: 1, fontSize: 17, color: colors.inkSoft }} numberOfLines={1}>
+        {label}
+      </T>
+      {value ? (
+        <T weight="xbold" style={{ fontSize: 14, color: colors.faint, marginRight: 6 }} numberOfLines={1}>
+          {value}
         </T>
-        {subtitle ? <T style={{ color: colors.muted, fontSize: 15, marginTop: 2 }}>{subtitle}</T> : null}
+      ) : null}
+      <Icon name="chevR" size={16} color={colors.faint} />
+    </Bouncy>
+  );
+}
+
+/** Section header, Waterllama style: a back circle (and an optional action) on top, the big title under it. */
+export function TabTitle({ title, subtitle, right, onBack }: { title: string; subtitle?: string; right?: React.ReactNode; onBack?: () => void }) {
+  const back = onBack ?? (() => (router.canGoBack() ? router.back() : router.navigate('/')));
+  return (
+    <View style={styles.tabTitleWrap}>
+      <View style={styles.tabTitleBar}>
+        <CircleButton icon="back" label={t('Back')} onPress={back} size={46} />
+        {right ?? <View style={{ width: 46 }} />}
       </View>
-      {right}
+      <T weight="black" style={{ fontSize: 30, marginTop: 14 }} accessibilityRole="header">
+        {title}
+      </T>
+      {subtitle ? <T style={{ color: colors.muted, fontSize: 15, marginTop: 2 }}>{subtitle}</T> : null}
     </View>
   );
 }
 
-export function Field({ label, style, ...rest }: TextInputProps & { label: string; style?: StyleProp<ViewStyle> }) {
+export function Field({ label, style, ref, ...rest }: TextInputProps & { label: string; style?: StyleProp<ViewStyle>; ref?: React.Ref<React.ComponentRef<typeof TextInput>> }) {
   return (
     <View style={[{ gap: 6 }, style]}>
       <Label>{label}</Label>
-      <TextInput placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
+      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
     </View>
   );
 }
@@ -81,9 +103,9 @@ export function Chip({ label, on, onPress, color = colors.ink, tint = colors.lin
 
 export function Card({ children, style, onPress, accessibilityLabel, enter }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; onPress?: () => void; accessibilityLabel?: string; enter?: number }) {
   const body = !onPress ? (
-    <View style={[styles.card, softShadow, style]}>{children}</View>
+    <View style={[styles.card, style]}>{children}</View>
   ) : (
-    <Bouncy accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} scaleTo={0.975} style={[styles.card, softShadow, style]}>
+    <Bouncy accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} scaleTo={0.975} style={[styles.card, style]}>
       {children}
     </Bouncy>
   );
@@ -132,7 +154,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdrop]}>
         <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Close')} accessibilityRole="button" />
       </Animated.View>
-      <View style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
         <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }, panel]}>
           <View style={styles.sheetHandle} />
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
@@ -143,7 +165,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
           </View>
           {children}
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -438,13 +460,12 @@ const styles = StyleSheet.create({
   knob: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#FFFFFF' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 8, gap: 10 },
   headerTitle: { fontSize: 20, flex: 1, textAlign: 'center' },
-  tabTitle: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 6, paddingBottom: 14 },
+  tabTitleWrap: { paddingHorizontal: 20, paddingTop: 4, paddingBottom: 14 },
+  tabTitleBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   input: {
     minHeight: 54,
     borderRadius: 18,
-    backgroundColor: colors.canvasWarm,
-    borderWidth: 1.5,
-    borderColor: colors.line,
+    backgroundColor: colors.card,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontFamily: font.bold,
@@ -452,7 +473,9 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   chip: { paddingHorizontal: 14, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
-  card: { backgroundColor: colors.white, borderRadius: radius.card - 6, padding: 16 },
+  card: { backgroundColor: colors.card, borderRadius: radius.card - 4, padding: 16 },
+  menuRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.card, borderRadius: 24, paddingHorizontal: 16, height: 68, marginBottom: 10 },
+  menuIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
   empty: { alignItems: 'center', paddingVertical: 36, paddingHorizontal: 24 },
   backdrop: { backgroundColor: 'rgba(20,26,40,0.4)' },
   sheet: { backgroundColor: colors.white, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 20, paddingTop: 10 },

@@ -9,33 +9,63 @@
 type Img = number | null;
 
 export const ART = {
+  /**
+   * Care illustrations (ChatGPT, Nov 2026; tools/art/careicons.py → assets/art/care2, 512 px webp).
+   * One picture per care: the log card and the Home row show it as a gray silhouette that fills
+   * with its real colours (FillArt), every list shows it in colour.
+   */
   care: {
-    /** assets/art/care/meal_empty.png, meal_half.png, meal_full.png — 1024×1024 transparent */
-    meal: {
-      empty: require('../../assets/art/care/meal_empty.png') as Img,
-      half: require('../../assets/art/care/meal_half.png') as Img,
-      full: require('../../assets/art/care/meal_full.png') as Img,
-    },
-    /** assets/art/care/water_low.png, water_half.png, water_full.png */
-    water: {
-      empty: require('../../assets/art/care/water_low.png') as Img,
-      half: require('../../assets/art/care/water_half.png') as Img,
-      full: require('../../assets/art/care/water_full.png') as Img,
-    },
-    /** assets/art/care/walk.png */
-    walk: require('../../assets/art/care/walk.png') as Img,
-    /** assets/art/care/play.png */
-    play: require('../../assets/art/care/play.png') as Img,
-    /** assets/art/care/grooming.png */
-    grooming: require('../../assets/art/care/grooming.png') as Img,
-    /** assets/art/care/litter.png */
-    litter: require('../../assets/art/care/litter.png') as Img,
+    meal: require('../../assets/art/care2/meal.webp') as Img,
+    water: require('../../assets/art/care2/water.webp') as Img,
+    walk: require('../../assets/art/care2/walk.webp') as Img,
+    play: require('../../assets/art/care2/play.webp') as Img,
+    grooming: require('../../assets/art/care2/grooming.webp') as Img,
+    litter: require('../../assets/art/care2/litter.webp') as Img,
+    medication: require('../../assets/art/care2/medication.webp') as Img,
+  },
+  /** Pavurio Adventures (ChatGPT final set, tools/art/adventures2.py) */
+  adventures: {
+    adventure_saved: require('../../assets/art/adventures/adventure_saved.webp'),
+    badge_cloud: require('../../assets/art/adventures/badge_cloud.webp'),
+    badge_early: require('../../assets/art/adventures/badge_early.webp'),
+    badge_first: require('../../assets/art/adventures/badge_first.webp'),
+    badge_five: require('../../assets/art/adventures/badge_five.webp'),
+    badge_golden: require('../../assets/art/adventures/badge_golden.webp'),
+    badge_spring: require('../../assets/art/adventures/badge_spring.webp'),
+    badge_ten: require('../../assets/art/adventures/badge_ten.webp'),
+    badge_together: require('../../assets/art/adventures/badge_together.webp'),
+    passport_cover: require('../../assets/art/adventures/passport_cover.webp'),
+    stopwatch: require('../../assets/art/adventures/stopwatch.webp'),
+    t_afternoon: require('../../assets/art/adventures/t_afternoon.webp'),
+    t_evening: require('../../assets/art/adventures/t_evening.webp'),
+    t_golden: require('../../assets/art/adventures/t_golden.webp'),
+    t_morning: require('../../assets/art/adventures/t_morning.webp'),
+    t_night: require('../../assets/art/adventures/t_night.webp'),
+    w_cloudy: require('../../assets/art/adventures/w_cloudy.webp'),
+    w_cold: require('../../assets/art/adventures/w_cold.webp'),
+    w_hot: require('../../assets/art/adventures/w_hot.webp'),
+    w_night: require('../../assets/art/adventures/w_night.webp'),
+    w_partly: require('../../assets/art/adventures/w_partly.webp'),
+    w_rainy: require('../../assets/art/adventures/w_rainy.webp'),
+    w_snow: require('../../assets/art/adventures/w_snow.webp'),
+    w_storm: require('../../assets/art/adventures/w_storm.webp'),
+    w_sunny: require('../../assets/art/adventures/w_sunny.webp'),
+    walk_ready: require('../../assets/art/adventures/walk_ready.webp'),
+    walk_scene: require('../../assets/art/adventures/walk_scene.webp'),
+  } as Record<string, number>,
+  /** section illustrations from the same set */
+  section: {
+    calendar: require('../../assets/art/care2/calendar.webp'),
+    records: require('../../assets/art/care2/records.webp'),
+    medication: require('../../assets/art/care2/medication.webp'),
+    sleep: require('../../assets/art/care2/sleep.webp'),
+    leash: require('../../assets/art/care2/walk_leash.webp'),
   },
   ui: {
     /** assets/art/ui/welcome_badge.png — small icon above the welcome headline, 512×512 transparent */
     welcomeBadge: require('../../assets/art/ui/welcome_badge.png') as Img,
     /** assets/art/ui/empty_day.png — pet next to an empty bowl, hopeful and happy, 1024×1024 transparent */
-    emptyDay: null as Img,
+    emptyDay: require('../../assets/art/stickers/dog_please.webp') as Img,
     /** assets/art/ui/plan_header.png — dog and cat looking at a checklist, 1536×1024 transparent */
     planHeader: null as Img,
     /** Honey & Tabby hugging, transparent (ChatGPT duo hero, 1024 px) — Smart Reminders card */

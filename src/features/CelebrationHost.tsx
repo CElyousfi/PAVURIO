@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { usePathname } from 'expo-router';
-import Animated, { ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { BADGES, badgeText } from '../domain/badges';
 import { challengeDef, pick } from '../domain/challenges';
 import { useEngagement } from '../state/Engagement';
@@ -56,36 +56,38 @@ export function CelebrationHost() {
   };
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={close}>
-      <View style={styles.scrim}>
-        <Animated.View entering={ZoomIn.springify().damping(13)} style={styles.card}>
-          <View style={[styles.rays, { backgroundColor: `${color}1A` }]} />
-          <T weight="black" style={[styles.kicker, { color }]}>
-            {badge ? t('NEW BADGE') : t('CHALLENGE COMPLETE')}
-          </T>
-          <PopIn delay={200} style={{ marginTop: 16 }}>
+    <Modal visible transparent animationType="fade" onRequestClose={close} statusBarTranslucent>
+      <View style={styles.screen}>
+        <Animated.View entering={FadeIn.duration(260)} style={[styles.arch, { backgroundColor: `${color}22` }]} />
+        <View style={styles.center}>
+          <PopIn delay={150}>
             {badge ? (
-              <Medal def={badge} size={150} />
+              <Medal def={badge} size={190} />
             ) : ch ? (
               ART.challenges[ch.key] ? (
-                <Scene source={ART.challenges[ch.key]!} width={140} height={172} border={5} tilt={-4} />
+                <Scene source={ART.challenges[ch.key]!} width={170} height={210} border={6} tilt={-4} />
               ) : (
                 <View style={[styles.chArt, { backgroundColor: ch.tint }]}>
-                  <CareIcon type={ch.rule.kind === 'care' ? ch.rule.type : 'meal'} size={110} />
+                  <CareIcon type={ch.rule.kind === 'care' ? ch.rule.type : 'meal'} size={130} />
                 </View>
               )
             ) : null}
           </PopIn>
-          <T weight="black" style={styles.title}>
-            {badge ? badgeText(badge.title) : ch ? pick(ch.title) : ''}
-          </T>
-          <T style={styles.body}>{badge ? badgeText(badge.how) : t('You did it! The badge is in your collection.')}</T>
-          <Bouncy onPress={close} style={[styles.btn, { backgroundColor: color }]} accessibilityRole="button" testID="celebrate-ok">
-            <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 1 }}>
-              {t('AWESOME!')}
+          <Animated.View entering={ZoomIn.delay(260).springify().damping(14)} style={{ alignItems: 'center' }}>
+            <T weight="black" style={[styles.kicker, { color }]}>
+              {badge ? t('NEW BADGE') : t('CHALLENGE COMPLETE')}
             </T>
-          </Bouncy>
-        </Animated.View>
+            <T weight="black" style={styles.title}>
+              {badge ? badgeText(badge.title) : ch ? pick(ch.title) : ''}
+            </T>
+            <T style={styles.body}>{badge ? badgeText(badge.how) : t('You did it! The badge is in your collection.')}</T>
+          </Animated.View>
+        </View>
+        <Bouncy onPress={close} style={[styles.btn, { backgroundColor: color }]} accessibilityRole="button" testID="celebrate-ok">
+          <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 1 }}>
+            {t('AWESOME!')}
+          </T>
+        </Bouncy>
         <ConfettiRain fireKey={fire} />
       </View>
     </Modal>
@@ -93,12 +95,12 @@ export function CelebrationHost() {
 }
 
 const styles = StyleSheet.create({
-  scrim: { flex: 1, backgroundColor: 'rgba(14,19,32,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 },
-  card: { width: '100%', maxWidth: 360, borderRadius: 34, backgroundColor: '#FFFFFF', alignItems: 'center', padding: 26, overflow: 'hidden' },
-  rays: { position: 'absolute', top: -80, width: 360, height: 300, borderRadius: 180 },
+  screen: { flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'space-between', paddingTop: 80, paddingBottom: 50, paddingHorizontal: 28, overflow: 'hidden' },
+  arch: { position: 'absolute', top: -220, width: 620, height: 620, borderRadius: 310 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 },
   kicker: { fontSize: 13, letterSpacing: 2 },
-  chArt: { width: 160, height: 160, borderRadius: 50, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 26, textAlign: 'center', marginTop: 16 },
-  body: { fontSize: 15, color: colors.inkSoft, textAlign: 'center', marginTop: 6, lineHeight: 21 },
-  btn: { marginTop: 22, height: 56, alignSelf: 'stretch', borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  chArt: { width: 190, height: 190, borderRadius: 60, alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 34, lineHeight: 40, textAlign: 'center', marginTop: 8 },
+  body: { fontSize: 17, color: colors.inkSoft, textAlign: 'center', marginTop: 8, lineHeight: 24, maxWidth: 320 },
+  btn: { height: 62, alignSelf: 'stretch', maxWidth: 360, width: '100%', borderRadius: 31, alignItems: 'center', justifyContent: 'center' },
 });

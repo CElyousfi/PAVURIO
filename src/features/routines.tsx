@@ -38,7 +38,7 @@ export function kindMeta(type: string): { label: string; color: string } {
 }
 
 export function routineKindsFor(species: Species): string[] {
-  return [...(Object.keys(CARE) as CareType[]).filter((c) => careAllowedFor(species, c)), 'medication', 'custom'];
+  return [...(Object.keys(CARE) as CareType[]).filter((c) => careAllowedFor(species, c)), 'custom'];
 }
 
 export function KindIcon({ type, size }: { type: string; size: number }) {

@@ -64,7 +64,7 @@ export default function AppointmentEditor() {
       const input = { petId: pet.id, title, at, location, notes, remindMinutes: remind };
       if (params.id) await updateAppointment(db, params.id, input);
       else await createAppointment(db, input);
-      if (remind != null) await requestPermission();
+      if (remind != null) await requestPermission(db);
       successFeedback();
       bump();
       router.back();

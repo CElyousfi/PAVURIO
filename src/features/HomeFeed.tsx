@@ -16,12 +16,13 @@ import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
 import { Medal } from './Medal';
+import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
 import { Bouncy, Enter, Pop, PopIn, Pulse } from '../ui/motion';
 import { Icon, T } from '../ui/primitives';
-import { colors, softShadow } from '../ui/theme';
+import { colors } from '../ui/theme';
 import { formatDateLong } from '../ui/forms';
 import { t, tn } from '../i18n';
 
@@ -84,7 +85,7 @@ export function HomeFeed({ width }: { width: number }) {
     <View style={{ width, paddingHorizontal: 20, paddingBottom: 40 }}>
       {/* streak */}
       <Enter index={0}>
-        <Bouncy onPress={() => router.push('/achievements')} style={[styles.streak, softShadow]} accessibilityRole="button" accessibilityLabel={streak.current > 0 ? tn(streak.current, '1-day streak', '{n}-day streak') : t('Start a streak')} testID="feed-streak">
+        <Bouncy onPress={() => router.push('/achievements')} style={[styles.streak]} accessibilityRole="button" accessibilityLabel={streak.current > 0 ? tn(streak.current, '1-day streak', '{n}-day streak') : t('Start a streak')} testID="feed-streak">
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <Pulse active={streak.atRisk} amount={0.12} period={1200}>
               <Flame size={44} lit={streak.current > 0} />
@@ -135,10 +136,16 @@ export function HomeFeed({ width }: { width: number }) {
         </Bouncy>
       </Enter>
 
+      {/* Pavurio Memories: today's little moment + birthday / adoption prompt */}
+      <Enter index={1}>
+        <TodayMomentCard width={width - 40} />
+      </Enter>
+      <AnniversaryCard />
+
       {/* visits soon */}
       {visits.length ? (
         <Enter index={1}>
-          <Bouncy onPress={() => router.push({ pathname: '/appointment', params: { id: visits[0].id } })} style={[styles.visit, softShadow]} accessibilityRole="button">
+          <Bouncy onPress={() => router.push({ pathname: '/appointment', params: { id: visits[0].id } })} style={[styles.visit]} accessibilityRole="button">
             <View style={styles.visitDate}>
               <T weight="black" style={{ fontSize: 11, color: '#FFFFFFC0' }}>
                 {formatDateLong(dayKeyOf(new Date(visits[0].at))).split(' ')[0].toUpperCase()}
@@ -208,7 +215,7 @@ export function HomeFeed({ width }: { width: number }) {
 
       {/* story */}
       <Enter index={6}>
-        <Bouncy onPress={() => router.push({ pathname: '/story', params: { range: 'week' } })} style={[styles.story, softShadow]} accessibilityRole="button" accessibilityLabel={t('Play this week story')}>
+        <Bouncy onPress={() => router.push({ pathname: '/story', params: { range: 'week' } })} style={[styles.story]} accessibilityRole="button" accessibilityLabel={t('Play this week story')}>
           <View style={styles.storyRing}>
             <PetAvatar species={pet.species} appearance={pet.appearance} size={64} />
           </View>
@@ -230,7 +237,7 @@ export function HomeFeed({ width }: { width: number }) {
 
       {/* badges */}
       <Section title={t('Achievements')} action={t('{n} of {total}', { n: badgesFor(pet.species).filter((b) => earned.includes(b.key)).length, total: badgesFor(pet.species).length })} onAction={() => router.push('/achievements')}>
-        <Bouncy onPress={() => router.push('/achievements')} style={[styles.badges, softShadow]} accessibilityRole="button" accessibilityLabel={t('Open achievements')}>
+        <Bouncy onPress={() => router.push('/achievements')} style={[styles.badges]} accessibilityRole="button" accessibilityLabel={t('Open achievements')}>
           {badgesFor(pet.species)
             .sort((a, b) => Number(earned.includes(b.key)) - Number(earned.includes(a.key)))
             .slice(0, 5)
@@ -243,7 +250,7 @@ export function HomeFeed({ width }: { width: number }) {
       {/* account: guests are backed up, but only a saved account survives a new phone */}
       {cloudState.enabled && cloudState.user?.anonymous ? (
         <Enter index={7}>
-          <Bouncy scaleTo={0.975} onPress={() => router.push('/account')} style={[styles.save, softShadow]} accessibilityRole="button" testID="feed-save-account">
+          <Bouncy scaleTo={0.975} onPress={() => router.push('/account')} style={[styles.save]} accessibilityRole="button" testID="feed-save-account">
             {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 54, height: 54 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ fontSize: 17 }}>
@@ -355,7 +362,7 @@ function ActiveChallenge({ def, done, target, days }: { def: ChallengeDef; done:
 }
 
 const styles = StyleSheet.create({
-  save: { marginTop: 26, backgroundColor: colors.white, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  save: { marginTop: 26, backgroundColor: colors.card, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   sectionHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   streak: { backgroundColor: '#FFF6EC', borderRadius: 28, padding: 18, marginTop: 6 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, paddingHorizontal: 4 },
@@ -373,7 +380,7 @@ const styles = StyleSheet.create({
   story: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.brand, borderRadius: 28, padding: 16, marginTop: 26 },
   storyRing: { width: 72, height: 72, borderRadius: 36, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   play: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
-  badges: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#FFFFFF', borderRadius: 24, padding: 16 },
+  badges: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: colors.card, borderRadius: 24, padding: 16 },
   pro: { marginTop: 26, borderRadius: 28, padding: 20, backgroundColor: '#E8FAFB', borderWidth: 1.5, borderColor: '#BDEEF1' },
   proAv: { width: 90, height: 90, borderRadius: 30, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginLeft: 10 },
   proBtn: { marginTop: 16, height: 54, borderRadius: 27, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },

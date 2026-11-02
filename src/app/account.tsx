@@ -17,7 +17,7 @@ import type { AuthResult } from '../cloud/types';
 import { ART } from '../ui/art';
 import { Field } from '../ui/forms';
 import { CircleButton, Label, Pill, SoftPill, T } from '../ui/primitives';
-import { colors, softShadow } from '../ui/theme';
+import { colors } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
 import { formatRelative } from '../i18n/dates';
 import { lang } from '../i18n/core';
@@ -278,7 +278,7 @@ export default function Account() {
           </View>
 
           {!enabled ? (
-            <View style={[styles.card, softShadow, { marginTop: 22 }]}>
+            <View style={[styles.card, { marginTop: 22 }]}>
               <T style={{ color: colors.inkSoft, lineHeight: 21 }}>{t('Accounts and cloud backup are available in the iPhone and Android app.')}</T>
             </View>
           ) : step === 'code' ? (
@@ -304,7 +304,7 @@ export default function Account() {
               <T style={{ color: colors.muted, fontSize: 13, textAlign: 'center' }}>{t('Can’t find it? Check your spam folder.')}</T>
             </View>
           ) : step === 'forgot' || step === 'reset' ? (
-            <View style={[styles.card, softShadow, { marginTop: 22, gap: 12 }]}>
+            <View style={[styles.card, { marginTop: 22, gap: 12 }]}>
               <Field label={t('Email')} value={email} onChangeText={setEmail} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" editable={step === 'forgot'} />
               {step === 'reset' ? (
                 <>
@@ -323,7 +323,7 @@ export default function Account() {
               )}
             </View>
           ) : saved && !signinMode ? (
-            <View style={[styles.card, softShadow, { marginTop: 22 }]}>
+            <View style={[styles.card, { marginTop: 22 }]}>
               <T weight="xbold" style={{ fontSize: 17 }}>
                 {lastBackupAt ? t('Backed up {when}', { when: formatRelative(lastBackupAt) }) : t('Not backed up yet')}
               </T>
@@ -339,7 +339,7 @@ export default function Account() {
                 <T style={{ color: colors.muted, fontSize: 13 }}>{t('or with email')}</T>
                 <View style={styles.orLine} />
               </View>
-              <View style={[styles.card, softShadow, { gap: 12 }]}>
+              <View style={[styles.card, { gap: 12 }]}>
                 <Field label={t('Email')} value={email} onChangeText={setEmail} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" testID="email-input" />
                 <PasswordField value={password} onChange={setPassword} show={showPw} onToggle={() => setShowPw((s) => !s)} label={t('Password')} isNew={step === 'create'} />
                 {step === 'create' ? <T style={{ color: colors.muted, fontSize: 12, marginTop: -6 }}>{t('At least 6 characters. We’ll email you a code to confirm it’s you.')}</T> : null}
@@ -379,7 +379,7 @@ export default function Account() {
           {enabled && !signinMode && saved && step === 'create' ? (
             <>
               <Label style={styles.section}>{t('Account')}</Label>
-              <View style={[styles.card, softShadow, { gap: 10 }]}>
+              <View style={[styles.card, { gap: 10 }]}>
                 <SoftPill label={t('Sign out')} onPress={() => void signOut()} small style={{ alignSelf: 'flex-start' }} />
                 <SoftPill label={t('Delete account')} onPress={() => void deleteAccount()} color={colors.danger} tint={colors.dangerSoft} small style={{ alignSelf: 'flex-start' }} />
                 {showPw && user?.providers.includes('password') ? <PasswordField value={password} onChange={setPassword} show={false} onToggle={() => {}} label={t('Password')} /> : null}
@@ -390,7 +390,7 @@ export default function Account() {
           {enabled && !signinMode && step === 'create' ? (
             <>
               <Label style={styles.section}>{t('Privacy')}</Label>
-              <View style={[styles.card, softShadow, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+              <View style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 17 }}>
                     {t('Share crash reports')}
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   h1: { fontSize: 26, textAlign: 'center', marginTop: 12 },
   sub: { color: colors.muted, fontSize: 15, textAlign: 'center', marginTop: 8, lineHeight: 21, paddingHorizontal: 8 },
-  card: { backgroundColor: colors.white, borderRadius: 22, padding: 16 },
+  card: { backgroundColor: colors.card, borderRadius: 22, padding: 16 },
   section: { marginTop: 26, marginBottom: 10 },
   error: { color: colors.danger, textAlign: 'center', marginTop: 14, lineHeight: 20 },
   note: { color: colors.brand, textAlign: 'center', marginTop: 14, lineHeight: 20 },

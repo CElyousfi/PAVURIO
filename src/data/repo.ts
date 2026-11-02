@@ -1,6 +1,6 @@
 import { CARE, CareType, Species, careAllowedFor, clampAmount, isCareType } from '../domain/care';
 import { Appearance, defaultAppearance, parseAppearance } from '../domain/appearance';
-import { Plan } from '../domain/progress';
+import { Plan, Portions } from '../domain/progress';
 import { newId } from '../domain/ids';
 import { Db } from './db';
 import { t } from '../i18n/core';
@@ -110,6 +110,8 @@ export type NewPetInput = {
   name: string;
   appearance?: Appearance;
   plan?: Plan;
+  /** the owner's usual amount per care (g, ml, min, doses); missing = the care's default */
+  portions?: Portions;
   birthDate?: string | null;
   adoptionDate?: string | null;
 };
@@ -140,7 +142,7 @@ export async function createPet(db: Db, input: NewPetInput, now = Date.now()): P
       'INSERT INTO pets (id, species, name, appearance_json, birth_date, adoption_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [id, input.species, name, JSON.stringify(appearance), birthDate, adoptionDate, now, now],
     );
-    await writePlan(db, id, input.species, plan);
+    await writePlan(db, id, input.species, plan, input.portions ?? {});
     await setSetting(db, 'activePetId', id);
   });
   return { id, species: input.species, name, appearance, createdAt: now, birthDate, adoptionDate };
@@ -258,17 +260,24 @@ export function defaultPlan(species: Species): Plan {
   return plan;
 }
 
-async function writePlan(db: Db, petId: string, species: Species, plan: Plan): Promise<void> {
+async function writePlan(db: Db, petId: string, species: Species, plan: Plan, portions?: Portions): Promise<void> {
+  // portions not given = keep the ones already saved
+  const keep = portions ?? (await getPortions(db, petId));
   await db.runAsync('DELETE FROM care_plans WHERE pet_id = ?', [petId]);
-  for (const [type, target] of Object.entries(plan)) {
-    if (!isCareType(type) || !careAllowedFor(species, type)) continue;
+  for (const ct of Object.keys(CARE) as CareType[]) {
+    if (!careAllowedFor(species, ct)) continue;
+    const target = plan[ct];
+    const portion = keep[ct];
+    if (target == null && portion == null) continue;
     const n = Math.max(0, Math.min(20, Math.round(target ?? 0)));
-    await db.runAsync('INSERT INTO care_plans (pet_id, type, target_per_day) VALUES (?, ?, ?)', [petId, type, n]);
+    const spec = CARE[ct].amount;
+    const p = spec && portion != null && portion > 0 ? Math.max(spec.min, Math.min(spec.max, portion)) : null;
+    await db.runAsync('INSERT INTO care_plans (pet_id, type, target_per_day, portion) VALUES (?, ?, ?, ?)', [petId, ct, n, p]);
   }
 }
 
-export async function setPlan(db: Db, pet: Pet, plan: Plan): Promise<void> {
-  await db.withTransactionAsync(() => writePlan(db, pet.id, pet.species, plan));
+export async function setPlan(db: Db, pet: Pet, plan: Plan, portions?: Portions): Promise<void> {
+  await db.withTransactionAsync(() => writePlan(db, pet.id, pet.species, plan, portions));
 }
 
 export async function getPlan(db: Db, petId: string): Promise<Plan> {
@@ -279,6 +288,14 @@ export async function getPlan(db: Db, petId: string): Promise<Plan> {
   const plan: Plan = {};
   for (const r of rows) if (isCareType(r.type)) plan[r.type] = r.target_per_day;
   return plan;
+}
+
+/** The owner's usual amount per care, as set in the plan (only the ones they chose). */
+export async function getPortions(db: Db, petId: string): Promise<Portions> {
+  const rows = await db.getAllAsync<{ type: string; portion: number | null }>('SELECT type, portion FROM care_plans WHERE pet_id = ?', [petId]);
+  const out: Portions = {};
+  for (const r of rows) if (isCareType(r.type) && r.portion != null && r.portion > 0) out[r.type] = r.portion;
+  return out;
 }
 
 // ---------------------------------------------------------------- care events
@@ -471,7 +488,7 @@ export async function exportCareCsv(db: Db): Promise<string> {
 
 export async function resetAll(db: Db): Promise<void> {
   await db.withTransactionAsync(async () => {
-    for (const tbl of ['challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memories']) {
+    for (const tbl of ['walk_badges', 'walks', 'challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memory_pets', 'memories', 'media']) {
       await db.runAsync(`DELETE FROM ${tbl}`, []);
     }
     await db.runAsync('DELETE FROM care_events', []);

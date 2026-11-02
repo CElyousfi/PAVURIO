@@ -14,7 +14,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Take a photo of a vet document or a moment with your pet.",
         "NSPhotoLibraryUsageDescription": "Attach photos to records and moments.",
-        "NSPhotoLibraryAddUsageDescription": "Save your pet's story images to Photos.",
+        "NSPhotoLibraryAddUsageDescription": "Save your pet's stories and Memory Cards to Photos.",
         "CFBundleAllowMixedLocalizations": true
       },
       "privacyManifests": {
@@ -89,11 +89,18 @@
         "expo-media-library",
         {
           "photosPermission": "Attach photos to records and moments.",
-          "savePhotosPermission": "Save your pet's story images to Photos.",
+          "savePhotosPermission": "Save your pet's stories and Memory Cards to Photos.",
           "isAccessMediaLocationEnabled": false
         }
       ],
-      "expo-document-picker"
+      "expo-document-picker",
+      [
+        "expo-widgets",
+        {
+          "enableAndroid": true
+        }
+      ],
+      "expo-background-task"
     ],
     "scheme": "pavurio",
     "backgroundColor": "#FFFFFF",

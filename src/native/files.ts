@@ -10,6 +10,9 @@ import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { newId } from '../domain/ids';
 import { t } from '../i18n';
+import { setDocRoot } from '../data/uris';
+
+if (Platform.OS !== 'web') setDocRoot(Paths.document.uri);
 
 export type PickedFile = { uri: string; mime: string | null; name: string | null };
 const WEB_MAX_BYTES = 6 * 1024 * 1024;
