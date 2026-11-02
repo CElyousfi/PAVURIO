@@ -12,7 +12,7 @@ import { Walk, durationText, timeOfDay, timeOfDayLabel, walkEnd } from '../domai
 import { conditionLabel, formatTemp, weatherArt } from '../domain/weather';
 import { formatClock } from '../domain/time';
 import { persistFile, pickPhoto } from '../native/files';
-import { TIME_ART, WEATHER_ART } from '../features/adventures';
+import { TimeArt, WEATHER_ART } from '../features/adventures';
 import { Missing } from '../ui/Missing';
 import { CircleButton, Pill, SoftPill, T } from '../ui/primitives';
 import { Bouncy } from '../ui/motion';
@@ -110,7 +110,7 @@ export default function Adventure() {
         </View>
         <View style={styles.facts}>
           <View style={styles.fact}>
-            <Image source={TIME_ART[tod]} style={styles.factArt} />
+            <TimeArt tod={tod} size={40} />
             <T weight="xbold">{timeOfDayLabel(tod)}</T>
           </View>
           <View style={styles.fact}>

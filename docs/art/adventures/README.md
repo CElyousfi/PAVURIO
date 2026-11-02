@@ -1,24 +1,17 @@
 # Pavurio Adventures — artwork
 
-The pieces in `assets/art/adventures/` are cut from `reference-sheet.png`, a 1536 × 1024 concept sheet, using
-`tools/art/adventures.py`. Each cut is only 50–130 px wide in the sheet. The tool upscales it ×2–4 onto a
-round cream stamp, so the art is soft up close. **Every piece below should be replaced with a
-high-resolution export (512 px or larger, transparent PNG) before release.**
+Final set from ChatGPT (2 Nov 2026), built by `tools/art/adventures2.py` into `assets/art/adventures/`.
 
-| File | Used for | From the sheet | Notes |
-|---|---|---|---|
-| `badge_first.webp` | First Walk | "First Adventure" emblem | Banner text cropped off (titles are translated in the UI) |
-| `badge_early.webp` | Early Bird | "Morning" chip | The sheet has no Early Bird badge, so the morning sunrise stands in |
-| `badge_golden.webp` | Golden Hour | "Golden Hay Explorer" (umbrella) | Misspelt in the sheet. Needs a sunset badge |
-| `badge_cloud.webp` | Cloud Explorer | "Cloud Explorer" | |
-| `badge_spring.webp` | Spring Walk | "Spring Walker" | |
-| `badge_five.webp` / `badge_ten.webp` | 5 / 10 Adventures | "5 / 10 Adventures" | |
-| `badge_together.webp` | 50 Together | "Together" heart | Needs a "50" |
-| `w_*.webp` | Weather: sunny, partly, cloudy, rainy, storm, snow, hot, cold | Weather row | The sheet's "Light Rain" icon is used for storms (it shows lightning). "Stormy" is used for snow |
-| `t_*.webp` | Time of day: morning, afternoon, golden, night | Time-of-day chips | Evening uses the golden one |
+- **Stamps**: `badge_first`, `badge_early`, `badge_golden`, `badge_cloud`, `badge_spring`, `badge_five`, `badge_ten`, `badge_together` (512 px). Locked stamps are the same pictures drawn grey by `FillArt`, so there is no separate locked file.
+- **Weather**: `w_sunny`, `w_partly`, `w_cloudy`, `w_rainy`, `w_storm`, `w_snow`, `w_hot`, `w_cold`, `w_night` (384 px).
+- **Time of day**: `t_morning`, `t_afternoon`, `t_golden`, `t_evening`, `t_night`. These are 512×384 tiles cut from a labelled sheet, with their corners re-rounded.
+- **Screens**:
+  - `passport_cover`: the passport header.
+  - `walk_scene`: the park behind the dog while walking.
+  - `walk_ready`: the passport's empty state.
+  - `stopwatch`: walk time.
+  - `adventure_saved`: the saved banner.
 
-The walk screens show the app's own Honey (the animated master in `src/animation`) rather than the sheet's
-golden-dog extracts, as the brief asks. The passport cover uses the paw-prints care illustration
-(`assets/art/care2/walk.webp`). The sheet's book icon was too small to use.
+Not delivered yet (still drawn by the app): the Moments covers and placeholders, the record icons, the paywall perk icons, the streak flame, the bell, the lock, the empty-day picture and the plan header. The prompts for these are in `docs/art/GPT_PROMPTS.md`.
 
-The full screen references in the sheet are never shown as UI images.
+The first concept-sheet cuts (`tools/art/adventures.py`, `reference-sheet.png`) are replaced and kept only for reference.

@@ -246,13 +246,14 @@ export default function WalkScreen() {
           </Animated.View>
           <PetRig species={pet.species} appearance={pet.appearance} size={petSize * 0.9} progress={1} clip={clip} onClipEnd={() => setClip(null)} active reduceMotion={reduceMotion} accessibilityLabel={pet.name} />
           <View style={styles.chips}>
-            <Fact label={t('Walk time')} value={durationText(ms)} art={ART.adventures.t_afternoon} hideArt />
+            <Fact label={t('Walk time')} value={durationText(ms)} art={ART.adventures.stopwatch} />
             <Fact label={t('Weather')} value={w.weather?.available ? formatTemp(w.weather.tempC, unit) : '–'} sub={w.weather?.available ? conditionLabel(w.weather.condition) : t('Not recorded')} art={art ? WEATHER_ART[art] : null} />
-            <Fact label={t('Time of day')} value={timeOfDayLabel(tod)} art={TIME_ART[tod]} />
+            <Fact label={t('Time of day')} value={timeOfDayLabel(tod)} art={TIME_ART[tod]} wide />
           </View>
           {done.newBadges.length ? <NewBadges ids={done.newBadges} reduceMotion={reduceMotion} /> : null}
           <Animated.View entering={reduceMotion ? undefined : FadeIn.delay(300)} style={styles.saved} accessibilityLiveRegion="polite" testID="walk-saved">
-            <T weight="xbold" style={{ color: '#0E8F98', fontSize: 14, textAlign: 'center' }}>
+            <Image source={ART.adventures.adventure_saved} style={{ width: 44, height: 44 }} />
+            <T weight="xbold" style={{ color: '#0E8F98', fontSize: 14, flex: 1 }}>
               {t('✓ Saved to {name}’s day, calendar, moments and Paw Passport', { name: pet.name })}
             </T>
           </Animated.View>
@@ -302,7 +303,7 @@ export default function WalkScreen() {
           </T>
         </View>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={styles.scene} />
+          <Image source={ART.adventures.walk_scene} style={styles.scene} resizeMode="cover" accessibilityIgnoresInvertColors />
           <PetRig
             species={pet.species}
             appearance={pet.appearance}
@@ -374,10 +375,10 @@ export default function WalkScreen() {
   );
 }
 
-function Fact({ label, value, sub, art, hideArt }: { label: string; value: string; sub?: string; art: number | null; hideArt?: boolean }) {
+function Fact({ label, value, sub, art, wide }: { label: string; value: string; sub?: string; art: number | null; wide?: boolean }) {
   return (
     <View style={styles.fact} accessibilityLabel={`${label}: ${value}${sub ? `, ${sub}` : ''}`}>
-      {hideArt ? <T style={{ fontSize: 24 }}>⏱️</T> : <Image source={art ?? WEATHER_ART.partly} style={{ width: 34, height: 34, opacity: art ? 1 : 0.4 }} />}
+      <Image source={art ?? WEATHER_ART.partly} style={{ width: wide ? 46 : 36, height: wide ? 34 : 36, borderRadius: wide ? 6 : 0, opacity: art ? 1 : 0.4 }} resizeMode="contain" />
       <T weight="black" style={{ fontSize: 17, textAlign: 'center' }} numberOfLines={1} adjustsFontSizeToFit>
         {value}
       </T>
@@ -419,13 +420,13 @@ const styles = StyleSheet.create({
   hint: { color: colors.muted, textAlign: 'center', fontSize: 13, marginTop: 10 },
   clockWrap: { alignSelf: 'center', marginTop: 14, backgroundColor: '#FFFFFF', borderRadius: 30, paddingHorizontal: 26, paddingVertical: 6 },
   clock: { fontSize: 64, lineHeight: 74, color: colors.ink, letterSpacing: -1, fontVariant: ['tabular-nums'] },
-  scene: { position: 'absolute', bottom: '8%', width: '86%', height: '36%', borderRadius: 999, backgroundColor: '#DDF2D2' },
+  scene: { position: 'absolute', bottom: '4%', width: '92%', height: '62%', borderRadius: 28 },
   weatherChip: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FFFFFF', borderRadius: 20, paddingHorizontal: 12, height: 40 },
   controls: { flexDirection: 'row', gap: 12, paddingHorizontal: 20 },
   longNote: { marginHorizontal: 20, marginBottom: 10, backgroundColor: '#FFF4E0', borderRadius: 16, padding: 10 },
   chips: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, marginTop: 6, alignSelf: 'stretch' },
   fact: { flex: 1, backgroundColor: colors.card, borderRadius: 20, paddingVertical: 12, paddingHorizontal: 6, alignItems: 'center', gap: 3 },
   newBadge: { marginTop: 14, marginHorizontal: 20, alignSelf: 'stretch', backgroundColor: '#FFF6E6', borderRadius: 24, padding: 14, alignItems: 'center' },
-  saved: { marginTop: 14, marginHorizontal: 20, backgroundColor: '#E6F7F8', borderRadius: 16, paddingVertical: 10, paddingHorizontal: 14, alignSelf: 'stretch' },
+  saved: { marginTop: 14, marginHorizontal: 20, backgroundColor: '#E6F7F8', borderRadius: 16, paddingVertical: 8, paddingHorizontal: 12, alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: 10 },
   actionsRow: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, marginTop: 12, alignSelf: 'stretch' },
 });

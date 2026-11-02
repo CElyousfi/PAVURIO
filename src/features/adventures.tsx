@@ -9,6 +9,7 @@ import { T } from '../ui/primitives';
 import { Bouncy } from '../ui/motion';
 import { colors, font } from '../ui/theme';
 import { ART } from '../ui/art';
+import { FillArt } from '../ui/FillArt';
 import { Advice, Place, TempUnit, WeatherArt, WeatherSnapshot, conditionLabel, formatTemp, walkAdvice, weatherArt } from '../domain/weather';
 import { AdventureBadgeId, TimeOfDay } from '../domain/walks';
 import { searchPlaces } from '../native/weather';
@@ -23,14 +24,14 @@ export const WEATHER_ART: Record<WeatherArt, number> = {
   snow: ART.adventures.w_snow,
   hot: ART.adventures.w_hot,
   cold: ART.adventures.w_cold,
-  night: ART.adventures.t_night,
+  night: ART.adventures.w_night,
 };
 
 export const TIME_ART: Record<TimeOfDay, number> = {
   morning: ART.adventures.t_morning,
   afternoon: ART.adventures.t_afternoon,
   golden: ART.adventures.t_golden,
-  evening: ART.adventures.t_golden,
+  evening: ART.adventures.t_evening,
   night: ART.adventures.t_night,
 };
 
@@ -179,20 +180,15 @@ export function PlacePicker({ visible, onClose, onPick }: { visible: boolean; on
   );
 }
 
-/** A passport stamp: full colour when earned, a faded locked stamp otherwise. */
+/** A passport stamp: full colour when earned; a gray picture of itself while locked (the app's "not yet" look). */
 export function Stamp({ id, size, earned }: { id: AdventureBadgeId; size: number; earned: boolean }) {
-  return (
-    <View style={{ width: size, height: size }}>
-      <Image source={BADGE_ART[id]} style={{ width: size, height: size, opacity: earned ? 1 : 0.35 }} accessibilityIgnoresInvertColors />
-      {!earned ? (
-        <View style={[styles.lock, { width: size * 0.34, height: size * 0.34, borderRadius: size * 0.17 }]}>
-          <T weight="black" style={{ fontSize: size * 0.16, color: '#FFFFFF' }}>
-            🔒
-          </T>
-        </View>
-      ) : null}
-    </View>
-  );
+  if (!earned) return <FillArt source={BADGE_ART[id]} size={size} level={0} />;
+  return <Image source={BADGE_ART[id]} style={{ width: size, height: size }} accessibilityIgnoresInvertColors />;
+}
+
+/** Time-of-day picture (a small landscape tile), kept whole at any size. */
+export function TimeArt({ tod, size }: { tod: TimeOfDay; size: number }) {
+  return <Image source={TIME_ART[tod]} style={{ width: size, height: size * 0.75, borderRadius: size * 0.12 }} resizeMode="contain" accessibilityIgnoresInvertColors />;
 }
 
 const styles = StyleSheet.create({
@@ -205,5 +201,4 @@ const styles = StyleSheet.create({
   advice: { borderRadius: 16, paddingVertical: 9, paddingHorizontal: 12 },
   input: { height: 52, borderRadius: 16, backgroundColor: colors.card, paddingHorizontal: 16, fontFamily: font.bold, fontSize: 17, color: colors.ink },
   result: { paddingVertical: 10, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: colors.line },
-  lock: { position: 'absolute', right: -2, bottom: -2, backgroundColor: '#9AA1AE', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FFFFFF' },
 });

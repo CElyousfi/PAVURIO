@@ -23,8 +23,9 @@ export const ART = {
     litter: require('../../assets/art/care2/litter.webp') as Img,
     medication: require('../../assets/art/care2/medication.webp') as Img,
   },
-  /** Pavurio Adventures (tools/art/adventures.py; concept-sheet cuts, see docs/art/adventures/README.md) */
+  /** Pavurio Adventures (ChatGPT final set, tools/art/adventures2.py) */
   adventures: {
+    adventure_saved: require('../../assets/art/adventures/adventure_saved.webp'),
     badge_cloud: require('../../assets/art/adventures/badge_cloud.webp'),
     badge_early: require('../../assets/art/adventures/badge_early.webp'),
     badge_first: require('../../assets/art/adventures/badge_first.webp'),
@@ -33,18 +34,24 @@ export const ART = {
     badge_spring: require('../../assets/art/adventures/badge_spring.webp'),
     badge_ten: require('../../assets/art/adventures/badge_ten.webp'),
     badge_together: require('../../assets/art/adventures/badge_together.webp'),
+    passport_cover: require('../../assets/art/adventures/passport_cover.webp'),
+    stopwatch: require('../../assets/art/adventures/stopwatch.webp'),
     t_afternoon: require('../../assets/art/adventures/t_afternoon.webp'),
+    t_evening: require('../../assets/art/adventures/t_evening.webp'),
     t_golden: require('../../assets/art/adventures/t_golden.webp'),
     t_morning: require('../../assets/art/adventures/t_morning.webp'),
     t_night: require('../../assets/art/adventures/t_night.webp'),
     w_cloudy: require('../../assets/art/adventures/w_cloudy.webp'),
     w_cold: require('../../assets/art/adventures/w_cold.webp'),
     w_hot: require('../../assets/art/adventures/w_hot.webp'),
+    w_night: require('../../assets/art/adventures/w_night.webp'),
     w_partly: require('../../assets/art/adventures/w_partly.webp'),
     w_rainy: require('../../assets/art/adventures/w_rainy.webp'),
     w_snow: require('../../assets/art/adventures/w_snow.webp'),
     w_storm: require('../../assets/art/adventures/w_storm.webp'),
     w_sunny: require('../../assets/art/adventures/w_sunny.webp'),
+    walk_ready: require('../../assets/art/adventures/walk_ready.webp'),
+    walk_scene: require('../../assets/art/adventures/walk_scene.webp'),
   } as Record<string, number>,
   /** section illustrations from the same set */
   section: {

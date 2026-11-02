@@ -12,7 +12,7 @@ import { listWalkBadges, listWalks, type WalkBadge } from '../data/walkRepo';
 import { ADVENTURE_BADGES, AdventureBadgeId, Walk, adventureBadge, badgeProgress, durationText, isValidWalk, timeOfDay, timeOfDayLabel, walkEnd, walkStats } from '../domain/walks';
 import { formatTemp, weatherArt } from '../domain/weather';
 import { formatDateLong } from '../ui/forms';
-import { Stamp, TIME_ART, WEATHER_ART } from '../features/adventures';
+import { Stamp, TimeArt, WEATHER_ART } from '../features/adventures';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CircleButton, Pill, T } from '../ui/primitives';
 import { Bouncy } from '../ui/motion';
@@ -64,9 +64,7 @@ export default function Passport() {
         </View>
         {/* the cover */}
         <Animated.View entering={reduceMotion ? undefined : FadeInDown.duration(260)} style={styles.cover}>
-          <View style={styles.book}>
-            <Image source={ART.care.walk!} style={{ width: 44, height: 44 }} />
-          </View>
+          <Image source={ART.adventures.passport_cover} style={{ width: 76, height: 76 }} accessibilityIgnoresInvertColors />
           <View style={{ flex: 1 }}>
             <T weight="black" style={styles.coverTitle} accessibilityRole="header">
               {t('{name}’s Paw Passport', { name: pet.name })}
@@ -157,7 +155,7 @@ function WalkCard({ w, unit, badges }: { w: Walk; unit: 'C' | 'F'; badges: WalkB
   const date = formatDateLong(dayKey(w.startedAt));
   return (
     <Bouncy scaleTo={0.98} onPress={() => router.push({ pathname: '/adventure', params: { id: w.id } })} accessibilityRole="button" accessibilityLabel={`${date}, ${durationText(w.durationMs ?? 0)}, ${timeOfDayLabel(tod)}`} style={styles.walkCard}>
-      <Image source={art ? WEATHER_ART[art] : TIME_ART[tod]} style={{ width: 52, height: 52 }} />
+      {art ? <Image source={WEATHER_ART[art]} style={{ width: 52, height: 52 }} /> : <TimeArt tod={tod} size={52} />}
       <View style={{ flex: 1, gap: 2 }}>
         <T weight="black" style={{ fontSize: 16 }}>
           {date}
@@ -167,7 +165,7 @@ function WalkCard({ w, unit, badges }: { w: Walk; unit: 'C' | 'F'; badges: WalkB
           {w.weather?.available ? ` · ${formatTemp(w.weather.tempC, unit)}` : ''}
         </T>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Image source={TIME_ART[tod]} style={{ width: 18, height: 18 }} />
+          <TimeArt tod={tod} size={22} />
           <T style={{ color: colors.muted, fontSize: 13 }}>{timeOfDayLabel(tod)}</T>
           {w.note ? <T style={{ color: colors.muted, fontSize: 13 }}>· ✎</T> : null}
           {w.photoUri ? <T style={{ color: colors.muted, fontSize: 13 }}>· 📷</T> : null}
@@ -217,7 +215,7 @@ function BadgeDetail({ id, got, valid }: { id: AdventureBadgeId; got: WalkBadge 
 function Empty({ name }: { name: string }) {
   return (
     <View style={styles.empty}>
-      <Image source={ART.section.leash} style={{ width: 110, height: 110 }} />
+      <Image source={ART.adventures.walk_ready} style={{ width: 130, height: 130 }} />
       <T weight="black" style={{ fontSize: 18, textAlign: 'center' }}>
         {t('No adventures yet')}
       </T>
@@ -236,7 +234,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
   topRow: { flexDirection: 'row', paddingHorizontal: 16 },
   cover: { flexDirection: 'row', alignItems: 'center', gap: 12, margin: 20, marginTop: 10, padding: 16, borderRadius: 26, backgroundColor: '#E6F4DE' },
-  book: { width: 62, height: 70, borderRadius: 12, backgroundColor: '#2F9E5A', alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
   coverTitle: { fontSize: 22, lineHeight: 27, color: '#1F4D2B' },
   seg: { flexDirection: 'row', backgroundColor: '#E8EAEE', borderRadius: 22, padding: 4, marginHorizontal: 20, marginBottom: 16 },
   segBtn: { flex: 1, height: 40, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
