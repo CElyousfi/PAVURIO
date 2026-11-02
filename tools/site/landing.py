@@ -146,6 +146,7 @@ h2{font-size:clamp(36px,4.6vw,60px)}
 .press h2{font-size:clamp(30px,3.4vw,44px)}
 .press .lead{color:#4a5568}
 .pbtn{display:inline-block;background:var(--cyan);color:#fff;font-weight:900;border-radius:999px;padding:14px 26px;text-decoration:none;box-shadow:0 10px 24px rgba(22,179,211,.35);transition:transform .2s}.pbtn:hover{transform:translateY(-2px)}
+.mail{margin:12px 0 0;font-weight:800;color:#6b7383;font-size:15px}
 .kit{display:flex;gap:16px;justify-content:center;margin:30px 0}.kit img{width:84px;height:84px;object-fit:contain;background:#fff;border-radius:22px;padding:8px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
 .foot{margin-top:36px;display:flex;flex-direction:column;align-items:center;gap:14px;font-weight:800;font-size:15px;color:#5b6474}
 .foot nav{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}.foot a{text-decoration:none}.foot a:hover{color:var(--cyan)}
@@ -301,7 +302,7 @@ def body(lang, up, play_url, legal, lang_links):
     nav = ''.join(f'<a href="{h}">{E(n)}</a>' for h, n in legal)
     s13 = f"""<section class="band press"><div class="wrap center"><h2 class="reveal">{E(t['press_h'])}</h2><p class="lead reveal d1">{E(t['press_p'])}</p>
 <div class="kit reveal d1"><img src="{I('app_icon')}" alt=""><img src="{I('duo_hug')}" alt=""><img src="{I('dog_party')}" alt=""><img src="{I('cat_cheer')}" alt=""></div>
-<a class="pbtn reveal d2" href="mailto:lesepavistespro@gmail.com?subject=Pavurio%20press%20kit">{E(t['press_btn'])}</a>
+<a class="pbtn reveal d2" href="mailto:lesepavistespro@gmail.com?subject=Pavurio%20press%20kit">{E(t['press_btn'])}</a><p class="mail reveal d2">lesepavistespro@gmail.com</p>
 <footer class="foot"><nav>{nav}<a href="mailto:lesepavistespro@gmail.com">Contact</a></nav><div class="langs">{lang_links}</div><div class="copy">© 2026 Pavurio · All rights reserved</div></footer>
 </div></section>"""
 
