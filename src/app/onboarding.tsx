@@ -41,6 +41,18 @@ function suggestions(species: Species, plan: Plan): Suggestion[] {
   return out;
 }
 
+/** the welcome pet colours in band by band, like Waterllama's llama */
+const WELCOME_STACK = [
+  { color: CARE.meal.color, from: 0, to: 0.24 },
+  { color: CARE.water.color, from: 0.24, to: 0.46 },
+  { color: CARE.walk.color, from: 0.46, to: 0.7 },
+  { color: CARE.play.color, from: 0.7, to: 1 },
+];
+const WELCOME_STACK_CAT = [
+  { color: CARE.water.color, from: 0, to: 0.3 },
+  { color: CARE.meal.color, from: 0.3, to: 0.62 },
+];
+
 type Step = 'welcome' | 'species' | 'name' | 'look' | 'dates' | 'plan' | 'first' | 'reminders';
 const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'dates', 'plan', 'first', 'reminders'];
 const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom' };
@@ -309,7 +321,8 @@ export default function Onboarding() {
               species={created.species}
               appearance={created.appearance}
               size={petSize * 0.9}
-              progress={firstLogged ? Math.max(0.08, computeProgress(plan, [{ type: firstType, occurredAt: Date.now() }]).ratio) : 0}
+              progress={firstLogged ? Math.max(0.12, computeProgress(plan, [{ type: firstType, occurredAt: Date.now() }]).level) : 0}
+              stack={[{ color: CARE[firstType].color, from: 0, to: 1 }]}
               clip={clip}
               onClipEnd={() => setClip(null)}
               reduceMotion={reduceMotion}
@@ -504,7 +517,7 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
             </View>
             <View style={styles.hero}>
               {i === 0 ? (
-                <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} reduceMotion={reduceMotion} interactive active={page === 0} />
+                <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} stack={WELCOME_STACK} reduceMotion={reduceMotion} interactive active={page === 0} />
               ) : i === 1 ? (
                 <View style={{ alignItems: 'center' }}>
                   <NotifPreview
@@ -514,7 +527,7 @@ function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onSta
                     play={page === 1}
                     style={{ marginBottom: 10, width: size + 20 }}
                   />
-                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={1} reduceMotion={reduceMotion} active={page === 1} />
+                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={0.62} stack={WELCOME_STACK_CAT} reduceMotion={reduceMotion} active={page === 1} />
                 </View>
               ) : (
                 <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} progress={1} clip={page === 2 ? clip : null} onClipEnd={() => setClip(page === 2 ? { name: 'celebrate', nonce: Date.now() } : null)} reduceMotion={reduceMotion} active={page === 2} />

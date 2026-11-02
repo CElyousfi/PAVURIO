@@ -286,6 +286,11 @@ function ClipView({
           </View>
         </BandWindow>
       ))}
+      {/* the art's own shading laid over the flat colours (luminosity blend): eyes, ears and fur lines stay
+          readable on the gray and pick up each band's colour, like the llama's face showing through its fill */}
+      <View pointerEvents="none" style={[box, styles.detail]}>
+        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} />
+      </View>
     </>
   );
 }
@@ -498,5 +503,6 @@ function Shadow({ geo }: { geo: Geo }) {
 }
 
 const styles = StyleSheet.create({
+  detail: { mixBlendMode: 'luminosity', opacity: 0.55 },
   band: { position: 'absolute', overflow: 'hidden' },
 });
