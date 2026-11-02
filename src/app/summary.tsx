@@ -12,7 +12,7 @@ import { useEngagement } from '../state/Engagement';
 import { MonthGrid, MonthNav } from '../ui/forms';
 import { Bouncy, CountUp, Ring, motionReduced } from '../ui/motion';
 import { CircleButton, T } from '../ui/primitives';
-import { colors, softShadow } from '../ui/theme';
+import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
@@ -36,10 +36,12 @@ function Column({ col, max, h, index }: { col: Col; max: number; h: number; inde
             {col.total}
           </T>
         ) : null}
-        <Animated.View style={[{ width: '72%', height, justifyContent: 'flex-end', gap: 2, transformOrigin: 'bottom' }, a]}>
-          {col.parts.map((p) => (
-            <View key={p.type} style={{ height: Math.max(3, (p.n / col.total) * height - 2), borderRadius: 6, backgroundColor: CARE[p.type].color }} />
-          ))}
+        <Animated.View style={[{ width: '74%', height, justifyContent: 'flex-end', gap: 3, transformOrigin: 'bottom' }, a]}>
+          {col.parts.flatMap((p) =>
+            Array.from({ length: p.n }, (_, k) => (
+              <View key={`${p.type}-${k}`} style={{ height: Math.max(3, height / Math.max(1, col.total) - 3), borderRadius: 7, backgroundColor: CARE[p.type].color }} />
+            )),
+          )}
         </Animated.View>
       </View>
       <T weight="black" style={{ fontSize: 11, marginTop: 6, color: col.highlight ? colors.brand : colors.muted }}>
@@ -124,15 +126,15 @@ export default function Summary() {
         </View>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
           <View style={{ alignItems: 'center', marginTop: 4 }}>
-            <Ring size={170} stroke={16} value={todayProgress.ratio} track={colors.brandSoft}>
-              <View style={{ alignItems: 'center' }}>
+            <Ring size={196} stroke={11} value={todayProgress.ratio} color="#4FD0D9" track="transparent">
+              <View style={styles.disc}>
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                  <CountUp value={Math.round(todayProgress.ratio * 100)} style={{ fontSize: 44, color: colors.brand }} />
-                  <T weight="black" style={{ fontSize: 22, color: colors.brand }}>
+                  <CountUp value={Math.round(todayProgress.ratio * 100)} style={{ fontSize: 48, color: '#FFFFFF' }} />
+                  <T weight="black" style={{ fontSize: 30, color: '#FFFFFF' }}>
                     %
                   </T>
                 </View>
-                <T weight="black" style={{ fontSize: 11, color: colors.muted, letterSpacing: 1.2, textAlign: 'center' }}>
+                <T weight="black" style={{ fontSize: 12, color: '#FFFFFF', letterSpacing: 1.2, textAlign: 'center' }}>
                   {t("TODAY'S PLAN")}
                 </T>
               </View>
@@ -142,7 +144,7 @@ export default function Summary() {
             </T>
           </View>
 
-          <View style={[styles.card, softShadow]}>
+          <View style={styles.card}>
             <View style={styles.seg}>
               {(['days', 'weeks', 'months'] as Range[]).map((r) => (
                 <Pressable key={r} accessibilityRole="tab" accessibilityState={{ selected: range === r }} onPress={() => pick(r)} style={[styles.segBtn, range === r && styles.segOn]}>
@@ -166,9 +168,14 @@ export default function Summary() {
                 <T style={{ color: colors.muted }}>{t('Nothing logged in this period yet.')}</T>
               ) : (
                 legend.map((l) => (
-                  <View key={l.type} style={[styles.chip, { backgroundColor: CARE[l.type].tint }]}>
-                    <T weight="black" style={{ fontSize: 12, color: CARE[l.type].color }}>
-                      {l.pct}% {CARE[l.type].label}
+                  <View key={l.type} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <View style={[styles.chip, { backgroundColor: CARE[l.type].tint }]}>
+                      <T weight="black" style={{ fontSize: 12, color: CARE[l.type].color }}>
+                        {l.pct}%
+                      </T>
+                    </View>
+                    <T weight="black" style={{ fontSize: 15, color: CARE[l.type].color }}>
+                      {CARE[l.type].label}
                     </T>
                   </View>
                 ))
@@ -176,7 +183,7 @@ export default function Summary() {
             </View>
           </View>
 
-          <View style={[styles.card, softShadow]}>
+          <View style={styles.calendar}>
             <MonthNav month={month} onChange={setMonth} />
             <MonthGrid month={month} selected={null} dots={dots} maxDay={today} onSelect={(k) => router.push({ pathname: '/day', params: { day: k } })} />
             <View style={styles.legend}>
@@ -204,11 +211,13 @@ export default function Summary() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
   top: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, zIndex: 2 },
-  card: { backgroundColor: '#FFFFFF', borderRadius: 28, padding: 16, marginTop: 20 },
-  seg: { flexDirection: 'row', backgroundColor: colors.line, borderRadius: 18, padding: 4 },
-  segBtn: { flex: 1, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  disc: { width: 166, height: 166, borderRadius: 83, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
+  card: { backgroundColor: colors.card, borderRadius: 32, padding: 18, marginTop: 22 },
+  calendar: { marginTop: 26 },
+  seg: { flexDirection: 'row', backgroundColor: '#E8EAEE', borderRadius: 22, padding: 4 },
+  segBtn: { flex: 1, height: 42, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   segOn: { backgroundColor: '#FFFFFF' },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 14, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 12 },
-  chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12 },
+  chip: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 11 },
   link: { alignSelf: 'center', marginTop: 16, padding: 10 },
 });

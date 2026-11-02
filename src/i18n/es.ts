@@ -979,4 +979,8 @@ export const ES: Record<string, string> = {
   "When and notes": "Cuándo y notas",
   "Delete {label}?": "¿Eliminar {label}?",
   "This entry will be removed from the day.": "Esta entrada se quitará del día.",
+  "LEAVE": "SALIR",
+  "TELL FRIENDS": "CONTAR A AMIGOS",
+  "What to do": "Qué hacer",
+  "START NOW": "EMPEZAR",
 };

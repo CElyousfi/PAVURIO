@@ -278,4 +278,8 @@ export const FR2: Record<string, string> = {
   "When and notes": "Quand et notes",
   "Delete {label}?": "Supprimer : {label} ?",
   "This entry will be removed from the day.": "Cette entrée sera retirée de la journée.",
+  "LEAVE": "QUITTER",
+  "TELL FRIENDS": "PARTAGER",
+  "What to do": "Que faire",
+  "START NOW": "COMMENCER",
 };

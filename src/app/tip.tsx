@@ -9,7 +9,7 @@ import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
 import { Bouncy, Float } from '../ui/motion';
-import { CircleButton, T } from '../ui/primitives';
+import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
@@ -37,54 +37,54 @@ export default function TipReader() {
     <View style={[styles.root, { backgroundColor: tip.tint, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }]}>
       <View style={{ width: W, alignSelf: 'center', flex: 1 }}>
         <View style={styles.top}>
+          <Bouncy onPress={() => router.back()} style={styles.leave} accessibilityRole="button" accessibilityLabel={t('Close')} scaleTo={0.92}>
+            <T weight="black" style={{ fontSize: 13, letterSpacing: 1.2, color: '#00000055' }}>
+              {t('LEAVE')}
+            </T>
+          </Bouncy>
+        </View>
+        <View style={styles.progress}>
           <View style={styles.bars}>
             {tip.slides.map((_, i) => (
-              <View key={i} style={[styles.bar, { backgroundColor: i <= page ? tip.color : '#00000014' }]} />
+              <View key={i} style={[styles.bar, { backgroundColor: i <= page ? colors.ink : '#FFFFFF99', flex: i === page ? 1.6 : 1 }]} />
             ))}
           </View>
-          <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={44} />
+          <View style={[styles.done, { backgroundColor: page === last ? colors.ink : '#FFFFFF99' }]}>
+            <Icon name="check" size={16} color={page === last ? '#FFFFFF' : tip.color} />
+          </View>
         </View>
-        <View style={{ alignItems: 'center', marginTop: 10 }}>
-          <T weight="black" style={{ color: tip.color, fontSize: 12, letterSpacing: 1.6 }}>
-            {tipText(tip.kicker).toUpperCase()}
-          </T>
-          <T weight="black" style={{ fontSize: 22, textAlign: 'center', marginTop: 2, paddingHorizontal: 24 }}>
-            {tipText(tip.title)}
-          </T>
-        </View>
-        <Float style={{ alignItems: 'center', marginVertical: 18 }} amount={7}>
-          {ART.tips[tip.id] ? <Scene source={ART.tips[tip.id]!} width={170} height={200} border={5} tilt={2} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={150} />}
-        </Float>
-        <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={onScroll} onScroll={onScroll} scrollEventThrottle={32} style={{ flexGrow: 0 }}>
-          {tip.slides.map((s, i) => (
-            <View key={i} style={{ width: W, paddingHorizontal: 22 }}>
-              <Animated.View entering={FadeIn.delay(i === 0 ? 150 : 0)} style={styles.card}>
-                <T weight="black" style={{ color: tip.color, fontSize: 14 }}>
-                  {i + 1}/{tip.slides.length}
+        <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={onScroll} onScroll={onScroll} scrollEventThrottle={32} style={{ flex: 1 }}>
+          {tip.slides.map((sl, i) => (
+            <View key={i} style={{ width: W, paddingHorizontal: 26 }}>
+              <Animated.View entering={FadeIn.delay(i === 0 ? 120 : 0)}>
+                <T weight="black" style={{ color: tip.color, fontSize: 13, letterSpacing: 1.6, marginTop: 22 }}>
+                  {i === 0 ? tipText(tip.kicker).toUpperCase() : `${i + 1}/${tip.slides.length}`}
                 </T>
-                <T weight="black" style={{ fontSize: 22, marginTop: 6, lineHeight: 27 }}>
-                  {tipText(s.title)}
+                <T weight="black" style={styles.title}>
+                  {i === 0 ? tipText(tip.title) : tipText(sl.title)}
                 </T>
-                <T style={{ fontSize: 17, color: colors.inkSoft, marginTop: 10, lineHeight: 25 }}>{tipText(s.body)}</T>
+                <T style={styles.body}>{i === 0 ? `${tipText(sl.title)} — ${tipText(sl.body)}` : tipText(sl.body)}</T>
               </Animated.View>
             </View>
           ))}
         </ScrollView>
-        <View style={{ flex: 1 }} />
-        <View style={{ paddingHorizontal: 22, gap: 10 }}>
-          <Bouncy onPress={() => (page < last ? go(page + 1) : router.back())} style={[styles.cta, { backgroundColor: tip.color }]} accessibilityRole="button" testID="tip-next">
-            <T weight="black" style={{ color: '#FFFFFF', fontSize: 18 }}>
-              {page < last ? t('Next') : t('Got it!')}
+        <Float style={{ alignItems: 'center', marginBottom: 14 }} amount={6}>
+          {ART.tips[tip.id] ? <Scene source={ART.tips[tip.id]!} width={200} height={230} border={6} tilt={-2} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={170} />}
+        </Float>
+        <View style={{ paddingHorizontal: 22, gap: 6, alignItems: 'center' }}>
+          <Bouncy onPress={() => (page < last ? go(page + 1) : router.back())} style={[styles.cta, { backgroundColor: colors.ink }]} accessibilityRole="button" testID="tip-next">
+            <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 1 }}>
+              {page < last ? t('NEXT') : t('Got it!')}
             </T>
           </Bouncy>
           {page === last ? (
             <Bouncy
-              onPress={() => Share.share({ message: `${tipText(tip.title)}\n\n${tip.slides.map((s) => `• ${tipText(s.title)} — ${tipText(s.body)}`).join('\n')}\n\n${t('From Pavurio')}` })}
+              onPress={() => Share.share({ message: `${tipText(tip.title)}\n\n${tip.slides.map((x) => `• ${tipText(x.title)} — ${tipText(x.body)}`).join('\n')}\n\n${t('From Pavurio')}` })}
               style={styles.ghost}
               accessibilityRole="button"
             >
-              <T weight="black" style={{ color: tip.color, fontSize: 15 }}>
-                {t('Share this tip')}
+              <T weight="black" style={{ color: colors.ink, fontSize: 14, letterSpacing: 1 }}>
+                {t('TELL FRIENDS')}
               </T>
             </Bouncy>
           ) : null}
@@ -96,10 +96,14 @@ export default function TipReader() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  top: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 18 },
+  top: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 22 },
+  leave: { height: 40, paddingHorizontal: 18, borderRadius: 20, backgroundColor: '#FFFFFFAA', justifyContent: 'center' },
+  progress: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 26, marginTop: 18 },
   bars: { flex: 1, flexDirection: 'row', gap: 6 },
-  bar: { flex: 1, height: 5, borderRadius: 3 },
-  card: { backgroundColor: '#FFFFFF', borderRadius: 28, padding: 22, minHeight: 190 },
-  cta: { height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center' },
-  ghost: { height: 44, alignItems: 'center', justifyContent: 'center' },
+  bar: { height: 6, borderRadius: 3 },
+  done: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 34, lineHeight: 40, marginTop: 6, color: colors.ink },
+  body: { fontSize: 18, color: colors.inkSoft, marginTop: 14, lineHeight: 28 },
+  cta: { height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', minWidth: 240, paddingHorizontal: 34 },
+  ghost: { height: 40, alignItems: 'center', justifyContent: 'center' },
 });

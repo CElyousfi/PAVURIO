@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,10 +9,9 @@ import { ChallengeCard, Flame } from '../features/HomeFeed';
 import { Medal } from '../features/Medal';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
-import { Sheet } from '../ui/forms';
 import { Bar, Bouncy, CountUp, Enter, PopIn } from '../ui/motion';
-import { CircleButton, T } from '../ui/primitives';
-import { colors, softShadow } from '../ui/theme';
+import { CircleButton, Icon, T } from '../ui/primitives';
+import { colors } from '../ui/theme';
 import { t, tn } from '../i18n';
 
 export default function Achievements() {
@@ -19,78 +19,105 @@ export default function Achievements() {
   const { streak, earned, stats, completedChallengeKeys } = useEngagement();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const [open, setOpen] = useState<BadgeDef | null>(null);
-  const lastOpen = useRef<BadgeDef | null>(null);
-  if (open) lastOpen.current = open;
-  const shown = open ?? lastOpen.current;
+  const [sel, setSel] = useState<string | null>(null);
   if (!pet) return null;
   const W = Math.min(width, 560);
-  const cols = 3;
-  const cell = (W - 40 - (cols - 1) * 12) / cols;
+  const cols = 4;
+  const gap = 8;
+  const cell = (W - 40 - (cols - 1) * gap) / cols;
   const list = CHALLENGES.filter((c) => careOk(c, pet.species));
   const mine = badgesFor(pet.species);
+  const got = mine.filter((b) => earned.includes(b.key));
+  // the header shows the tapped badge, else the latest earned one, else the first to earn
+  const shown: BadgeDef = mine.find((b) => b.key === sel) ?? got[got.length - 1] ?? mine[0];
+  const shownGot = earned.includes(shown.key);
+  const goal = stats ? shown.goal(stats) : null;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={{ width: W, alignSelf: 'center', flex: 1 }}>
         <View style={styles.top}>
-          <CircleButton icon="back" label={t('Back')} onPress={() => router.back()} size={46} />
-          <T weight="black" style={{ fontSize: 20 }} accessibilityRole="header">
-            {t('Achievements')}
-          </T>
-          <View style={{ width: 46 }} />
-        </View>
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
-          <View style={[styles.streak, softShadow]}>
-            <PopIn>
-              <Flame size={64} lit={streak.current > 0} />
-            </PopIn>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6, marginTop: 6 }}>
-              <CountUp value={streak.current} style={{ fontSize: 56, color: '#FF7A1A', lineHeight: 62 }} />
-              <T weight="black" style={{ fontSize: 20, color: '#FF7A1A' }}>
-                {tn(streak.current, 'day', 'days')}
-              </T>
-            </View>
-            <T weight="xbold" style={{ color: colors.muted }}>
-              {t('Current streak · best {n}', { n: streak.best })}
+          <View style={styles.tag}>
+            <T weight="black" style={{ fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>
+              {t('Achievements').toUpperCase()}
             </T>
           </View>
+          <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={46} />
+        </View>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
+          <Animated.View key={shown.key} entering={FadeIn.duration(200)} style={styles.head}>
+            <View style={styles.headArt}>
+              <PopIn key={shown.key}>
+                <Medal def={shown} size={92} locked={!shownGot} />
+              </PopIn>
+            </View>
+            <View style={{ flex: 1 }}>
+              <T weight="black" style={{ fontSize: 21 }} numberOfLines={2}>
+                {badgeText(shown.title)}
+              </T>
+              <T style={{ color: colors.muted, fontSize: 14, lineHeight: 19, marginTop: 2 }}>{badgeText(shown.how)}</T>
+              <T weight="black" style={{ color: colors.brand, fontSize: 13, marginTop: 4 }}>
+                {shownGot ? `✓ ${t('Earned')}` : goal ? `${goal[0]} / ${goal[1]}` : ''}
+              </T>
+            </View>
+          </Animated.View>
+          {!shownGot && goal ? (
+            <View style={{ marginTop: 12 }}>
+              <Bar value={goal[0] / goal[1]} color={shown.color} height={10} />
+            </View>
+          ) : null}
 
-          <View style={styles.statsRow}>
-            {[
-              { n: stats?.logs ?? 0, l: t('cares logged') },
-              { n: earned.length, l: t('badges') },
-              { n: stats?.challengesDone ?? 0, l: t('challenges') },
-            ].map((s, i) => (
-              <View key={i} style={styles.stat}>
-                <CountUp value={s.n} style={{ fontSize: 26 }} />
-                <T weight="xbold" style={{ color: colors.muted, fontSize: 12 }}>
-                  {s.l}
-                </T>
-              </View>
-            ))}
+          <View style={styles.sectionRow}>
+            <T weight="black" style={styles.h2}>
+              {t('Badges')}
+            </T>
+            <View style={styles.countPill}>
+              <T weight="black" style={{ color: '#FFFFFF', fontSize: 13 }}>
+                {got.length}/{mine.length}
+              </T>
+            </View>
           </View>
-
-          <T weight="black" style={styles.h2}>
-            {t('Badges')} · {mine.filter((b) => earned.includes(b.key)).length}/{mine.length}
-          </T>
           <View style={styles.grid}>
             {mine.map((b, i) => {
-              const got = earned.includes(b.key);
+              const has = earned.includes(b.key);
+              const on = b.key === shown.key;
               return (
                 <Enter key={b.key} index={i} style={{ width: cell }}>
-                  <Bouncy onPress={() => setOpen(b)} style={styles.cell} accessibilityRole="button" accessibilityLabel={`${badgeText(b.title)}${got ? '' : `, ${t('locked')}`}`}>
-                    <Medal def={b} size={cell * 0.7} locked={!got} />
-                    <T weight="black" style={{ fontSize: 13, textAlign: 'center', marginTop: 8, color: got ? colors.ink : colors.muted }} numberOfLines={2}>
-                      {badgeText(b.title)}
-                    </T>
+                  <Bouncy onPress={() => setSel(b.key)} scaleTo={0.92} style={[styles.cell, { height: cell }]} accessibilityRole="button" accessibilityState={{ selected: on }} accessibilityLabel={`${badgeText(b.title)}${has ? '' : `, ${t('locked')}`}`}>
+                    <Medal def={b} size={cell * 0.78} locked={!has} lockedTint="#C9EBF0" plain />
+                    {on ? (
+                      <View style={styles.check}>
+                        <Icon name="check" size={12} color="#FFFFFF" />
+                      </View>
+                    ) : null}
                   </Bouncy>
                 </Enter>
               );
             })}
           </View>
 
-          <T weight="black" style={styles.h2}>
+          <View style={styles.streak}>
+            <Flame size={44} lit={streak.current > 0} />
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
+                <CountUp value={streak.current} style={{ fontSize: 30, color: '#FF7A1A' }} />
+                <T weight="black" style={{ fontSize: 16, color: '#FF7A1A' }}>
+                  {tn(streak.current, 'day', 'days')}
+                </T>
+              </View>
+              <T weight="xbold" style={{ color: colors.muted, fontSize: 13 }}>
+                {t('Current streak · best {n}', { n: streak.best })}
+              </T>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <CountUp value={stats?.logs ?? 0} style={{ fontSize: 22 }} />
+              <T weight="xbold" style={{ color: colors.muted, fontSize: 12 }}>
+                {t('cares logged')}
+              </T>
+            </View>
+          </View>
+
+          <T weight="black" style={[styles.h2, { marginTop: 26, marginBottom: 12 }]}>
             {t('Challenges')}
           </T>
           <View style={{ gap: 12 }}>
@@ -100,29 +127,6 @@ export default function Achievements() {
           </View>
         </ScrollView>
       </View>
-
-      <Sheet visible={!!open} onClose={() => setOpen(null)} title={shown ? badgeText(shown.title) : ''}>
-        {shown ? (
-          <View style={{ alignItems: 'center', paddingBottom: 10 }}>
-            <PopIn>
-              <Medal def={shown} size={130} locked={!earned.includes(shown.key)} />
-            </PopIn>
-            <T style={{ color: colors.inkSoft, fontSize: 16, marginTop: 14, textAlign: 'center' }}>{badgeText(shown.how)}</T>
-            {!earned.includes(shown.key) && stats ? (
-              <View style={{ alignSelf: 'stretch', marginTop: 16 }}>
-                <Bar value={shown.goal(stats)[0] / shown.goal(stats)[1]} color={shown.color} height={12} />
-                <T weight="black" style={{ textAlign: 'center', marginTop: 6, color: shown.color }}>
-                  {shown.goal(stats)[0]} / {shown.goal(stats)[1]}
-                </T>
-              </View>
-            ) : (
-              <T weight="black" style={{ color: shown.color, marginTop: 12 }}>
-                ✓ {t('Earned')}
-              </T>
-            )}
-          </View>
-        ) : null}
-      </Sheet>
     </View>
   );
 }
@@ -130,10 +134,14 @@ export default function Achievements() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.canvas },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 8 },
-  streak: { alignItems: 'center', backgroundColor: '#FFF6EC', borderRadius: 30, padding: 22, marginTop: 6 },
-  statsRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
-  stat: { flex: 1, alignItems: 'center', backgroundColor: colors.canvasWarm, borderRadius: 20, paddingVertical: 14 },
-  h2: { fontSize: 21, marginTop: 28, marginBottom: 12 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cell: { alignItems: 'center', paddingVertical: 12, borderRadius: 22, backgroundColor: colors.canvasWarm },
+  tag: { height: 32, paddingHorizontal: 14, borderRadius: 16, backgroundColor: colors.card, justifyContent: 'center' },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 8 },
+  headArt: { width: 104, height: 104, borderRadius: 52, backgroundColor: '#FFF4E3', alignItems: 'center', justifyContent: 'center' },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 26, marginBottom: 12 },
+  h2: { fontSize: 24, color: colors.brand },
+  countPill: { backgroundColor: colors.brand, borderRadius: 12, paddingHorizontal: 10, height: 26, justifyContent: 'center' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  cell: { alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: '#E3F6F8' },
+  check: { position: 'absolute', top: 6, left: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FFFFFF' },
+  streak: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFF6EC', borderRadius: 26, padding: 16, marginTop: 22 },
 });
