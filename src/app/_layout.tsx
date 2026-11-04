@@ -116,7 +116,7 @@ function Gate() {
       <WalkLiveBridge />
       <CelebrationHost />
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true, freezeOnBlur: true }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="care" />
         <Stack.Screen name="moments" />

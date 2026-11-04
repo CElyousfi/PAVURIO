@@ -7,6 +7,8 @@ import React from 'react';
 import { ClipKit, ClipMeta, ClipStage } from './ClipStage';
 import { CAT_CLIPS, CAT_CLIP_IMG } from './catClips';
 import type { PetClipName, PetRigProps } from './PetRig';
+import { CAT_DYE } from './catDye';
+import { dyeOf } from '../domain/appearance';
 
 const HAS = new Set(Object.keys(CAT_CLIP_IMG));
 
@@ -18,6 +20,8 @@ export function catClip(name: PetClipName): string | null {
 }
 
 const CAT_KIT: ClipKit = {
+  dye: CAT_DYE,
+  dyeOf: (id) => dyeOf('cat', id),
   clips: CAT_CLIPS as unknown as Record<string, ClipMeta>,
   img: CAT_CLIP_IMG,
   anchor: CAT_CLIPS._anchor,

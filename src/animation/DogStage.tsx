@@ -3,8 +3,12 @@ import React from 'react';
 import { ClipKit, ClipMeta, ClipStage } from './ClipStage';
 import { DOG_ANCHOR, DOG_CLIPS, DOG_CLIP_IMG } from './dogClips';
 import type { PetRigProps } from './PetRig';
+import { DOG_DYE } from './dogDye';
+import { dyeOf } from '../domain/appearance';
 
 const DOG_KIT: ClipKit = {
+  dye: DOG_DYE,
+  dyeOf: (id) => dyeOf('dog', id),
   clips: DOG_CLIPS as unknown as Record<string, ClipMeta>,
   img: DOG_CLIP_IMG,
   anchor: DOG_ANCHOR,

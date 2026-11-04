@@ -4,7 +4,7 @@ import { router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PetRig } from '../animation/PetRig';
 import { useBursts } from '../animation/Burst';
-import { Appearance } from '../domain/appearance';
+import { Appearance, isProCoat } from '../domain/appearance';
 import { ValidationError, updatePet } from '../data/repo';
 import { useApp } from '../state/AppState';
 import { LookPicker } from '../features/PetEditors';
@@ -16,7 +16,7 @@ import { ScreenHeader } from '../ui/forms';
 
 /** Character Studio — appearance is stored locally per pet and previewed live. */
 export default function Studio() {
-  const { pet, db, bump, reduceMotion } = useApp();
+  const { pet, db, bump, reduceMotion, pro } = useApp();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
@@ -37,7 +37,10 @@ export default function Studio() {
   if (!pet || !appearance) return null;
   const dirty = name.trim() !== pet.name || JSON.stringify(appearance) !== JSON.stringify(pet.appearance);
 
+  const locked = !pro && isProCoat(pet.species, appearance.paletteId);
   const save = async () => {
+    // a Pro coat being tried on: the paywall first, then they come back here to save it
+    if (locked) return router.push({ pathname: '/paywall', params: { reason: 'coat', coat: appearance.paletteId } });
     setSaving(true);
     setError(null);
     try {
@@ -83,10 +86,10 @@ export default function Studio() {
             maxLength={40}
             accessibilityLabel={t('Pet name')}
           />
-          <LookPicker species={pet.species} appearance={appearance} onChange={setAppearance} />
+          <LookPicker species={pet.species} appearance={appearance} onChange={setAppearance} pro={pro} />
           {error ? <T style={{ color: colors.danger, textAlign: 'center', marginTop: 10 }}>{error}</T> : null}
           <View style={{ paddingHorizontal: 24, marginTop: 26 }}>
-            <Pill label={t('SAVE LOOK')} onPress={save} loading={saving} disabled={!dirty || !name.trim()} />
+            <Pill label={locked ? t('Keep this coat with Pro') : t('SAVE LOOK')} color={locked ? '#FF8A1F' : colors.ink} onPress={save} loading={saving} disabled={!dirty || !name.trim()} />
           </View>
           <T style={styles.note}>{t('More accessories, outfits and Little World items arrive in a later update.')}</T>
         </View>

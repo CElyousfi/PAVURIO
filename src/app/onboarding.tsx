@@ -7,7 +7,7 @@ import { PetRig, PetClipName } from '../animation/PetRig';
 import { cloud } from '../cloud/firebase';
 import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, Species } from '../domain/care';
-import { Appearance, defaultAppearance } from '../domain/appearance';
+import { Appearance, defaultAppearance, isProCoat } from '../domain/appearance';
 import { Plan, Portions, computeProgress, portionOf } from '../domain/progress';
 import { Pet, ValidationError, createPet, defaultPlan, logCare } from '../data/repo';
 import { createSchedule } from '../data/careRepo';
@@ -62,7 +62,7 @@ export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
-  const { db, reload, bump, reduceMotion, language, setLanguage, setWeightUnit, settings, pets } = useApp();
+  const { db, reload, bump, reduceMotion, language, setLanguage, setWeightUnit, settings, pets, pro } = useApp();
   const params = useLocalSearchParams<{ add?: string }>();
   const adding = params.add === '1';
   const [step, setStep] = useState<Step>(adding ? 'species' : 'welcome');
@@ -164,6 +164,9 @@ export default function Onboarding() {
       }
       await reload();
       if (adding) router.dismissTo('/');
+      // a Pro coat chosen while setting up: the paywall leads with keeping it (it goes back to a drawn
+      // coat if they close without Pro)
+      else if (created && !pro && isProCoat(created.species, created.appearance.paletteId)) router.replace({ pathname: '/paywall', params: { reason: 'coat', coat: created.appearance.paletteId, from: 'onboarding' } });
       else router.replace({ pathname: '/paywall', params: { reason: 'onboarding' } });
     } finally {
       setSaving(false);
@@ -263,7 +266,7 @@ export default function Onboarding() {
           <View style={styles.hero}>
             <PetRig species={species} appearance={appearance} size={petSize * 0.8} reduceMotion={reduceMotion} interactive />
           </View>
-          <LookPicker species={species} appearance={appearance} onChange={setAppearance} />
+          <LookPicker species={species} appearance={appearance} onChange={setAppearance} pro={pro} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
             <Pill label={t('LOOKS RIGHT')} onPress={() => go('dates')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
           </View>

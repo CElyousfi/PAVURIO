@@ -28,6 +28,7 @@ import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { Bouncy, ConfettiRain, Pop, Ring, Splash, motionReduced, usePress } from '../ui/motion';
 import { HomeFeed } from '../features/HomeFeed';
+import { ProMomentHost } from '../features/ProMoment';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
 
@@ -373,6 +374,7 @@ function HomeScreen() {
       </View>
 
       <AddFab bottom={insets.bottom + 14} hidden={!!snack} />
+      <ProMomentHost focused={focused} />
 
       {snack ? (
         <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: insets.bottom + 14 }]}>
