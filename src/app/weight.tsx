@@ -8,7 +8,8 @@ import { dayKeyOf } from '../domain/time';
 import { formatWeight, toUnit } from '../features/weight';
 import { useApp } from '../state/AppState';
 import { confirmAsync } from '../ui/confirm';
-import { Card, Chip, DateField, ModalScreen, formatDateLong } from '../ui/forms';
+import { Card, Chip, DateField, EmptyState, ModalScreen, formatDateLong } from '../ui/forms';
+import { Sticker, moodSticker } from '../ui/Sticker';
 import { Icon, Label, Pill, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
 import { errorFeedback, successFeedback } from '../native/haptics';
@@ -98,11 +99,11 @@ export default function WeightScreen() {
           <WeightChart data={series} w={chartW} h={180} unit={unit} />
         </Card>
       ) : series.length === 0 && !adding ? (
-        <Card>
-          <T style={{ color: colors.muted, lineHeight: 21 }}>
-            {t('No weights yet. Weigh {name} every few weeks to spot changes early — a chart appears after two entries.', { name: pet.name })}
-          </T>
-        </Card>
+        <EmptyState
+          art={<Sticker name={moodSticker(pet.species, 'curious')} size={130} />}
+          title={t('Weight')}
+          body={t('No weights yet. Weigh {name} every few weeks to spot changes early — a chart appears after two entries.', { name: pet.name })}
+        />
       ) : null}
 
       {list.length > 0 ? (

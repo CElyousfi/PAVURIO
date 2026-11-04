@@ -1,6 +1,7 @@
 /** Clucky-style interactions (Nov 2026): arc time wheels, slide to done, result screen, Play time, tap to wake. */
 
 export const FR5: Record<string, string> = {
+  'Care, records, memories & settings': 'Soins, dossiers, souvenirs et réglages',
   On: 'Activé',
   Off: 'Désactivé',
   'Your first report is on its way.': 'Votre premier bilan arrive bientôt.',
@@ -109,6 +110,7 @@ export const FR5: Record<string, string> = {
 };
 
 export const ES5: Record<string, string> = {
+  'Care, records, memories & settings': 'Cuidados, registros, recuerdos y ajustes',
   On: 'Activado',
   Off: 'Desactivado',
   'Your first report is on its way.': 'Tu primer informe está en camino.',
@@ -217,6 +219,7 @@ export const ES5: Record<string, string> = {
 };
 
 export const PT5: Record<string, string> = {
+  'Care, records, memories & settings': 'Cuidados, registros, memórias e ajustes',
   On: 'Ativado',
   Off: 'Desativado',
   'Your first report is on its way.': 'Seu primeiro relatório está a caminho.',

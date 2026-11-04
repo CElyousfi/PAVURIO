@@ -168,7 +168,7 @@ export function CareHeatmap({ plan, byDay, today }: { plan: Plan; byDay: DayLogs
     const prev = i > 0 ? parseDayKey(grid[i - 1][0].k).getMonth() : -1;
     return m !== prev ? monthNamesShort()[m].replace('.', '') : '';
   });
-  const shade = (r: number, logged: boolean) => (r >= 1 ? colors.brand : r >= 0.66 ? '#5CCFD7' : r >= 0.33 ? '#A6E4E8' : logged || r > 0 ? '#D3F1F3' : '#E9EBEF');
+  const shade = (r: number, logged: boolean) => (r >= 1 ? colors.brand : r >= 0.66 ? '#5CCFD7' : r >= 0.33 ? '#A6E4E8' : logged || r > 0 ? '#D3F1F3' : '#E2E5EA');
   return (
     <View style={styles.cardWhite}>
       <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
@@ -231,10 +231,10 @@ const styles = StyleSheet.create({
   reportPet: { position: 'absolute', right: -6, bottom: -10, opacity: 0.9 },
   chips: { flexDirection: 'row', gap: 8, marginTop: 12 },
   chip: { flex: 1, backgroundColor: colors.card, borderRadius: 22, paddingVertical: 12, paddingHorizontal: 10, alignItems: 'flex-start', gap: 2 },
-  cardWhite: { backgroundColor: '#FFFFFF', borderRadius: 30, borderWidth: 2, borderColor: colors.line, padding: 16, marginTop: 12 },
+  cardWhite: { backgroundColor: colors.card, borderRadius: 30, padding: 16, marginTop: 12 },
   cardTitle: { fontSize: 19 },
   cardSub: { fontSize: 13, color: colors.muted, marginTop: 1 },
-  barTrack: { width: '82%', height: 120, borderRadius: 20, backgroundColor: '#EEF0F3', overflow: 'hidden', justifyContent: 'flex-end' },
+  barTrack: { width: '82%', height: 120, borderRadius: 20, backgroundColor: '#FFFFFF', overflow: 'hidden', justifyContent: 'flex-end' },
   barFill: { width: '100%', borderRadius: 20 },
   cell: { aspectRatio: 1, borderRadius: 4 },
   cellToday: { borderWidth: 2, borderColor: colors.ink },

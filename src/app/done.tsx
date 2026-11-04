@@ -13,9 +13,9 @@ import { KindIcon, kindMeta } from '../features/routines';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { Flame } from '../features/HomeFeed';
-import { Icon, T } from '../ui/primitives';
+import { Icon, Pill, T } from '../ui/primitives';
 import { LipChip, Sunburst } from '../ui/Reward';
-import { Bouncy, ConfettiRain, motionReduced } from '../ui/motion';
+import { ConfettiRain, motionReduced } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { t, tn } from '../i18n';
 
@@ -87,12 +87,7 @@ export default function Done() {
           />
         </View>
 
-        <Bouncy onPress={home} accessibilityRole="button" accessibilityLabel={t('Back to {name}', { name: pet.name })} style={styles.cta} testID="done-home">
-          <T weight="black" style={styles.ctaText}>
-            {t('Back to {name}', { name: pet.name })}
-          </T>
-          <Icon name="chevR" size={24} color="#FFFFFF" />
-        </Bouncy>
+        <Pill label={t('Back to {name}', { name: pet.name })} onPress={home} style={{ marginHorizontal: 22, alignSelf: 'stretch' }} testID="done-home" />
       </View>
       <ConfettiRain fireKey={fire} colorsList={[meta.color, '#FFC83D', colors.brand, '#FF6B9A']} />
     </View>

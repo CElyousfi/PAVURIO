@@ -26,6 +26,7 @@ import { PetAvatar } from '../animation/PetAvatar';
 import { colors } from '../ui/theme';
 import { uses24h } from '../i18n/dates';
 import { t } from '../i18n';
+import { Segmented } from '../ui/Segmented';
 
 const BG = '#F1F2F4';
 const PILL_W = 150;
@@ -164,23 +165,18 @@ export default function AddReminder() {
 
         {/* mode toggle with a little tail, like a speech bubble */}
         <Animated.View entering={motionReduced() ? undefined : FadeInDown.delay(220).springify().damping(16)} style={[styles.toggleWrap, { top: insets.top + PILL_H - 40 }]}>
-          <View style={styles.toggle}>
-            {(['at', 'in'] as const).map((m) => (
-              <Bouncy
-                key={m}
-                scaleTo={0.94}
-                accessibilityRole="button"
-                accessibilityState={{ selected: mode === m }}
-                onPress={() => setMode(m)}
-                style={[styles.seg, mode === m && { backgroundColor: colors.brand }]}
-                testID={`add-mode-${m}`}
-              >
-                <T weight="black" style={{ fontSize: 14, color: mode === m ? '#FFFFFF' : colors.inkSoft }}>
-                  {m === 'at' ? `☀︎ ${t('At a time')}` : `⏳ ${t('In a while')}`}
-                </T>
-              </Bouncy>
-            ))}
-          </View>
+          <Segmented
+            style={{ width: 290, backgroundColor: '#FFFFFF' }}
+            height={40}
+            value={mode}
+            onChange={setMode}
+            accent="#FFFFFF"
+            thumbColor={colors.brand}
+            options={[
+              { key: 'at', label: `☀︎ ${t('At a time')}`, testID: 'add-mode-at' },
+              { key: 'in', label: `⏳ ${t('In a while')}`, testID: 'add-mode-in' },
+            ]}
+          />
           <View style={styles.tail} />
         </Animated.View>
 

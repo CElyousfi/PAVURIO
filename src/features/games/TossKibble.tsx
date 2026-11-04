@@ -235,7 +235,7 @@ export function TossKibble({ width, onDone }: { width: number; onDone: () => voi
           </T>
         </View>
         <View style={{ marginTop: 8 }}>
-          <Bar value={scoops / SCOOPS} color="#FF8A1F" track={colors.line} height={10} />
+          <Bar value={scoops / SCOOPS} color="#FF8A1F" track="#FFFFFF" height={10} />
         </View>
         <View style={{ height: 30, marginTop: 10, overflow: 'hidden' }}>
           <Animated.View key={line} entering={motionReduced() ? undefined : FadeInUp.duration(220)} exiting={motionReduced() ? undefined : FadeOutUp.duration(160)}>
@@ -260,7 +260,7 @@ export function TossKibble({ width, onDone }: { width: number; onDone: () => voi
 const styles = StyleSheet.create({
   bit: { position: 'absolute', backgroundColor: '#B06A2B', borderWidth: 1.5, borderColor: '#8A4F1C' },
   pet: { position: 'absolute', left: 0, top: 0 },
-  card: { marginHorizontal: 16, marginBottom: 8, backgroundColor: '#FFFFFF', borderRadius: 28, padding: 18, borderWidth: 2, borderColor: colors.line },
+  card: { marginHorizontal: 16, marginBottom: 8, backgroundColor: colors.card, borderRadius: 28, padding: 18 },
   fullWrap: { position: 'absolute', top: '18%', alignSelf: 'center' },
   fullBadge: { width: 96, height: 96, borderRadius: 32, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
 });

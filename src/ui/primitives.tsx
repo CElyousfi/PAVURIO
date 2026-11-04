@@ -120,7 +120,7 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
 
 const styles = StyleSheet.create({
   pill: { height: 62, borderRadius: radius.pill, paddingHorizontal: 34, alignItems: 'center', justifyContent: 'center', minWidth: 200 },
-  pillText: { fontFamily: font.black, fontSize: 20, letterSpacing: 1.2 },
+  pillText: { fontFamily: font.black, fontSize: 20, letterSpacing: 1.2, textTransform: 'uppercase' },
   soft: { paddingHorizontal: 20, height: 46, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
   softSmall: { height: 38, paddingHorizontal: 16 },
   softText: { fontFamily: font.xbold, fontSize: 16 },

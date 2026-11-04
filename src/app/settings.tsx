@@ -11,13 +11,13 @@ import { ART } from '../ui/art';
 import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
-import { Chip } from '../ui/forms';
+import { Chip, TabTitle } from '../ui/forms';
 import { DarkTile } from '../ui/Tiles';
 import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
 import { PlanEditor } from '../features/PetEditors';
-import { CircleButton, Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
+import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
 import { LANGS, LANG_NAMES, t, tn } from '../i18n';
@@ -94,14 +94,8 @@ export default function Settings() {
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: insets.bottom + 30 }}>
         <View style={{ width: W, paddingHorizontal: 20 }}>
-          <View style={styles.topRow}>
-            <CircleButton icon="back" label={t('Back')} onPress={() => router.back()} />
-            <View />
-            <View style={styles.whatsNew}>
-              <T weight="black" style={{ fontSize: 13, letterSpacing: 1 }} accessibilityRole="header">
-                {pet.name.toUpperCase()}
-              </T>
-            </View>
+          <View style={{ marginHorizontal: -20 }}>
+            <TabTitle title={pet.name} subtitle={t('Care, records, memories & settings')} />
           </View>
 
           {/* the hub: Clucky-style dark tiles, art spilling off the corner */}

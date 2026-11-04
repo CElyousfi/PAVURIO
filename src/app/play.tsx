@@ -13,9 +13,9 @@ import { Accelerometer } from 'expo-sensors';
 import { PetRig, PetClipName } from '../animation/PetRig';
 import { CARE } from '../domain/care';
 import { useApp } from '../state/AppState';
-import { CircleButton, Icon, Pill, T } from '../ui/primitives';
+import { CircleButton, Pill, T } from '../ui/primitives';
 import { LipChip, Sunburst } from '../ui/Reward';
-import { Bouncy, ConfettiRain, Pop, Ring, motionReduced } from '../ui/motion';
+import { ConfettiRain, Pop, Ring, motionReduced } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { errorFeedback, petFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
@@ -63,7 +63,7 @@ export default function Play() {
             <View style={styles.hero}>
               <PetRig species={pet.species} appearance={pet.appearance} size={Math.min(W * 0.7, 320)} interactive reduceMotion={reduceMotion} ambient />
             </View>
-            <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'center', marginBottom: 18 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 18, paddingHorizontal: 16 }}>
               <GamePill emoji="🥣" label={t('Kibble')} />
               <GamePill emoji="🐾" label={t('Paw pattern')} />
               <GamePill emoji="🦴" label={t('Treat jar')} />
@@ -376,12 +376,7 @@ function Result({ width, tries, onAgain }: { width: number; tries: number; onAga
         <LipChip icon={<T style={{ fontSize: 20 }}>🐾</T>} value={tries <= 1 ? t('Perfect') : t('{n} tries', { n: tries })} caption={t('Paw pattern')} color={colors.brand} delay={300} />
         <LipChip icon={<T style={{ fontSize: 20 }}>🦴</T>} value={`${SHAKES}/${SHAKES}`} caption={t('Treat jar')} color="#FF8A1F" delay={420} />
       </View>
-      <Bouncy onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('Back to {name}', { name: pet.name })} style={styles.cta} testID="play-done">
-        <T weight="black" style={{ color: '#FFFFFF', fontSize: 20 }}>
-          {t('Back to {name}', { name: pet.name })}
-        </T>
-        <Icon name="chevR" size={24} color="#FFFFFF" />
-      </Bouncy>
+      <Pill label={t('Back to {name}', { name: pet.name })} onPress={() => router.back()} style={{ marginHorizontal: 22, alignSelf: 'stretch' }} testID="play-done" />
       <Pressable onPress={onAgain} accessibilityRole="button" style={{ alignSelf: 'center', paddingTop: 14 }} hitSlop={8} testID="play-again">
         <T weight="black" style={{ color: colors.muted, fontSize: 15 }}>
           {t('Play again')}
@@ -400,7 +395,7 @@ const styles = StyleSheet.create({
   h1: { fontSize: 30, lineHeight: 36, textAlign: 'center', letterSpacing: -0.3 },
   sub: { fontSize: 16, lineHeight: 22, color: colors.muted, textAlign: 'center', marginTop: 8 },
   hero: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  gamePill: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 40, paddingHorizontal: 14, borderRadius: 20, backgroundColor: colors.card },
+  gamePill: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 12, borderRadius: 20, backgroundColor: colors.card },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
   tile: { borderRadius: 34, alignItems: 'center', justifyContent: 'center' },
   seqDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: colors.line },

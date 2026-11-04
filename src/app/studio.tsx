@@ -8,10 +8,11 @@ import { Appearance } from '../domain/appearance';
 import { ValidationError, updatePet } from '../data/repo';
 import { useApp } from '../state/AppState';
 import { LookPicker } from '../features/PetEditors';
-import { CircleButton, Pill, T } from '../ui/primitives';
+import { Pill, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
 import { errorFeedback, petFeedback, successFeedback } from '../native/haptics';
 import { t } from '../i18n';
+import { ScreenHeader } from '../ui/forms';
 
 /** Character Studio — appearance is stored locally per pet and previewed live. */
 export default function Studio() {
@@ -55,11 +56,8 @@ export default function Studio() {
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: insets.bottom + 28 }} keyboardShouldPersistTaps="handled">
         <View style={{ width: W }}>
-          <View style={styles.topRow}>
-            <T weight="black" style={{ fontSize: 22 }} accessibilityRole="header">
-              {t('Character Studio')}
-            </T>
-            <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} />
+          <View style={{ paddingHorizontal: 18 }}>
+            <ScreenHeader title={t('Character Studio')} onClose={() => router.back()} />
           </View>
           <View style={{ alignItems: 'center', marginTop: 4 }}>
             <PetRig

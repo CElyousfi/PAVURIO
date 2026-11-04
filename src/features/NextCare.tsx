@@ -71,7 +71,7 @@ export function NextCareCard({ width }: { width: number }) {
               y1={cy + r1 * Math.sin(a)}
               x2={cx + R * Math.cos(a)}
               y2={cy + R * Math.sin(a)}
-              stroke={i <= lit ? meta.color : colors.line}
+              stroke={i <= lit ? meta.color : '#DADDE3'}
               strokeWidth={long ? 4 : 3}
               strokeLinecap="round"
             />
@@ -116,7 +116,7 @@ export function NextCareCard({ width }: { width: number }) {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#FFFFFF', borderRadius: 30, borderWidth: 2, borderColor: colors.line, paddingTop: 10, paddingHorizontal: 14, paddingBottom: 14, marginTop: 6, overflow: 'hidden' },
+  card: { backgroundColor: colors.card, borderRadius: 30, paddingTop: 10, paddingHorizontal: 14, paddingBottom: 14, marginTop: 6, overflow: 'hidden' },
   chips: { flexDirection: 'row', gap: 8, marginTop: 12 },
-  chip: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, height: 50, paddingHorizontal: 10, borderRadius: 18, backgroundColor: colors.card },
+  chip: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, height: 50, paddingHorizontal: 10, borderRadius: 18, backgroundColor: '#FFFFFF' },
 });
