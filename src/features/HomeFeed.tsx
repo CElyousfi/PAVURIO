@@ -147,26 +147,6 @@ export function HomeFeed({ width }: { width: number }) {
         </Bouncy>
       </Enter>
 
-      {/* Play time: two quick mini-games with the pet */}
-      <Enter index={1}>
-        <Bouncy scaleTo={0.97} onPress={() => router.push('/play')} style={styles.playCard} accessibilityRole="button" accessibilityLabel={t('Play time with {name}', { name: pet.name })} testID="feed-play">
-          <View style={styles.playPaws}>
-            {['#FFB648', '#3DB2FF', '#58C322', '#FF6B9A'].map((c, i) => (
-              <View key={c} style={[styles.playTile, { backgroundColor: c, transform: [{ rotate: `${(i % 2 ? 1 : -1) * 6}deg` }] }]} />
-            ))}
-          </View>
-          <View style={{ flex: 1 }}>
-            <T weight="black" style={{ fontSize: 19 }}>
-              {t('Play time with {name}', { name: pet.name })}
-            </T>
-            <T weight="xbold" style={{ color: colors.muted, fontSize: 14 }}>
-              {t('Kibble, paw pattern & treat jar · 2 min')}
-            </T>
-          </View>
-          <Icon name="chevR" size={18} color={colors.faint} />
-        </Bouncy>
-      </Enter>
-
       {/* Pavurio Memories: today's little moment + birthday / adoption prompt */}
       <Enter index={1}>
         <TodayMomentCard width={width - 40} />
@@ -396,9 +376,6 @@ const styles = StyleSheet.create({
   save: { marginTop: 26, backgroundColor: colors.card, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   sectionHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   streak: { backgroundColor: '#FFF6EC', borderRadius: 28, padding: 18, marginTop: 6 },
-  playCard: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.card, borderRadius: 28, padding: 16, marginTop: 14 },
-  playPaws: { width: 54, height: 54, flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
-  playTile: { width: 25, height: 25, borderRadius: 9 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, paddingHorizontal: 4 },
   weekDone: { backgroundColor: '#FFE9D2', borderColor: '#FFB766' },
   weekDot: { width: 38, height: 38, borderRadius: 19, overflow: 'hidden', backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#F2E3D2' },

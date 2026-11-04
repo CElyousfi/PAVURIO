@@ -211,9 +211,7 @@ export default function AddReminder() {
 
         {/* bottom: play · jelly + · close */}
         <View style={[styles.bottom, { bottom: -64 }]} pointerEvents="box-none">
-          <CircleButton label={t('Play time with {name}', { name: pet.name })} onPress={() => router.replace('/play')} size={58} style={{ marginBottom: 90 }}>
-            <T style={{ fontSize: 24 }}>🎾</T>
-          </CircleButton>
+          <View style={{ width: 58 }} />
           <Animated.View style={botIn}>
             <JellyPill width={PILL_W} height={PILL_H} color={colors.brand} poke={poke} onPress={save} accessibilityLabel={t('Save reminder')} testID="add-save">
               <View style={{ position: 'absolute', top: 40 }}>
