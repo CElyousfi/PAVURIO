@@ -12,6 +12,7 @@ import { removeCareEvent, walkIdFromEvent } from '../../data/walkRepo';
 import { useApp, useDay } from '../../state/AppState';
 import { confirmOccurrence } from '../../features/careLink';
 import { Vessel } from '../../ui/Vessel';
+import { RollingNumber } from '../../ui/Rolling';
 import { Sheet } from '../../ui/forms';
 import { CircleButton, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
@@ -262,12 +263,13 @@ export default function LogCard() {
                   {prevPreset != null ? `${fmt(prevPreset)}${u(prevPreset)}` : ''}
                 </T>
               </Pressable>
-              <T weight="black" style={styles.amount} accessibilityLiveRegion="polite" testID="amount">
-                {fmt(amount)}
-                <T weight="black" style={styles.unit}>
+              {/* the amount rolls like an odometer as it changes (Clucky's steppers) */}
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end' }} accessibilityLiveRegion="polite" accessible accessibilityLabel={`${fmt(amount)}${u(amount)}`} testID="amount">
+                <RollingNumber value={fmt(amount)} size={52} lineHeight={60} />
+                <T weight="black" style={[styles.unit, { lineHeight: 60 }]}>
                   {u(amount)}
                 </T>
-              </T>
+              </View>
               <Pressable accessibilityRole="button" accessibilityLabel={nextPreset != null ? `${fmt(nextPreset)}${u(nextPreset)}` : ''} disabled={nextPreset == null} onPress={() => nextPreset != null && setAmount(nextPreset)} style={styles.side}>
                 <T weight="black" style={styles.sideText} numberOfLines={1}>
                   {nextPreset != null ? `${fmt(nextPreset)}${u(nextPreset)}` : ''}

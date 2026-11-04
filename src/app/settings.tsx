@@ -11,7 +11,8 @@ import { ART } from '../ui/art';
 import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
-import { Chip, MenuRow } from '../ui/forms';
+import { Chip } from '../ui/forms';
+import { DarkTile } from '../ui/Tiles';
 import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
@@ -103,16 +104,37 @@ export default function Settings() {
             </View>
           </View>
 
-          <View style={{ marginTop: 18 }}>
-            <MenuRow icon={<Image source={ART.section.calendar} style={styles.menuArtBig} />} tint="#FDECEF" label={t('Care')} value={t('Routines & visits')} onPress={() => router.push('/care')} testID="menu-care" />
-            <MenuRow icon={<Image source={ART.section.records} style={styles.menuArtBig} />} tint="#E8F6FF" label={t('Records')} value={t('Health file')} onPress={() => router.push('/records')} testID="menu-records" />
-            <MenuRow icon={<Image source={ART.icons.gift} style={styles.menuArt} />} tint="#FFF4E0" label={t('Memories')} onPress={() => router.push('/moments')} testID="menu-moments" />
-            <MenuRow icon={<Image source={ART.section.sleep} style={styles.menuArtBig} />} tint="#FFF1E4" label={t('Pets')} value={pets.length > 1 ? String(pets.length) : pet.name} onPress={() => router.push('/pets')} testID="menu-pets" />
-            {pet.species === 'dog' ? (
-              <MenuRow icon={<Image source={ART.care.walk!} style={styles.menuArtBig} />} tint="#E6F4DE" label={t('Paw Passport')} value={t('Adventures')} onPress={() => router.push('/passport')} testID="menu-passport" />
-            ) : null}
-            <MenuRow icon={<Image source={ART.icons.trophy} style={styles.menuArt} />} tint="#F1ECFF" label={t('Achievements')} onPress={() => router.push('/achievements')} testID="menu-achievements" />
-            <MenuRow icon={<Image source={ART.icons.chart} style={styles.menuArt} />} tint="#E6F7F8" label={t('Summary')} onPress={() => router.push('/summary')} testID="menu-summary" />
+          {/* the hub: Clucky-style dark tiles, art spilling off the corner */}
+          <View style={styles.hub}>
+            <DarkTile
+              title={t('Care')}
+              subtitle={t('Routines & visits')}
+              art={<Image source={ART.section.calendar} style={{ width: 104, height: 104 }} resizeMode="contain" />}
+              onPress={() => router.push('/care')}
+              height={118}
+              testID="menu-care"
+            />
+            <View style={styles.hubRow}>
+              <DarkTile title={t('Records')} subtitle={t('Health file')} art={<Image source={ART.section.records} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/records')} style={styles.half} testID="menu-records" />
+              <DarkTile title={t('Summary')} subtitle={t('Your week')} art={<Image source={ART.icons.chart} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/summary')} style={styles.half} testID="menu-summary" />
+            </View>
+            <View style={styles.hubRow}>
+              <DarkTile title={t('Memories')} art={<Image source={ART.icons.gift} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/moments')} style={styles.half} testID="menu-moments" />
+              <DarkTile
+                title={t('Pets')}
+                subtitle={pets.length > 1 ? String(pets.length) : pet.name}
+                art={<Image source={ART.section.sleep} style={styles.tileArt} resizeMode="contain" />}
+                onPress={() => router.push('/pets')}
+                style={styles.half}
+                testID="menu-pets"
+              />
+            </View>
+            <View style={styles.hubRow}>
+              {pet.species === 'dog' ? (
+                <DarkTile title={t('Paw Passport')} subtitle={t('Adventures')} art={<Image source={ART.care.walk!} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/passport')} style={styles.half} testID="menu-passport" />
+              ) : null}
+              <DarkTile title={t('Achievements')} art={<Image source={ART.icons.trophy} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/achievements')} style={styles.half} testID="menu-achievements" />
+            </View>
           </View>
           <View style={styles.divider} />
 
@@ -307,6 +329,11 @@ function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: str
 }
 
 const styles = StyleSheet.create({
+  hub: { marginTop: 18, gap: 10 },
+  hubRow: { flexDirection: 'row', gap: 10 },
+  half: { flex: 1 },
+  tileArt: { width: 86, height: 86 },
+  tileArtSm: { width: 64, height: 64, marginRight: 8, marginBottom: 8 },
   menuArt: { width: 28, height: 28, resizeMode: 'contain' },
   menuArtBig: { width: 46, height: 46, resizeMode: 'contain' },
   divider: { alignSelf: 'center', width: 120, height: 3, borderRadius: 2, backgroundColor: colors.line, marginTop: 14, marginBottom: 6 },

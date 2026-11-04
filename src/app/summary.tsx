@@ -15,6 +15,7 @@ import { CircleButton, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { Sticker, moodSticker } from '../ui/Sticker';
 import { tapFeedback } from '../native/haptics';
+import { CareHeatmap, DaysColoured, StatChips, WeekReport } from '../features/Insights';
 import { t } from '../i18n';
 
 type Range = 'days' | 'weeks' | 'months';
@@ -148,6 +149,11 @@ export default function Summary() {
               {t('{name} · {n}-day streak · best {b}', { name: pet.name, n: streak.current, b: streak.best })}
             </T>
           </View>
+
+          <WeekReport plan={plan} byDay={byDay} today={today} species={pet.species} name={pet.name} since={dayKeyOf(new Date(pet.createdAt))} />
+          <StatChips plan={plan} byDay={byDay} today={today} streak={streak.current} />
+          <DaysColoured plan={plan} byDay={byDay} today={today} />
+          <CareHeatmap plan={plan} byDay={byDay} today={today} />
 
           <View style={styles.card}>
             <View style={styles.seg}>
