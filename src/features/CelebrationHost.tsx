@@ -28,7 +28,7 @@ export function CelebrationHost() {
   const [, setTick] = useState(0);
   const path = usePathname();
   // don't interrupt onboarding, a purchase, or the pet's reaction to the care that was just logged; the queue waits
-  const blocked = path.startsWith('/onboarding') || path.startsWith('/paywall');
+  const blocked = path.startsWith('/onboarding') || path.startsWith('/paywall') || path.startsWith('/done') || path.startsWith('/play');
   const holdUntil = lastLoggedAt + REACTION_MS;
   const holding = Date.now() < holdUntil;
   useEffect(() => {

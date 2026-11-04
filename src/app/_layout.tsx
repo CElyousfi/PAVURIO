@@ -145,6 +145,8 @@ function Gate() {
         <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
         <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="challenge" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
+        <Stack.Screen name="play" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
         <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
       </Stack>
     </Animated.View>

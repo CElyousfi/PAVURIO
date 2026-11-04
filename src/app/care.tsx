@@ -11,6 +11,7 @@ import { CARE } from '../domain/care';
 import { describeDays, formatTime24to12 } from '../domain/schedule';
 import { addDays, dayKeyOf, dayRange, formatClock, parseDayKey } from '../domain/time';
 import { KindIcon, OccurrenceRow, kindMeta } from '../features/routines';
+import { DueNowCard } from '../features/DueNow';
 import { useApp, useOccurrences } from '../state/AppState';
 import { Card, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../ui/forms';
 import { CircleButton, Icon, Label, T } from '../ui/primitives';
@@ -107,6 +108,7 @@ export default function CareTab() {
     return Array.from({ length: 7 }, (_, i) => addDays(sunday, i));
   }, [day]);
 
+  const dueOcc = occ.find((o) => o.status === 'due') ?? occ.find((o) => o.status === 'overdue');
   if (!pet) return null;
   const latest = weights[weights.length - 1];
   const prev = weights[weights.length - 2];
@@ -168,6 +170,9 @@ export default function CareTab() {
             <CircleButton icon="chevR" label={t('Next week')} onPress={() => setDay(addDays(day, 7))} size={34} />
           </View>
         </View>
+
+        {/* the reminder that's due right now: one slide and it's done */}
+        {day === today && dueOcc ? <DueNowCard o={dueOcc} /> : null}
 
         {/* agenda */}
         <Card enter={0}>

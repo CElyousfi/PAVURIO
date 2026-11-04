@@ -463,7 +463,96 @@ function ReminderPreview({ pet }: { pet: Pet }) {
   );
 }
 
-function Welcome({ width, bottomInset, reduceMotion, language, onLanguage, onStart }: { width: number; bottomInset: number; reduceMotion: boolean; language: Lang; onLanguage: () => void; onStart: () => void }) {
+/** session flag: the pet is only woken once (going back to the welcome step doesn't put it to sleep again) */
+let wokenOnce = false;
+
+function Welcome(props: { width: number; bottomInset: number; reduceMotion: boolean; language: Lang; onLanguage: () => void; onStart: () => void }) {
+  const [awake, setAwake] = useState(wokenOnce || props.reduceMotion);
+  if (!awake)
+    return (
+      <WakeIntro
+        width={props.width}
+        bottomInset={props.bottomInset}
+        onAwake={() => {
+          wokenOnce = true;
+          setAwake(true);
+        }}
+      />
+    );
+  return <WelcomePager {...props} />;
+}
+
+/**
+ * Clucky's opener: the pet is asleep, a hand says "Tap to wake". The tap plays the hello clip, the pet
+ * says hi, and the welcome slides in. Skipped entirely with reduce-motion.
+ */
+function WakeIntro({ width, bottomInset, onAwake }: { width: number; bottomInset: number; onAwake: () => void }) {
+  const [phase, setPhase] = useState<'asleep' | 'waking' | 'hi'>('asleep');
+  const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  const size = Math.min(width * 0.78, 340);
+  const wake = () => {
+    if (phase === 'hi') return onAwake();
+    if (phase !== 'asleep') return;
+    successFeedback();
+    setPhase('waking');
+    setClip({ name: 'hello', nonce: Date.now() });
+    timers.current.push(setTimeout(() => setPhase('hi'), 900));
+    timers.current.push(setTimeout(onAwake, 3400));
+  };
+  return (
+    <Pressable onPress={wake} accessibilityRole="button" accessibilityLabel={phase === 'asleep' ? t('Tap to wake') : t('Continue')} style={[styles.page, { width, justifyContent: 'center' }]} testID="wake">
+      <View style={{ height: 120, justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: 24 }}>
+        {phase === 'hi' ? (
+          <Animated.View entering={ZoomIn.springify().damping(11)} style={{ alignItems: 'center' }}>
+            <T weight="black" style={styles.h1}>
+              {t('Woof! Hi there!')}
+            </T>
+            <T style={styles.sub}>{t('Let’s take care of someone special.')}</T>
+          </Animated.View>
+        ) : null}
+      </View>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <View>
+          <PetRig species="dog" appearance={defaultAppearance('dog')} size={size} rest={phase === 'asleep'} clip={clip} onClipEnd={() => setClip(null)} active />
+          {phase === 'asleep' ? <Zzz size={size} /> : null}
+        </View>
+      </View>
+      <View style={{ height: 130, alignItems: 'center', paddingBottom: bottomInset + 20 }}>
+        {phase === 'asleep' ? (
+          <Animated.View entering={FadeInUp.delay(600)} style={{ alignItems: 'center', gap: 6 }}>
+            <Float amount={8} period={1100}>
+              <T style={{ fontSize: 40 }}>👆</T>
+            </Float>
+            <T weight="black" style={{ fontSize: 18, color: colors.muted }}>
+              {t('Tap to wake')}
+            </T>
+          </Animated.View>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}
+
+/** three z's drifting up off the sleeping pet */
+function Zzz({ size }: { size: number }) {
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', top: size * 0.12, right: size * 0.1 }}>
+      {[0, 1, 2].map((i) => (
+        <Animated.View key={i} entering={FadeIn.delay(300 + i * 350)} style={{ marginLeft: (2 - i) * 18, marginTop: -6 }}>
+          <Float amount={5 + i * 2} period={1600 + i * 300}>
+            <T weight="black" style={{ fontSize: 36 - i * 8, color: colors.brand, opacity: 0.9 - i * 0.25 }}>
+              z
+            </T>
+          </Float>
+        </Animated.View>
+      ))}
+    </View>
+  );
+}
+
+function WelcomePager({ width, bottomInset, reduceMotion, language, onLanguage, onStart }: { width: number; bottomInset: number; reduceMotion: boolean; language: Lang; onLanguage: () => void; onStart: () => void }) {
   const [page, setPage] = useState(0);
   const [fill, setFill] = useState(0.15);
   const [clip, setClip] = useState<{ name: PetClipName; nonce: number } | null>(null);
