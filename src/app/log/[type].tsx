@@ -13,7 +13,7 @@ import { useApp, useDay } from '../../state/AppState';
 import { confirmOccurrence } from '../../features/careLink';
 import { Vessel } from '../../ui/Vessel';
 import { RollingNumber } from '../../ui/Rolling';
-import { LinkedStockChip } from '../../features/supplies';
+import { ProductPicker } from '../../features/supplies';
 import { Sheet } from '../../ui/forms';
 import { CircleButton, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
@@ -68,6 +68,8 @@ export default function LogCard() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mutationId = useRef(newId());
+  // which product this meal / dose comes out of (the pet's usual one unless changed)
+  const [supplyId, setSupplyId] = useState<string | null>(null);
 
   // Edit mode: load the record being corrected.
   useEffect(() => {
@@ -85,6 +87,7 @@ export default function LogCard() {
       }
       setEditing(e);
       if (e.amount != null) setAmount(e.amount);
+      if (e.supplyId) setSupplyId(e.supplyId);
       setOccurredAt(e.occurredAt);
       setTimeLabel(formatClock(e.occurredAt));
       if (e.note) setNote(e.note);
@@ -178,7 +181,7 @@ export default function LogCard() {
     setError(null);
     try {
       if (editing) {
-        await updateEvent(db, editing.id, { amount: spec ? amount : undefined, occurredAt, note: note.trim() ? note : null });
+        await updateEvent(db, editing.id, { amount: spec ? amount : undefined, occurredAt, note: note.trim() ? note : null, ...(supplyId ? { supplyId } : {}) });
         bump();
         router.back();
         return;
@@ -191,6 +194,7 @@ export default function LogCard() {
         amount: spec ? amount : null,
         note: note.trim() ? note : null,
         mutationId: mutationId.current,
+        supplyId: type === 'meal' || type === 'medication' ? supplyId : null,
       });
       // 2) tick the matching scheduled occurrence (never blocks the save) …
       await confirmOccurrence(db, schedules, saved, params.occ && params.scheduleId ? { scheduleId: params.scheduleId, key: params.occ } : null).catch((e) =>
@@ -291,7 +295,7 @@ export default function LogCard() {
             </T>
           </View>
 
-          {type === 'meal' || type === 'medication' ? <LinkedStockChip type={type} /> : null}
+          {type === 'meal' || type === 'medication' ? <ProductPicker type={type} amount={editing ? 0 : spec ? amount : 1} value={supplyId} onChange={setSupplyId} /> : null}
           {error ? (
             <T style={styles.error} accessibilityLiveRegion="assertive">
               {error}

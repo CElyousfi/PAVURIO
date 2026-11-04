@@ -564,7 +564,7 @@ function WelcomePager({ width, bottomInset, reduceMotion, language, onLanguage, 
   const frames = [
     { care: 'meal' as CareType, title: t('Track every care'), sub: t('Log the care you give. Watch them color in.') },
     { care: 'water' as CareType, title: t('Never miss a thing'), sub: t('Meals, walks, pills and vet visits — gently reminded.') },
-    { care: 'play' as CareType, title: t('Celebrate together'), sub: t('Streaks, challenges and stories of your life together.') },
+    { care: 'play' as CareType, title: t('Celebrate together'), sub: t('Milestones, memories and stories of your life together.') },
   ];
   // frame 1 colours in on a loop; frame 3 plays the happy clip
   useEffect(() => {

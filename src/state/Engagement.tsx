@@ -1,25 +1,21 @@
 /**
- * Streak, challenges and achievements for the active pet, recomputed after every data change.
- * Also detects newly finished challenges / newly earned badges so the UI can celebrate them once.
+ * The week's rhythm and Paw Passport milestones for the active pet, recomputed after every data change.
+ * Also detects newly earned milestones so the UI can celebrate them once.
  */
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { listEventsBetween } from '../data/repo';
-import { badgeStats, completeChallenge, listChallengeRuns, markSeen, seenSet } from '../data/engageRepo';
+import { badgeStats, markSeen, seenSet } from '../data/engageRepo';
 import { BadgeStats, earnedBadges } from '../domain/badges';
-import { CHALLENGES, ChallengeDef, ChallengeProgress, ChallengeRun, challengeProgress } from '../domain/challenges';
 import { DayLogs, Streak, computeStreak, groupByDay } from '../domain/streak';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { useApp } from './AppState';
 
-export type LiveChallenge = { def: ChallengeDef; run: ChallengeRun; progress: ChallengeProgress };
-export type Celebration = { kind: 'badge'; key: string } | { kind: 'challenge'; key: string };
+export type Celebration = { kind: 'badge'; key: string };
 
 type Ctx = {
   loaded: boolean;
   byDay: DayLogs;
   streak: Streak;
-  challenges: LiveChallenge[];
-  completedChallengeKeys: string[];
   stats: BadgeStats | null;
   earned: string[];
   queue: Celebration[];
@@ -31,8 +27,8 @@ const C = createContext<Ctx | null>(null);
 const HISTORY_DAYS = 400;
 
 export function EngagementProvider({ children }: { children: React.ReactNode }) {
-  const { db, pet, plan, version, bump } = useApp();
-  const [state, setState] = useState<Omit<Ctx, 'queue' | 'shift'>>({ loaded: false, byDay: new Map(), streak: EMPTY_STREAK, challenges: [], completedChallengeKeys: [], stats: null, earned: [] });
+  const { db, pet, plan, version } = useApp();
+  const [state, setState] = useState<Omit<Ctx, 'queue' | 'shift'>>({ loaded: false, byDay: new Map(), streak: EMPTY_STREAK, stats: null, earned: [] });
   const [queue, setQueue] = useState<Celebration[]>([]);
   const [tick, setTick] = useState(0);
 
@@ -57,22 +53,7 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
       const events = await listEventsBetween(db, pet.id, from, Date.now() + 60_000);
       const byDay = groupByDay(events);
       const streak = computeStreak(plan, byDay, today);
-      const runs = await listChallengeRuns(db, pet.id);
-      const challenges: LiveChallenge[] = [];
       const fresh: Celebration[] = [];
-      let changed = false;
-      for (const run of runs) {
-        const def = CHALLENGES.find((c) => c.key === run.key);
-        if (!def) continue;
-        const progress = challengeProgress(def, run, plan, byDay, today);
-        if (progress.state === 'completed' && !run.completedAt) {
-          await completeChallenge(db, run.id);
-          run.completedAt = Date.now();
-          fresh.push({ kind: 'challenge', key: def.key });
-          changed = true;
-        }
-        challenges.push({ def, run, progress });
-      }
       const stats = await badgeStats(db, pet.id, streak.best);
       const earned = earnedBadges(stats);
       const seenKey = `seenBadges:${pet.id}`;
@@ -87,9 +68,7 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
       // celebrations were already marked as seen: queue them even if this load was superseded
       if (fresh.length) setQueue((q) => [...q, ...fresh.filter((f) => !q.some((x) => x.kind === f.kind && x.key === f.key))]);
       if (!alive) return;
-      const completedChallengeKeys = challenges.filter((c) => c.run.completedAt).map((c) => c.def.key);
-      setState({ loaded: true, byDay, streak, challenges, completedChallengeKeys, stats, earned });
-      if (changed) bump();
+      setState({ loaded: true, byDay, streak, stats, earned });
     };
     // immediate on first load and when the pet changes (never show one pet's streak under another)
     const immediate = !loadedOnce.current || lastPet.current !== pet.id;
@@ -105,7 +84,7 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
       alive = false;
       clearTimeout(timer);
     };
-  }, [db, pet, plan, version, tick, bump]);
+  }, [db, pet, plan, version, tick]);
 
   const shift = useCallback(() => setQueue((q) => q.slice(1)), []);
   const value = useMemo<Ctx>(() => ({ ...state, queue, shift }), [state, queue, shift]);

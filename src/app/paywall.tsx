@@ -9,7 +9,6 @@ import { PALETTES, defaultAppearance, isProCoat } from '../domain/appearance';
 import { updatePet } from '../data/repo';
 import { noteOffer } from '../features/ProMoment';
 import { PetRig } from '../animation/PetRig';
-import { CHALLENGES } from '../domain/challenges';
 import { TIPS } from '../content/tips';
 import { PREVIEW_PLANS, Plan, loadPlans, purchase, restore, storeState, yearlySaving } from '../native/purchases';
 import { scheduleTrialReminder } from '../native/notifications';
@@ -23,13 +22,12 @@ import { LEGAL } from '../config/links';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
 
-type Reason = 'onboarding' | 'pets' | 'story' | 'challenge' | 'tip' | 'stats' | 'settings' | 'feed' | 'coat' | 'streak' | 'week' | 'milestone';
+type Reason = 'onboarding' | 'pets' | 'story' | 'tip' | 'stats' | 'settings' | 'feed' | 'coat' | 'streak' | 'week' | 'milestone';
 
 const HEADLINE: Record<Reason, () => string> = {
   onboarding: () => t('Give {name} the very best care'),
   pets: () => t('Room for the whole family'),
   story: () => t('Relive every month together'),
-  challenge: () => t('Unlock every challenge'),
   tip: () => t('Unlock every care tip'),
   stats: () => t('See the whole story'),
   settings: () => t('Give {name} the very best care'),
@@ -41,20 +39,18 @@ const HEADLINE: Record<Reason, () => string> = {
 };
 
 function perks(reason: Reason) {
-  const proChallenges = CHALLENGES.filter((c) => c.pro).length;
   const proTips = TIPS.filter((x) => x.pro).length;
   const coats = PALETTES.dog.filter((p) => p.pro).length + PALETTES.cat.filter((p) => p.pro).length;
   const list = [
     { color: '#C77800', tint: '#FFF1DC', icon: 'paw' as const, title: tn(coats, '{n} realistic coat', '{n} realistic coats'), body: t('Golden, chocolate, black, Russian blue, brown tabby and more — try them on in the Studio.') },
     { color: '#B07A4F', tint: '#F6ECE2', icon: 'paw' as const, title: t('Every pet in one place'), body: t('Dogs and cats, each with their own day, routines, records and stories.') },
-    { color: '#7C5CE6', tint: '#EEE8FE', icon: 'trophy' as const, title: tn(proChallenges, '{n} extra challenge', '{n} extra challenges'), body: t('Perfect Five, Brushing Habit, Playtime Fortnight and more — with badges to earn.') },
     { color: '#0C8FD1', tint: '#DDF3FE', icon: 'chart' as const, title: t('Weeks & months of history'), body: t('Stacked charts of every care, so you can spot changes over time.') },
     { color: '#FF6B9A', tint: '#FFE6EF', icon: 'film' as const, title: t('Monthly stories'), body: t('A 30-day recap built from the care you logged, ready to share.') },
     { color: '#C77800', tint: '#FFF1DC', icon: 'bulb' as const, title: tn(proTips, '{n} more care tip', '{n} more care tips'), body: t('Short, friendly guides for meals, weight, litter and a calm home.') },
     { color: '#0E9AA5', tint: '#DDF6F7', icon: 'heart' as const, title: t('Support a small team'), body: t('Pro keeps Pavurio ad-free and independent.') },
   ];
   // the perk that brought them here goes first
-  const lead: Partial<Record<Reason, number>> = { coat: 0, pets: 1, challenge: 2, stats: 3, week: 3, streak: 3, milestone: 4, story: 4, tip: 5 };
+  const lead: Partial<Record<Reason, number>> = { coat: 0, pets: 1, stats: 2, week: 2, streak: 2, milestone: 3, story: 3, tip: 4 };
   const i = lead[reason];
   if (i === undefined || i === 0) return list;
   return [list[i], ...list.filter((_, j) => j !== i)];
@@ -77,7 +73,6 @@ function PerkIcon({ icon, color }: { icon: ReturnType<typeof perks>[number]['ico
           <Circle cx={18} cy={9.5} r={1.8} {...p} />
         </>
       )}
-      {icon === 'trophy' && <Path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4" {...p} />}
       {icon === 'chart' && <Path d="M4 20h16M6 20v-6M10 20V9M14 20v-8M18 20V5" {...p} />}
       {icon === 'film' && <Path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM10 9l5 3-5 3z" {...p} />}
       {icon === 'bulb' && <Path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" {...p} />}
@@ -229,7 +224,7 @@ export default function Paywall() {
           </View>
           <Animated.View entering={FadeInDown.delay(120).springify().damping(16)}>
             <T weight="black" style={styles.kicker}>
-              ✓ {tn(CHALLENGES.length, '{n} challenge', '{n} challenges')} · {tn(TIPS.length, '{n} care tip', '{n} care tips')}
+              ✓ {tn(PALETTES.dog.length + PALETTES.cat.length, '{n} coat', '{n} coats')} · {tn(TIPS.length, '{n} care tip', '{n} care tips')}
             </T>
             <T weight="black" style={styles.h1} accessibilityRole="header">
               {HEADLINE[reason]().replace('{name}', name).replace('{coat}', coatName).replace('{n}', params.n ?? '')}

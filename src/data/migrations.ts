@@ -265,6 +265,30 @@ export const MIGRATIONS: string[] = [
   );
   CREATE INDEX IF NOT EXISTS idx_supply_purchases_supply ON supply_purchases (supply_id, at);
   `,
+  // v7: the pet pantry — each logged meal/dose names the product it came from (supply_id), every pet has
+  // a default product per care type (so unnamed logs reduce exactly one bag), household-wide items,
+  // undoable purchases and a free-form shopping list
+  `
+  ALTER TABLE care_events ADD COLUMN supply_id TEXT;
+  ALTER TABLE supplies ADD COLUMN shared INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE supply_purchases ADD COLUMN prev_stock REAL;
+  ALTER TABLE supply_purchases ADD COLUMN prev_stock_at INTEGER;
+  CREATE TABLE IF NOT EXISTS supply_defaults (
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    link TEXT NOT NULL,
+    supply_id TEXT NOT NULL REFERENCES supplies(id) ON DELETE CASCADE,
+    PRIMARY KEY (pet_id, link)
+  );
+  INSERT OR IGNORE INTO supply_defaults (pet_id, link, supply_id)
+    SELECT pet_id, link, id FROM supplies WHERE link IS NOT NULL AND archived_at IS NULL ORDER BY created_at;
+  CREATE TABLE IF NOT EXISTS shopping_items (
+    id TEXT PRIMARY KEY NOT NULL,
+    pet_id TEXT REFERENCES pets(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    done_at INTEGER,
+    created_at INTEGER NOT NULL
+  );
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;
