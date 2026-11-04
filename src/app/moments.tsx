@@ -23,6 +23,7 @@ import { Scene } from '../ui/Scene';
 import { Sticker, moodSticker } from '../ui/Sticker';
 import { colors } from '../ui/theme';
 import { t, tn } from '../i18n';
+import { Segmented } from '../ui/Segmented';
 
 type View3 = 'moments' | 'milestones' | 'onthisday';
 type Row = { key: string; kind: 'month'; month: string; count: number } | { key: string; kind: 'row'; items: Moment[] };
@@ -115,21 +116,17 @@ export default function MemoriesTab() {
         ))}
       </View>
 
-      <View style={styles.seg} accessibilityRole="tablist">
-        {(
-          [
-            ['moments', t('Moments')],
-            ['milestones', t('Milestones')],
-            ['onthisday', t('On This Day')],
-          ] as [View3, string][]
-        ).map(([k, label]) => (
-          <Bouncy key={k} accessibilityRole="tab" accessibilityState={{ selected: tab === k }} accessibilityLabel={label} onPress={() => setTab(k)} style={[styles.segBtn, tab === k && styles.segOn]} haptic={false} testID={`mem-tab-${k}`}>
-            <T weight="black" style={{ fontSize: 13.5, color: tab === k ? colors.ink : colors.muted }} numberOfLines={1}>
-              {label}
-            </T>
-          </Bouncy>
-        ))}
-      </View>
+      <Segmented
+        style={{ marginTop: 18 }}
+        height={38}
+        value={tab}
+        onChange={setTab}
+        options={[
+          { key: 'moments', label: t('Moments'), testID: 'mem-tab-moments' },
+          { key: 'milestones', label: t('Milestones'), testID: 'mem-tab-milestones' },
+          { key: 'onthisday', label: t('On This Day'), testID: 'mem-tab-onthisday' },
+        ]}
+      />
 
       {tab === 'moments' && items?.length ? (
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>

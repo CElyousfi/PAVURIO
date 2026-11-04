@@ -47,7 +47,7 @@ describe('memories schema v5', () => {
   it('extends the existing memories table and backfills pets, media and adventure links', async () => {
     const db = openNodeDb(':memory:');
     await migrate(db);
-    expect(SCHEMA_VERSION).toBe(5);
+    expect(SCHEMA_VERSION).toBeGreaterThanOrEqual(5);
     const cols = (await db.getAllAsync<{ name: string }>('PRAGMA table_info(memories)', [])).map((c) => c.name);
     for (const c of ['media_id', 'favorite', 'featured', 'milestone', 'walk_id', 'captured_at', 'updated_at', 'title', 'photo_uri']) expect(cols).toContain(c);
   });

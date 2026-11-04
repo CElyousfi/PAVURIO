@@ -10,6 +10,7 @@ import { tapFeedback } from '../native/haptics';
 import { Bouncy, Enter, motionReduced } from './motion';
 import { springs, usePress } from './springs';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
+import { ArcTimePicker } from './ArcTime';
 import { lang, t } from '../i18n';
 import { capitalize, formatHM, monthNames, monthNamesShort, uses24h, weekdayInitials } from '../i18n/dates';
 
@@ -329,19 +330,16 @@ export function TimeField({ label, value, onChange }: { label: string; value: st
         <Icon name="chevR" size={18} color={colors.muted} />
       </Pressable>
       <Sheet visible={open} onClose={() => setOpen(false)} title={label || t('Time')}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 18, marginVertical: 8 }}>
-          <Spinner label={t('Hour')} value={h24 ? h : h % 12 || 12} onUp={() => set(h + 1, m)} onDown={() => set(h - 1, m)} />
-          <T weight="black" style={{ fontSize: 40 }}>
-            :
-          </T>
-          <Spinner label={t('Minutes')} value={String(m).padStart(2, '0')} onUp={() => set(h + (m >= 55 ? 1 : 0), m + 5 - (m % 5))} onDown={() => set(h - (m < 5 ? 1 : 0), m - (m % 5 || 5))} />
-          {h24 ? null : (
-            <View style={{ gap: 8 }}>
-              <Chip label="AM" on={h < 12} onPress={() => h >= 12 && set(h - 12, m)} />
-              <Chip label="PM" on={h >= 12} onPress={() => h < 12 && set(h + 12, m)} />
-            </View>
-          )}
-        </View>
+        <T weight="black" style={{ textAlign: 'center', fontSize: 15, color: colors.muted }}>
+          {t('Drag the wheels')}
+        </T>
+        <ArcTimePicker value={value} onChange={onChange} h24={h24} height={280} />
+        {h24 ? null : (
+          <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
+            <Chip label="AM" on={h < 12} onPress={() => h >= 12 && set(h - 12, m)} />
+            <Chip label="PM" on={h >= 12} onPress={() => h < 12 && set(h + 12, m)} />
+          </View>
+        )}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10, justifyContent: 'center' }}>
           {['07:00', '08:00', '12:00', '18:00', '20:00'].map((tm) => (
             <Chip key={tm} label={formatShort(tm)} on={value === tm} onPress={() => onChange(tm)} />
@@ -357,22 +355,6 @@ function formatShort(time: string) {
   const [h, m] = time.split(':').map(Number);
   if (uses24h()) return `${h}h${m ? String(m).padStart(2, '0') : ''}`;
   return `${h % 12 || 12}${m ? `:${String(m).padStart(2, '0')}` : ''} ${h >= 12 ? 'PM' : 'AM'}`;
-}
-
-function Spinner({ label, value, onUp, onDown }: { label: string; value: string | number; onUp: () => void; onDown: () => void }) {
-  return (
-    <View style={{ alignItems: 'center', gap: 4 }}>
-      <Pressable accessibilityRole="button" accessibilityLabel={t('{label} up', { label })} onPress={() => (tapFeedback(), onUp())} style={styles.spinBtn} hitSlop={6}>
-        <Icon name="up" />
-      </Pressable>
-      <T weight="black" style={{ fontSize: 40, minWidth: 64, textAlign: 'center' }}>
-        {value}
-      </T>
-      <Pressable accessibilityRole="button" accessibilityLabel={t('{label} down', { label })} onPress={() => (tapFeedback(), onDown())} style={styles.spinBtn} hitSlop={6}>
-        <Icon name="down" />
-      </Pressable>
-    </View>
-  );
 }
 
 export function Row({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
@@ -486,5 +468,4 @@ const styles = StyleSheet.create({
   dayBubble: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   dotRow: { flexDirection: 'row', gap: 2, height: 6, marginTop: 2 },
   dot: { width: 5, height: 5, borderRadius: 3 },
-  spinBtn: { width: 54, height: 40, borderRadius: 20, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },
 });

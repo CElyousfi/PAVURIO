@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BadgeDef, badgeText, badgesFor } from '../domain/badges';
 import { CHALLENGES, careOk } from '../domain/challenges';
@@ -10,9 +9,10 @@ import { Medal } from '../features/Medal';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { Bar, Bouncy, CountUp, Enter, PopIn } from '../ui/motion';
-import { CircleButton, Icon, T } from '../ui/primitives';
+import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { t, tn } from '../i18n';
+import { TabTitle } from '../ui/forms';
 
 export default function Achievements() {
   const { pet, pro } = useApp();
@@ -36,14 +36,7 @@ export default function Achievements() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={{ width: W, alignSelf: 'center', flex: 1 }}>
-        <View style={styles.top}>
-          <View style={styles.tag}>
-            <T weight="black" style={{ fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>
-              {t('Achievements').toUpperCase()}
-            </T>
-          </View>
-          <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={46} />
-        </View>
+        <TabTitle title={t('Achievements')} subtitle={t('Badges, streaks and challenges')} />
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
           <Animated.View key={shown.key} entering={FadeIn.duration(200)} style={styles.head}>
             <View style={styles.headArt}>

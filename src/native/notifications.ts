@@ -15,7 +15,11 @@ import { planReminders, type PlannedReminder } from '../domain/schedule';
 import { computeStreak, groupByDay } from '../domain/streak';
 import { computeProgress, portionOf } from '../domain/progress';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
-import { t } from '../i18n';
+import { t, tn } from '../i18n';
+import { listAllSupplies, listPurchases } from '../data/suppliesRepo';
+import { forecastAll } from '../domain/supplies';
+
+const DAY_MS = 86_400_000;
 
 const SUPPORTED = Platform.OS === 'ios' || Platform.OS === 'android';
 const CHANNEL = 'care-reminders';
@@ -250,6 +254,37 @@ export function syncReminders(db: Db): Promise<number> {
           }
         }
       }
+      // supplies: one reminder on the buy-by day (10:00) and a last call on the run-out day (9:00)
+      try {
+        const supplies = await listAllSupplies(db);
+        if (supplies.length) {
+          const purchases = await listPurchases(db, supplies.map((s) => s.id));
+          for (const pet of pets) {
+            const mine = supplies.filter((s) => s.petId === pet.id);
+            if (!mine.length) continue;
+            const from = Math.min(now - 31 * DAY_MS, ...mine.map((s) => s.stockAt));
+            const events = await listEventsBetween(db, pet.id, from, now + 60_000);
+            const plan = await getPlan(db, pet.id);
+            const portions = await getPortions(db, pet.id);
+            const name = names.get(pet.id) ?? t('your pet');
+            for (const f of forecastAll(mine, events, plan, portions, purchases, now, portionOf)) {
+              if (f.buyBy == null || f.runOutAt == null) continue;
+              const at10 = (ms: number, h: number) => {
+                const d = new Date(ms);
+                return new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, 0).getTime();
+              };
+              const buyAt = at10(f.buyBy, 10);
+              if (buyAt > now && buyAt - now < 21 * DAY_MS)
+                plans.push({ id: `pv:sup:${f.supply.id}`, at: buyAt, title: t('Time to order {item} 🛒', { item: f.supply.name }), body: t('{name} has about {n} left. Order today and it arrives before it runs out.', { name, n: tn(Math.max(1, Math.round((f.runOutAt - buyAt) / DAY_MS)), '{n} day', '{n} days') }), scheduleId: '', key: `supply:${pet.id}:${f.supply.id}` });
+              const lastAt = at10(f.runOutAt, 9);
+              if (lastAt > now && lastAt > buyAt + DAY_MS && lastAt - now < 21 * DAY_MS)
+                plans.push({ id: `pv:supx:${f.supply.id}`, at: lastAt, title: t('{item} runs out today', { item: f.supply.name }), body: t('Bought it already? Tap to add it to {name}’s shelf.', { name }), scheduleId: '', key: `supply:${pet.id}:${f.supply.id}` });
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[pavurio] supply reminders', e);
+      }
       for (const a of await upcomingAppointments(db, null, now, 20)) {
         if (a.remindMinutes == null) continue;
         const at = a.at - a.remindMinutes * 60_000;
@@ -272,10 +307,10 @@ export function syncReminders(db: Db): Promise<number> {
       // medicine is time-critical: on Android, alarm-clock delivery when the owner allowed exact alarms
       const exact = Platform.OS === 'android' ? (await Notifications.getExactAlarmPermissionsAsync().catch(() => null))?.granted === true : false;
       for (const p of plans.slice(0, 60)) {
-        const kind = p.key.startsWith('appt:') ? 'appointment' : p.key.startsWith('nudge:') ? 'nudge' : p.key.startsWith('walk:') ? 'walk' : 'care';
+        const kind = p.key.startsWith('appt:') ? 'appointment' : p.key.startsWith('nudge:') ? 'nudge' : p.key.startsWith('walk:') ? 'walk' : p.key.startsWith('supply:') ? 'supply' : 'care';
         const sch = kind === 'care' ? schedules.find((s) => s.id === p.scheduleId) : undefined;
         const type = sch?.type ?? (kind === 'walk' ? 'walk' : null);
-        const petId = sch?.petId ?? (kind === 'nudge' || kind === 'walk' ? p.key.split(':')[1] : null);
+        const petId = sch?.petId ?? (kind === 'nudge' || kind === 'walk' || kind === 'supply' ? p.key.split(':')[1] : null);
         const med = type === 'medication';
         await Notifications.scheduleNotificationAsync({
           identifier: p.id,
@@ -312,7 +347,7 @@ export function syncReminders(db: Db): Promise<number> {
   return syncing;
 }
 
-export type ReminderTap = { kind: 'care' | 'appointment' | 'nudge' | 'trial'; type: string | null; petId: string | null; scheduleId: string; key: string; action: 'open' | 'done' | 'snooze' };
+export type ReminderTap = { kind: 'care' | 'appointment' | 'nudge' | 'trial' | 'supply'; type: string | null; petId: string | null; scheduleId: string; key: string; action: 'open' | 'done' | 'snooze' };
 
 /** Calls back when the user taps one of our notifications (also for the one that launched the app). */
 const handled = new Set<string>();
@@ -323,7 +358,7 @@ export function onReminderTap(cb: (t: ReminderTap) => void): () => void {
     if (!r) return;
     const d = r.notification.request.content.data as Partial<ReminderTap> | undefined;
     const action = r.actionIdentifier === 'done' ? 'done' : r.actionIdentifier === 'snooze' ? 'snooze' : 'open';
-    if (d && (d.kind === 'care' || d.kind === 'appointment' || d.kind === 'nudge' || d.kind === 'trial')) {
+    if (d && (d.kind === 'care' || d.kind === 'appointment' || d.kind === 'nudge' || d.kind === 'trial' || d.kind === 'supply')) {
       // a launch response is delivered again by getLastNotificationResponseAsync: handle each once
       const id = `${r.notification.request.identifier}:${r.actionIdentifier}:${r.notification.date}`;
       if (handled.has(id)) return;

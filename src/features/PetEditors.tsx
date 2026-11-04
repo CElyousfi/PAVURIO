@@ -10,7 +10,8 @@ import { colors } from '../ui/theme';
 import { tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
-export function LookPicker({ species, appearance, onChange }: { species: Species; appearance: Appearance; onChange: (a: Appearance) => void }) {
+export function LookPicker({ species, appearance, onChange, pro = false }: { species: Species; appearance: Appearance; onChange: (a: Appearance) => void; pro?: boolean }) {
+  const chosen = PALETTES[species].find((p) => p.id === appearance.paletteId);
   return (
     <View style={{ alignSelf: 'stretch', paddingHorizontal: 24, gap: 14 }}>
       <Label>{t('Coat')}</Label>
@@ -31,11 +32,28 @@ export function LookPicker({ species, appearance, onChange }: { species: Species
               <View style={[styles.swatch, { backgroundColor: p.coat }]}>
                 <View style={[styles.swatchHalf, { backgroundColor: p.patch }]} />
               </View>
-              <T style={styles.swatchName}>{p.name}</T>
+              {p.pro && !pro ? (
+                <View style={styles.proTag}>
+                  <T weight="black" style={styles.proTagText}>
+                    PRO
+                  </T>
+                </View>
+              ) : null}
+              <T style={styles.swatchName} numberOfLines={1}>
+                {p.name}
+              </T>
             </Bouncy>
           );
         })}
       </View>
+      {chosen?.pro && !pro ? (
+        <View style={styles.tryOn}>
+          <T weight="black" style={{ fontSize: 14 }}>
+            {t('Trying on {coat} ✨', { coat: chosen.name })}
+          </T>
+          <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18 }}>{t('Realistic coats come with Pro. Try any of them on — keep the one you love.')}</T>
+        </View>
+      ) : null}
       <Label>{species === 'dog' ? t('Bandana') : t('Collar')}</Label>
       <View style={styles.swatchRow}>
         {ACCESSORIES.map((a) => {
@@ -150,7 +168,10 @@ const styles = StyleSheet.create({
   swatchWrap: { alignItems: 'center', padding: 6, borderRadius: 18, borderWidth: 2.5, borderColor: 'transparent' },
   swatch: { width: 50, height: 50, borderRadius: 25, overflow: 'hidden' },
   swatchHalf: { position: 'absolute', left: 0, top: 0, width: 50, height: 22 },
-  swatchName: { fontSize: 12, color: colors.muted, marginTop: 4 },
+  swatchName: { fontSize: 12, color: colors.muted, marginTop: 4, maxWidth: 62 },
+  proTag: { position: 'absolute', top: 2, right: 0, backgroundColor: colors.ink, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1 },
+  proTagText: { color: '#FFFFFF', fontSize: 9, letterSpacing: 0.6 },
+  tryOn: { backgroundColor: '#FFF6E5', borderRadius: 18, padding: 12, gap: 2 },
   dotWrap: { padding: 4, borderRadius: 24, borderWidth: 2.5, borderColor: 'transparent' },
   dot: { width: 36, height: 36, borderRadius: 18 },
   planRow: { backgroundColor: colors.card, borderRadius: 22, padding: 12, paddingRight: 14, gap: 8 },

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
@@ -9,13 +9,15 @@ import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { monthNamesShort, weekdayInitials } from '../i18n/dates';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
-import { MonthGrid, MonthNav } from '../ui/forms';
+import { MonthGrid, MonthNav, ScreenHeader } from '../ui/forms';
 import { Bouncy, CountUp, Ring, motionReduced } from '../ui/motion';
-import { CircleButton, T } from '../ui/primitives';
+import { T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { Sticker, moodSticker } from '../ui/Sticker';
 import { tapFeedback } from '../native/haptics';
+import { CareHeatmap, DaysColoured, StatChips, WeekReport } from '../features/Insights';
 import { t } from '../i18n';
+import { Segmented } from '../ui/Segmented';
 
 type Range = 'days' | 'weeks' | 'months';
 type Col = { label: string; total: number; parts: { type: CareType; n: number }[]; highlight: boolean };
@@ -124,10 +126,8 @@ export default function Summary() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={{ width: W, alignSelf: 'center', flex: 1 }}>
-        <View style={styles.top}>
-          <View style={{ width: 44 }} />
-          <View style={{ flex: 1 }} />
-          <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} size={44} />
+        <View style={{ paddingHorizontal: 18 }}>
+          <ScreenHeader title={t('Summary')} onClose={() => router.back()} />
         </View>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
           <View style={{ alignItems: 'center', marginTop: 4 }}>
@@ -149,17 +149,17 @@ export default function Summary() {
             </T>
           </View>
 
+          <WeekReport plan={plan} byDay={byDay} today={today} species={pet.species} name={pet.name} since={dayKeyOf(new Date(pet.createdAt))} />
+          <StatChips plan={plan} byDay={byDay} today={today} streak={streak.current} />
+          <DaysColoured plan={plan} byDay={byDay} today={today} />
+          <CareHeatmap plan={plan} byDay={byDay} today={today} />
+
           <View style={styles.card}>
-            <View style={styles.seg}>
-              {(['days', 'weeks', 'months'] as Range[]).map((r) => (
-                <Pressable key={r} accessibilityRole="tab" accessibilityState={{ selected: range === r }} onPress={() => pick(r)} style={[styles.segBtn, range === r && styles.segOn]}>
-                  <T weight="black" style={{ fontSize: 15, color: range === r ? colors.ink : colors.muted }}>
-                    {r === 'days' ? t('Days') : r === 'weeks' ? t('Weeks') : t('Months')}
-                    {r !== 'days' && !pro ? ' 🔒' : ''}
-                  </T>
-                </Pressable>
-              ))}
-            </View>
+            <Segmented
+              value={range}
+              onChange={pick}
+              options={(['days', 'weeks', 'months'] as Range[]).map((r) => ({ key: r, label: (r === 'days' ? t('Days') : r === 'weeks' ? t('Weeks') : t('Months')) + (r !== 'days' && !pro ? ' 🔒' : '') }))}
+            />
             <T weight="black" style={{ textAlign: 'center', fontSize: 17, marginTop: 14 }}>
               {range === 'days' ? t('Last 7 days') : range === 'weeks' ? t('Last 8 weeks') : t('Last 6 months')}
             </T>

@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, ZoomIn, ZoomOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { JellyPill } from '../ui/Jelly';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { RollingNumber } from '../ui/Rolling';
 import { PetRig, PetClipName } from '../animation/PetRig';
 import { catClip } from '../animation/CatStage';
 import { useBursts } from '../animation/Burst';
@@ -23,8 +26,9 @@ import { ART } from '../ui/art';
 import { colors, font, softShadow } from '../ui/theme';
 import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
-import { Bouncy, ConfettiRain, CountUp, Pop, Ring, Splash, usePress } from '../ui/motion';
+import { Bouncy, ConfettiRain, Pop, Ring, Splash, motionReduced, usePress } from '../ui/motion';
 import { HomeFeed } from '../features/HomeFeed';
+import { ProMomentHost } from '../features/ProMoment';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
 
@@ -180,7 +184,7 @@ function HomeScreen() {
         scrollEventThrottle={16}
         onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 40)}
       >
-      <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 70 }]}>
+      <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 70, paddingBottom: insets.bottom + 86 }]}>
 
         <View style={styles.header} accessibilityRole="header" accessibilityLabel={`${big} · ${progressSentence(progress)}`}>
           {complete ? (
@@ -191,7 +195,7 @@ function HomeScreen() {
             </Animated.View>
           ) : (
             <Pop trigger={progress.planned > 0 ? progress.done : events.length} amount={0.12} style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-              <CountUp value={progress.planned > 0 ? progress.done : events.length} style={styles.big} />
+              <RollingNumber value={progress.planned > 0 ? progress.done : events.length} size={60} lineHeight={68} style={{ color: colors.brand, letterSpacing: -1 }} />
               {progress.planned > 0 ? (
                 <T weight="black" style={styles.big}>
                   /{progress.planned}
@@ -369,8 +373,11 @@ function HomeScreen() {
         <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} testID="menu" />
       </View>
 
+      <AddFab bottom={insets.bottom + 14} hidden={!!snack} />
+      <ProMomentHost focused={focused} />
+
       {snack ? (
-        <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: 14 }]}>
+        <Animated.View entering={FadeInDown.springify().damping(16)} exiting={FadeOutDown} style={[styles.snack, { bottom: insets.bottom + 14 }]}>
           <T weight="xbold" style={styles.snackText}>
             {t('{label} saved', { label: CARE[snack.type].label })}
           </T>
@@ -382,6 +389,50 @@ function HomeScreen() {
         </Animated.View>
       ) : null}
     </View>
+  );
+}
+
+/**
+ * The jelly "+" (Clucky's add button): tapping it floods the screen with brand colour from the button,
+ * and the New reminder screen splits that colour into its two pills.
+ */
+function AddFab({ bottom, hidden }: { bottom: number; hidden: boolean }) {
+  const { width, height } = useWindowDimensions();
+  const grow = useSharedValue(0);
+  const focused = useIsFocused();
+  useEffect(() => {
+    if (focused) grow.value = 0;
+  }, [focused, grow]);
+  const reach = Math.hypot(width, height) / 30;
+  const flood = useAnimatedStyle(() => ({ opacity: grow.value > 0 ? 1 : 0, transform: [{ scale: 1 + grow.value * reach }] }));
+  const open = () => {
+    tapFeedback();
+    if (motionReduced()) return router.push('/add');
+    grow.value = withTiming(1, { duration: 260, easing: Easing.in(Easing.quad) });
+    setTimeout(() => router.push('/add'), 230);
+  };
+  return (
+    <>
+      {/* a soft white fade so the button floats over the feed without text running under it */}
+      <Svg pointerEvents="none" width={width} height={bottom + 90} style={{ position: 'absolute', bottom: 0, left: 0 }}>
+        <Defs>
+          <LinearGradient id="fabFade" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0" />
+            <Stop offset="0.55" stopColor="#FFFFFF" stopOpacity="0.92" />
+            <Stop offset="1" stopColor="#FFFFFF" stopOpacity="1" />
+          </LinearGradient>
+        </Defs>
+        <Rect x={0} y={0} width={width} height={bottom + 90} fill="url(#fabFade)" />
+      </Svg>
+      <Animated.View pointerEvents="none" style={[styles.flood, { bottom: bottom + 4 }, flood]} />
+      {hidden ? null : (
+        <Animated.View entering={ZoomIn.springify().damping(12)} exiting={ZoomOut.duration(120)} style={[styles.fab, { bottom }]}>
+          <JellyPill width={68} height={68} color={colors.brand} idle={1.2} onPress={open} accessibilityLabel={t('New reminder')} testID="add-fab">
+            <Icon name="plus" size={30} color="#FFFFFF" />
+          </JellyPill>
+        </Animated.View>
+      )}
+    </>
   );
 }
 
@@ -486,6 +537,8 @@ const styles = StyleSheet.create({
   peekChip: { minWidth: 54, height: 40, borderRadius: 20, paddingHorizontal: 12, alignItems: 'center', justifyContent: 'center' },
   peekTitle: { fontSize: 19 },
   peekMeta: { fontSize: 13, color: colors.muted, marginTop: 1 },
+  fab: { position: 'absolute', alignSelf: 'center' },
+  flood: { position: 'absolute', alignSelf: 'center', width: 60, height: 60, borderRadius: 30, backgroundColor: colors.brand },
   snack: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 18, backgroundColor: colors.ink, paddingHorizontal: 22, height: 52, borderRadius: 26 },
   snackText: { color: '#FFFFFF', fontSize: 16 },
   snackUndo: { color: '#7FE3EA', fontSize: 15, letterSpacing: 1.2 },

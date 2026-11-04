@@ -5,7 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, ZoomIn, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { PetAvatar } from '../animation/PetAvatar';
-import { defaultAppearance } from '../domain/appearance';
+import { PALETTES, defaultAppearance, isProCoat } from '../domain/appearance';
+import { updatePet } from '../data/repo';
+import { noteOffer } from '../features/ProMoment';
+import { PetRig } from '../animation/PetRig';
 import { CHALLENGES } from '../domain/challenges';
 import { TIPS } from '../content/tips';
 import { PREVIEW_PLANS, Plan, loadPlans, purchase, restore, storeState, yearlySaving } from '../native/purchases';
@@ -20,7 +23,7 @@ import { LEGAL } from '../config/links';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
 
-type Reason = 'onboarding' | 'pets' | 'story' | 'challenge' | 'tip' | 'stats' | 'settings' | 'feed';
+type Reason = 'onboarding' | 'pets' | 'story' | 'challenge' | 'tip' | 'stats' | 'settings' | 'feed' | 'coat' | 'streak' | 'week' | 'milestone';
 
 const HEADLINE: Record<Reason, () => string> = {
   onboarding: () => t('Give {name} the very best care'),
@@ -31,12 +34,18 @@ const HEADLINE: Record<Reason, () => string> = {
   stats: () => t('See the whole story'),
   settings: () => t('Give {name} the very best care'),
   feed: () => t('Give {name} the very best care'),
+  coat: () => t('Keep {name}’s {coat} coat'),
+  streak: () => t('{n} days in a row. Keep {name}’s story going'),
+  week: () => t('See every week as good as this one'),
+  milestone: () => t('{n} cares for {name}. Keep every one'),
 };
 
-function perks() {
+function perks(reason: Reason) {
   const proChallenges = CHALLENGES.filter((c) => c.pro).length;
   const proTips = TIPS.filter((x) => x.pro).length;
-  return [
+  const coats = PALETTES.dog.filter((p) => p.pro).length + PALETTES.cat.filter((p) => p.pro).length;
+  const list = [
+    { color: '#C77800', tint: '#FFF1DC', icon: 'paw' as const, title: tn(coats, '{n} realistic coat', '{n} realistic coats'), body: t('Golden, chocolate, black, Russian blue, brown tabby and more — try them on in the Studio.') },
     { color: '#B07A4F', tint: '#F6ECE2', icon: 'paw' as const, title: t('Every pet in one place'), body: t('Dogs and cats, each with their own day, routines, records and stories.') },
     { color: '#7C5CE6', tint: '#EEE8FE', icon: 'trophy' as const, title: tn(proChallenges, '{n} extra challenge', '{n} extra challenges'), body: t('Perfect Five, Brushing Habit, Playtime Fortnight and more — with badges to earn.') },
     { color: '#0C8FD1', tint: '#DDF3FE', icon: 'chart' as const, title: t('Weeks & months of history'), body: t('Stacked charts of every care, so you can spot changes over time.') },
@@ -44,6 +53,11 @@ function perks() {
     { color: '#C77800', tint: '#FFF1DC', icon: 'bulb' as const, title: tn(proTips, '{n} more care tip', '{n} more care tips'), body: t('Short, friendly guides for meals, weight, litter and a calm home.') },
     { color: '#0E9AA5', tint: '#DDF6F7', icon: 'heart' as const, title: t('Support a small team'), body: t('Pro keeps Pavurio ad-free and independent.') },
   ];
+  // the perk that brought them here goes first
+  const lead: Partial<Record<Reason, number>> = { coat: 0, pets: 1, challenge: 2, stats: 3, week: 3, streak: 3, milestone: 4, story: 4, tip: 5 };
+  const i = lead[reason];
+  if (i === undefined || i === 0) return list;
+  return [list[i], ...list.filter((_, j) => j !== i)];
 }
 
 const PERK_ART: Record<string, keyof typeof ART.icons> = { paw: 'paw', trophy: 'trophy', chart: 'chart', film: 'calendar', bulb: 'shield', heart: 'heart' };
@@ -77,9 +91,9 @@ const periodLabel = (p: Plan) =>
 const perWord = (p: Plan) => (p.period === 'year' ? t('/year') : p.period === 'month' ? t('/month') : p.period === 'week' ? t('/week') : '');
 
 export default function Paywall() {
-  const params = useLocalSearchParams<{ reason?: string }>();
+  const params = useLocalSearchParams<{ reason?: string; coat?: string; from?: string; n?: string }>();
   const reason = ((params.reason as Reason) in HEADLINE ? params.reason : 'settings') as Reason;
-  const { pro, setPro, pet } = useApp();
+  const { pro, setPro, pet, db, bump } = useApp();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const store = storeState();
@@ -89,6 +103,11 @@ export default function Paywall() {
   const [msg, setMsg] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [confetti, setConfetti] = useState<number | null>(null);
+  const [heroClip, setHeroClip] = useState<{ name: 'celebrate'; nonce: number } | null>(null);
+  useEffect(() => {
+    const timer = setTimeout(() => setHeroClip({ name: 'celebrate', nonce: Date.now() }), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!store.configured) return;
@@ -109,8 +128,19 @@ export default function Paywall() {
   const name = pet?.name ?? t('your pet');
   const cw = Math.min(width, 560) - 48;
 
-  const close = () => {
-    if (reason === 'onboarding') router.replace('/');
+  // every opening counts as an offer, so a "moment" never follows right after this
+  useEffect(() => {
+    void noteOffer(db);
+  }, [db]);
+
+  const coatName = params.coat && pet ? PALETTES[pet.species].find((p) => p.id === params.coat)?.name ?? '' : '';
+  const close = async () => {
+    // a Pro coat tried on during setup goes back to the drawn coat if they leave without Pro
+    if (reason === 'coat' && params.from === 'onboarding' && pet && !pro && isProCoat(pet.species, pet.appearance.paletteId)) {
+      await updatePet(db, pet.id, { name: pet.name, appearance: { ...pet.appearance, paletteId: defaultAppearance(pet.species).paletteId } }).catch(() => null);
+      bump();
+    }
+    if (reason === 'onboarding' || params.from === 'onboarding') router.replace('/');
     else router.back();
   };
 
@@ -172,7 +202,12 @@ export default function Paywall() {
           {/* hero */}
           <View style={styles.hero}>
             <View style={styles.glow} />
-            {ART.ui.paywallHero ? (
+            {pet && (reason === 'coat' || reason === 'streak' || reason === 'week' || reason === 'milestone') ? (
+              // their own pet (in the coat they tried on) instead of the generic scene
+              <View style={{ position: 'absolute', alignSelf: 'center', top: -6 }}>
+                <PetRig species={pet.species} appearance={params.coat ? { ...pet.appearance, paletteId: params.coat } : pet.appearance} size={176} clip={heroClip} onClipEnd={() => setHeroClip(null)} />
+              </View>
+            ) : ART.ui.paywallHero ? (
               <Float style={{ position: 'absolute', alignSelf: 'center', top: 0 }} period={2800} amount={6}>
                 <Scene source={ART.ui.paywallHero} width={142} height={178} border={5} tilt={-4} />
               </Float>
@@ -197,7 +232,7 @@ export default function Paywall() {
               ✓ {tn(CHALLENGES.length, '{n} challenge', '{n} challenges')} · {tn(TIPS.length, '{n} care tip', '{n} care tips')}
             </T>
             <T weight="black" style={styles.h1} accessibilityRole="header">
-              {HEADLINE[reason]().replace('{name}', name)}
+              {HEADLINE[reason]().replace('{name}', name).replace('{coat}', coatName).replace('{n}', params.n ?? '')}
             </T>
           </Animated.View>
 
@@ -312,7 +347,7 @@ export default function Paywall() {
             {t('What you get')}
           </T>
           <View style={{ gap: 10, marginTop: 12 }}>
-            {perks().map((p, i) => (
+            {perks(reason).map((p, i) => (
               <Enter key={p.title} index={i + 2}>
                 <View style={[styles.perk, { backgroundColor: p.tint }]}>
                   <View style={[styles.perkIcon, { backgroundColor: '#FFFFFF' }]}>

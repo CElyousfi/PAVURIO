@@ -65,6 +65,10 @@ function ReminderRouter() {
           }
           return;
         }
+        if (n.kind === 'supply') {
+          router.push('/supplies');
+          return;
+        }
         if (n.kind === 'appointment') {
           router.push({ pathname: '/appointment', params: { id: n.key.replace(/^appt:/, '') } });
         } else if (n.kind === 'care' && n.type === 'walk' && species === 'dog') {
@@ -116,7 +120,7 @@ function Gate() {
       <WalkLiveBridge />
       <CelebrationHost />
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true, freezeOnBlur: true }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="care" />
         <Stack.Screen name="moments" />
@@ -145,6 +149,11 @@ function Gate() {
         <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
         <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="challenge" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="add" options={{ presentation: 'fullScreenModal', animation: 'none', gestureEnabled: false }} />
+        <Stack.Screen name="supplies" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="supply" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="supply-edit" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
         <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
       </Stack>
     </Animated.View>

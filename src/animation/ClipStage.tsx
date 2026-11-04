@@ -58,6 +58,9 @@ export type ClipKit = {
   overlayPrefix: string;
   /** sitting pet height, fraction of stage height */
   petH: number;
+  /** runtime-dyed coats: per clip, the base coat split into layers (tools/art/dye.py) */
+  dye?: Record<string, Record<'fur_body' | 'fur_patch' | 'fur_shade' | 'fur_feat', number[]>>;
+  dyeOf?: (paletteId: string) => { body: string; patch: string } | null;
   /** clip actually played for a request (null = nothing to play) */
   resolve: (name: PetClipName) => string | null;
   base: (rest: boolean) => string;
@@ -91,6 +94,13 @@ function sheetsToKeep(c: ClipMeta, chunk: number, running: boolean): number[] {
 function useFrameClock(kit: ClipKit, name: string, run: string, running: boolean, onEnd?: () => void) {
   const c = kit.clips[name];
   const frame = useSharedValue(0);
+  // in-between: the following frame and how far we are towards it (0..1), for cross-blending
+  const next = useSharedValue(0);
+  const blend = useSharedValue(0);
+  // opacities for the two layers: the next frame comes in fully before the current one goes, so the
+  // body never turns see-through (only the moving edges blend)
+  const topA = useSharedValue(0);
+  const baseA = useSharedValue(1);
   const t0 = useSharedValue(-1);
   const ended = useSharedValue(false);
   const lo = useSharedValue(0);
@@ -117,26 +127,49 @@ function useFrameClock(kit: ClipKit, name: string, run: string, running: boolean
     (info: FrameInfo) => {
       'worklet';
       if (t0.value < 0) t0.value = info.timestamp;
-      let i = Math.floor(((info.timestamp - t0.value) / 1000) * fps);
-      if (loop) {
+      const p = ((info.timestamp - t0.value) / 1000) * fps;
+      const raw = Math.floor(p);
+      const frac = p - raw;
+      const map = (j: number) => {
+        if (!loop) return Math.min(j, n - 1);
         const period = pingpong ? Math.max(1, 2 * n - 2) : n;
-        i %= period;
-        if (pingpong && i >= n) i = period - i;
-      } else if (i >= n) {
+        let m = j % period;
+        if (pingpong && m >= n) m = period - m;
+        return m;
+      };
+      if (!loop && raw >= n) {
         if (!ended.value && Math.floor((n - 1) / per) <= hi.value) {
           ended.value = true;
           frame.value = n - 1;
+          blend.value = 0;
+          topA.value = 0;
+          baseA.value = 1;
           runOnJS(fireEnd)(runId.value);
         }
         return;
       }
+      let i = map(raw);
       // stay inside the mounted sheets
       const k = Math.floor(i / per);
-      if (k > hi.value) i = Math.min(n - 1, (hi.value + 1) * per - 1);
-      else if (k < lo.value) i = lo.value * per;
+      let held = false;
+      if (k > hi.value) {
+        i = Math.min(n - 1, (hi.value + 1) * per - 1);
+        held = true;
+      } else if (k < lo.value) {
+        i = lo.value * per;
+        held = true;
+      }
+      let j = !loop && raw + 1 >= n ? i : map(raw + 1);
+      const kj = Math.floor(j / per);
+      if (held || kj > hi.value || kj < lo.value) j = i;
       if (i !== frame.value) frame.value = i;
+      if (j !== next.value) next.value = j;
+      const b = j === i ? 0 : frac;
+      blend.value = b;
+      topA.value = b < 0.5 ? b * 2 : 1;
+      baseA.value = b < 0.5 ? 1 : 2 - b * 2;
     },
-    [n, fps, loop, pingpong, per, frame, t0, ended, lo, hi, runId, fireEnd],
+    [n, fps, loop, pingpong, per, frame, next, blend, topA, baseA, t0, ended, lo, hi, runId, fireEnd],
   );
   const cb = useFrameCallback(tick, false);
   // publish the mounted window to the worklet once React has committed it
@@ -163,7 +196,7 @@ function useFrameClock(kit: ClipKit, name: string, run: string, running: boolean
     },
     [per, run],
   );
-  return { frame, keep };
+  return { frame, next, blend, topA, baseA, keep };
 }
 
 type Geo = { w: number; h: number };
@@ -187,7 +220,7 @@ function frameRect(kit: ClipKit, name: string, g: Geo) {
 }
 
 /** One sheet image of a clip: shows its frame when the clock is inside this sheet, else hides. */
-function SheetImage({ c, k, source, frame, s, onLoad, tint }: { c: ClipMeta; k: number; source: number; frame: SharedValue<number>; s: number; onLoad?: () => void; tint?: string }) {
+function SheetImage({ c, k, source, frame, s, onLoad, tint, mixv }: { c: ClipMeta; k: number; source: number; frame: SharedValue<number>; s: number; onLoad?: () => void; tint?: string; mixv?: SharedValue<number> }) {
   const inChunk = Math.min(c.per, c.frames - k * c.per);
   const rows = Math.ceil(inChunk / c.cols);
   const fw = c.fw * s;
@@ -197,7 +230,7 @@ function SheetImage({ c, k, source, frame, s, onLoad, tint }: { c: ClipMeta; k: 
     const visible = Math.floor(f / c.per) === k;
     if (!visible) return { opacity: 0, transform: [{ translateX: 0 }, { translateY: 0 }] };
     const local = f % c.per;
-    return { opacity: 1, transform: [{ translateX: -(local % c.cols) * fw }, { translateY: -Math.floor(local / c.cols) * fh }] };
+    return { opacity: mixv ? mixv.value : 1, transform: [{ translateX: -(local % c.cols) * fw }, { translateY: -Math.floor(local / c.cols) * fh }] };
   });
   return (
     <Animated.Image
@@ -210,16 +243,24 @@ function SheetImage({ c, k, source, frame, s, onLoad, tint }: { c: ClipMeta; k: 
 }
 
 /** One layer of a clip (sketch, coat or accessory): the sheets the clock has asked to keep. */
-function SheetLayer({ kit, name, sheets, frame, keep, s, onLoaded, tint }: { kit: ClipKit; name: string; sheets: number[]; frame: SharedValue<number>; keep: number[]; s: number; onLoaded?: () => void; tint?: string }) {
+function SheetLayer({ kit, name, sheets, frame, keep, s, onLoaded, tint, smooth }: { kit: ClipKit; name: string; sheets: number[]; frame: SharedValue<number>; keep: number[]; s: number; onLoaded?: () => void; tint?: string; smooth?: Smooth }) {
   const c = kit.clips[name];
   return (
     <>
       {keep.map((k) =>
-        sheets[k] != null ? <SheetImage key={k} c={c} k={k} source={sheets[k]} frame={frame} s={s} tint={tint} onLoad={k === 0 ? onLoaded : undefined} /> : null,
+        sheets[k] != null ? <SheetImage key={k} c={c} k={k} source={sheets[k]} frame={frame} s={s} tint={tint} mixv={smooth?.baseA} onLoad={k === 0 ? onLoaded : undefined} /> : null,
       )}
+      {/* low-fps clips: the following frame fades in over this one between ticks, so 12 fps moves like 60 */}
+      {smooth
+        ? keep.map((k) => (sheets[k] != null ? <SheetImage key={`n${k}`} c={c} k={k} source={sheets[k]} frame={smooth.next} s={s} tint={tint} mixv={smooth.topA} /> : null))
+        : null}
     </>
   );
 }
+
+type Smooth = { next: SharedValue<number>; topA: SharedValue<number>; baseA: SharedValue<number> };
+/** clips generated at a low frame rate get in-between blending; 24 fps loops are already smooth */
+const BLEND_BELOW_FPS = 20;
 
 /** Flat silhouette colour of the not-yet-coloured pet (Waterllama's light gray). */
 export const SILHOUETTE = '#EEF0F3';
@@ -237,10 +278,14 @@ function ClipView({
   stack,
   geo,
   onReady,
+  smooth: smoothIn,
+  dye,
 }: {
+  dye?: { body: string; patch: string } | null;
   kit: ClipKit;
   name: string;
   frame: SharedValue<number>;
+  smooth?: Smooth;
   keep: number[];
   palette: string;
   bandana: string;
@@ -250,6 +295,7 @@ function ClipView({
   onReady?: () => void;
 }) {
   const sheets = kit.img[name];
+  const smooth = kit.clips[name].fps < BLEND_BELOW_FPS ? smoothIn : undefined;
   const r = useMemo(() => frameRect(kit, name, geo), [kit, name, geo]);
   const loaded = useRef(0);
   const silhouette = !!stack;
@@ -263,12 +309,28 @@ function ClipView({
   const I = 2;
   const box = { position: 'absolute' as const, left: r.left + I, top: r.top + I, width: r.width - 2 * I, height: r.height - 2 * I, overflow: 'hidden' as const };
   const coat = sheets[palette] ?? sheets[kit.palettes[0]];
+  const layers = dye ? kit.dye?.[name] : undefined;
+  if (!silhouette && dye && layers) {
+    // a dyed coat: flat coat + patch colours, the art's shading multiplied over them, then everything
+    // that isn't fur (outlines, eyes, nose, collar, bowls) drawn as it is
+    return (
+      <View pointerEvents="none" style={box}>
+        <SheetLayer kit={kit} name={name} sheets={layers.fur_body} frame={frame} keep={keep} s={r.s} smooth={smooth} tint={dye.body} />
+        <SheetLayer kit={kit} name={name} sheets={layers.fur_patch} frame={frame} keep={keep} s={r.s} smooth={smooth} tint={dye.patch} />
+        <View style={[StyleSheet.absoluteFill, styles.multiply]}>
+          <SheetLayer kit={kit} name={name} sheets={layers.fur_shade} frame={frame} keep={keep} s={r.s} smooth={smooth} />
+        </View>
+        <SheetLayer kit={kit} name={name} sheets={layers.fur_feat} frame={frame} keep={keep} s={r.s} smooth={smooth} onLoaded={markLoaded} />
+        {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} keep={keep} s={r.s} smooth={smooth} onLoaded={markLoaded} /> : null}
+      </View>
+    );
+  }
   if (!silhouette) {
     // character view: the pet in its real colours
     return (
       <View pointerEvents="none" style={box}>
-        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} onLoaded={markLoaded} />
-        {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} keep={keep} s={r.s} onLoaded={markLoaded} /> : null}
+        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} smooth={smooth} onLoaded={markLoaded} />
+        {overlay ? <SheetLayer kit={kit} name={name} sheets={sheets[`${kit.overlayPrefix}${bandana}`]} frame={frame} keep={keep} s={r.s} smooth={smooth} onLoaded={markLoaded} /> : null}
       </View>
     );
   }
@@ -277,19 +339,19 @@ function ClipView({
   return (
     <>
       <View pointerEvents="none" style={box}>
-        <SheetLayer kit={kit} name={name} sheets={alpha} frame={frame} keep={keep} s={r.s} tint={SILHOUETTE} onLoaded={markLoaded} />
+        <SheetLayer kit={kit} name={name} sheets={alpha} frame={frame} keep={keep} s={r.s} smooth={smooth} tint={SILHOUETTE} onLoaded={markLoaded} />
       </View>
       {stack!.map((band, i) => (
         <BandWindow key={i} band={band} first={i === 0} fill={fill} geo={geo} petH={kit.petH}>
           <View pointerEvents="none" style={box}>
-            <SheetLayer kit={kit} name={name} sheets={alpha} frame={frame} keep={keep} s={r.s} tint={band.color} />
+            <SheetLayer kit={kit} name={name} sheets={alpha} frame={frame} keep={keep} s={r.s} smooth={smooth} tint={band.color} />
           </View>
         </BandWindow>
       ))}
       {/* the art's own shading laid over the flat colours (luminosity blend): eyes, ears and fur lines stay
           readable on the gray and pick up each band's colour, like the llama's face showing through its fill */}
       <View pointerEvents="none" style={[box, styles.detail]}>
-        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} />
+        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} smooth={smooth} />
       </View>
     </>
   );
@@ -348,6 +410,7 @@ export function ClipStage({
   const base = kit.base(rest);
   const geo = useMemo(() => ({ w: size, h: size * ASPECT }), [size]);
   const palette = kit.palettes.includes(appearance.paletteId) ? appearance.paletteId : kit.palettes[0];
+  const dye = useMemo(() => kit.dyeOf?.(appearance.paletteId) ?? null, [kit, appearance.paletteId]);
   const bandana = kit.accessories.includes(appearance.accessoryId) ? appearance.accessoryId : kit.nativeAccessory;
 
   // ---- color-in
@@ -440,8 +503,9 @@ export function ClipStage({
   }, [ambient, rest, active, reduceMotion, action, start]);
   const act = useFrameClock(kit, action ? action.name : base, action ? `${action.name}:${action.nonce}` : `none:${base}`, !!action && actionReady && active && !reduceMotion, finish);
 
-  const idleStyle = useAnimatedStyle(() => ({ opacity: 1 - mix.value }));
-  const actionStyle = useAnimatedStyle(() => ({ opacity: mix.value }));
+  // the incoming pose arrives fully before the outgoing one leaves, so the pet never looks see-through
+  const idleStyle = useAnimatedStyle(() => ({ opacity: 1 - Math.max(0, Math.min(1, (mix.value - 0.5) * 2)) }));
+  const actionStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, mix.value * 2) }));
 
   // ---- touch: a tap plays the happy clip (visual only, never logs care)
   const startRef = useRef({ x: 0, y: 0, t: 0 });
@@ -471,7 +535,7 @@ export function ClipStage({
     >
       {stack ? null : <Shadow geo={geo} />}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, idleStyle]}>
-        <ClipView kit={kit} key={base} name={base} frame={idle.frame} keep={idle.keep} palette={palette} bandana={bandana} fill={fill} stack={stack} geo={geo} />
+        <ClipView kit={kit} key={base} name={base} frame={idle.frame} smooth={idle} keep={idle.keep} palette={palette} dye={dye} bandana={bandana} fill={fill} stack={stack} geo={geo} />
       </Animated.View>
       {action ? (
         <Animated.View key={action.nonce} pointerEvents="none" style={[StyleSheet.absoluteFill, actionStyle]}>
@@ -479,8 +543,10 @@ export function ClipStage({
             kit={kit}
             name={action.name}
             frame={act.frame}
+            smooth={act}
             keep={act.keep}
             palette={palette}
+            dye={dye}
             bandana={bandana}
             fill={fill}
             stack={stack}
@@ -504,5 +570,6 @@ function Shadow({ geo }: { geo: Geo }) {
 
 const styles = StyleSheet.create({
   detail: { mixBlendMode: 'luminosity', opacity: 0.42 },
+  multiply: { mixBlendMode: 'multiply' },
   band: { position: 'absolute', overflow: 'hidden' },
 });

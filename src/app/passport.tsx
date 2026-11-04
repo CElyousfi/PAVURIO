@@ -19,6 +19,7 @@ import { Bouncy } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { ART } from '../ui/art';
 import { t, tn } from '../i18n';
+import { Segmented } from '../ui/Segmented';
 
 type Tab = 'overview' | 'badges' | 'history';
 
@@ -74,15 +75,17 @@ export default function Passport() {
           <PetAvatar species={pet.species} appearance={pet.appearance} size={72} />
         </Animated.View>
 
-        <View style={styles.seg} accessibilityRole="tablist">
-          {(['overview', 'badges', 'history'] as Tab[]).map((k) => (
-            <Bouncy key={k} scaleTo={0.96} onPress={() => setTab(k)} accessibilityRole="tab" accessibilityState={{ selected: tab === k }} style={[styles.segBtn, tab === k && styles.segOn]} testID={`passport-${k}`}>
-              <T weight="black" style={{ color: tab === k ? '#FFFFFF' : colors.inkSoft, fontSize: 15 }}>
-                {k === 'overview' ? t('Overview') : k === 'badges' ? t('Badges') : t('History')}
-              </T>
-            </Bouncy>
-          ))}
-        </View>
+        <Segmented
+          style={{ marginHorizontal: 20, marginBottom: 16 }}
+          height={40}
+          value={tab}
+          onChange={setTab}
+          options={[
+            { key: 'overview', label: t('Overview'), testID: 'passport-overview' },
+            { key: 'badges', label: t('Badges'), testID: 'passport-badges' },
+            { key: 'history', label: t('History'), testID: 'passport-history' },
+          ]}
+        />
 
         {tab === 'overview' ? (
           <Animated.View key="o" entering={reduceMotion ? undefined : FadeIn.duration(200)} style={{ paddingHorizontal: 20, gap: 14 }}>

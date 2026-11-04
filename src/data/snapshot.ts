@@ -21,6 +21,8 @@ export const SNAPSHOT_TABLES = [
   'challenge_runs',
   'walks',
   'walk_badges',
+  'supplies',
+  'supply_purchases',
 ] as const;
 
 /** Settings that describe this device, not the owner's data: never backed up or restored. */

@@ -16,6 +16,8 @@ import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
 import { Medal } from './Medal';
+import { NextCareCard } from './NextCare';
+import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
@@ -82,7 +84,17 @@ export function HomeFeed({ width }: { width: number }) {
   const days = weekdayInitials();
 
   return (
-    <View style={{ width, paddingHorizontal: 20, paddingBottom: 40 }}>
+    <View style={{ width, paddingHorizontal: 20, paddingBottom: 120 }}>
+      {/* next scheduled care, Clucky's "Next wakeup" */}
+      <Enter index={0}>
+        <NextCareCard width={width} />
+      </Enter>
+
+      {/* the shelf: what's running low and when to buy */}
+      <Enter index={0}>
+        <SuppliesCard />
+      </Enter>
+
       {/* streak */}
       <Enter index={0}>
         <Bouncy onPress={() => router.push('/achievements')} style={[styles.streak]} accessibilityRole="button" accessibilityLabel={streak.current > 0 ? tn(streak.current, '1-day streak', '{n}-day streak') : t('Start a streak')} testID="feed-streak">
@@ -119,11 +131,16 @@ export function HomeFeed({ width }: { width: number }) {
               const isT = k === today;
               return (
                 <View key={k} style={{ alignItems: 'center', gap: 4 }}>
-                  <View style={[styles.weekDot, done && { backgroundColor: '#FF8A1F' }, isT && !done && { borderColor: '#FF8A1F', borderWidth: 2.5 }]}>
+                  {/* a happy pet face for every day the plan was coloured in */}
+                  <View style={[styles.weekDot, done && styles.weekDone, isT && !done && { borderColor: '#FF8A1F', borderWidth: 2.5 }]}>
                     {done ? (
                       <PopIn delay={isT ? 250 : 0}>
-                        <Icon name="check" size={14} color="#FFFFFF" />
+                        <PetAvatar species={pet.species} size={34} mood="happy" />
                       </PopIn>
+                    ) : isT ? (
+                      <View style={{ opacity: 0.45 }}>
+                        <PetAvatar species={pet.species} size={30} mood="sleep" />
+                      </View>
                     ) : null}
                   </View>
                   <T weight="black" style={{ fontSize: 11, color: isT ? colors.ink : colors.muted }}>
@@ -366,7 +383,8 @@ const styles = StyleSheet.create({
   sectionHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   streak: { backgroundColor: '#FFF6EC', borderRadius: 28, padding: 18, marginTop: 6 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, paddingHorizontal: 4 },
-  weekDot: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#F2E3D2' },
+  weekDone: { backgroundColor: '#FFE9D2', borderColor: '#FFB766' },
+  weekDot: { width: 38, height: 38, borderRadius: 19, overflow: 'hidden', backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#F2E3D2' },
   visit: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#FFFFFF', borderRadius: 24, padding: 14, marginTop: 12 },
   visitDate: { width: 52, height: 56, borderRadius: 16, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
   chCard: { height: 170, borderRadius: 28, padding: 18, overflow: 'hidden' },

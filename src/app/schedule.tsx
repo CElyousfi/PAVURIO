@@ -7,6 +7,8 @@ import { ValidationError } from '../data/repo';
 import { weekdayInitials } from '../domain/schedule';
 import { dayKeyOf } from '../domain/time';
 import { KindIcon, kindMeta, routineKindsFor } from '../features/routines';
+import { FollowUpCard } from '../features/FollowUpCard';
+import { DarkTile } from '../ui/Tiles';
 import { getPermission, requestPermission, PermissionState } from '../native/notifications';
 import { useApp } from '../state/AppState';
 import { confirmAsync } from '../ui/confirm';
@@ -140,21 +142,17 @@ export default function ScheduleEditor() {
             const on = k === type;
             const m = kindMeta(k);
             return (
-              <Bouncy
+              <DarkTile
                 key={k}
+                title={m.label}
+                selected={on}
+                accent={m.color}
                 accessibilityRole="radio"
-                accessibilityState={{ selected: on }}
-                accessibilityLabel={m.label}
-                onPress={() => {
-                  pickType(k);
-                }}
-                style={[styles.kind, on && { borderColor: m.color, backgroundColor: `${m.color}14` }]}
-              >
-                <KindIcon type={k} size={44} />
-                <T weight="black" style={{ fontSize: 12, color: on ? m.color : colors.inkSoft }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
-                  {m.label}
-                </T>
-              </Bouncy>
+                art={<KindIcon type={k} size={62} />}
+                onPress={() => pickType(k)}
+                height={86}
+                style={styles.kind}
+              />
             );
           })}
         </View>
@@ -203,6 +201,8 @@ export default function ScheduleEditor() {
           </Bouncy>
         ) : null}
       </View>
+
+      <FollowUpCard type={type} time={[...times].sort()[0] ?? '08:00'} remind={remind} />
 
       <View style={{ gap: 8 }}>
         <Label>{t('Days')}</Label>
@@ -259,7 +259,7 @@ export default function ScheduleEditor() {
 
 const styles = StyleSheet.create({
   kinds: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  kind: { width: '23%', alignItems: 'center', gap: 4, paddingVertical: 10, borderRadius: 18, borderWidth: 2, borderColor: colors.line },
+  kind: { width: '48.5%' },
   remove: { width: 44, height: 54, borderRadius: 18, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   addTime: { flexDirection: 'row', alignItems: 'center', gap: 8, height: 48, borderRadius: 18, borderWidth: 2, borderStyle: 'dashed', borderColor: colors.line, justifyContent: 'center' },
   day: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
