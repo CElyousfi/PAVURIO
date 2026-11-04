@@ -13,6 +13,7 @@ import { useApp, useDay } from '../../state/AppState';
 import { confirmOccurrence } from '../../features/careLink';
 import { Vessel } from '../../ui/Vessel';
 import { RollingNumber } from '../../ui/Rolling';
+import { LinkedStockChip } from '../../features/supplies';
 import { Sheet } from '../../ui/forms';
 import { CircleButton, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
@@ -290,6 +291,7 @@ export default function LogCard() {
             </T>
           </View>
 
+          {type === 'meal' || type === 'medication' ? <LinkedStockChip type={type} /> : null}
           {error ? (
             <T style={styles.error} accessibilityLiveRegion="assertive">
               {error}

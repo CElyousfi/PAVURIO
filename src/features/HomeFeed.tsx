@@ -17,6 +17,7 @@ import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
 import { Medal } from './Medal';
 import { NextCareCard } from './NextCare';
+import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
 import { ART } from '../ui/art';
@@ -87,6 +88,11 @@ export function HomeFeed({ width }: { width: number }) {
       {/* next scheduled care, Clucky's "Next wakeup" */}
       <Enter index={0}>
         <NextCareCard width={width} />
+      </Enter>
+
+      {/* the shelf: what's running low and when to buy */}
+      <Enter index={0}>
+        <SuppliesCard />
       </Enter>
 
       {/* streak */}

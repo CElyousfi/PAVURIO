@@ -234,6 +234,37 @@ export const MIGRATIONS: string[] = [
   UPDATE memories SET walk_id = substr(id, 6) WHERE kind = 'adventure' AND id LIKE 'walk-%';
   UPDATE memories SET updated_at = created_at;
   `,
+  // v6: supplies — what's on the shelf for each pet and its purchases (stock = on hand at stock_at)
+  `
+  CREATE TABLE IF NOT EXISTS supplies (
+    id TEXT PRIMARY KEY NOT NULL,
+    pet_id TEXT NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,
+    name TEXT NOT NULL,
+    unit TEXT NOT NULL,
+    pack_size REAL NOT NULL,
+    stock REAL NOT NULL,
+    stock_at INTEGER NOT NULL,
+    link TEXT,
+    per_day REAL,
+    lead_days REAL NOT NULL DEFAULT 2,
+    price REAL,
+    archived_at INTEGER,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_supplies_pet ON supplies (pet_id);
+  CREATE TABLE IF NOT EXISTS supply_purchases (
+    id TEXT PRIMARY KEY NOT NULL,
+    supply_id TEXT NOT NULL REFERENCES supplies(id) ON DELETE CASCADE,
+    at INTEGER NOT NULL,
+    packs REAL NOT NULL,
+    pack_size REAL NOT NULL,
+    price REAL,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_supply_purchases_supply ON supply_purchases (supply_id, at);
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

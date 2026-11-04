@@ -13,6 +13,7 @@ import { shareText } from '../native/files';
 import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
 import { Chip, TabTitle } from '../ui/forms';
 import { DarkTile } from '../ui/Tiles';
+import { SupplyArt } from '../features/supplies';
 import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
@@ -107,6 +108,14 @@ export default function Settings() {
               onPress={() => router.push('/care')}
               height={118}
               testID="menu-care"
+            />
+            <DarkTile
+              title={t('Supplies')}
+              subtitle={t('Food, treats & meds — never run out')}
+              art={<View style={{ marginRight: 14, marginBottom: 4 }}><SupplyArt kind="food" level={0.6} size={70} /></View>}
+              onPress={() => router.push('/supplies')}
+              height={112}
+              testID="menu-supplies"
             />
             <View style={styles.hubRow}>
               <DarkTile title={t('Records')} subtitle={t('Health file')} art={<Image source={ART.section.records} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/records')} style={styles.half} testID="menu-records" />
