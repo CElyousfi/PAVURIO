@@ -82,7 +82,7 @@ export function HomeFeed({ width }: { width: number }) {
   const days = weekdayInitials();
 
   return (
-    <View style={{ width, paddingHorizontal: 20, paddingBottom: 40 }}>
+    <View style={{ width, paddingHorizontal: 20, paddingBottom: 120 }}>
       {/* streak */}
       <Enter index={0}>
         <Bouncy onPress={() => router.push('/achievements')} style={[styles.streak]} accessibilityRole="button" accessibilityLabel={streak.current > 0 ? tn(streak.current, '1-day streak', '{n}-day streak') : t('Start a streak')} testID="feed-streak">
@@ -149,7 +149,7 @@ export function HomeFeed({ width }: { width: number }) {
               {t('Play time with {name}', { name: pet.name })}
             </T>
             <T weight="xbold" style={{ color: colors.muted, fontSize: 14 }}>
-              {t('Paw pattern + treat jar · 1 min')}
+              {t('Kibble, paw pattern & treat jar · 2 min')}
             </T>
           </View>
           <Icon name="chevR" size={18} color={colors.faint} />

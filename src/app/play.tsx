@@ -19,8 +19,9 @@ import { Bouncy, ConfettiRain, Pop, Ring, motionReduced } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { errorFeedback, petFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { t } from '../i18n';
+import { SCOOPS, TossKibble } from '../features/games/TossKibble';
 
-type Stage = 'intro' | 'pattern' | 'shake' | 'result';
+type Stage = 'intro' | 'kibble' | 'pattern' | 'shake' | 'result';
 const SHAKES = 20;
 const SEQ_LEN = 4;
 const TILES = [CARE.meal.color, CARE.water.color, CARE.walk.color, CARE.play.color];
@@ -33,15 +34,15 @@ export default function Play() {
   const [stage, setStage] = useState<Stage>('intro');
   const [tries, setTries] = useState(1);
   if (!pet) return null;
-  const stepIndex = stage === 'pattern' ? 0 : stage === 'shake' ? 1 : stage === 'result' ? 2 : -1;
+  const stepIndex = ['kibble', 'pattern', 'shake', 'result'].indexOf(stage);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 20 }]}>
       <View style={[styles.col, { width: W }]}>
         <View style={styles.topRow}>
           {stepIndex >= 0 ? (
-            <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={t('Step {n} of {total}', { n: stepIndex + 1, total: 3 })}>
-              {[0, 1, 2].map((i) => (
+            <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={t('Step {n} of {total}', { n: stepIndex + 1, total: 4 })}>
+              {[0, 1, 2, 3].map((i) => (
                 <View key={i} style={{ width: i === stepIndex ? 22 : 8, height: 8, borderRadius: 4, backgroundColor: i <= stepIndex ? colors.ink : colors.line }} />
               ))}
             </View>
@@ -57,22 +58,33 @@ export default function Play() {
               <T weight="black" style={styles.h1} accessibilityRole="header">
                 {t('Play time!')}
               </T>
-              <T style={styles.sub}>{t('Two quick games with {name}. One minute, tops.', { name: pet.name })}</T>
+              <T style={styles.sub}>{t('Three quick games with {name}. Two minutes, tops.', { name: pet.name })}</T>
             </View>
             <View style={styles.hero}>
               <PetRig species={pet.species} appearance={pet.appearance} size={Math.min(W * 0.7, 320)} interactive reduceMotion={reduceMotion} ambient />
             </View>
             <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'center', marginBottom: 18 }}>
+              <GamePill emoji="🥣" label={t('Kibble')} />
               <GamePill emoji="🐾" label={t('Paw pattern')} />
               <GamePill emoji="🦴" label={t('Treat jar')} />
             </View>
-            <Pill label={t('LET’S PLAY')} onPress={() => setStage('pattern')} style={{ marginHorizontal: 24 }} testID="play-start" />
+            <Pill label={t('LET’S PLAY')} onPress={() => setStage('kibble')} style={{ marginHorizontal: 24 }} testID="play-start" />
           </Animated.View>
         ) : null}
 
+        {stage === 'kibble' ? (
+          <Animated.View key="kibble" entering={motionReduced() ? undefined : FadeInRight.springify().damping(18)} style={styles.page}>
+            <View style={{ paddingHorizontal: 24, alignItems: 'center' }}>
+              <T weight="black" style={styles.h1}>
+                {t('Feed {name}', { name: pet.name })}
+              </T>
+            </View>
+            <TossKibble width={W} onDone={() => setStage('pattern')} />
+          </Animated.View>
+        ) : null}
         {stage === 'pattern' ? <PawPattern key="pattern" width={W} onDone={(n) => (setTries(n), setStage('shake'))} /> : null}
         {stage === 'shake' ? <TreatJar key="shake" width={W} onDone={() => setStage('result')} /> : null}
-        {stage === 'result' ? <Result key="result" width={W} tries={tries} onAgain={() => setStage('pattern')} /> : null}
+        {stage === 'result' ? <Result key="result" width={W} tries={tries} onAgain={() => setStage('kibble')} /> : null}
       </View>
     </View>
   );
@@ -360,8 +372,9 @@ function Result({ width, tries, onAgain }: { width: number; tries: number; onAga
         <T style={styles.sub}>{t('{name} says: again, again!', { name: pet.name })}</T>
       </Animated.View>
       <View style={styles.chips}>
-        <LipChip icon={<T style={{ fontSize: 22 }}>🐾</T>} value={tries <= 1 ? t('Perfect') : t('{n} tries', { n: tries })} caption={t('Paw pattern')} color={colors.brand} delay={300} />
-        <LipChip icon={<T style={{ fontSize: 22 }}>🦴</T>} value={`${SHAKES}/${SHAKES}`} caption={t('Treat jar')} color="#FF8A1F" delay={420} />
+        <LipChip icon={<T style={{ fontSize: 20 }}>🥣</T>} value={`${SCOOPS}/${SCOOPS}`} caption={t('Kibble')} color="#B06A2B" delay={200} />
+        <LipChip icon={<T style={{ fontSize: 20 }}>🐾</T>} value={tries <= 1 ? t('Perfect') : t('{n} tries', { n: tries })} caption={t('Paw pattern')} color={colors.brand} delay={300} />
+        <LipChip icon={<T style={{ fontSize: 20 }}>🦴</T>} value={`${SHAKES}/${SHAKES}`} caption={t('Treat jar')} color="#FF8A1F" delay={420} />
       </View>
       <Bouncy onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('Back to {name}', { name: pet.name })} style={styles.cta} testID="play-done">
         <T weight="black" style={{ color: '#FFFFFF', fontSize: 20 }}>
@@ -392,6 +405,6 @@ const styles = StyleSheet.create({
   tile: { borderRadius: 34, alignItems: 'center', justifyContent: 'center' },
   seqDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: colors.line },
   counter: { position: 'absolute', bottom: 34, backgroundColor: '#FFFFFF', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 2 },
-  chips: { flexDirection: 'row', gap: 12, paddingHorizontal: 22, marginTop: 22, marginBottom: 22 },
+  chips: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginTop: 22, marginBottom: 22 },
   cta: { marginHorizontal: 22, height: 66, borderRadius: 24, backgroundColor: colors.ink, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 26 },
 });

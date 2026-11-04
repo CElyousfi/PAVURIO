@@ -45,7 +45,7 @@ function ArcItem({ i, n, pos, label, side, cx, cy, r }: { i: number; n: number; 
   );
 }
 
-function Wheel({
+export function ArcWheel({
   n,
   value,
   onChange,
@@ -171,6 +171,36 @@ function Wheel({
   );
 }
 
+/** A duration on the same two wheels: 0–12 hours on the left, minutes in 5s on the right. */
+export function ArcDurationPicker({ minutes, onChange, height = 300, hourUnit, minUnit }: { minutes: number; onChange: (m: number) => void; height?: number; hourUnit: string; minUnit: string }) {
+  const [w, setW] = useState(0);
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const half = w / 2;
+  return (
+    <View onLayout={(e) => setW(e.nativeEvent.layout.width)} style={{ height, flexDirection: 'row' }}>
+      {w > 0 ? (
+        <>
+          <ArcWheel n={13} value={h} side={1} width={half} height={height} label={hourUnit} a11yValue={String(h)} format={(i) => String(i).padStart(2, '0')} onChange={(i) => onChange(i * 60 + m)} />
+          <ArcWheel n={12} value={Math.round(m / 5) % 12} side={-1} width={half} height={height} label={minUnit} a11yValue={String(m)} format={(i) => String(i * 5).padStart(2, '0')} onChange={(i) => onChange(h * 60 + i * 5)} />
+          <View pointerEvents="none" style={[styles.knobWrap, { left: half - 26, top: height / 2 - 26 }]}>
+            <View style={styles.knob} />
+            <T weight="black" style={styles.colon}>
+              :
+            </T>
+          </View>
+          <T weight="black" style={[styles.unit, { left: half - 108, top: height / 2 + 30, width: 100 }]}>
+            {hourUnit}
+          </T>
+          <T weight="black" style={[styles.unit, { left: half + 8, top: height / 2 + 30, width: 100 }]}>
+            {minUnit}
+          </T>
+        </>
+      ) : null}
+    </View>
+  );
+}
+
 /** value / onChange use "HH:MM" (24 h). Minutes move in 5-minute steps. */
 export function ArcTimePicker({ value, onChange, h24, height = 300 }: { value: string; onChange: (v: string) => void; h24: boolean; height?: number }) {
   const [w, setW] = useState(0);
@@ -185,7 +215,7 @@ export function ArcTimePicker({ value, onChange, h24, height = 300 }: { value: s
     <View onLayout={(e) => setW(e.nativeEvent.layout.width)} style={{ height, flexDirection: 'row' }}>
       {w > 0 ? (
         <>
-          <Wheel
+          <ArcWheel
             n={hourN}
             value={hourIdx}
             side={1}
@@ -196,7 +226,7 @@ export function ArcTimePicker({ value, onChange, h24, height = 300 }: { value: s
             format={hourLabel}
             onChange={(i) => set(h24 ? i : i + (pm ? 12 : 0), m)}
           />
-          <Wheel
+          <ArcWheel
             n={12}
             value={Math.round(m / 5) % 12}
             side={-1}
@@ -223,5 +253,6 @@ const styles = StyleSheet.create({
   num: { position: 'absolute', left: 0, top: 0, width: 100, height: 68, textAlign: 'center', fontFamily: font.black, fontSize: 56, lineHeight: 68, letterSpacing: -1 },
   knobWrap: { position: 'absolute', width: 52, height: 52, alignItems: 'center', justifyContent: 'center' },
   knob: { position: 'absolute', width: 42, height: 42, borderRadius: 14, backgroundColor: colors.brand, transform: [{ rotate: '45deg' }] },
+  unit: { position: 'absolute', textAlign: 'center', fontSize: 13, letterSpacing: 1, color: '#A9B0BC' },
   colon: { color: '#FFFFFF', fontSize: 28, lineHeight: 32, marginTop: -4 },
 });
