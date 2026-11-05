@@ -625,7 +625,7 @@ function WelcomePager({ width, bottomInset, reduceMotion, language, onLanguage, 
       <View style={[styles.welcomeBottom, { paddingBottom: bottomInset + 18 }]}>
         <Bouncy onPress={onLanguage} style={styles.lang} accessibilityRole="button" accessibilityLabel={`${t('Language')}: ${LANG_NAMES[language]}`} testID="language">
           <T weight="black" style={{ fontSize: 14 }}>
-            🌐 {langShort(language)}
+            {langShort(language)}
           </T>
         </Bouncy>
         <Pill label={t('GET STARTED')} onPress={onStart} style={{ flex: 1 }} testID="get-started" />

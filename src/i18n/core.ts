@@ -54,6 +54,39 @@ export const LANG_NAMES = {
   hu: 'Magyar',
 } as const;
 export type Lang = keyof typeof LANG_NAMES;
+/** A flag for each language in the picker (the country most associated with it). */
+export const LANG_FLAGS: Record<Lang, string> = {
+  en: '🇬🇧',
+  fr: '🇫🇷',
+  es: '🇪🇸',
+  pt: '🇵🇹',
+  de: '🇩🇪',
+  it: '🇮🇹',
+  nl: '🇳🇱',
+  pl: '🇵🇱',
+  ru: '🇷🇺',
+  uk: '🇺🇦',
+  tr: '🇹🇷',
+  ar: '🇸🇦',
+  he: '🇮🇱',
+  ja: '🇯🇵',
+  ko: '🇰🇷',
+  'zh-Hans': '🇨🇳',
+  'zh-Hant': '🇹🇼',
+  hi: '🇮🇳',
+  id: '🇮🇩',
+  ms: '🇲🇾',
+  vi: '🇻🇳',
+  th: '🇹🇭',
+  sv: '🇸🇪',
+  da: '🇩🇰',
+  nb: '🇳🇴',
+  fi: '🇫🇮',
+  cs: '🇨🇿',
+  ro: '🇷🇴',
+  el: '🇬🇷',
+  hu: '🇭🇺',
+};
 /** Only languages whose translation file is present are offered (en, fr, es, pt always are). */
 export const LANGS: Lang[] = (Object.keys(LANG_NAMES) as Lang[]).filter((l) => l === 'en' || l === 'fr' || l === 'es' || l === 'pt' || l in LOCALES);
 export const isLang = (s: unknown): s is Lang => typeof s === 'string' && (LANGS as string[]).includes(s);
