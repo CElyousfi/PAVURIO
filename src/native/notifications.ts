@@ -166,6 +166,25 @@ export async function requestExactAlarms(db?: Db): Promise<boolean> {
   }
 }
 
+/**
+ * Clears notifications already in the shade that are no longer true: a care reminder whose occurrence
+ * has been done (or skipped), a "time to order" for something that has been restocked.
+ */
+async function dismissObsolete(marks: { scheduleId: string; key: string; status: string }[], pantryOk: Set<string>) {
+  try {
+    const shown = await Notifications.getPresentedNotificationsAsync();
+    const closed = new Set(marks.filter((m) => m.status === 'done' || m.status === 'skipped').map((m) => m.key));
+    for (const n of shown) {
+      const d = n.request.content.data as { kind?: string; key?: string } | undefined;
+      const key = String(d?.key ?? '');
+      const stale = (d?.kind === 'care' && closed.has(key)) || (d?.kind === 'supply' && pantryOk.has(key.split(':')[2] ?? ''));
+      if (stale) await Notifications.dismissNotificationAsync(n.request.identifier);
+    }
+  } catch {
+    // not supported on this platform: nothing to clear
+  }
+}
+
 let syncing: Promise<number> | null = null;
 let again = false;
 
@@ -196,7 +215,9 @@ export function syncReminders(db: Db): Promise<number> {
         today,
         addDays(today, 5),
       );
+      let pantryOk = new Set<string>();
       const plans: (PlannedReminder & { followUp?: boolean })[] = [];
+      const followUps = (await getSetting(db, 'followUps')) !== '0';
       for (const pet of pets) {
         const name = names.get(pet.id) ?? t('your pet');
         const portions = await getPortions(db, pet.id);
@@ -206,7 +227,7 @@ export function syncReminders(db: Db): Promise<number> {
           const portion = type && isCareType(type) && CARE[type].amount ? formatAmount(type, portionOf(type, portions)) : null;
           plans.push({ ...r, ...reminderCopy(type, sch?.title ?? r.title, name, portion) });
           // meals and medicine matter most: one gentle follow-up if it's still open, in the next day and a half
-          if ((type === 'meal' || type === 'medication') && r.at + FOLLOW_UP_MS - now < 36 * 3600_000) {
+          if (followUps && (type === 'meal' || type === 'medication') && r.at + FOLLOW_UP_MS - now < 36 * 3600_000) {
             plans.push({ ...r, id: `pv:f:${r.key}`, at: r.at + FOLLOW_UP_MS, ...followUpCopy(type, sch?.title ?? r.title, name), followUp: true });
           }
         }
@@ -256,7 +277,8 @@ export function syncReminders(db: Db): Promise<number> {
       // it's still not restocked. Household items name every pet that uses them.
       try {
         const { forecasts } = await loadPantry(db, now);
-        for (const f of forecasts) {
+        pantryOk = new Set(forecasts.filter((f) => f.status !== 'buy' && f.status !== 'out').map((f) => f.supply.id));
+        for (const f of (await getSetting(db, 'pantryReminders')) === '0' ? [] : forecasts) {
           const who = f.petIds.map((id) => names.get(id)).filter(Boolean).join(' & ') || t('your pet');
           const key = `supply:${f.supply.petId}:${f.supply.id}`;
           for (const r of restockReminders(f, now)) {
@@ -289,6 +311,7 @@ export function syncReminders(db: Db): Promise<number> {
           key: `appt:${a.id}`,
         });
       }
+      await dismissObsolete(marks, pantryOk);
       plans.sort((x, y) => x.at - y.at);
       // medicine is time-critical: on Android, alarm-clock delivery when the owner allowed exact alarms
       const exact = Platform.OS === 'android' ? (await Notifications.getExactAlarmPermissionsAsync().catch(() => null))?.granted === true : false;

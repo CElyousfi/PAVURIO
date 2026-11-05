@@ -15,11 +15,12 @@ import { Vessel } from '../../ui/Vessel';
 import { RollingNumber } from '../../ui/Rolling';
 import { ProductPicker } from '../../features/supplies';
 import { Sheet } from '../../ui/forms';
+import { confirmAsync } from '../../ui/confirm';
 import { CircleButton, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
 import { errorFeedback, tapFeedback } from '../../native/haptics';
 import { motionReduced, springs } from '../../ui/motion';
-import { t } from '../../i18n';
+import { t, tn } from '../../i18n';
 
 type TimeOption = { label: string; at: number };
 
@@ -68,6 +69,7 @@ export default function LogCard() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mutationId = useRef(newId());
+  const confirmedTwice = useRef(false);
   // which product this meal / dose comes out of (the pet's usual one unless changed)
   const [supplyId, setSupplyId] = useState<string | null>(null);
 
@@ -185,6 +187,20 @@ export default function LogCard() {
         bump();
         router.back();
         return;
+      }
+      // an accidental second log (a double tap, two people feeding the same pet): ask first
+      const recent = dayEvents.find((e) => e.type === type && Math.abs(e.recordedAt - Date.now()) < 3 * 60_000);
+      if (recent && !confirmedTwice.current) {
+        const mins = Math.max(1, Math.round((Date.now() - recent.recordedAt) / 60_000));
+        const ok = await confirmAsync(
+          t('Log {label} again?', { label: tpl.label.toLowerCase() }),
+          tn(mins, '{name} already has one logged a minute ago.', '{name} already has one logged {n} minutes ago.', { name: pet.name }),
+        );
+        if (!ok) {
+          setSaving(false);
+          return;
+        }
+        confirmedTwice.current = true;
       }
       // 1) persist in a transaction (idempotent on mutationId) …
       const saved = await logCare(db, {

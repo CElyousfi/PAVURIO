@@ -11,7 +11,7 @@ import { AppState } from 'react-native';
 import { router } from 'expo-router';
 import { useApp } from '../state/AppState';
 import { getAnyLiveWalk, getWalk, pauseWalk, recoverWalks, resumeWalk } from '../data/walkRepo';
-import { afterWalkFinished, applyLive, mirrorWalk, reconcileLockScreen } from './walkSession';
+import { afterWalkFinished, applyLive, finishPendingWalks, mirrorWalk, reconcileLockScreen } from './walkSession';
 import { onWalkLiveAction } from '../native/walkLive';
 
 export function WalkLiveBridge() {
@@ -24,7 +24,8 @@ export function WalkLiveBridge() {
     const sync = async () => {
       const { db, pets, bump } = ref.current;
       try {
-        for (const r of await recoverWalks(db)) await afterWalkFinished(db, r);
+        for (const r of await recoverWalks(db)) await afterWalkFinished(db, r).catch((e) => console.warn('[pavurio] walk follow-up will retry', e));
+        await finishPendingWalks(db);
         const w = await getAnyLiveWalk(db);
         if (!w || !alive) return;
         const name = pets.find((p) => p.id === w.petId)?.name ?? '';

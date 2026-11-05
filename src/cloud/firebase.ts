@@ -19,6 +19,7 @@ type FsMod = typeof import('@react-native-firebase/firestore');
 type CrashMod = typeof import('@react-native-firebase/crashlytics');
 type FnMod = typeof import('@react-native-firebase/functions');
 type AcMod = typeof import('@react-native-firebase/app-check');
+type StMod = typeof import('@react-native-firebase/storage');
 
 const ENABLED = Platform.OS !== 'web' && (Constants.expoConfig?.extra as { firebase?: boolean } | undefined)?.firebase === true;
 const WEB_CLIENT_ID = (Constants.expoConfig?.extra as { googleWebClientId?: string } | undefined)?.googleWebClientId;
@@ -28,6 +29,7 @@ let A: AuthMod | null = null;
 let F: FsMod | null = null;
 let C: CrashMod | null = null;
 let FN: FnMod | null = null;
+let ST: StMod | null = null;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const auth = () => (A ??= require('@react-native-firebase/auth') as AuthMod);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -36,6 +38,11 @@ const fs = () => (F ??= require('@react-native-firebase/firestore') as FsMod);
 const crashMod = () => (C ??= require('@react-native-firebase/crashlytics') as CrashMod);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const fnMod = () => (FN ??= require('@react-native-firebase/functions') as FnMod);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const stMod = () => (ST ??= require('@react-native-firebase/storage') as StMod);
+const fileRef = (uid: string, path: string) => stMod().ref(stMod().getStorage(), `users/${uid}/files/${path}`);
+/** native file paths for the storage module (it wants a plain path, not a file:// URL) */
+const plainPath = (uri: string) => decodeURI(uri.replace(/^file:\/\//, ''));
 
 /**
  * App Check proves requests come from the real Pavurio app (Play Integrity / App Attest), so the
@@ -279,6 +286,15 @@ export const cloud: CloudApi = {
         await auth().reauthenticateWithCredential(u, auth().AppleAuthProvider.credential(r.identityToken, raw));
         await auth().revokeToken(inst, r.authorizationCode);
       }
+      // photos and documents first (best effort per folder; the rules keep them private regardless)
+      for (const dir of ['memories/thumbs', 'memories', 'attachments', 'moments']) {
+        try {
+          const list = await stMod().listAll(stMod().ref(stMod().getStorage(), `users/${u.uid}/files/${dir}`));
+          await Promise.all(list.items.map((it) => stMod().deleteObject(it).catch(() => null)));
+        } catch (e) {
+          cloud.crash.record(e, 'account:delete-files');
+        }
+      }
       const f = fs();
       const docs = await f.getDocs(backupCol(u.uid));
       const batch = f.writeBatch(f.getFirestore());
@@ -337,6 +353,25 @@ export const cloud: CloudApi = {
       out.push(d.data);
     }
     return out;
+  },
+
+  async putFile(uid, path, localUri, mime) {
+    const snap = await stMod().putFile(fileRef(uid, path), plainPath(localUri), { contentType: mime ?? undefined, cacheControl: 'private, max-age=31536000' });
+    return { size: Number(snap.metadata?.size ?? snap.totalBytes ?? 0) };
+  },
+
+  async getFile(uid, path, localUri) {
+    const snap = await stMod().writeToFile(fileRef(uid, path), plainPath(localUri));
+    return { size: Number(snap.totalBytes ?? snap.bytesTransferred ?? 0) };
+  },
+
+  async removeFile(uid, path) {
+    try {
+      await stMod().deleteObject(fileRef(uid, path));
+    } catch (e) {
+      // already gone is fine
+      if (!/object-not-found/.test(String((e as { code?: string })?.code ?? e))) throw e;
+    }
   },
 
   async refresh() {

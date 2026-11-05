@@ -65,15 +65,51 @@ export async function applyLive(db: Db, walkId: string, p: Pick<WalkLiveProps, '
 
 /**
  * What every finished walk does once, wherever it was finished (screen, lock screen, crash recovery):
- * ticks the scheduled walk it fulfils and counts it for achievements. Idempotent per walk.
+ * ticks the scheduled walk it fulfils and counts it for achievements.
+ *
+ * Recoverable: each step has its own marker that is written only after the step succeeded (the count
+ * and its marker in one transaction), and the "all done" marker comes last. An interruption at any
+ * point leaves the walk to be finished by `finishPendingWalks` on the next start; nothing is counted
+ * twice and a temporary failure never blocks the update for good.
  */
 export async function afterWalkFinished(db: Db, r: FinishResult): Promise<void> {
-  const key = `walkCounted:${r.walk.id}`;
+  const w = r.walk;
+  const key = `walkCounted:${w.id}`;
   if (await getSetting(db, key)) return;
-  await setSetting(db, key, '1');
-  if (r.walk.eventId) {
-    const ev = await getEvent(db, r.walk.eventId);
-    if (ev) await confirmOccurrence(db, await listSchedules(db, r.walk.petId), ev).catch(() => null);
+  if (w.eventId && !(await getSetting(db, `${key}:care`))) {
+    const ev = await getEvent(db, w.eventId);
+    if (ev) {
+      // already ticked by this walk (a re-run): don't tick a second occurrence
+      const linked = await db.getFirstAsync<{ n: number }>('SELECT COUNT(*) AS n FROM schedule_marks WHERE event_id = ?', [ev.id]);
+      if (!linked?.n) await confirmOccurrence(db, await listSchedules(db, w.petId), ev);
+    }
+    await setSetting(db, `${key}:care`, '1');
   }
-  await bumpCounter(db, `walksTimed:${r.walk.petId}`).catch(() => null);
+  if (!(await getSetting(db, `${key}:count`))) {
+    await db.withTransactionAsync(async () => {
+      await bumpCounter(db, `walksTimed:${w.petId}`);
+      await setSetting(db, `${key}:count`, '1');
+    });
+  }
+  await setSetting(db, key, '1');
+}
+
+/** Completed walks whose follow-up didn't finish (the app was closed, a step failed): finish them now. */
+export async function finishPendingWalks(db: Db): Promise<number> {
+  const rows = await db.getAllAsync<{ id: string }>(
+    "SELECT id FROM walks WHERE status = 'completed' AND NOT EXISTS (SELECT 1 FROM settings WHERE key = 'walkCounted:' || walks.id)",
+    [],
+  );
+  let n = 0;
+  for (const { id } of rows) {
+    const walk = await getWalk(db, id);
+    if (!walk) continue;
+    try {
+      await afterWalkFinished(db, { walk, newBadges: [] });
+      n++;
+    } catch (e) {
+      console.warn('[pavurio] walk follow-up will retry', e);
+    }
+  }
+  return n;
 }

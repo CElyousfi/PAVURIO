@@ -38,6 +38,8 @@ export type Snapshot = {
   createdAt: number;
   tables: Record<string, Row[]>;
   settings: { key: string; value: string }[];
+  /** photos and documents this account has in cloud storage (path inside the documents folder + size) */
+  files?: { path: string; size: number }[];
 };
 
 export async function dumpSnapshot(db: Db, now = Date.now()): Promise<Snapshot> {

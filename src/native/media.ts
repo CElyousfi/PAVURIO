@@ -176,13 +176,15 @@ export async function shareImage(uri: string, title: string) {
   if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(uri, { mimeType: 'image/jpeg', dialogTitle: title, UTI: 'public.jpeg' });
 }
 
-/** "Erase everything": removes the Memories photo folder (originals and thumbnails). */
+/** "Erase everything": removes the owner's files — Memories photos (originals and thumbnails), adventure photos and record attachments. */
 export function removeAllMemoryFiles() {
   if (Platform.OS === 'web') return;
-  try {
-    const dir = new Directory(Paths.document, 'memories');
-    if (dir.exists) dir.delete();
-  } catch (e) {
-    console.warn('[pavurio] could not remove memories folder', e);
+  for (const folder of ['memories', 'moments', 'attachments']) {
+    try {
+      const dir = new Directory(Paths.document, folder);
+      if (dir.exists) dir.delete();
+    } catch (e) {
+      console.warn('[pavurio] could not remove folder', folder, e);
+    }
   }
 }

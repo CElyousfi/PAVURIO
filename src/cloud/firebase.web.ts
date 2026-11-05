@@ -18,6 +18,13 @@ export const cloud: CloudApi = {
     throw new Error('unavailable');
   },
   download: async () => [],
+  putFile: async () => {
+    throw new Error('unavailable');
+  },
+  getFile: async () => {
+    throw new Error('unavailable');
+  },
+  removeFile: async () => {},
   refresh: async () => null,
   unlinkEmail: async () => {},
   sendCode: async () => ({ kind: 'error', message: 'unavailable' }),

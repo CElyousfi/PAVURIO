@@ -19,11 +19,10 @@ import { ART } from '../ui/art';
 import { CareIcon } from '../ui/CareIcon';
 import { NotifPreview } from '../ui/NotifPreview';
 import { colors, font, shadow } from '../ui/theme';
-import { DateField, Sheet, TimeField, Toggle } from '../ui/forms';
+import { Sheet, TimeField, Toggle } from '../ui/forms';
 import { Bouncy, ConfettiRain, Float, Pulse } from '../ui/motion';
 import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { reminderCopy, requestPermission } from '../native/notifications';
-import { dayKeyOf } from '../domain/time';
 import { formatHM } from '../i18n/dates';
 import { newId } from '../domain/ids';
 import { LANGS, LANG_NAMES, Lang, t } from '../i18n';
@@ -54,8 +53,9 @@ const WELCOME_STACK_CAT = [
   { color: CARE.meal.color, from: 0.3, to: 0.62 },
 ];
 
-type Step = 'welcome' | 'species' | 'name' | 'look' | 'dates' | 'plan' | 'first' | 'reminders';
-const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'dates', 'plan', 'first', 'reminders'];
+type Step = 'welcome' | 'species' | 'name' | 'look' | 'plan' | 'first' | 'reminders';
+// birthday and adoption day are optional: they're set later in the pet's profile, not asked up front
+const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'plan', 'first', 'reminders'];
 const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom' };
 
 export default function Onboarding() {
@@ -67,8 +67,6 @@ export default function Onboarding() {
   const adding = params.add === '1';
   const [step, setStep] = useState<Step>(adding ? 'species' : 'welcome');
   const [unitsOpen, setUnitsOpen] = useState(false);
-  const [birthDate, setBirthDate] = useState<string | null>(null);
-  const [adoptionDate, setAdoptionDate] = useState<string | null>(null);
   const [routines, setRoutines] = useState<Suggestion[]>([]);
   const [customize, setCustomize] = useState(false);
   const [species, setSpecies] = useState<Species>('dog');
@@ -125,7 +123,7 @@ export default function Onboarding() {
     setSaving(true);
     setError(null);
     try {
-      const pet = await createPet(db, { species, name, appearance, plan, portions, birthDate, adoptionDate });
+      const pet = await createPet(db, { species, name, appearance, plan, portions });
       setCreated(pet);
       setRoutines(suggestions(species, plan));
       await reload();
@@ -175,7 +173,7 @@ export default function Onboarding() {
 
   const petSize = Math.min(W * 0.72, 330);
   const displayName = name.trim() || (species === 'dog' ? t('your dog') : t('your cat'));
-  const setupSteps: Step[] = ['species', 'name', 'look', 'dates', 'plan'];
+  const setupSteps: Step[] = ['species', 'name', 'look', 'plan'];
   const showBack = step !== 'welcome' && !created;
   const showSkip = step === 'first' || step === 'reminders';
 
@@ -268,28 +266,7 @@ export default function Onboarding() {
           </View>
           <LookPicker species={species} appearance={appearance} onChange={setAppearance} pro={pro} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label={t('LOOKS RIGHT')} onPress={() => go('dates')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
-          </View>
-        </Animated.View>
-      )}
-
-      {step === 'dates' && (
-        <Animated.View key="dates" entering={slide()} style={[styles.page, { width: W }]}>
-          <T weight="black" style={styles.h2}>
-            {t('Special days')}
-          </T>
-          <T style={styles.sub}>{t("Optional. We'll celebrate {name}'s birthday and your anniversary together.", { name: displayName })}</T>
-          <View style={{ alignSelf: 'stretch', paddingHorizontal: 24, gap: 16, marginTop: 24 }}>
-            <DateField label={t('Birthday')} value={birthDate} onChange={setBirthDate} allowClear maxDay={dayKeyOf(new Date())} placeholder={t('Not sure? Skip it')} />
-            <DateField label={t('Adoption day')} value={adoptionDate} onChange={setAdoptionDate} allowClear maxDay={dayKeyOf(new Date())} placeholder={t('When they came home')} />
-          </View>
-          <View style={styles.hero}>
-            <Float amount={6}>
-              <PetRig species={species} appearance={appearance} size={petSize * 0.6} reduceMotion={reduceMotion} />
-            </Float>
-          </View>
-          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label={birthDate || adoptionDate ? t('NEXT') : t('SKIP FOR NOW')} onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="dates-next" />
+            <Pill label={t('LOOKS RIGHT')} onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
           </View>
         </Animated.View>
       )}
