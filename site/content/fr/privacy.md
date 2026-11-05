@@ -1,6 +1,6 @@
 # Politique de confidentialité
 
-*Dernière mise à jour : 31 octobre 2026*
+*Dernière mise à jour : 5 novembre 2026*
 
 Pavurio est une application de suivi des soins pour animaux. Cette politique explique ce que l'app conserve, où, et comment le supprimer. En bref : **les données de vos animaux restent sur votre téléphone, une copie de sauvegarde est conservée dans votre compte Pavurio pour pouvoir la restaurer, et nous ne vendons aucune donnée ni n'affichons de publicité.**
 
@@ -11,7 +11,7 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 - Ces données sont enregistrées **sur votre téléphone**.
 - Une **copie de sauvegarde** est conservée dans votre compte Pavurio (Google Firebase Cloud Firestore), pour les retrouver après un changement ou une réinitialisation de téléphone. Elle est liée à votre compte et lisible par vous seul.
 
-**Les photos et pièces jointes** restent **uniquement sur votre téléphone**. Elles ne sont pas envoyées.
+**Les photos et pièces jointes** ajoutées aux dossiers et aux souvenirs sont enregistrées sur votre téléphone, et une **copie de sauvegarde** est conservée dans votre compte Pavurio (Google Firebase Cloud Storage) pour les retrouver avec le reste de vos données sur un nouveau téléphone. Elles sont liées à votre compte, lisibles par vous seul et ne sont partagées avec personne.
 
 **Votre compte (Firebase Authentication).**
 
@@ -51,7 +51,7 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 
 | Service | Finalité | Données |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics) | compte, codes e-mail, sauvegarde, rapports de plantage | identifiant, e-mail de connexion, choix newsletter, copie de sauvegarde, rapports de plantage |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics) | compte, codes e-mail, sauvegarde, rapports de plantage | identifiant, e-mail de connexion, choix newsletter, copie de sauvegarde (photos et pièces jointes comprises), rapports de plantage |
 | Resend | envoi des codes et, si vous l'acceptez, de la newsletter | adresse e-mail, contenu du message |
 | RevenueCat | vérification de Pavurio Pro | identifiant, reçus d'achat |
 | Apple / Google | connexion, paiements, distribution | selon leurs propres politiques |

@@ -1,6 +1,6 @@
 # Política de Privacidade
 
-*Última atualização: 31 de outubro de 2026*
+*Última atualização: 5 de novembro de 2026*
 
 O Pavurio é um aplicativo de acompanhamento dos cuidados com animais de estimação. Esta política explica o que o aplicativo armazena, onde, e como excluir esses dados. Em resumo: **os dados dos seus animais ficam no seu telefone, uma cópia de backup é mantida na sua conta Pavurio para que você possa restaurá-la, e nós nunca vendemos dados nem exibimos anúncios.**
 
@@ -11,7 +11,7 @@ O Pavurio é um aplicativo de acompanhamento dos cuidados com animais de estima�
 - Esses dados são salvos **no seu telefone**.
 - Uma **cópia de backup** é salva na sua conta Pavurio (Google Firebase Cloud Firestore) para que você possa recuperá-los depois de trocar ou redefinir o telefone. Ela está vinculada à sua conta e só pode ser lida por você.
 
-**Fotos e anexos** que você adiciona a registros e momentos ficam **apenas no seu telefone**. Eles não são enviados para nenhum servidor.
+**Fotos e anexos** que você adiciona a registros e momentos são salvos no seu telefone, e uma **cópia de backup** é mantida na sua conta Pavurio (Google Firebase Cloud Storage) para que voltem com o resto dos seus dados em um telefone novo. Eles estão vinculados à sua conta, só podem ser lidos por você e não são compartilhados com ninguém.
 
 **Sua conta (Firebase Authentication).**
 
@@ -51,7 +51,7 @@ O Pavurio é um aplicativo de acompanhamento dos cuidados com animais de estima�
 
 | Serviço | Finalidade | Dados |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics) | conta, códigos por e-mail, backup, relatórios de falhas | ID de conta, e-mail de login, escolha quanto ao boletim, cópia de backup, relatórios de falhas |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics) | conta, códigos por e-mail, backup, relatórios de falhas | ID de conta, e-mail de login, escolha quanto ao boletim, cópia de backup (incluindo fotos e anexos), relatórios de falhas |
 | Resend | envio dos e-mails com códigos e, se você aceitar, do boletim | endereço de e-mail, conteúdo da mensagem |
 | RevenueCat | verificação do Pavurio Pro | ID de conta, recibos de compra |
 | Apple / Google | login, pagamentos, distribuição do aplicativo | conforme descrito nas respectivas políticas |
