@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Φωτογράφισε ένα έγγραφο του κτηνιάτρου ή μια στιγμή με το κατοικίδιό σου.",
+    "NSPhotoLibraryUsageDescription": "Επισύναψε φωτογραφίες σε αρχεία και στιγμές.",
+    "NSPhotoLibraryAddUsageDescription": "Αποθήκευσε τις ιστορίες και τις κάρτες του κατοικίδιού σου στις Φωτογραφίες."
+  }
+}

@@ -14,7 +14,6 @@ import type { CareType, Species } from '../domain/care';
 import { Plan, computeProgress } from '../domain/progress';
 import { addDays, parseDayKey } from '../domain/time';
 import { monthNamesShort, weekdayInitials } from '../i18n/dates';
-import { Flame } from './HomeFeed';
 import { PetAvatar } from '../animation/PetAvatar';
 import { RollingNumber } from '../ui/Rolling';
 import { Ring, motionReduced } from '../ui/motion';
@@ -79,14 +78,14 @@ export function WeekReport({ plan, byDay, today, species, name, since }: { plan:
   );
 }
 
-export function StatChips({ plan, byDay, today, streak }: { plan: Plan; byDay: DayLogs; today: string; streak: number }) {
+/** The week in two numbers (no streak counter: the app never pressures a daily streak). */
+export function StatChips({ plan, byDay, today }: { plan: Plan; byDay: DayLogs; today: string }) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6));
   const cares = days.reduce((s, k) => s + (byDay.get(k)?.length ?? 0), 0);
   const full = days.filter((k) => ratioOf(plan, byDay, k) >= 1).length;
   const items = [
     { icon: <T style={{ fontSize: 18 }}>🐾</T>, value: cares, label: t('Cares this week') },
     { icon: <T style={{ fontSize: 18 }}>✅</T>, value: full, label: t('Full days') },
-    { icon: <Flame size={22} lit={streak > 0} />, value: streak, label: t('Streak') },
   ];
   return (
     <View style={styles.chips}>

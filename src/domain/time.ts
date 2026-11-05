@@ -3,8 +3,8 @@
  * "days" in the device's local timezone using calendar arithmetic (never +24h),
  * so DST transitions produce 23h / 25h days correctly.
  */
-import { t } from '../i18n/core';
-import { capitalize, formatHM, monthNamesShort, weekdayNames } from '../i18n/dates';
+import { lang, t } from '../i18n/core';
+import { capitalize, formatDayMonth, formatHM, monthNamesShort, weekdayNames } from '../i18n/dates';
 
 export type DayRange = { start: number; end: number; key: string };
 
@@ -45,6 +45,11 @@ export function formatDayTitle(key: string, now: Date = new Date()): string {
   if (isToday(key, now)) return t('Today');
   if (addDays(key, 1) === dayKeyOf(now)) return t('Yesterday');
   const d = parseDayKey(key);
+  const l = lang();
+  if (l !== 'en' && l !== 'fr' && l !== 'es' && l !== 'pt') {
+    const sep = l === 'ja' || l.startsWith('zh') ? ' ' : ', ';
+    return `${capitalize(weekdayNames()[d.getDay()])}${sep}${formatDayMonth(d)}`;
+  }
   return t('{weekday}, {month} {day}', {
     weekday: capitalize(weekdayNames()[d.getDay()]),
     month: monthNamesShort()[d.getMonth()],

@@ -23,8 +23,8 @@ import { Bar, Bouncy, motionReduced } from '../ui/motion';
 import { Icon, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { successFeedback, tapFeedback } from '../native/haptics';
-import { capitalize, monthNamesShort, weekdayNames } from '../i18n/dates';
-import { lang, t, tn } from '../i18n';
+import { capitalize, formatDayMonth, weekdayNames } from '../i18n/dates';
+import { t, tn } from '../i18n';
 
 // ------------------------------------------------------------------ data
 
@@ -153,8 +153,7 @@ export function dayName(at: number, now: number) {
   if (diff <= 0) return t('today');
   if (diff === 1) return t('tomorrow');
   if (diff < 7) return capitalize(weekdayNames()[d.getDay()]);
-  const mon = monthNamesShort()[d.getMonth()].replace('.', '');
-  return lang() === 'en' ? `${mon} ${d.getDate()}` : `${d.getDate()} ${mon}`;
+  return formatDayMonth(d);
 }
 
 export const daysLeftLabel = (f: Forecast) => (Number.isFinite(f.daysLeft) ? tn(Math.max(0, Math.floor(f.daysLeft)), '{n} day left', '{n} days left') : qty(f.left, f.supply.unit));
@@ -193,9 +192,7 @@ export function whyLines(f: Forecast, who: string, now: number): string[] {
 }
 
 export function formatShort(at: number) {
-  const d = new Date(at);
-  const mon = monthNamesShort()[d.getMonth()].replace('.', '');
-  return lang() === 'en' ? `${mon} ${d.getDate()}` : `${d.getDate()} ${mon}`;
+  return formatDayMonth(new Date(at));
 }
 
 // ------------------------------------------------------------------ templates

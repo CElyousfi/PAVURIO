@@ -10,13 +10,17 @@ import { openNodeDb } from './helpers/nodeDb';
 vi.mock('expo-localization', () => ({ getLocales: () => [{ languageCode: 'en' }] }));
 vi.mock('../src/native/walkLive', () => ({ endWalkLive: async () => {}, readWalkLive: async () => null, showWalkLive: async () => {} }));
 
-const at = (h: number, m = 0) => new Date(2026, 10, 5, h, m).getTime();
+// yesterday (a real past day, so nothing is "in the future"); the routine started a week before
+const y = new Date(Date.now() - 86_400_000);
+const at = (h: number, m = 0) => new Date(y.getFullYear(), y.getMonth(), y.getDate(), h, m).getTime();
+const weekBefore = new Date(Date.now() - 8 * 86_400_000);
+const startDate = `${weekBefore.getFullYear()}-${String(weekBefore.getMonth() + 1).padStart(2, '0')}-${String(weekBefore.getDate()).padStart(2, '0')}`;
 
 async function setup() {
   const db = openNodeDb(':memory:');
   await migrate(db);
   const pet = await createPet(db, { species: 'dog', name: 'Honey' });
-  await createSchedule(db, { petId: pet.id, type: 'walk', title: 'Morning walk', times: ['08:00', '18:00'] });
+  await createSchedule(db, { petId: pet.id, type: 'walk', title: 'Morning walk', times: ['08:00', '18:00'], startDate }, at(0) - 86_400_000);
   return { db, pet };
 }
 const marks = (db: Awaited<ReturnType<typeof setup>>['db']) => db.getAllAsync<{ occurrence_key: string }>("SELECT occurrence_key FROM schedule_marks WHERE status = 'done'", []);

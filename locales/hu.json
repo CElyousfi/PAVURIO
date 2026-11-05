@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Fényképezz le egy állatorvosi dokumentumot vagy egy pillanatot a kedvenceddel.",
+    "NSPhotoLibraryUsageDescription": "Csatolj fotókat a bejegyzésekhez és pillanatokhoz.",
+    "NSPhotoLibraryAddUsageDescription": "Mentsd a kedvenced történeteit és kártyáit a Fotókba."
+  }
+}

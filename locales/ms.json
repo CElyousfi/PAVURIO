@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Ambil foto dokumen doktor haiwan atau momen bersama haiwan peliharaan anda.",
+    "NSPhotoLibraryUsageDescription": "Lampirkan foto pada rekod dan momen.",
+    "NSPhotoLibraryAddUsageDescription": "Simpan cerita dan kad haiwan peliharaan anda ke Foto."
+  }
+}

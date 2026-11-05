@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Tag et billede af et dyrlægedokument eller et øjeblik med dit kæledyr.",
+    "NSPhotoLibraryUsageDescription": "Vedhæft billeder til journaler og øjeblikke.",
+    "NSPhotoLibraryAddUsageDescription": "Gem dit kæledyrs historier og kort i Fotos."
+  }
+}

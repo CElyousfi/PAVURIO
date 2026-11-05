@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "拍攝獸醫文件或與毛孩的美好時刻。",
+    "NSPhotoLibraryUsageDescription": "為紀錄和時刻加入照片。",
+    "NSPhotoLibraryAddUsageDescription": "將毛孩的故事和卡片儲存到照片。"
+  }
+}

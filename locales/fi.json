@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Ota kuva eläinlääkärin asiakirjasta tai hetkestä lemmikkisi kanssa.",
+    "NSPhotoLibraryUsageDescription": "Liitä kuvia merkintöihin ja hetkiin.",
+    "NSPhotoLibraryAddUsageDescription": "Tallenna lemmikkisi tarinat ja kortit Kuviin."
+  }
+}

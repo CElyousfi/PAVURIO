@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "पशु चिकित्सक के दस्तावेज़ या अपने पालतू के साथ किसी पल की फ़ोटो लें।",
+    "NSPhotoLibraryUsageDescription": "रिकॉर्ड और पलों में फ़ोटो जोड़ें।",
+    "NSPhotoLibraryAddUsageDescription": "अपने पालतू की कहानियाँ और कार्ड फ़ोटो में सेव करें।"
+  }
+}

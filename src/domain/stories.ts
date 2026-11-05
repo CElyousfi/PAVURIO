@@ -2,7 +2,8 @@
  * Story recaps built only from what the owner logged: care counts, fully-colored days, photos,
  * weights and visits. A story is offered only when there is enough real data to fill it.
  */
-import { lang, t, tn } from '../i18n/core';
+import { t, tn } from '../i18n/core';
+import { formatDayMonthNumeric } from '../i18n/dates';
 import { CARE, CareType } from './care';
 import { Plan, computeProgress } from './progress';
 import { addDays, dayKeyOf } from './time';
@@ -49,7 +50,7 @@ const TOP_LINE: Record<CareType, (n: number, name: string) => string> = {
 /** 'YYYY-MM-DD' → "10/24" (English) or "24/10" (French). */
 function shortDate(key: string): string {
   const [, m, d] = key.split('-');
-  return lang() === 'en' ? `${m}/${d}` : `${d}/${m}`;
+  return formatDayMonthNumeric(Number(m), Number(d));
 }
 
 /** Returns null when there isn't enough logged to make an honest story (fewer than 3 logs). */

@@ -11,18 +11,15 @@ import { Bouncy, Enter, motionReduced } from './motion';
 import { springs, usePress } from './springs';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { ArcTimePicker } from './ArcTime';
-import { lang, t } from '../i18n';
-import { capitalize, formatHM, monthNames, monthNamesShort, uses24h, weekdayInitials } from '../i18n/dates';
+import { t } from '../i18n';
+import { capitalize, formatDayMonthYear, formatHM, monthNames, uses24h, weekdayInitials } from '../i18n/dates';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
 
 /** "Oct 31, 2026" in English, "31 oct. 2026" in French. */
 export function formatDateLong(key: string | null | undefined): string {
   if (!key) return '—';
-  const d = parseDayKey(key);
-  const mon = monthNamesShort()[d.getMonth()];
-  if (lang() !== 'en') return `${d.getDate()} ${mon} ${d.getFullYear()}`;
-  return `${mon} ${d.getDate()}, ${d.getFullYear()}`;
+  return formatDayMonthYear(parseDayKey(key));
 }
 
 export function ScreenHeader({ title, onClose, onBack, right }: { title: string; onClose?: () => void; onBack?: () => void; right?: React.ReactNode }) {

@@ -1,0 +1,8220 @@
+[
+ {
+  "id": "0",
+  "en": "+ GROOM",
+  "fr": "+ TOILETTAGE"
+ },
+ {
+  "id": "1",
+  "en": "+ LITTER",
+  "fr": "+ LITIÈRE"
+ },
+ {
+  "id": "2",
+  "en": "+ LOG WEIGHT",
+  "fr": "+ NOTER LE POIDS"
+ },
+ {
+  "id": "3",
+  "en": "+ MEAL",
+  "fr": "+ REPAS"
+ },
+ {
+  "id": "4",
+  "en": "+ MEDICINE",
+  "fr": "+ MÉDICAMENT"
+ },
+ {
+  "id": "5",
+  "en": "+ PLAY",
+  "fr": "+ JEU"
+ },
+ {
+  "id": "6",
+  "en": "+ WALK",
+  "fr": "+ BALADE"
+ },
+ {
+  "id": "7",
+  "en": "+ WATER",
+  "fr": "+ EAU"
+ },
+ {
+  "id": "8",
+  "en": "+1 more to buy",
+  "fr": "+1 autre à acheter",
+  "plural": "one"
+ },
+ {
+  "id": "9",
+  "en": "+30 MIN",
+  "fr": "+30 MIN"
+ },
+ {
+  "id": "10",
+  "en": "+{n} more to buy",
+  "fr": "+{n} autres à acheter",
+  "plural": "other"
+ },
+ {
+  "id": "11",
+  "en": "/ {n} scoops",
+  "fr": "/ {n} poignées"
+ },
+ {
+  "id": "12",
+  "en": "/month",
+  "fr": "/mois"
+ },
+ {
+  "id": "13",
+  "en": "/week",
+  "fr": "/semaine"
+ },
+ {
+  "id": "14",
+  "en": "/year",
+  "fr": "/an"
+ },
+ {
+  "id": "15",
+  "en": "1 day coloured in",
+  "fr": "1 jour coloré",
+  "plural": "one"
+ },
+ {
+  "id": "16",
+  "en": "1 gentle follow-up",
+  "fr": "1 relance en douceur"
+ },
+ {
+  "id": "17",
+  "en": "1 h ago",
+  "fr": "Il y a 1 h"
+ },
+ {
+  "id": "18",
+  "en": "1 hour before",
+  "fr": "1 heure avant"
+ },
+ {
+  "id": "19",
+  "en": "1 moment",
+  "fr": "1 moment",
+  "plural": "one"
+ },
+ {
+  "id": "20",
+  "en": "1 month",
+  "fr": "1 mois"
+ },
+ {
+  "id": "21",
+  "en": "1 photo",
+  "fr": "1 photo",
+  "plural": "one"
+ },
+ {
+  "id": "22",
+  "en": "1 photo couldn’t be brought back yet. Pavurio will try again next time it opens.",
+  "fr": "1 photo n’a pas encore pu être récupérée. Pavurio réessaiera à la prochaine ouverture.",
+  "plural": "one"
+ },
+ {
+  "id": "23",
+  "en": "1 photo couldn’t be saved.",
+  "fr": "1 photo n’a pas pu être enregistrée.",
+  "plural": "one"
+ },
+ {
+  "id": "24",
+  "en": "1 photo of {name} today",
+  "fr": "1 photo de {name} aujourd’hui",
+  "plural": "one"
+ },
+ {
+  "id": "25",
+  "en": "1 photo or document is still waiting to upload. Keep Pavurio open on Wi-Fi for a moment.",
+  "fr": "1 photo ou document attend encore d’être envoyé. Gardez Pavurio ouvert en Wi-Fi un instant.",
+  "plural": "one"
+ },
+ {
+  "id": "26",
+  "en": "1 thing to buy soon",
+  "fr": "1 chose à acheter bientôt"
+ },
+ {
+  "id": "27",
+  "en": "1 thing to buy this week",
+  "fr": "1 chose à acheter cette semaine"
+ },
+ {
+  "id": "28",
+  "en": "1 to add",
+  "fr": "1 à ajouter",
+  "plural": "one"
+ },
+ {
+  "id": "29",
+  "en": "1 year ago today",
+  "fr": "Il y a 1 an aujourd’hui",
+  "plural": "one"
+ },
+ {
+  "id": "30",
+  "en": "1-day streak",
+  "fr": "Série de 1 jour"
+ },
+ {
+  "id": "31",
+  "en": "10 Adventures",
+  "fr": "10 aventures"
+ },
+ {
+  "id": "32",
+  "en": "15 min ago",
+  "fr": "Il y a 15 min"
+ },
+ {
+  "id": "33",
+  "en": "2 days ago",
+  "fr": "Il y a 2 jours"
+ },
+ {
+  "id": "34",
+  "en": "2 h ago",
+  "fr": "Il y a 2 h"
+ },
+ {
+  "id": "35",
+  "en": "3 days in a row! 🔥",
+  "fr": "3 jours d’affilée ! 🔥"
+ },
+ {
+  "id": "36",
+  "en": "3 hours before",
+  "fr": "3 heures avant"
+ },
+ {
+  "id": "37",
+  "en": "30 min ago",
+  "fr": "Il y a 30 min"
+ },
+ {
+  "id": "38",
+  "en": "5 Adventures",
+  "fr": "5 aventures"
+ },
+ {
+  "id": "39",
+  "en": "50 Together",
+  "fr": "50 ensemble"
+ },
+ {
+  "id": "40",
+  "en": "< 1 min",
+  "fr": "< 1 min"
+ },
+ {
+  "id": "41",
+  "en": "A 30-day recap built from the care you logged, ready to share.",
+  "fr": "Un récap de 30 jours tiré des soins notés, prêt à partager."
+ },
+ {
+  "id": "42",
+  "en": "A 7-day streak.",
+  "fr": "Une série de 7 jours."
+ },
+ {
+  "id": "43",
+  "en": "A Year Together",
+  "fr": "Une année ensemble"
+ },
+ {
+  "id": "44",
+  "en": "A bed or box in a quiet spot gives your pet somewhere to retreat when the house is busy.",
+  "fr": "Un panier ou un carton dans un coin calme offre un refuge quand la maison s’agite."
+ },
+ {
+  "id": "45",
+  "en": "A box they love",
+  "fr": "Une litière qu’il adore"
+ },
+ {
+  "id": "46",
+  "en": "A calm corner",
+  "fr": "Un coin tranquille"
+ },
+ {
+  "id": "47",
+  "en": "A few cares left to colour {name} in today.",
+  "fr": "Encore quelques soins pour colorier {name} aujourd’hui."
+ },
+ {
+  "id": "48",
+  "en": "A few strokes, a reward, done. Build up the time over days instead of one long session.",
+  "fr": "Quelques coups de brosse, une récompense, terminé. Allongez sur plusieurs jours plutôt qu’en une fois."
+ },
+ {
+  "id": "49",
+  "en": "A fresh start awaits.",
+  "fr": "Un nouveau départ vous attend."
+ },
+ {
+  "id": "50",
+  "en": "A hundred moments of care. Pro turns them into monthly stories you can keep and share.",
+  "fr": "Cent moments de soin. Pro en fait des histoires du mois à garder et partager."
+ },
+ {
+  "id": "51",
+  "en": "A line to remember it by",
+  "fr": "Une phrase pour s’en souvenir"
+ },
+ {
+  "id": "52",
+  "en": "A little moment with {name}",
+  "fr": "Un petit moment avec {name}"
+ },
+ {
+  "id": "53",
+  "en": "A little world for all\ntheir big moments",
+  "fr": "Un petit monde pour tous\nleurs grands moments"
+ },
+ {
+  "id": "54",
+  "en": "A lovely day for an adventure, {name}!",
+  "fr": "Belle journée pour une aventure, {name} !"
+ },
+ {
+  "id": "55",
+  "en": "A new friend at the park, a puddle jump…",
+  "fr": "Un nouvel ami au parc, un saut dans une flaque…"
+ },
+ {
+  "id": "56",
+  "en": "A notification at each time. Nothing is ever marked done for you.",
+  "fr": "Une notification à chaque horaire. Rien n’est jamais coché à votre place."
+ },
+ {
+  "id": "57",
+  "en": "A nudge at the times you choose. Nothing is ever ticked off for you — you log it when it's done.",
+  "fr": "Un petit rappel aux heures choisies. Rien n’est coché à votre place : vous le notez une fois fait."
+ },
+ {
+  "id": "58",
+  "en": "A pack lasts about",
+  "fr": "Un paquet dure environ"
+ },
+ {
+  "id": "59",
+  "en": "A photo in this card couldn’t be loaded. Replace it and try again."
+ },
+ {
+  "id": "60",
+  "en": "A quick look in the bag keeps the forecast honest.",
+  "fr": "Un coup d’œil dans le sac garde la prévision juste."
+ },
+ {
+  "id": "61",
+  "en": "A quick wash with hot water and a little dish soap a few times a week keeps slime away.",
+  "fr": "Un lavage à l’eau chaude et un peu de liquide vaisselle quelques fois par semaine évite le dépôt glissant."
+ },
+ {
+  "id": "62",
+  "en": "A reminder in the evening only if today’s plan isn’t coloured in yet — it also protects your streak.",
+  "fr": "Un rappel le soir, seulement si le programme du jour n’est pas encore colorié — pour protéger votre série."
+ },
+ {
+  "id": "63",
+  "en": "A review helps other pet parents find us",
+  "fr": "Un avis aide d’autres maîtres à nous trouver"
+ },
+ {
+  "id": "64",
+  "en": "A routine makes it predictable — add a brushing routine in Care to get a reminder.",
+  "fr": "Une routine rend le moment prévisible — ajoutez une routine de brossage dans Soins pour un rappel."
+ },
+ {
+  "id": "65",
+  "en": "A slow walk with time to sniff can tire a dog out as much as a fast one.",
+  "fr": "Une balade lente avec du temps pour renifler fatigue autant qu’une balade rapide."
+ },
+ {
+  "id": "66",
+  "en": "A small treat or meal after play completes the hunt and helps them settle.",
+  "fr": "Une petite friandise ou un repas après le jeu termine la chasse et aide à se calmer."
+ },
+ {
+  "id": "67",
+  "en": "A walk in spring where you live (your hemisphere counts).",
+  "fr": "Une balade au printemps là où vous vivez (selon votre hémisphère)."
+ },
+ {
+  "id": "68",
+  "en": "A walk in the hour before sunset, using the real sunset where you are.",
+  "fr": "Une balade dans l’heure qui précède le coucher du soleil, d’après le vrai coucher du soleil chez vous."
+ },
+ {
+  "id": "69",
+  "en": "A walk that starts between 5 and 10 in the morning.",
+  "fr": "Une balade qui commence entre 5 h et 10 h du matin."
+ },
+ {
+  "id": "70",
+  "en": "A walk under a cloudy sky, as recorded by the weather.",
+  "fr": "Une balade sous un ciel nuageux, selon la météo enregistrée."
+ },
+ {
+  "id": "71",
+  "en": "A whole week for {name}! 🏆",
+  "fr": "Une semaine entière pour {name} ! 🏆"
+ },
+ {
+  "id": "72",
+  "en": "A year with {name}",
+  "fr": "Une année avec {name}"
+ },
+ {
+  "id": "73",
+  "en": "ADD 1 MORE PHOTO",
+  "fr": "AJOUTER ENCORE 1 PHOTO",
+  "plural": "one"
+ },
+ {
+  "id": "74",
+  "en": "ADD A MOMENT",
+  "fr": "AJOUTER UN MOMENT"
+ },
+ {
+  "id": "75",
+  "en": "ADD APPOINTMENT",
+  "fr": "AJOUTER LE RDV"
+ },
+ {
+  "id": "76",
+  "en": "ADD FIRST RECORD",
+  "fr": "PREMIÈRE FICHE"
+ },
+ {
+  "id": "77",
+  "en": "ADD MOMENT",
+  "fr": "AJOUTER"
+ },
+ {
+  "id": "78",
+  "en": "ADD RECORD",
+  "fr": "AJOUTER LA FICHE"
+ },
+ {
+  "id": "79",
+  "en": "ADD ROUTINE",
+  "fr": "AJOUTER LA ROUTINE"
+ },
+ {
+  "id": "80",
+  "en": "ADD {n} MORE PHOTOS",
+  "fr": "AJOUTER ENCORE {n} PHOTOS",
+  "plural": "other"
+ },
+ {
+  "id": "81",
+  "en": "AWESOME!",
+  "fr": "GÉNIAL !"
+ },
+ {
+  "id": "82",
+  "en": "About",
+  "fr": "À propos"
+ },
+ {
+  "id": "83",
+  "en": "About {n} a month",
+  "fr": "Environ {n} par mois"
+ },
+ {
+  "id": "84",
+  "en": "About {n} a month on supplies",
+  "fr": "Environ {n} par mois en fournitures"
+ },
+ {
+  "id": "85",
+  "en": "About {q} a day",
+  "fr": "Environ {q} par jour"
+ },
+ {
+  "id": "86",
+  "en": "About {q} a day from {name}’s routine (times a day × usual portion). After 4 days of logged meals Pavurio switches to what’s really eaten.",
+  "fr": "Environ {q} par jour d’après la routine de {name} (repas par jour × portion habituelle). Après 4 jours de repas notés, Pavurio passe à ce qui est vraiment mangé."
+ },
+ {
+  "id": "87",
+  "en": "About {q} a day, from how long you said a pack lasts.",
+  "fr": "Environ {q} par jour, d’après la durée d’un paquet que vous avez indiquée."
+ },
+ {
+  "id": "88",
+  "en": "About {q} a day, from {name}’s plan",
+  "fr": "Environ {q} par jour, d’après le programme de {name}"
+ },
+ {
+  "id": "89",
+  "en": "Account",
+  "fr": "Compte"
+ },
+ {
+  "id": "90",
+  "en": "Account saved. Your pets are backed up.",
+  "fr": "Compte enregistré. Vos animaux sont sauvegardés."
+ },
+ {
+  "id": "91",
+  "en": "Accounts and cloud backup are available in the iPhone and Android app.",
+  "fr": "Les comptes et la sauvegarde en ligne sont disponibles dans l’app iPhone et Android."
+ },
+ {
+  "id": "92",
+  "en": "Achievements",
+  "fr": "Succès"
+ },
+ {
+  "id": "93",
+  "en": "Active",
+  "fr": "Active"
+ },
+ {
+  "id": "94",
+  "en": "Add",
+  "fr": "Ajouter"
+ },
+ {
+  "id": "95",
+  "en": "Add ",
+  "fr": "Ajouter "
+ },
+ {
+  "id": "96",
+  "en": "Add 1 more photo to finish the card.",
+  "fr": "Ajoutez encore 1 photo pour terminer la carte.",
+  "plural": "one"
+ },
+ {
+  "id": "97",
+  "en": "Add a birthday or adoption day.",
+  "fr": "Ajoutez un anniversaire ou un jour d’adoption."
+ },
+ {
+  "id": "98",
+  "en": "Add a health record.",
+  "fr": "Ajoutez un dossier de santé."
+ },
+ {
+  "id": "99",
+  "en": "Add a milestone",
+  "fr": "Ajouter une étape"
+ },
+ {
+  "id": "100",
+  "en": "Add a missed entry",
+  "fr": "Ajouter un oubli"
+ },
+ {
+  "id": "101",
+  "en": "Add a moment",
+  "fr": "Ajouter un moment"
+ },
+ {
+  "id": "102",
+  "en": "Add a note",
+  "fr": "Ajouter une note"
+ },
+ {
+  "id": "103",
+  "en": "Add a note (optional)",
+  "fr": "Ajouter une note (facultatif)"
+ },
+ {
+  "id": "104",
+  "en": "Add a pet",
+  "fr": "Ajouter un animal"
+ },
+ {
+  "id": "105",
+  "en": "Add a photo",
+  "fr": "Ajouter une photo"
+ },
+ {
+  "id": "106",
+  "en": "Add a photo of the certificate or the vet's PDF.",
+  "fr": "Ajoutez une photo du certificat ou le PDF du vétérinaire."
+ },
+ {
+  "id": "107",
+  "en": "Add a photo or a title.",
+  "fr": "Ajoutez une photo ou un titre."
+ },
+ {
+  "id": "108",
+  "en": "Add a record",
+  "fr": "Ajouter une fiche"
+ },
+ {
+  "id": "109",
+  "en": "Add a record of this kind with the + button.",
+  "fr": "Ajoutez une fiche de ce type avec le bouton +."
+ },
+ {
+  "id": "110",
+  "en": "Add a supply",
+  "fr": "Ajouter une fourniture"
+ },
+ {
+  "id": "111",
+  "en": "Add a time",
+  "fr": "Ajouter un horaire"
+ },
+ {
+  "id": "112",
+  "en": "Add an appointment",
+  "fr": "Ajouter un rendez-vous"
+ },
+ {
+  "id": "113",
+  "en": "Add an item",
+  "fr": "Ajouter un article"
+ },
+ {
+  "id": "114",
+  "en": "Add at least one time.",
+  "fr": "Ajoutez au moins un horaire."
+ },
+ {
+  "id": "115",
+  "en": "Add birthday",
+  "fr": "Ajouter l’anniversaire"
+ },
+ {
+  "id": "116",
+  "en": "Add caption",
+  "fr": "Ajouter une légende"
+ },
+ {
+  "id": "117",
+  "en": "Add missed {label}",
+  "fr": "Ajouter un oubli : {label}"
+ },
+ {
+  "id": "118",
+  "en": "Add more if you like — or just enjoy it.",
+  "fr": "Ajoutez-en d’autres si vous voulez — ou profitez-en, tout simplement."
+ },
+ {
+  "id": "119",
+  "en": "Add or edit",
+  "fr": "Ajouter ou modifier"
+ },
+ {
+  "id": "120",
+  "en": "Add photo",
+  "fr": "Ajouter une photo"
+ },
+ {
+  "id": "121",
+  "en": "Add photos",
+  "fr": "Ajouter des photos"
+ },
+ {
+  "id": "122",
+  "en": "Add photos from the walk to keep them with it in Memories.",
+  "fr": "Ajoutez les photos de la balade pour les garder avec elle dans Souvenirs."
+ },
+ {
+  "id": "123",
+  "en": "Add something (a new toy, a harness…)",
+  "fr": "Ajouter quelque chose (un jouet, un harnais…)"
+ },
+ {
+  "id": "124",
+  "en": "Add the whole family — dogs and cats, each with their own day, routines and records.",
+  "fr": "Ajoutez toute la famille — chiens et chats, chacun avec sa journée, ses routines et ses dossiers."
+ },
+ {
+  "id": "125",
+  "en": "Add to care",
+  "fr": "Ajouter aux soins"
+ },
+ {
+  "id": "126",
+  "en": "Add to favorites",
+  "fr": "Ajouter aux favoris"
+ },
+ {
+  "id": "127",
+  "en": "Add to pantry",
+  "fr": "Ajouter au garde-manger"
+ },
+ {
+  "id": "128",
+  "en": "Add to the shelf",
+  "fr": "Ajouter au placard"
+ },
+ {
+  "id": "129",
+  "en": "Add usage",
+  "fr": "Ajouter l’usage"
+ },
+ {
+  "id": "130",
+  "en": "Add what’s on the shelf once. Pavurio follows the meals you log, works out what’s left and tells you when to order — before it runs out.",
+  "fr": "Ajoutez une fois ce qu’il y a dans le placard. Pavurio suit les repas saisis, calcule ce qui reste et vous dit quand commander — avant la rupture."
+ },
+ {
+  "id": "131",
+  "en": "Add {name}'s birthday or adoption day to celebrate milestones →",
+  "fr": "Ajoutez l’anniversaire ou le jour d’adoption de {name} pour fêter les grandes dates →"
+ },
+ {
+  "id": "132",
+  "en": "Add {n} more photos to finish the card.",
+  "fr": "Ajoutez encore {n} photos pour terminer la carte.",
+  "plural": "other"
+ },
+ {
+  "id": "133",
+  "en": "Adopted: {date}",
+  "fr": "Adoption : {date}"
+ },
+ {
+  "id": "134",
+  "en": "Adoption Anniversary",
+  "fr": "Anniversaire d’adoption"
+ },
+ {
+  "id": "135",
+  "en": "Adoption date",
+  "fr": "Date d’adoption"
+ },
+ {
+  "id": "136",
+  "en": "Adoption day",
+  "fr": "Jour d’adoption"
+ },
+ {
+  "id": "137",
+  "en": "Adventure #{n} with {name}",
+  "fr": "Aventure n° {n} avec {name}"
+ },
+ {
+  "id": "138",
+  "en": "Adventure saved",
+  "fr": "Aventure enregistrée"
+ },
+ {
+  "id": "139",
+  "en": "Adventure with {name}",
+  "fr": "Aventure avec {name}"
+ },
+ {
+  "id": "140",
+  "en": "Adventure with {name} · {time}",
+  "fr": "Aventure avec {name} · {time}"
+ },
+ {
+  "id": "141",
+  "en": "Adventures",
+  "fr": "Aventures"
+ },
+ {
+  "id": "142",
+  "en": "Afternoon",
+  "fr": "Après-midi"
+ },
+ {
+  "id": "143",
+  "en": "Agenda",
+  "fr": "Agenda"
+ },
+ {
+  "id": "144",
+  "en": "All",
+  "fr": "Tout"
+ },
+ {
+  "id": "145",
+  "en": "All care logs, routines, records, photos and moments for this pet are erased. This cannot be undone.",
+  "fr": "Tous les soins, routines, dossiers, photos et moments de cet animal seront effacés. C’est irréversible."
+ },
+ {
+  "id": "146",
+  "en": "All done for today",
+  "fr": "Tout est fait pour aujourd’hui"
+ },
+ {
+  "id": "147",
+  "en": "All pets, care logs, routines, records and moments will be removed from this device. Export first if you want a copy.",
+  "fr": "Tous les animaux, soins, routines, dossiers et moments seront supprimés de cet appareil. Exportez d’abord si vous voulez une copie."
+ },
+ {
+  "id": "148",
+  "en": "All stocked up",
+  "fr": "Tout est en stock"
+ },
+ {
+  "id": "149",
+  "en": "All the care",
+  "fr": "Tous les soins"
+ },
+ {
+  "id": "150",
+  "en": "Allergies",
+  "fr": "Allergies"
+ },
+ {
+  "id": "151",
+  "en": "Allergy",
+  "fr": "Allergie"
+ },
+ {
+  "id": "152",
+  "en": "Allow on-time reminders",
+  "fr": "Autoriser les rappels à l’heure"
+ },
+ {
+  "id": "153",
+  "en": "Also pick up",
+  "fr": "À prendre aussi"
+ },
+ {
+  "id": "154",
+  "en": "Amount must be between {min} and {max} {unit}.",
+  "fr": "La quantité doit être entre {min} et {max} {unit}."
+ },
+ {
+  "id": "155",
+  "en": "An old T-shirt of yours in the bed can be comforting.",
+  "fr": "Un vieux t-shirt à vous dans le panier peut être réconfortant."
+ },
+ {
+  "id": "156",
+  "en": "Anonymous technical details when the app crashes, so we can fix it.",
+  "fr": "Des détails techniques anonymes quand l’app plante, pour que nous puissions corriger."
+ },
+ {
+  "id": "157",
+  "en": "Another adventure together!",
+  "fr": "Encore une aventure ensemble !"
+ },
+ {
+  "id": "158",
+  "en": "Another walk is already in progress. Finish it first.",
+  "fr": "Une autre balade est déjà en cours. Terminez-la d’abord."
+ },
+ {
+  "id": "159",
+  "en": "Appointment",
+  "fr": "Rendez-vous"
+ },
+ {
+  "id": "160",
+  "en": "Appointment {title} at {time}",
+  "fr": "Rendez-vous {title} à {time}"
+ },
+ {
+  "id": "161",
+  "en": "Archive",
+  "fr": "Archiver"
+ },
+ {
+  "id": "162",
+  "en": "Archive or delete",
+  "fr": "Archiver ou supprimer"
+ },
+ {
+  "id": "163",
+  "en": "Archive {name}",
+  "fr": "Archiver {name}"
+ },
+ {
+  "id": "164",
+  "en": "Archive {name}?",
+  "fr": "Archiver {name} ?"
+ },
+ {
+  "id": "165",
+  "en": "Archived",
+  "fr": "Archivés"
+ },
+ {
+  "id": "166",
+  "en": "Archiving hides {name} and stops reminders but keeps every record. Deleting removes {name} and all care, records and moments from this device for good.",
+  "fr": "Archiver masque {name} et arrête les rappels, mais garde tout l’historique. Supprimer efface définitivement {name} et tous ses soins, dossiers et moments de cet appareil."
+ },
+ {
+  "id": "167",
+  "en": "Ask for a code first.",
+  "fr": "Demandez d’abord un code."
+ },
+ {
+  "id": "168",
+  "en": "At a time",
+  "fr": "À une heure"
+ },
+ {
+  "id": "169",
+  "en": "At least 6 characters. We’ll email you a code to confirm it’s you.",
+  "fr": "Au moins 6 caractères. Nous vous enverrons un code par e-mail pour confirmer."
+ },
+ {
+  "id": "170",
+  "en": "Attachment",
+  "fr": "Pièce jointe"
+ },
+ {
+  "id": "171",
+  "en": "Attachments",
+  "fr": "Pièces jointes"
+ },
+ {
+  "id": "172",
+  "en": "Away from loud appliances and their food, with an easy way in and out.",
+  "fr": "Loin des appareils bruyants et de la nourriture, facile d’accès."
+ },
+ {
+  "id": "173",
+  "en": "BACK",
+  "fr": "RETOUR"
+ },
+ {
+  "id": "174",
+  "en": "BEST",
+  "fr": "RECORD"
+ },
+ {
+  "id": "175",
+  "en": "BEST VALUE",
+  "fr": "MEILLEUR PRIX"
+ },
+ {
+  "id": "176",
+  "en": "Back",
+  "fr": "Retour"
+ },
+ {
+  "id": "177",
+  "en": "Back to editing",
+  "fr": "Retour à l’édition"
+ },
+ {
+  "id": "178",
+  "en": "Back to {name}",
+  "fr": "Retour à {name}"
+ },
+ {
+  "id": "179",
+  "en": "Back up now",
+  "fr": "Sauvegarder maintenant"
+ },
+ {
+  "id": "180",
+  "en": "Backed up {when}",
+  "fr": "Sauvegardé {when}"
+ },
+ {
+  "id": "181",
+  "en": "Backing up…",
+  "fr": "Sauvegarde…"
+ },
+ {
+  "id": "182",
+  "en": "Backup, sign out, delete account",
+  "fr": "Sauvegarde, déconnexion, suppression du compte"
+ },
+ {
+  "id": "183",
+  "en": "Badges",
+  "fr": "Badges"
+ },
+ {
+  "id": "184",
+  "en": "Badges, streaks and challenges",
+  "fr": "Badges, séries et défis"
+ },
+ {
+  "id": "185",
+  "en": "Bandana",
+  "fr": "Bandana"
+ },
+ {
+  "id": "186",
+  "en": "Batch number, dosage, what the vet said…",
+  "fr": "N° de lot, dosage, ce qu’a dit le vétérinaire…"
+ },
+ {
+  "id": "187",
+  "en": "Bath day",
+  "fr": "Jour de bain"
+ },
+ {
+  "id": "188",
+  "en": "Bedding",
+  "fr": "Couchage"
+ },
+ {
+  "id": "189",
+  "en": "Berry",
+  "fr": "Mûre"
+ },
+ {
+  "id": "190",
+  "en": "Best Friend",
+  "fr": "Meilleur ami"
+ },
+ {
+  "id": "191",
+  "en": "Best friends",
+  "fr": "Meilleurs amis"
+ },
+ {
+  "id": "192",
+  "en": "Best play date ever.",
+  "fr": "Meilleure partie de jeu."
+ },
+ {
+  "id": "193",
+  "en": "Better late than never. Tail wags all round.",
+  "fr": "Mieux vaut tard que jamais. Queue qui frétille !"
+ },
+ {
+  "id": "194",
+  "en": "Big days live here",
+  "fr": "Les grands jours vivent ici"
+ },
+ {
+  "id": "195",
+  "en": "Birthday",
+  "fr": "Anniversaire"
+ },
+ {
+  "id": "196",
+  "en": "Birthday Pawty",
+  "fr": "Pattes en fête"
+ },
+ {
+  "id": "197",
+  "en": "Black",
+  "fr": "Noir"
+ },
+ {
+  "id": "198",
+  "en": "Blue",
+  "fr": "Bleu"
+ },
+ {
+  "id": "199",
+  "en": "Born: {date}",
+  "fr": "Naissance : {date}"
+ },
+ {
+  "id": "200",
+  "en": "Bought",
+  "fr": "Achats"
+ },
+ {
+  "id": "201",
+  "en": "Bought it already? Tap to add it to {name}’s shelf.",
+  "fr": "Déjà acheté ? Touchez pour l’ajouter au placard de {name}."
+ },
+ {
+  "id": "202",
+  "en": "Bought today",
+  "fr": "Acheté aujourd’hui"
+ },
+ {
+  "id": "203",
+  "en": "Bought {name}",
+  "fr": "Acheté : {name}"
+ },
+ {
+  "id": "204",
+  "en": "Breakfast at 8, a walk at 6, a pill every evening — pick times and days, and Pavurio reminds you.",
+  "fr": "Petit-déjeuner à 8 h, balade à 18 h, un comprimé chaque soir — choisissez les heures et les jours, Pavurio vous le rappelle."
+ },
+ {
+  "id": "205",
+  "en": "Bring the chart",
+  "fr": "Montrez la courbe"
+ },
+ {
+  "id": "206",
+  "en": "Brown Tabby",
+  "fr": "Tigré brun"
+ },
+ {
+  "id": "207",
+  "en": "Brushing",
+  "fr": "Brossage"
+ },
+ {
+  "id": "208",
+  "en": "Brushing is a good moment to notice lumps, ticks or sore spots. Anything new? Ask your vet.",
+  "fr": "Le brossage est le bon moment pour repérer bosses, tiques ou zones sensibles. Quelque chose de nouveau ? Demandez à votre vétérinaire."
+ },
+ {
+  "id": "209",
+  "en": "Brushing time for {name} ✨",
+  "fr": "C’est l’heure du brossage de {name} ✨"
+ },
+ {
+  "id": "210",
+  "en": "Brushing, bath or nails",
+  "fr": "Brossage, bain ou griffes"
+ },
+ {
+  "id": "211",
+  "en": "Buy enough for",
+  "fr": "Acheter assez pour"
+ },
+ {
+  "id": "212",
+  "en": "Buy now",
+  "fr": "À acheter"
+ },
+ {
+  "id": "213",
+  "en": "CARE TIP",
+  "fr": "CONSEIL"
+ },
+ {
+  "id": "214",
+  "en": "CAT",
+  "fr": "CHAT"
+ },
+ {
+  "id": "215",
+  "en": "CHALLENGE COMPLETE",
+  "fr": "DÉFI RÉUSSI"
+ },
+ {
+  "id": "216",
+  "en": "CLOSE",
+  "fr": "FERMER"
+ },
+ {
+  "id": "217",
+  "en": "CONFIRM",
+  "fr": "CONFIRMER"
+ },
+ {
+  "id": "218",
+  "en": "CONTINUE",
+  "fr": "CONTINUER"
+ },
+ {
+  "id": "219",
+  "en": "CONTINUE WITH EMAIL",
+  "fr": "CONTINUER AVEC UN E-MAIL"
+ },
+ {
+  "id": "220",
+  "en": "CREATE ACCOUNT",
+  "fr": "CRÉER MON COMPTE"
+ },
+ {
+  "id": "221",
+  "en": "Calendar",
+  "fr": "Calendrier"
+ },
+ {
+  "id": "222",
+  "en": "Calmer pet. Care logging works exactly the same.",
+  "fr": "Animal plus calme. Les soins se notent exactement pareil."
+ },
+ {
+  "id": "223",
+  "en": "Camera",
+  "fr": "Appareil photo"
+ },
+ {
+  "id": "224",
+  "en": "Camera access is off for Pavurio. You can turn it on in Settings.",
+  "fr": "L’accès à l’appareil photo est désactivé pour Pavurio. Vous pouvez l’activer dans Réglages."
+ },
+ {
+  "id": "225",
+  "en": "Cancel",
+  "fr": "Annuler"
+ },
+ {
+  "id": "226",
+  "en": "Cancel anytime",
+  "fr": "Annulable à tout moment"
+ },
+ {
+  "id": "227",
+  "en": "Can’t find it? Check your spam folder.",
+  "fr": "Introuvable ? Regardez dans les spams."
+ },
+ {
+  "id": "228",
+  "en": "Can’t search right now. Check your connection.",
+  "fr": "Recherche impossible pour l’instant. Vérifiez votre connexion."
+ },
+ {
+  "id": "229",
+  "en": "Caption (optional)",
+  "fr": "Légende (facultatif)"
+ },
+ {
+  "id": "230",
+  "en": "Card downloaded!",
+  "fr": "Carte téléchargée !"
+ },
+ {
+  "id": "231",
+  "en": "Card preview",
+  "fr": "Aperçu de la carte"
+ },
+ {
+  "id": "232",
+  "en": "Care",
+  "fr": "Soins"
+ },
+ {
+  "id": "233",
+  "en": "Care calendar",
+  "fr": "Calendrier des soins"
+ },
+ {
+  "id": "234",
+  "en": "Care can't be logged in the future.",
+  "fr": "Impossible de noter un soin dans le futur."
+ },
+ {
+  "id": "235",
+  "en": "Care for 2 pets.",
+  "fr": "Prenez soin de 2 animaux."
+ },
+ {
+  "id": "236",
+  "en": "Care log (CSV)",
+  "fr": "Soins (CSV)"
+ },
+ {
+  "id": "237",
+  "en": "Care logged today",
+  "fr": "Soins notés aujourd’hui"
+ },
+ {
+  "id": "238",
+  "en": "Care logged · {pct}% of today's plan",
+  "fr": "Soins notés · {pct} % du programme du jour"
+ },
+ {
+  "id": "239",
+  "en": "Care reminders",
+  "fr": "Rappels de soins"
+ },
+ {
+  "id": "240",
+  "en": "Care tip",
+  "fr": "Conseil"
+ },
+ {
+  "id": "241",
+  "en": "Care tips",
+  "fr": "Conseils soins"
+ },
+ {
+  "id": "242",
+  "en": "Care, records, memories & settings",
+  "fr": "Soins, dossiers, souvenirs et réglages"
+ },
+ {
+  "id": "243",
+  "en": "Cares this week",
+  "fr": "Soins cette semaine"
+ },
+ {
+  "id": "244",
+  "en": "Cat",
+  "fr": "Chat"
+ },
+ {
+  "id": "245",
+  "en": "Celebrate my day!",
+  "fr": "Je fête ma journée !"
+ },
+ {
+  "id": "246",
+  "en": "Celebrate together",
+  "fr": "Célébrez ensemble"
+ },
+ {
+  "id": "247",
+  "en": "Celebrate with a Memory Card made from your own photos.",
+  "fr": "Fêtez-le avec une Carte souvenir faite de vos propres photos."
+ },
+ {
+  "id": "248",
+  "en": "Challenges",
+  "fr": "Défis"
+ },
+ {
+  "id": "249",
+  "en": "Change it, don’t top it up",
+  "fr": "Changez-la, ne complétez pas"
+ },
+ {
+  "id": "250",
+  "en": "Change look",
+  "fr": "Changer le look"
+ },
+ {
+  "id": "251",
+  "en": "Change photo",
+  "fr": "Changer la photo"
+ },
+ {
+  "id": "252",
+  "en": "Change town, now {place}",
+  "fr": "Changer de ville, actuellement {place}"
+ },
+ {
+  "id": "253",
+  "en": "Changes are gradual",
+  "fr": "Les changements sont lents"
+ },
+ {
+  "id": "254",
+  "en": "Character Studio",
+  "fr": "Studio du personnage"
+ },
+ {
+  "id": "255",
+  "en": "Check as you go",
+  "fr": "Vérifiez en passant"
+ },
+ {
+  "id": "256",
+  "en": "Check level",
+  "fr": "Vérifier"
+ },
+ {
+  "id": "257",
+  "en": "Check stock",
+  "fr": "Voir le stock"
+ },
+ {
+  "id": "258",
+  "en": "Check what’s left",
+  "fr": "Vérifier ce qui reste"
+ },
+ {
+  "id": "259",
+  "en": "Check your email",
+  "fr": "Consultez vos e-mails"
+ },
+ {
+  "id": "260",
+  "en": "Check your inbox for a link to choose a new password.",
+  "fr": "Consultez votre boîte mail : un lien vous permet de choisir un nouveau mot de passe."
+ },
+ {
+  "id": "261",
+  "en": "Checking the weather…",
+  "fr": "On regarde la météo…"
+ },
+ {
+  "id": "262",
+  "en": "Chilly out. A shorter walk and a dry towel after.",
+  "fr": "Il fait frais. Une balade plus courte et une serviette au retour."
+ },
+ {
+  "id": "263",
+  "en": "Chocolate",
+  "fr": "Chocolat"
+ },
+ {
+  "id": "264",
+  "en": "Choose a date",
+  "fr": "Choisir une date"
+ },
+ {
+  "id": "265",
+  "en": "Choose a date and time.",
+  "fr": "Choisissez une date et une heure."
+ },
+ {
+  "id": "266",
+  "en": "Choose a date.",
+  "fr": "Choisissez une date."
+ },
+ {
+  "id": "267",
+  "en": "Choose a photo",
+  "fr": "Choisir une photo"
+ },
+ {
+  "id": "268",
+  "en": "Choose at least one pet.",
+  "fr": "Choisissez au moins un animal."
+ },
+ {
+  "id": "269",
+  "en": "Choose from Gallery",
+  "fr": "Choisir dans la galerie"
+ },
+ {
+  "id": "270",
+  "en": "Choose the times",
+  "fr": "Choisir les heures"
+ },
+ {
+  "id": "271",
+  "en": "Choose your town for the weather",
+  "fr": "Choisissez votre ville pour la météo"
+ },
+ {
+  "id": "272",
+  "en": "Choose your town once to see the weather before each walk. No location tracking.",
+  "fr": "Choisissez votre ville une fois pour voir la météo avant chaque balade. Aucun suivi de position."
+ },
+ {
+  "id": "273",
+  "en": "Choose your units",
+  "fr": "Choisissez vos unités"
+ },
+ {
+  "id": "274",
+  "en": "Cleaned",
+  "fr": "Nettoyée"
+ },
+ {
+  "id": "275",
+  "en": "Clear",
+  "fr": "Effacer"
+ },
+ {
+  "id": "276",
+  "en": "Clinic or address",
+  "fr": "Clinique ou adresse"
+ },
+ {
+  "id": "277",
+  "en": "Clockwork week.",
+  "fr": "Une semaine réglée comme une horloge."
+ },
+ {
+  "id": "278",
+  "en": "Close",
+  "fr": "Fermer"
+ },
+ {
+  "id": "279",
+  "en": "Close story",
+  "fr": "Fermer l’histoire"
+ },
+ {
+  "id": "280",
+  "en": "Close without saving",
+  "fr": "Fermer sans enregistrer"
+ },
+ {
+  "id": "281",
+  "en": "Cloud Explorer",
+  "fr": "Explorateur des nuages"
+ },
+ {
+  "id": "282",
+  "en": "Cloudy",
+  "fr": "Nuageux"
+ },
+ {
+  "id": "283",
+  "en": "Coat",
+  "fr": "Pelage"
+ },
+ {
+  "id": "284",
+  "en": "Cocoa",
+  "fr": "Cacao"
+ },
+ {
+  "id": "285",
+  "en": "Code",
+  "fr": "Code"
+ },
+ {
+  "id": "286",
+  "en": "Collar",
+  "fr": "Collier"
+ },
+ {
+  "id": "287",
+  "en": "Colour in the plan 3 days in a row.",
+  "fr": "Coloriez le programme 3 jours de suite."
+ },
+ {
+  "id": "288",
+  "en": "Colour in today’s plan to keep it going!",
+  "fr": "Coloriez le programme du jour pour continuer !"
+ },
+ {
+  "id": "289",
+  "en": "Coming soon",
+  "fr": "Bientôt"
+ },
+ {
+  "id": "290",
+  "en": "Coming up",
+  "fr": "À venir"
+ },
+ {
+  "id": "291",
+  "en": "Complete today’s plan to start a streak",
+  "fr": "Terminez le programme du jour pour lancer une série"
+ },
+ {
+  "id": "292",
+  "en": "Completed",
+  "fr": "Réussi"
+ },
+ {
+  "id": "293",
+  "en": "Completed before",
+  "fr": "Déjà réussi"
+ },
+ {
+  "id": "294",
+  "en": "Contact support",
+  "fr": "Contacter le support"
+ },
+ {
+  "id": "295",
+  "en": "Continue",
+  "fr": "Continuer"
+ },
+ {
+  "id": "296",
+  "en": "Continue with Google",
+  "fr": "Continuer avec Google"
+ },
+ {
+  "id": "297",
+  "en": "Coral",
+  "fr": "Corail"
+ },
+ {
+  "id": "298",
+  "en": "Cosy routine",
+  "fr": "Routine douillette"
+ },
+ {
+  "id": "299",
+  "en": "Could not add that file.",
+  "fr": "Impossible d’ajouter ce fichier."
+ },
+ {
+  "id": "300",
+  "en": "Could not open photos.",
+  "fr": "Impossible d’ouvrir les photos."
+ },
+ {
+  "id": "301",
+  "en": "Could not restore right now.",
+  "fr": "Restauration impossible pour le moment."
+ },
+ {
+  "id": "302",
+  "en": "Could not save changes.",
+  "fr": "Impossible d’enregistrer les modifications."
+ },
+ {
+  "id": "303",
+  "en": "Could not save the appointment.",
+  "fr": "Impossible d’enregistrer le rendez-vous."
+ },
+ {
+  "id": "304",
+  "en": "Could not save the moment.",
+  "fr": "Impossible d’enregistrer le moment."
+ },
+ {
+  "id": "305",
+  "en": "Could not save the record.",
+  "fr": "Impossible d’enregistrer la fiche."
+ },
+ {
+  "id": "306",
+  "en": "Could not save the routine. Please try again.",
+  "fr": "Impossible d’enregistrer la routine. Veuillez réessayer."
+ },
+ {
+  "id": "307",
+  "en": "Could not save the walk. It’s kept — try Finish again.",
+  "fr": "La balade n’a pas pu être enregistrée. Elle est conservée : touchez Terminer à nouveau."
+ },
+ {
+  "id": "308",
+  "en": "Could not save the walk. Please try again.",
+  "fr": "Impossible d’enregistrer la balade. Veuillez réessayer."
+ },
+ {
+  "id": "309",
+  "en": "Could not save the weight.",
+  "fr": "Impossible d’enregistrer le poids."
+ },
+ {
+  "id": "310",
+  "en": "Could not save.",
+  "fr": "Enregistrement impossible."
+ },
+ {
+  "id": "311",
+  "en": "Could not save. Please try again.",
+  "fr": "Impossible d’enregistrer. Réessayez."
+ },
+ {
+  "id": "312",
+  "en": "Could not save. Your entry was not recorded — please try again.",
+  "fr": "Enregistrement impossible. Rien n’a été noté — veuillez réessayer."
+ },
+ {
+  "id": "313",
+  "en": "Could not start the walk. Please try again.",
+  "fr": "Impossible de lancer la balade. Réessayez."
+ },
+ {
+  "id": "314",
+  "en": "Couldn't reach the store. Check your connection and try again.",
+  "fr": "Impossible de joindre la boutique. Vérifiez votre connexion et réessayez."
+ },
+ {
+  "id": "315",
+  "en": "Count the treats",
+  "fr": "Comptez les friandises"
+ },
+ {
+  "id": "316",
+  "en": "Counted from {q} on {day}.",
+  "fr": "Compté à partir de {q} le {day}."
+ },
+ {
+  "id": "317",
+  "en": "Cream",
+  "fr": "Crème"
+ },
+ {
+  "id": "318",
+  "en": "Create Memory Card",
+  "fr": "Créer une Carte souvenir"
+ },
+ {
+  "id": "319",
+  "en": "Create a routine",
+  "fr": "Créer une routine"
+ },
+ {
+  "id": "320",
+  "en": "Create a routine with reminders.",
+  "fr": "Créez une routine avec rappels."
+ },
+ {
+  "id": "321",
+  "en": "Current streak · best {n}",
+  "fr": "Série en cours · record {n}"
+ },
+ {
+  "id": "322",
+  "en": "Custom milestone",
+  "fr": "Étape personnalisée"
+ },
+ {
+  "id": "323",
+  "en": "DAILY ROUTINE",
+  "fr": "ROUTINE QUOTIDIENNE"
+ },
+ {
+  "id": "324",
+  "en": "DOG",
+  "fr": "CHIEN"
+ },
+ {
+  "id": "325",
+  "en": "DONE",
+  "fr": "OK"
+ },
+ {
+  "id": "326",
+  "en": "DOWNLOAD IMAGE",
+  "fr": "TÉLÉCHARGER"
+ },
+ {
+  "id": "327",
+  "en": "DUE NOW",
+  "fr": "C’EST L’HEURE"
+ },
+ {
+  "id": "328",
+  "en": "Daily goal: {goal}",
+  "fr": "Objectif du jour : {goal}"
+ },
+ {
+  "id": "329",
+  "en": "Daily habit",
+  "fr": "Habitude"
+ },
+ {
+  "id": "330",
+  "en": "Daily nudges",
+  "fr": "Petits rappels du jour"
+ },
+ {
+  "id": "331",
+  "en": "Daily use",
+  "fr": "Par jour"
+ },
+ {
+  "id": "332",
+  "en": "Data backed up {when}",
+  "fr": "Données sauvegardées {when}"
+ },
+ {
+  "id": "333",
+  "en": "Date",
+  "fr": "Date"
+ },
+ {
+  "id": "334",
+  "en": "Day",
+  "fr": "Jour"
+ },
+ {
+  "id": "335",
+  "en": "Day before",
+  "fr": "La veille"
+ },
+ {
+  "id": "336",
+  "en": "Day to day you won’t see a difference. A monthly weigh-in shows the trend.",
+  "fr": "D’un jour à l’autre, on ne voit rien. Une pesée mensuelle montre la tendance."
+ },
+ {
+  "id": "337",
+  "en": "Day {n}",
+  "fr": "Jour {n}",
+  "plural": "other"
+ },
+ {
+  "id": "338",
+  "en": "Days",
+  "fr": "Jours"
+ },
+ {
+  "id": "339",
+  "en": "Days coloured in",
+  "fr": "Jours coloriés"
+ },
+ {
+  "id": "340",
+  "en": "Days in a row · best {n}",
+  "fr": "Jours d’affilée · record {n}"
+ },
+ {
+  "id": "341",
+  "en": "Delete",
+  "fr": "Supprimer"
+ },
+ {
+  "id": "342",
+  "en": "Delete account",
+  "fr": "Supprimer le compte"
+ },
+ {
+  "id": "343",
+  "en": "Delete moment",
+  "fr": "Supprimer le moment"
+ },
+ {
+  "id": "344",
+  "en": "Delete record",
+  "fr": "Supprimer la fiche"
+ },
+ {
+  "id": "345",
+  "en": "Delete routine",
+  "fr": "Supprimer la routine"
+ },
+ {
+  "id": "346",
+  "en": "Delete this adventure",
+  "fr": "Supprimer cette aventure"
+ },
+ {
+  "id": "347",
+  "en": "Delete this adventure?",
+  "fr": "Supprimer cette aventure ?"
+ },
+ {
+  "id": "348",
+  "en": "Delete this appointment?",
+  "fr": "Supprimer ce rendez-vous ?"
+ },
+ {
+  "id": "349",
+  "en": "Delete this entry",
+  "fr": "Supprimer cette entrée"
+ },
+ {
+  "id": "350",
+  "en": "Delete this moment?",
+  "fr": "Supprimer ce moment ?"
+ },
+ {
+  "id": "351",
+  "en": "Delete this record?",
+  "fr": "Supprimer cette fiche ?"
+ },
+ {
+  "id": "352",
+  "en": "Delete this routine?",
+  "fr": "Supprimer cette routine ?"
+ },
+ {
+  "id": "353",
+  "en": "Delete this weight?",
+  "fr": "Supprimer ce poids ?"
+ },
+ {
+  "id": "354",
+  "en": "Delete weight from {date}",
+  "fr": "Supprimer le poids du {date}"
+ },
+ {
+  "id": "355",
+  "en": "Delete your account?",
+  "fr": "Supprimer votre compte ?"
+ },
+ {
+  "id": "356",
+  "en": "Delete {label}?",
+  "fr": "Supprimer : {label} ?"
+ },
+ {
+  "id": "357",
+  "en": "Delete {name} forever?",
+  "fr": "Supprimer {name} définitivement ?"
+ },
+ {
+  "id": "358",
+  "en": "Delete {name} permanently",
+  "fr": "Supprimer {name} définitivement"
+ },
+ {
+  "id": "359",
+  "en": "Dental cleaning",
+  "fr": "Détartrage"
+ },
+ {
+  "id": "360",
+  "en": "Did {name} get the medicine? 💊",
+  "fr": "{name} a-t-il eu son médicament ? 💊"
+ },
+ {
+  "id": "361",
+  "en": "Dinner",
+  "fr": "Dîner"
+ },
+ {
+  "id": "362",
+  "en": "Discard",
+  "fr": "Abandonner"
+ },
+ {
+  "id": "363",
+  "en": "Discard this walk?",
+  "fr": "Abandonner cette balade ?"
+ },
+ {
+  "id": "364",
+  "en": "Dismiss",
+  "fr": "Ignorer"
+ },
+ {
+  "id": "365",
+  "en": "Do it again",
+  "fr": "Recommencer"
+ },
+ {
+  "id": "366",
+  "en": "Dog",
+  "fr": "Chien"
+ },
+ {
+  "id": "367",
+  "en": "Dogs and cats, each with their own day, routines, records and stories.",
+  "fr": "Chiens et chats, chacun avec sa journée, ses routines, ses dossiers et ses histoires."
+ },
+ {
+  "id": "368",
+  "en": "Done",
+  "fr": "Fait"
+ },
+ {
+  "id": "369",
+  "en": "Done ✓",
+  "fr": "Fait ✓"
+ },
+ {
+  "id": "370",
+  "en": "Done!",
+  "fr": "Fait !"
+ },
+ {
+  "id": "371",
+  "en": "Done. {name} noticed.",
+  "fr": "C’est fait. {name} a remarqué."
+ },
+ {
+  "id": "372",
+  "en": "Don’t forget some water.",
+  "fr": "N’oubliez pas un peu d’eau."
+ },
+ {
+  "id": "373",
+  "en": "Drag the photo to frame it. Pinch to zoom.",
+  "fr": "Faites glisser la photo pour la cadrer. Pincez pour zoomer."
+ },
+ {
+  "id": "374",
+  "en": "Drag the wheels",
+  "fr": "Faites tourner les roues"
+ },
+ {
+  "id": "375",
+  "en": "Dry food",
+  "fr": "Croquettes"
+ },
+ {
+  "id": "376",
+  "en": "Due now",
+  "fr": "Maintenant"
+ },
+ {
+  "id": "377",
+  "en": "Each time",
+  "fr": "À chaque fois"
+ },
+ {
+  "id": "378",
+  "en": "Early",
+  "fr": "En avance"
+ },
+ {
+  "id": "379",
+  "en": "Early Bird",
+  "fr": "Lève-tôt"
+ },
+ {
+  "id": "380",
+  "en": "Earned",
+  "fr": "Obtenu"
+ },
+ {
+  "id": "381",
+  "en": "Edit",
+  "fr": "Modifier"
+ },
+ {
+  "id": "382",
+  "en": "Edit item",
+  "fr": "Modifier l’article"
+ },
+ {
+  "id": "383",
+  "en": "Edit moment",
+  "fr": "Modifier le moment"
+ },
+ {
+  "id": "384",
+  "en": "Edit routine",
+  "fr": "Modifier la routine"
+ },
+ {
+  "id": "385",
+  "en": "Edit routine {title}",
+  "fr": "Modifier la routine {title}"
+ },
+ {
+  "id": "386",
+  "en": "Edit supply",
+  "fr": "Modifier la fourniture"
+ },
+ {
+  "id": "387",
+  "en": "Edit this adventure from its walk.",
+  "fr": "Modifiez cette aventure depuis sa balade."
+ },
+ {
+  "id": "388",
+  "en": "Edit time",
+  "fr": "Corriger la durée"
+ },
+ {
+  "id": "389",
+  "en": "Edit {label}",
+  "fr": "Modifier : {label}"
+ },
+ {
+  "id": "390",
+  "en": "Edit {title}",
+  "fr": "Modifier {title}"
+ },
+ {
+  "id": "391",
+  "en": "Elapsed {time}",
+  "fr": "Écoulé {time}"
+ },
+ {
+  "id": "392",
+  "en": "Email",
+  "fr": "E-mail"
+ },
+ {
+  "id": "393",
+  "en": "Empty",
+  "fr": "Vide"
+ },
+ {
+  "id": "394",
+  "en": "Empty window {n}, add a photo",
+  "fr": "Fenêtre {n} vide, ajoutez une photo"
+ },
+ {
+  "id": "395",
+  "en": "Empty, rinse and refill the bowl at least once a day. Old water collects dust and saliva.",
+  "fr": "Videz, rincez et remplissez la gamelle au moins une fois par jour. L’eau stagnante accumule poussière et salive."
+ },
+ {
+  "id": "396",
+  "en": "End with a snack",
+  "fr": "Terminez par une friandise"
+ },
+ {
+  "id": "397",
+  "en": "Ends",
+  "fr": "Fin"
+ },
+ {
+  "id": "398",
+  "en": "Enjoy your time together, {name}",
+  "fr": "Profitez de ce moment ensemble, {name}"
+ },
+ {
+  "id": "399",
+  "en": "Enter a weight between 0 and 200.",
+  "fr": "Entrez un poids entre 0 et 200."
+ },
+ {
+  "id": "400",
+  "en": "Enter the code from the email and choose a new password.",
+  "fr": "Saisissez le code reçu par e-mail et choisissez un nouveau mot de passe."
+ },
+ {
+  "id": "401",
+  "en": "Enter your email and we’ll send you a code.",
+  "fr": "Saisissez votre e-mail, nous vous envoyons un code."
+ },
+ {
+  "id": "402",
+  "en": "Enter your email first.",
+  "fr": "Saisissez d’abord votre e-mail."
+ },
+ {
+  "id": "403",
+  "en": "Enter your password, then tap Delete account again.",
+  "fr": "Saisissez votre mot de passe, puis touchez à nouveau Supprimer le compte."
+ },
+ {
+  "id": "404",
+  "en": "Entered by me",
+  "fr": "Saisi par moi"
+ },
+ {
+  "id": "405",
+  "en": "Erase",
+  "fr": "Effacer"
+ },
+ {
+  "id": "406",
+  "en": "Erase all data?",
+  "fr": "Effacer toutes les données ?"
+ },
+ {
+  "id": "407",
+  "en": "Erase all {n} pet and every record from this device? This cannot be undone.",
+  "fr": "Effacer {n} animal et toutes ses données de cet appareil ? C’est irréversible.",
+  "plural": "one"
+ },
+ {
+  "id": "408",
+  "en": "Erase all {n} pets and every record from this device? This cannot be undone.",
+  "fr": "Effacer les {n} animaux et toutes leurs données de cet appareil ? C’est irréversible.",
+  "plural": "other"
+ },
+ {
+  "id": "409",
+  "en": "Erase everything",
+  "fr": "Tout effacer"
+ },
+ {
+  "id": "410",
+  "en": "Estimated",
+  "fr": "Estimé"
+ },
+ {
+  "id": "411",
+  "en": "Evening",
+  "fr": "Soir"
+ },
+ {
+  "id": "412",
+  "en": "Evening check-in",
+  "fr": "Point du soir"
+ },
+ {
+  "id": "413",
+  "en": "Evening nudge",
+  "fr": "Rappel du soir"
+ },
+ {
+  "id": "414",
+  "en": "Every care tip, more pets, monthly stories and the full history. Free trial included when available.",
+  "fr": "Tous les conseils, plus d’animaux, les histoires du mois et tout l’historique. Essai gratuit inclus quand il est proposé."
+ },
+ {
+  "id": "415",
+  "en": "Every care you log colours in a little more of {name}. That’s the whole idea!",
+  "fr": "Chaque soin noté colorie un peu plus {name}. C’est tout le principe !"
+ },
+ {
+  "id": "416",
+  "en": "Every challenge and tip, more pets, monthly stories and the full history. Free trial included when available.",
+  "fr": "Tous les défis et conseils, plus d’animaux, les histoires mensuelles et tout l’historique. Essai gratuit inclus quand il est proposé."
+ },
+ {
+  "id": "417",
+  "en": "Every day",
+  "fr": "Tous les jours"
+ },
+ {
+  "id": "418",
+  "en": "Every day at {time}",
+  "fr": "Tous les jours à {time}"
+ },
+ {
+  "id": "419",
+  "en": "Every day you colour in gets a happy face",
+  "fr": "Chaque jour coloré gagne un visage heureux"
+ },
+ {
+  "id": "420",
+  "en": "Every dose logged for {name} comes out of the box.",
+  "fr": "Chaque dose notée pour {name} est retirée de la boîte."
+ },
+ {
+  "id": "421",
+  "en": "Every dose you log comes out of the box.",
+  "fr": "Chaque dose saisie sort de la boîte."
+ },
+ {
+  "id": "422",
+  "en": "Every meal logged for {name} with this food comes out of the bag.",
+  "fr": "Chaque repas noté pour {name} avec cette nourriture est retiré du sac."
+ },
+ {
+  "id": "423",
+  "en": "Every meal you log takes its grams out of the bag. After a few days Pavurio learns how much {name} really eats.",
+  "fr": "Chaque repas saisi retire ses grammes du sac. Après quelques jours, Pavurio apprend combien {name} mange vraiment."
+ },
+ {
+  "id": "424",
+  "en": "Every pet in one place",
+  "fr": "Tous vos animaux au même endroit"
+ },
+ {
+  "id": "425",
+  "en": "Everyone",
+  "fr": "Tout le monde"
+ },
+ {
+  "id": "426",
+  "en": "Everyone needs a hideout",
+  "fr": "Chacun a besoin d’un refuge"
+ },
+ {
+  "id": "427",
+  "en": "Everything in Pro unlocks. No payment now.",
+  "fr": "Tout Pro se débloque. Rien à payer maintenant."
+ },
+ {
+  "id": "428",
+  "en": "Experience",
+  "fr": "Expérience"
+ },
+ {
+  "id": "429",
+  "en": "FILE",
+  "fr": "FICHIER"
+ },
+ {
+  "id": "430",
+  "en": "FINISH · {n} MIN",
+  "fr": "TERMINER · {n} MIN"
+ },
+ {
+  "id": "431",
+  "en": "Familiar smells",
+  "fr": "Des odeurs familières"
+ },
+ {
+  "id": "432",
+  "en": "Favorite",
+  "fr": "Favori"
+ },
+ {
+  "id": "433",
+  "en": "Favorites",
+  "fr": "Favoris"
+ },
+ {
+  "id": "434",
+  "en": "Favorites only",
+  "fr": "Favoris uniquement"
+ },
+ {
+  "id": "435",
+  "en": "Favourite time",
+  "fr": "Moment préféré"
+ },
+ {
+  "id": "436",
+  "en": "Feature for this day",
+  "fr": "Mettre en avant ce jour-là"
+ },
+ {
+  "id": "437",
+  "en": "Fed {name} today? Tap the bowl and watch them colour in.",
+  "fr": "{name} a mangé aujourd’hui ? Touchez la gamelle et regardez-le se colorier."
+ },
+ {
+  "id": "438",
+  "en": "Feed {name}",
+  "fr": "Nourrir {name}"
+ },
+ {
+  "id": "439",
+  "en": "Feeding at the same times each day helps many pets feel settled.",
+  "fr": "Nourrir aux mêmes heures chaque jour aide beaucoup d’animaux à se sentir en confiance."
+ },
+ {
+  "id": "440",
+  "en": "Fewer {label}",
+  "fr": "Moins : {label}"
+ },
+ {
+  "id": "441",
+  "en": "Fifty walks together.",
+  "fr": "Cinquante balades ensemble."
+ },
+ {
+  "id": "442",
+  "en": "Finish",
+  "fr": "Terminer"
+ },
+ {
+  "id": "443",
+  "en": "Finish Walk",
+  "fr": "Terminer la balade"
+ },
+ {
+  "id": "444",
+  "en": "First Adventure",
+  "fr": "Première aventure"
+ },
+ {
+  "id": "445",
+  "en": "First Day Home",
+  "fr": "Premier jour à la maison"
+ },
+ {
+  "id": "446",
+  "en": "First Trick",
+  "fr": "Premier tour"
+ },
+ {
+  "id": "447",
+  "en": "First Walk",
+  "fr": "Première balade"
+ },
+ {
+  "id": "448",
+  "en": "First bath, a new trick, a lazy Sunday — add a photo and it shows up in {name}'s stories.",
+  "fr": "Premier bain, nouveau tour, dimanche paresseux — ajoutez une photo, elle apparaîtra dans les histoires de {name}."
+ },
+ {
+  "id": "449",
+  "en": "First care",
+  "fr": "Premier soin"
+ },
+ {
+  "id": "450",
+  "en": "First day home, cozy days",
+  "fr": "Premier jour, jours douillets"
+ },
+ {
+  "id": "451",
+  "en": "First walk",
+  "fr": "Première balade"
+ },
+ {
+  "id": "452",
+  "en": "Five walks together.",
+  "fr": "Cinq balades ensemble."
+ },
+ {
+  "id": "453",
+  "en": "Fix date",
+  "fr": "Corriger la date"
+ },
+ {
+  "id": "454",
+  "en": "Flea & tick",
+  "fr": "Anti-puces et tiques"
+ },
+ {
+  "id": "455",
+  "en": "Foggy",
+  "fr": "Brouillard"
+ },
+ {
+  "id": "456",
+  "en": "Follows logged doses",
+  "fr": "Suit les doses saisies"
+ },
+ {
+  "id": "457",
+  "en": "Follows logged meals",
+  "fr": "Suit les repas saisis"
+ },
+ {
+  "id": "458",
+  "en": "Follows {name}’s logged doses",
+  "fr": "Suit les doses saisies de {name}"
+ },
+ {
+  "id": "459",
+  "en": "Follows {name}’s logged meals",
+  "fr": "Suit les repas saisis de {name}"
+ },
+ {
+  "id": "460",
+  "en": "Food",
+  "fr": "Nourriture"
+ },
+ {
+  "id": "461",
+  "en": "Food and medicine go down by themselves as you log meals and doses. Everything else follows how long a pack lasts.",
+  "fr": "La nourriture et les médicaments baissent tout seuls quand vous saisissez repas et doses. Le reste suit la durée d’un paquet."
+ },
+ {
+  "id": "462",
+  "en": "Food, treats & meds for {name}",
+  "fr": "Nourriture, friandises et médicaments de {name}"
+ },
+ {
+  "id": "463",
+  "en": "Food, treats & meds — never run out",
+  "fr": "Nourriture, friandises, médicaments — jamais à court"
+ },
+ {
+  "id": "464",
+  "en": "For the big day",
+  "fr": "Pour le grand jour"
+ },
+ {
+  "id": "465",
+  "en": "For your safety, confirm it’s you first.",
+  "fr": "Pour votre sécurité, confirmez d’abord que c’est bien vous."
+ },
+ {
+  "id": "466",
+  "en": "Forgot password?",
+  "fr": "Mot de passe oublié ?"
+ },
+ {
+  "id": "467",
+  "en": "Four everyday favorites",
+  "fr": "Quatre petits bonheurs"
+ },
+ {
+  "id": "468",
+  "en": "Frame your photos",
+  "fr": "Encadrez vos photos"
+ },
+ {
+  "id": "469",
+  "en": "Free forever: daily care logging, reminders, health records with attachments, weekly stories, achievements and data export.",
+  "fr": "Gratuit pour toujours : suivi des soins, rappels, dossiers de santé avec pièces jointes, histoires de la semaine, succès et export des données."
+ },
+ {
+  "id": "470",
+  "en": "Fresh and clean",
+  "fr": "Propre et fraîche"
+ },
+ {
+  "id": "471",
+  "en": "Fresh water",
+  "fr": "Eau fraîche"
+ },
+ {
+  "id": "472",
+  "en": "Fresh water for {name} 💧",
+  "fr": "De l’eau fraîche pour {name} 💧"
+ },
+ {
+  "id": "473",
+  "en": "Fresh water in the bowl",
+  "fr": "De l’eau fraîche dans la gamelle"
+ },
+ {
+  "id": "474",
+  "en": "Fresh water, every day",
+  "fr": "De l’eau fraîche, chaque jour"
+ },
+ {
+  "id": "475",
+  "en": "From Pavurio",
+  "fr": "Via Pavurio"
+ },
+ {
+  "id": "476",
+  "en": "From a vet document",
+  "fr": "D’un document vétérinaire"
+ },
+ {
+  "id": "477",
+  "en": "From the routine",
+  "fr": "D’après la routine"
+ },
+ {
+  "id": "478",
+  "en": "From your logs",
+  "fr": "D’après vos notes"
+ },
+ {
+  "id": "479",
+  "en": "From {name}’s memories",
+  "fr": "Dans les souvenirs de {name}"
+ },
+ {
+  "id": "480",
+  "en": "Full",
+  "fr": "Plein"
+ },
+ {
+  "id": "481",
+  "en": "Full backup (JSON)",
+  "fr": "Sauvegarde (JSON)"
+ },
+ {
+  "id": "482",
+  "en": "Full days",
+  "fr": "Jours complets"
+ },
+ {
+  "id": "483",
+  "en": "GET STARTED",
+  "fr": "C’EST PARTI"
+ },
+ {
+  "id": "484",
+  "en": "Gallery",
+  "fr": "Galerie"
+ },
+ {
+  "id": "485",
+  "en": "Gentle nudges at the times you choose — never ticked off for you.",
+  "fr": "De petits rappels aux heures choisies — jamais cochés à votre place."
+ },
+ {
+  "id": "486",
+  "en": "Gentle reminders",
+  "fr": "Rappels en douceur"
+ },
+ {
+  "id": "487",
+  "en": "Getting there.",
+  "fr": "Ça progresse."
+ },
+ {
+  "id": "488",
+  "en": "Ginger",
+  "fr": "Roux"
+ },
+ {
+  "id": "489",
+  "en": "Give it a name.",
+  "fr": "Donnez-lui un nom."
+ },
+ {
+  "id": "490",
+  "en": "Give the appointment a name.",
+  "fr": "Donnez un nom au rendez-vous."
+ },
+ {
+  "id": "491",
+  "en": "Give the moment a title.",
+  "fr": "Donnez un titre au moment."
+ },
+ {
+  "id": "492",
+  "en": "Give the record a name.",
+  "fr": "Donnez un nom à la fiche."
+ },
+ {
+  "id": "493",
+  "en": "Give the reminder a name.",
+  "fr": "Donnez un nom au rappel."
+ },
+ {
+  "id": "494",
+  "en": "Give your milestone a title above.",
+  "fr": "Donnez un titre à votre étape ci-dessus."
+ },
+ {
+  "id": "495",
+  "en": "Give {name} the very best care",
+  "fr": "Offrez à {name} les meilleurs soins"
+ },
+ {
+  "id": "496",
+  "en": "Given ✓",
+  "fr": "Donné ✓"
+ },
+ {
+  "id": "497",
+  "en": "Go Pro for {name}",
+  "fr": "Passez à Pro pour {name}"
+ },
+ {
+  "id": "498",
+  "en": "Going more or less often than usual is worth a call to your vet.",
+  "fr": "Y aller beaucoup plus ou moins souvent que d’habitude mérite un appel au vétérinaire."
+ },
+ {
+  "id": "499",
+  "en": "Golden",
+  "fr": "Doré"
+ },
+ {
+  "id": "500",
+  "en": "Golden Hour",
+  "fr": "Heure dorée"
+ },
+ {
+  "id": "501",
+  "en": "Golden hour",
+  "fr": "Heure dorée"
+ },
+ {
+  "id": "502",
+  "en": "Golden, chocolate, black, Russian blue, brown tabby and more — try them on in the Studio.",
+  "fr": "Doré, chocolat, noir, bleu russe, tigré brun et plus — essayez-les dans le Studio."
+ },
+ {
+  "id": "503",
+  "en": "Good afternoon",
+  "fr": "Bon après-midi"
+ },
+ {
+  "id": "504",
+  "en": "Good evening",
+  "fr": "Bonsoir"
+ },
+ {
+  "id": "505",
+  "en": "Good morning",
+  "fr": "Bonjour"
+ },
+ {
+  "id": "506",
+  "en": "Good night",
+  "fr": "Bonne nuit"
+ },
+ {
+  "id": "507",
+  "en": "Good until about {day}",
+  "fr": "Assez jusqu’à environ {day}"
+ },
+ {
+  "id": "508",
+  "en": "Good until {day}",
+  "fr": "Tranquille jusqu’à {day}"
+ },
+ {
+  "id": "509",
+  "en": "Good week.",
+  "fr": "Bonne semaine."
+ },
+ {
+  "id": "510",
+  "en": "Got it!",
+  "fr": "Compris !"
+ },
+ {
+  "id": "511",
+  "en": "Got it! I’ll nudge you at {time}.",
+  "fr": "Compris ! Je te fais signe à {time}."
+ },
+ {
+  "id": "512",
+  "en": "Gotcha Day",
+  "fr": "Jour d’adoption"
+ },
+ {
+  "id": "513",
+  "en": "Grades start after 3 days of care. {n} so far.",
+  "fr": "Les notes commencent après 3 jours de soins. {n} pour l’instant."
+ },
+ {
+  "id": "514",
+  "en": "Great week.",
+  "fr": "Super semaine."
+ },
+ {
+  "id": "515",
+  "en": "Groomer",
+  "fr": "Toiletteur"
+ },
+ {
+  "id": "516",
+  "en": "Grooming",
+  "fr": "Toilettage"
+ },
+ {
+  "id": "517",
+  "en": "Grooming star",
+  "fr": "Star du toilettage"
+ },
+ {
+  "id": "518",
+  "en": "Happy Gotcha Day!",
+  "fr": "Joyeux jour d’adoption !"
+ },
+ {
+  "id": "519",
+  "en": "Happy birthday, {name}!",
+  "fr": "Joyeux anniversaire, {name} !"
+ },
+ {
+  "id": "520",
+  "en": "Haptics",
+  "fr": "Vibrations"
+ },
+ {
+  "id": "521",
+  "en": "Health",
+  "fr": "Santé"
+ },
+ {
+  "id": "522",
+  "en": "Health file",
+  "fr": "Carnet de santé"
+ },
+ {
+  "id": "523",
+  "en": "Help & feedback",
+  "fr": "Aide et avis"
+ },
+ {
+  "id": "524",
+  "en": "Help center",
+  "fr": "Centre d’aide"
+ },
+ {
+  "id": "525",
+  "en": "Hide",
+  "fr": "Masquer"
+ },
+ {
+  "id": "526",
+  "en": "Hide note",
+  "fr": "Masquer la note"
+ },
+ {
+  "id": "527",
+  "en": "Hide password",
+  "fr": "Masquer le mot de passe"
+ },
+ {
+  "id": "528",
+  "en": "Hide times",
+  "fr": "Masquer les heures"
+ },
+ {
+  "id": "529",
+  "en": "History",
+  "fr": "Historique"
+ },
+ {
+  "id": "530",
+  "en": "Holiday Memories",
+  "fr": "Souvenirs de fêtes"
+ },
+ {
+  "id": "531",
+  "en": "Home",
+  "fr": "Accueil"
+ },
+ {
+  "id": "532",
+  "en": "Home Sweet Home",
+  "fr": "Home Sweet Home"
+ },
+ {
+  "id": "533",
+  "en": "Home sweet home",
+  "fr": "Home sweet home"
+ },
+ {
+  "id": "534",
+  "en": "Honey",
+  "fr": "Miel"
+ },
+ {
+  "id": "535",
+  "en": "Hour",
+  "fr": "Heure"
+ },
+ {
+  "id": "536",
+  "en": "How full is it?",
+  "fr": "C’est rempli à combien ?"
+ },
+ {
+  "id": "537",
+  "en": "How long was the walk?",
+  "fr": "Combien de temps a duré la balade ?"
+ },
+ {
+  "id": "538",
+  "en": "How many a day?",
+  "fr": "Combien par jour ?"
+ },
+ {
+  "id": "539",
+  "en": "How many did you buy?",
+  "fr": "Combien en avez-vous acheté ?"
+ },
+ {
+  "id": "540",
+  "en": "How much did they eat?",
+  "fr": "Quelle portion ?"
+ },
+ {
+  "id": "541",
+  "en": "How much is in one pack?",
+  "fr": "Combien y a-t-il dans un paquet ?"
+ },
+ {
+  "id": "542",
+  "en": "How much is left can’t be negative.",
+  "fr": "Ce qui reste ne peut pas être négatif."
+ },
+ {
+  "id": "543",
+  "en": "How your free trial works",
+  "fr": "Comment marche l’essai gratuit"
+ },
+ {
+  "id": "544",
+  "en": "How {name} has grown",
+  "fr": "Comme {name} a grandi"
+ },
+ {
+  "id": "545",
+  "en": "Hydration hero",
+  "fr": "Héros de l’hydratation"
+ },
+ {
+  "id": "546",
+  "en": "I already have an account",
+  "fr": "J’ai déjà un compte"
+ },
+ {
+  "id": "547",
+  "en": "I bought it",
+  "fr": "Je l’ai acheté"
+ },
+ {
+  "id": "548",
+  "en": "I bought more",
+  "fr": "J’en ai racheté"
+ },
+ {
+  "id": "549",
+  "en": "I keep track of my pet’s care with Pavurio — the pet colours in as you log meals, walks and more. 🐾",
+  "fr": "Je suis les soins de mon animal avec Pavurio — il se colorie à chaque repas, balade et plus encore. 🐾"
+ },
+ {
+  "id": "550",
+  "en": "If a meal or dose is still open 30 minutes later, one gentle follow-up.",
+  "fr": "Si un repas ou une dose n’est pas noté 30 minutes plus tard, un rappel en douceur."
+ },
+ {
+  "id": "551",
+  "en": "If an account uses {email}, a code is on its way.",
+  "fr": "Si un compte utilise {email}, un code est en route."
+ },
+ {
+  "id": "552",
+  "en": "In 1 year",
+  "fr": "Dans 1 an"
+ },
+ {
+  "id": "553",
+  "en": "In 15 min",
+  "fr": "Dans 15 min"
+ },
+ {
+  "id": "554",
+  "en": "In a while",
+  "fr": "Dans un moment"
+ },
+ {
+  "id": "555",
+  "en": "In stock",
+  "fr": "En stock"
+ },
+ {
+  "id": "556",
+  "en": "In {n} h",
+  "fr": "Dans {n} h"
+ },
+ {
+  "id": "557",
+  "en": "In {n} min",
+  "fr": "Dans {n} min"
+ },
+ {
+  "id": "558",
+  "en": "It may have been removed, or the link is out of date.",
+  "fr": "Il a peut-être été supprimé, ou le lien n’est plus à jour."
+ },
+ {
+  "id": "559",
+  "en": "It stays in {others}’s memories with its photo.",
+  "fr": "Il reste dans les souvenirs de {others}, avec sa photo."
+ },
+ {
+  "id": "560",
+  "en": "It will also be removed from the day, Moments and the Paw Passport.",
+  "fr": "Elle sera aussi retirée de la journée, des Moments et du Passeport des pattes."
+ },
+ {
+  "id": "561",
+  "en": "Its attachments are deleted from this device too.",
+  "fr": "Ses pièces jointes sont aussi supprimées de cet appareil."
+ },
+ {
+  "id": "562",
+  "en": "Its reminder is cancelled too.",
+  "fr": "Son rappel est aussi annulé."
+ },
+ {
+  "id": "563",
+  "en": "Its reminders stop. Care you already logged stays in your history.",
+  "fr": "Ses rappels s’arrêtent. Les soins déjà notés restent dans l’historique."
+ },
+ {
+  "id": "564",
+  "en": "Its reminders stop. Your care logs stay as they are.",
+  "fr": "Ses rappels s’arrêtent. Vos saisies de soins restent intactes."
+ },
+ {
+  "id": "565",
+  "en": "It’s dark out. Something bright or reflective helps you both be seen.",
+  "fr": "Il fait nuit. Un accessoire lumineux ou réfléchissant vous rend visibles tous les deux."
+ },
+ {
+  "id": "566",
+  "en": "Just once",
+  "fr": "Une seule fois"
+ },
+ {
+  "id": "567",
+  "en": "Just once, at {time}",
+  "fr": "Une seule fois, à {time}"
+ },
+ {
+  "id": "568",
+  "en": "Just the two of you",
+  "fr": "Rien que vous deux"
+ },
+ {
+  "id": "569",
+  "en": "Just {name}",
+  "fr": "Seulement {name}"
+ },
+ {
+  "id": "570",
+  "en": "Keep it all in one place",
+  "fr": "Tout au même endroit"
+ },
+ {
+  "id": "571",
+  "en": "Keep the current one",
+  "fr": "Garder l’actuel"
+ },
+ {
+  "id": "572",
+  "en": "Keep this coat with Pro",
+  "fr": "Garder ce pelage avec Pro"
+ },
+ {
+  "id": "573",
+  "en": "Keep your pets safe if you change phones",
+  "fr": "Gardez vos animaux si vous changez de téléphone"
+ },
+ {
+  "id": "574",
+  "en": "Keep your {n}-day streak 🔥",
+  "fr": "Gardez votre série de {n} jours 🔥"
+ },
+ {
+  "id": "575",
+  "en": "Keep {name} safe",
+  "fr": "Gardez {name} à l’abri"
+ },
+ {
+  "id": "576",
+  "en": "Keep {name}’s {coat} coat",
+  "fr": "Gardez le pelage {coat} de {name}"
+ },
+ {
+  "id": "577",
+  "en": "Kibble",
+  "fr": "Croquettes"
+ },
+ {
+  "id": "578",
+  "en": "Kibble, paw pattern & treat jar · 2 min",
+  "fr": "Croquettes, pattes en ordre et bocal · 2 min"
+ },
+ {
+  "id": "579",
+  "en": "Kind",
+  "fr": "Type"
+ },
+ {
+  "id": "580",
+  "en": "LEAVE",
+  "fr": "QUITTER"
+ },
+ {
+  "id": "581",
+  "en": "LET'S GO",
+  "fr": "C’EST PARTI"
+ },
+ {
+  "id": "582",
+  "en": "LET’S PLAY",
+  "fr": "ON JOUE"
+ },
+ {
+  "id": "583",
+  "en": "LOOKS RIGHT",
+  "fr": "C’EST PARFAIT"
+ },
+ {
+  "id": "584",
+  "en": "Language",
+  "fr": "Langue"
+ },
+ {
+  "id": "585",
+  "en": "Last 6 months",
+  "fr": "6 derniers mois"
+ },
+ {
+  "id": "586",
+  "en": "Last 7 days",
+  "fr": "7 derniers jours"
+ },
+ {
+  "id": "587",
+  "en": "Last 8 weeks",
+  "fr": "8 dernières semaines"
+ },
+ {
+  "id": "588",
+  "en": "Last time: {n} × {q}",
+  "fr": "La dernière fois : {n} × {q}"
+ },
+ {
+  "id": "589",
+  "en": "Late",
+  "fr": "En retard"
+ },
+ {
+  "id": "590",
+  "en": "Latest adventure",
+  "fr": "Dernière aventure"
+ },
+ {
+  "id": "591",
+  "en": "Leaf",
+  "fr": "Feuille"
+ },
+ {
+  "id": "592",
+  "en": "Leave them be",
+  "fr": "Laissez-le tranquille"
+ },
+ {
+  "id": "593",
+  "en": "Left the timer running? Set how long you really walked.",
+  "fr": "Le chrono a tourné trop longtemps ? Indiquez la vraie durée de la balade."
+ },
+ {
+  "id": "594",
+  "en": "Less",
+  "fr": "Moins"
+ },
+ {
+  "id": "595",
+  "en": "Less {label} each time",
+  "fr": "Moins de {label} à chaque fois"
+ },
+ {
+  "id": "596",
+  "en": "Less, remove {n} {unit}",
+  "fr": "Moins, retirer {n} {unit}"
+ },
+ {
+  "id": "597",
+  "en": "Let them sniff",
+  "fr": "Laissez-le renifler"
+ },
+ {
+  "id": "598",
+  "en": "Let {name} finish eating",
+  "fr": "Laissez {name} finir de manger"
+ },
+ {
+  "id": "599",
+  "en": "Let’s take care of someone special.",
+  "fr": "Prenons soin de quelqu’un de spécial."
+ },
+ {
+  "id": "600",
+  "en": "Library",
+  "fr": "Photothèque"
+ },
+ {
+  "id": "601",
+  "en": "Lifetime",
+  "fr": "À vie"
+ },
+ {
+  "id": "602",
+  "en": "Lilac",
+  "fr": "Lilas"
+ },
+ {
+  "id": "603",
+  "en": "Litter",
+  "fr": "Litière"
+ },
+ {
+  "id": "604",
+  "en": "Litter box cleaned",
+  "fr": "Litière nettoyée"
+ },
+ {
+  "id": "605",
+  "en": "Little Moment",
+  "fr": "Petit moment"
+ },
+ {
+  "id": "606",
+  "en": "Log",
+  "fr": "Noter"
+ },
+ {
+  "id": "607",
+  "en": "Log a few cares to unlock",
+  "fr": "Notez quelques soins pour débloquer"
+ },
+ {
+  "id": "608",
+  "en": "Log a few more cares for {name} to make this story.",
+  "fr": "Notez encore quelques soins pour {name} pour créer cette histoire."
+ },
+ {
+  "id": "609",
+  "en": "Log a past walk instead",
+  "fr": "Noter une balade déjà faite"
+ },
+ {
+  "id": "610",
+  "en": "Log a weight.",
+  "fr": "Notez un poids."
+ },
+ {
+  "id": "611",
+  "en": "Log fresh water 20 times.",
+  "fr": "Notez l’eau fraîche 20 fois."
+ },
+ {
+  "id": "612",
+  "en": "Log grooming 10 times.",
+  "fr": "Notez 10 toilettages."
+ },
+ {
+  "id": "613",
+  "en": "Log the care you give. Watch them color in.",
+  "fr": "Notez les soins que vous donnez. Regardez-les se colorier."
+ },
+ {
+  "id": "614",
+  "en": "Log your first care.",
+  "fr": "Notez votre premier soin."
+ },
+ {
+  "id": "615",
+  "en": "Log {care}",
+  "fr": "Noter : {care}"
+ },
+ {
+  "id": "616",
+  "en": "Log {label}",
+  "fr": "Noter : {label}"
+ },
+ {
+  "id": "617",
+  "en": "Log {label} again?",
+  "fr": "Noter encore {label} ?"
+ },
+ {
+  "id": "618",
+  "en": "Log {name}'s first care",
+  "fr": "Notez le premier soin de {name}"
+ },
+ {
+  "id": "619",
+  "en": "Log {name}'s weight today",
+  "fr": "Noter le poids de {name} aujourd’hui"
+ },
+ {
+  "id": "620",
+  "en": "Longer",
+  "fr": "Plus long"
+ },
+ {
+  "id": "621",
+  "en": "Look at {name} go!",
+  "fr": "Regardez {name} !"
+ },
+ {
+  "id": "622",
+  "en": "MONTH",
+  "fr": "MOIS"
+ },
+ {
+  "id": "623",
+  "en": "Make brushing a treat",
+  "fr": "Faire du brossage un plaisir"
+ },
+ {
+  "id": "624",
+  "en": "Make {name} look like {name}",
+  "fr": "À quoi ressemble {name} ?"
+ },
+ {
+  "id": "625",
+  "en": "Making your card…",
+  "fr": "Création de votre carte…"
+ },
+ {
+  "id": "626",
+  "en": "Many pets drink more with a second bowl in another room — cats often prefer it away from their food.",
+  "fr": "Beaucoup d’animaux boivent plus avec une deuxième gamelle dans une autre pièce — les chats la préfèrent souvent loin de leur repas."
+ },
+ {
+  "id": "627",
+  "en": "Mark a moment as a milestone and it joins {name}’s timeline.",
+  "fr": "Marquez un moment comme étape et il rejoint la frise de {name}."
+ },
+ {
+  "id": "628",
+  "en": "Mark as done",
+  "fr": "Marquer comme fait"
+ },
+ {
+  "id": "629",
+  "en": "Mark not done",
+  "fr": "Marquer non fait"
+ },
+ {
+  "id": "630",
+  "en": "Mark {title} done",
+  "fr": "Marquer {title} comme fait"
+ },
+ {
+  "id": "631",
+  "en": "Meal",
+  "fr": "Repas"
+ },
+ {
+  "id": "632",
+  "en": "Meals",
+  "fr": "Repas"
+ },
+ {
+  "id": "633",
+  "en": "Meals and medicine also get a follow-up",
+  "fr": "Les repas et médicaments ont aussi une relance"
+ },
+ {
+  "id": "634",
+  "en": "Meals, walks, medication — on a schedule",
+  "fr": "Repas, balades, médicaments — à heures fixes"
+ },
+ {
+  "id": "635",
+  "en": "Meals, walks, pills and vet visits — gently reminded.",
+  "fr": "Repas, balades, médicaments et visites — rappelés en douceur."
+ },
+ {
+  "id": "636",
+  "en": "Measure it",
+  "fr": "Mesurez"
+ },
+ {
+  "id": "637",
+  "en": "Medication",
+  "fr": "Médicament"
+ },
+ {
+  "id": "638",
+  "en": "Medicine",
+  "fr": "Médicament"
+ },
+ {
+  "id": "639",
+  "en": "Medicine reminders",
+  "fr": "Rappels de médicaments"
+ },
+ {
+  "id": "640",
+  "en": "Medicine time for {name} 💊",
+  "fr": "C’est l’heure du médicament de {name} 💊"
+ },
+ {
+  "id": "641",
+  "en": "Memories",
+  "fr": "Souvenirs"
+ },
+ {
+  "id": "642",
+  "en": "Memory Card",
+  "fr": "Carte souvenir"
+ },
+ {
+  "id": "643",
+  "en": "Memory Cards",
+  "fr": "Cartes souvenir"
+ },
+ {
+  "id": "644",
+  "en": "Memory keeper",
+  "fr": "Gardien des souvenirs"
+ },
+ {
+  "id": "645",
+  "en": "Midnight",
+  "fr": "Minuit"
+ },
+ {
+  "id": "646",
+  "en": "Milestone (optional)",
+  "fr": "Étape (facultatif)"
+ },
+ {
+  "id": "647",
+  "en": "Milestones",
+  "fr": "Étapes"
+ },
+ {
+  "id": "648",
+  "en": "Milestones from your life together",
+  "fr": "Les étapes de votre vie ensemble"
+ },
+ {
+  "id": "649",
+  "en": "Milestones, memories and stories of your life together.",
+  "fr": "Étapes, souvenirs et histoires de votre vie ensemble."
+ },
+ {
+  "id": "650",
+  "en": "Mind the pavement",
+  "fr": "Attention au bitume"
+ },
+ {
+  "id": "651",
+  "en": "Minutes",
+  "fr": "Minutes"
+ },
+ {
+  "id": "652",
+  "en": "Miss a day and it starts over — no pressure, you can try again any time.",
+  "fr": "Un jour manqué et on recommence — sans pression, réessayez quand vous voulez."
+ },
+ {
+  "id": "653",
+  "en": "Missed something? Add it below with the time it happened.",
+  "fr": "Un oubli ? Ajoutez-le ci-dessous avec l’heure à laquelle c’est arrivé."
+ },
+ {
+  "id": "654",
+  "en": "Mix up the route",
+  "fr": "Variez le parcours"
+ },
+ {
+  "id": "655",
+  "en": "Moment",
+  "fr": "Moment"
+ },
+ {
+  "id": "656",
+  "en": "Moment saved!",
+  "fr": "Moment enregistré !",
+  "plural": "one"
+ },
+ {
+  "id": "657",
+  "en": "Moments",
+  "fr": "Moments"
+ },
+ {
+  "id": "658",
+  "en": "Moments from this adventure",
+  "fr": "Moments de cette aventure"
+ },
+ {
+  "id": "659",
+  "en": "Month in Moments",
+  "fr": "Le mois en moments"
+ },
+ {
+  "id": "660",
+  "en": "Monthly",
+  "fr": "Mensuel"
+ },
+ {
+  "id": "661",
+  "en": "Monthly stories",
+  "fr": "Histoires du mois"
+ },
+ {
+  "id": "662",
+  "en": "Months",
+  "fr": "Mois"
+ },
+ {
+  "id": "663",
+  "en": "More",
+  "fr": "Plus"
+ },
+ {
+  "id": "664",
+  "en": "More accessories, outfits and Little World items arrive in a later update.",
+  "fr": "D’autres accessoires, tenues et objets du Petit Monde arriveront dans une prochaine mise à jour."
+ },
+ {
+  "id": "665",
+  "en": "More bowls, more sips",
+  "fr": "Plus de gamelles, plus de gorgées"
+ },
+ {
+  "id": "666",
+  "en": "More pets & monthly stories",
+  "fr": "Plus d’animaux et histoires du mois"
+ },
+ {
+  "id": "667",
+  "en": "More pets, more stories.",
+  "fr": "Plus d’animaux, plus d’histoires."
+ },
+ {
+  "id": "668",
+  "en": "More {label}",
+  "fr": "Plus : {label}"
+ },
+ {
+  "id": "669",
+  "en": "More {label} each time",
+  "fr": "Plus de {label} à chaque fois"
+ },
+ {
+  "id": "670",
+  "en": "More, add {n} {unit}",
+  "fr": "Plus, ajouter {n} {unit}"
+ },
+ {
+  "id": "671",
+  "en": "Morning",
+  "fr": "Matin"
+ },
+ {
+  "id": "672",
+  "en": "Most cats prefer a clean box. Daily scooping keeps them using it.",
+  "fr": "La plupart des chats préfèrent une litière propre. Ramasser chaque jour les encourage à l’utiliser."
+ },
+ {
+  "id": "673",
+  "en": "Move down",
+  "fr": "Descendre"
+ },
+ {
+  "id": "674",
+  "en": "Move left",
+  "fr": "Vers la gauche"
+ },
+ {
+  "id": "675",
+  "en": "Move photo earlier",
+  "fr": "Avancer la photo"
+ },
+ {
+  "id": "676",
+  "en": "Move photo later",
+  "fr": "Reculer la photo"
+ },
+ {
+  "id": "677",
+  "en": "Move right",
+  "fr": "Vers la droite"
+ },
+ {
+  "id": "678",
+  "en": "Move the toy like prey — away from your cat, hiding behind things — and let them catch it at the end.",
+  "fr": "Faites bouger le jouet comme une proie — en s’éloignant, en se cachant — et laissez-le l’attraper à la fin."
+ },
+ {
+  "id": "679",
+  "en": "Move up",
+  "fr": "Monter"
+ },
+ {
+  "id": "680",
+  "en": "My best friend",
+  "fr": "Mon meilleur ami"
+ },
+ {
+  "id": "681",
+  "en": "My buddy",
+  "fr": "Mon compagnon"
+ },
+ {
+  "id": "682",
+  "en": "My pantry",
+  "fr": "Mon garde-manger"
+ },
+ {
+  "id": "683",
+  "en": "NEW BADGE",
+  "fr": "NOUVEAU BADGE"
+ },
+ {
+  "id": "684",
+  "en": "NEXT",
+  "fr": "SUIVANT"
+ },
+ {
+  "id": "685",
+  "en": "NO REMINDERS · FINISH",
+  "fr": "SANS RAPPELS · TERMINER"
+ },
+ {
+  "id": "686",
+  "en": "Name",
+  "fr": "Nom"
+ },
+ {
+  "id": "687",
+  "en": "Name & date (optional)",
+  "fr": "Nom et date (facultatif)"
+ },
+ {
+  "id": "688",
+  "en": "Name your milestone.",
+  "fr": "Donnez un nom à votre étape."
+ },
+ {
+  "id": "689",
+  "en": "Names can be up to 60 characters.",
+  "fr": "Le nom peut contenir 60 caractères au maximum."
+ },
+ {
+  "id": "690",
+  "en": "Names can be up to 80 characters.",
+  "fr": "Le nom peut contenir 80 caractères au maximum."
+ },
+ {
+  "id": "691",
+  "en": "Names can be up to {n} characters.",
+  "fr": "Le nom peut contenir {n} caractères au maximum."
+ },
+ {
+  "id": "692",
+  "en": "Nap champion",
+  "fr": "Champion de la sieste"
+ },
+ {
+  "id": "693",
+  "en": "Never",
+  "fr": "Jamais"
+ },
+ {
+  "id": "694",
+  "en": "Never miss a thing",
+  "fr": "Ne rien oublier"
+ },
+ {
+  "id": "695",
+  "en": "Never run out of food",
+  "fr": "Ne soyez jamais à court de nourriture"
+ },
+ {
+  "id": "696",
+  "en": "Never run out of {name}’s food",
+  "fr": "Ne soyez jamais à court de nourriture pour {name}"
+ },
+ {
+  "id": "697",
+  "en": "New",
+  "fr": "Nouveau"
+ },
+ {
+  "id": "698",
+  "en": "New appointment",
+  "fr": "Nouveau rendez-vous"
+ },
+ {
+  "id": "699",
+  "en": "New here? Create an account",
+  "fr": "Nouveau ? Créer un compte"
+ },
+ {
+  "id": "700",
+  "en": "New moment",
+  "fr": "Nouveau moment"
+ },
+ {
+  "id": "701",
+  "en": "New password",
+  "fr": "Nouveau mot de passe"
+ },
+ {
+  "id": "702",
+  "en": "New record",
+  "fr": "Nouvelle fiche"
+ },
+ {
+  "id": "703",
+  "en": "New reminder",
+  "fr": "Nouveau rappel"
+ },
+ {
+  "id": "704",
+  "en": "New routine",
+  "fr": "Nouvelle routine"
+ },
+ {
+  "id": "705",
+  "en": "New stamp unlocked!",
+  "fr": "Nouveau tampon débloqué !"
+ },
+ {
+  "id": "706",
+  "en": "New stamps unlocked!",
+  "fr": "Nouveaux tampons débloqués !"
+ },
+ {
+  "id": "707",
+  "en": "New streets mean new smells. Even reversing your usual loop makes it more interesting.",
+  "fr": "Nouvelles rues, nouvelles odeurs. Même faire votre boucle à l’envers la rend plus intéressante."
+ },
+ {
+  "id": "708",
+  "en": "New supply",
+  "fr": "Nouvelle fourniture"
+ },
+ {
+  "id": "709",
+  "en": "New trick",
+  "fr": "Nouveau tour"
+ },
+ {
+  "id": "710",
+  "en": "New weight",
+  "fr": "Nouveau poids"
+ },
+ {
+  "id": "711",
+  "en": "Next",
+  "fr": "Suivant"
+ },
+ {
+  "id": "712",
+  "en": "Next care",
+  "fr": "Prochain soin"
+ },
+ {
+  "id": "713",
+  "en": "Next day",
+  "fr": "Jour suivant"
+ },
+ {
+  "id": "714",
+  "en": "Next due",
+  "fr": "Prochain rappel"
+ },
+ {
+  "id": "715",
+  "en": "Next month",
+  "fr": "Mois suivant"
+ },
+ {
+  "id": "716",
+  "en": "Next up",
+  "fr": "À suivre"
+ },
+ {
+  "id": "717",
+  "en": "Next week",
+  "fr": "Semaine suivante"
+ },
+ {
+  "id": "718",
+  "en": "Night",
+  "fr": "Nuit"
+ },
+ {
+  "id": "719",
+  "en": "No",
+  "fr": "Non"
+ },
+ {
+  "id": "720",
+  "en": "No adventures yet",
+  "fr": "Pas encore d’aventure"
+ },
+ {
+  "id": "721",
+  "en": "No care logged",
+  "fr": "Aucun soin noté"
+ },
+ {
+  "id": "722",
+  "en": "No connection. Check your internet and try again.",
+  "fr": "Pas de connexion. Vérifiez internet et réessayez."
+ },
+ {
+  "id": "723",
+  "en": "No daily plan yet",
+  "fr": "Pas encore de programme"
+ },
+ {
+  "id": "724",
+  "en": "No favorites yet",
+  "fr": "Pas encore de favoris"
+ },
+ {
+  "id": "725",
+  "en": "No meals logged for {n} — those days are estimated at the usual rate.",
+  "fr": "Aucun repas noté depuis {n} — ces jours sont estimés au rythme habituel."
+ },
+ {
+  "id": "726",
+  "en": "No payment now · Cancel anytime",
+  "fr": "Rien à payer maintenant · Annulable à tout moment"
+ },
+ {
+  "id": "727",
+  "en": "No previous Pro purchase was found for this account.",
+  "fr": "Aucun achat Pro trouvé pour ce compte."
+ },
+ {
+  "id": "728",
+  "en": "No reminder",
+  "fr": "Aucun rappel"
+ },
+ {
+  "id": "729",
+  "en": "No reminders for this routine.",
+  "fr": "Pas de rappel pour cette routine."
+ },
+ {
+  "id": "730",
+  "en": "No routines yet. Add {name}'s meals, walks or medication and get a gentle reminder.",
+  "fr": "Pas encore de routine. Ajoutez les repas, balades ou médicaments de {name} et recevez un rappel en douceur."
+ },
+ {
+  "id": "731",
+  "en": "No title",
+  "fr": "Sans titre"
+ },
+ {
+  "id": "732",
+  "en": "No town found. Try another spelling.",
+  "fr": "Aucune ville trouvée. Essayez une autre orthographe."
+ },
+ {
+  "id": "733",
+  "en": "No weights yet. Weigh {name} every few weeks to spot changes early — a chart appears after two entries.",
+  "fr": "Aucun poids pour l’instant. Pesez {name} toutes les quelques semaines pour repérer les changements — un graphique apparaît après deux mesures."
+ },
+ {
+  "id": "734",
+  "en": "None",
+  "fr": "Aucun"
+ },
+ {
+  "id": "735",
+  "en": "Noon",
+  "fr": "Midi"
+ },
+ {
+  "id": "736",
+  "en": "Not available yet",
+  "fr": "Pas encore disponible"
+ },
+ {
+  "id": "737",
+  "en": "Not backed up yet",
+  "fr": "Pas encore sauvegardé"
+ },
+ {
+  "id": "738",
+  "en": "Not everything is backed up yet",
+  "fr": "Tout n’est pas encore sauvegardé"
+ },
+ {
+  "id": "739",
+  "en": "Not in the daily plan",
+  "fr": "Hors programme"
+ },
+ {
+  "id": "740",
+  "en": "Not now",
+  "fr": "Pas maintenant"
+ },
+ {
+  "id": "741",
+  "en": "Not recorded",
+  "fr": "Non enregistrée"
+ },
+ {
+  "id": "742",
+  "en": "Not sure? Skip it",
+  "fr": "Pas sûr ? Passez"
+ },
+ {
+  "id": "743",
+  "en": "Not yet",
+  "fr": "Pas encore"
+ },
+ {
+  "id": "744",
+  "en": "Note",
+  "fr": "Note"
+ },
+ {
+  "id": "745",
+  "en": "Noted on",
+  "fr": "Constatée le"
+ },
+ {
+  "id": "746",
+  "en": "Notes (optional)",
+  "fr": "Notes (facultatif)"
+ },
+ {
+  "id": "747",
+  "en": "Nothing",
+  "fr": "Rien"
+ },
+ {
+  "id": "748",
+  "en": "Nothing from this day yet",
+  "fr": "Rien de ce jour pour l’instant"
+ },
+ {
+  "id": "749",
+  "en": "Nothing here yet",
+  "fr": "Rien pour l’instant"
+ },
+ {
+  "id": "750",
+  "en": "Nothing logged in this period yet.",
+  "fr": "Rien de noté sur cette période."
+ },
+ {
+  "id": "751",
+  "en": "Nothing logged on this day",
+  "fr": "Rien de noté ce jour-là"
+ },
+ {
+  "id": "752",
+  "en": "Nothing logged yet",
+  "fr": "Rien de noté pour l’instant"
+ },
+ {
+  "id": "753",
+  "en": "Nothing logged yet today",
+  "fr": "Rien de noté aujourd’hui"
+ },
+ {
+  "id": "754",
+  "en": "Nothing scheduled this day.",
+  "fr": "Rien de prévu ce jour-là."
+ },
+ {
+  "id": "755",
+  "en": "Nothing to buy right now",
+  "fr": "Rien à acheter pour l’instant"
+ },
+ {
+  "id": "756",
+  "en": "Nothing to do if you’re enjoying it. You can cancel anytime in your store settings.",
+  "fr": "Rien à faire si vous l’appréciez. Annulable à tout moment dans les réglages de votre store."
+ },
+ {
+  "id": "757",
+  "en": "Nothing will be charged.",
+  "fr": "Rien ne sera facturé."
+ },
+ {
+  "id": "758",
+  "en": "Nothing will be saved.",
+  "fr": "Rien ne sera enregistré."
+ },
+ {
+  "id": "759",
+  "en": "Notice changes",
+  "fr": "Remarquez les changements"
+ },
+ {
+  "id": "760",
+  "en": "Notifications are off",
+  "fr": "Notifications désactivées"
+ },
+ {
+  "id": "761",
+  "en": "Notifications are off for Pavurio. Turn them on in your phone's Settings to get reminders.",
+  "fr": "Les notifications sont désactivées pour Pavurio. Activez-les dans les Réglages du téléphone pour recevoir les rappels."
+ },
+ {
+  "id": "762",
+  "en": "Notifications are on",
+  "fr": "Notifications activées"
+ },
+ {
+  "id": "763",
+  "en": "Notifications not set up",
+  "fr": "Notifications non configurées"
+ },
+ {
+  "id": "764",
+  "en": "Now",
+  "fr": "Maintenant"
+ },
+ {
+  "id": "765",
+  "en": "ON HOME NOW",
+  "fr": "SUR L’ACCUEIL"
+ },
+ {
+  "id": "766",
+  "en": "OVERDUE",
+  "fr": "EN RETARD"
+ },
+ {
+  "id": "767",
+  "en": "Off",
+  "fr": "Désactivé"
+ },
+ {
+  "id": "768",
+  "en": "On",
+  "fr": "Activé"
+ },
+ {
+  "id": "769",
+  "en": "On This Day",
+  "fr": "Ce jour-là"
+ },
+ {
+  "id": "770",
+  "en": "On an adventure!",
+  "fr": "En pleine aventure !"
+ },
+ {
+  "id": "771",
+  "en": "On hot days, put your hand on the ground for 5 seconds. Too hot for you is too hot for paws.",
+  "fr": "Par forte chaleur, posez la main au sol 5 secondes. Trop chaud pour vous, trop chaud pour ses coussinets."
+ },
+ {
+  "id": "772",
+  "en": "On the dot",
+  "fr": "Pile à l’heure"
+ },
+ {
+  "id": "773",
+  "en": "On time",
+  "fr": "À l’heure"
+ },
+ {
+  "id": "774",
+  "en": "On time, once",
+  "fr": "À l’heure, une fois"
+ },
+ {
+  "id": "775",
+  "en": "Once a month",
+  "fr": "Une fois par mois"
+ },
+ {
+  "id": "776",
+  "en": "Once a week",
+  "fr": "Une fois par semaine"
+ },
+ {
+  "id": "777",
+  "en": "One less",
+  "fr": "Un de moins"
+ },
+ {
+  "id": "778",
+  "en": "One more",
+  "fr": "Un de plus"
+ },
+ {
+  "id": "779",
+  "en": "One pack",
+  "fr": "Un paquet"
+ },
+ {
+  "id": "780",
+  "en": "One payment · No subscription",
+  "fr": "Un seul paiement · Sans abonnement"
+ },
+ {
+  "id": "781",
+  "en": "One photo from today",
+  "fr": "Une photo d’aujourd’hui"
+ },
+ {
+  "id": "782",
+  "en": "One photo of {name}, kept forever.",
+  "fr": "Une photo de {name}, gardée pour toujours."
+ },
+ {
+  "id": "783",
+  "en": "One reminder at {time}.",
+  "fr": "Un rappel à {time}."
+ },
+ {
+  "id": "784",
+  "en": "One reminder in the evening, only if some of today’s care isn’t logged yet.",
+  "fr": "Un rappel le soir, seulement si certains soins du jour ne sont pas encore notés."
+ },
+ {
+  "id": "785",
+  "en": "Only as your vet prescribed",
+  "fr": "Uniquement selon la prescription du vétérinaire"
+ },
+ {
+  "id": "786",
+  "en": "Oops! Watch again",
+  "fr": "Oups ! Regardez encore"
+ },
+ {
+  "id": "787",
+  "en": "Open Pavurio to see your adventure",
+  "fr": "Ouvrez Pavurio pour voir votre aventure"
+ },
+ {
+  "id": "788",
+  "en": "Open achievements",
+  "fr": "Ouvrir les succès"
+ },
+ {
+  "id": "789",
+  "en": "Open care log for this day",
+  "fr": "Ouvrir les soins de ce jour"
+ },
+ {
+  "id": "790",
+  "en": "Open care schedule",
+  "fr": "Ouvrir le planning des soins"
+ },
+ {
+  "id": "791",
+  "en": "Open log",
+  "fr": "Voir le journal"
+ },
+ {
+  "id": "792",
+  "en": "Open moment",
+  "fr": "Ouvrir le moment"
+ },
+ {
+  "id": "793",
+  "en": "Open month calendar",
+  "fr": "Ouvrir le calendrier du mois"
+ },
+ {
+  "id": "794",
+  "en": "Open phone settings",
+  "fr": "Ouvrir les réglages"
+ },
+ {
+  "id": "795",
+  "en": "Open settings",
+  "fr": "Ouvrir les réglages"
+ },
+ {
+  "id": "796",
+  "en": "Open today's care timeline",
+  "fr": "Ouvrir les soins du jour"
+ },
+ {
+  "id": "797",
+  "en": "Open today's log",
+  "fr": "Ouvrir le journal du jour"
+ },
+ {
+  "id": "798",
+  "en": "Open today’s moment",
+  "fr": "Ouvrir le moment du jour"
+ },
+ {
+  "id": "799",
+  "en": "Open weight history",
+  "fr": "Ouvrir l’historique du poids"
+ },
+ {
+  "id": "800",
+  "en": "Open {name}",
+  "fr": "Ouvrir {name}"
+ },
+ {
+  "id": "801",
+  "en": "Open {name}'s look",
+  "fr": "Ouvrir le look de {name}"
+ },
+ {
+  "id": "802",
+  "en": "Optional. We'll celebrate {name}'s birthday and your anniversary together.",
+  "fr": "Facultatif. Nous fêterons l’anniversaire de {name} et celui de votre rencontre."
+ },
+ {
+  "id": "803",
+  "en": "Order around {day}",
+  "fr": "Commander vers {day}"
+ },
+ {
+  "id": "804",
+  "en": "Order by",
+  "fr": "Commander avant"
+ },
+ {
+  "id": "805",
+  "en": "Order by {day}",
+  "fr": "À commander avant {day}"
+ },
+ {
+  "id": "806",
+  "en": "Order today — about {n} left",
+  "fr": "À commander aujourd’hui — encore {n} environ"
+ },
+ {
+  "id": "807",
+  "en": "Other",
+  "fr": "Autre"
+ },
+ {
+  "id": "808",
+  "en": "Other notes",
+  "fr": "Autres notes"
+ },
+ {
+  "id": "809",
+  "en": "Other pets",
+  "fr": "Autres animaux"
+ },
+ {
+  "id": "810",
+  "en": "Other size ({unit})",
+  "fr": "Autre taille ({unit})"
+ },
+ {
+  "id": "811",
+  "en": "Our Adventures",
+  "fr": "Nos aventures"
+ },
+ {
+  "id": "812",
+  "en": "Our adventures",
+  "fr": "Nos aventures"
+ },
+ {
+  "id": "813",
+  "en": "Out",
+  "fr": "Épuisé"
+ },
+ {
+  "id": "814",
+  "en": "Overdue",
+  "fr": "En retard"
+ },
+ {
+  "id": "815",
+  "en": "Overview",
+  "fr": "Aperçu"
+ },
+ {
+  "id": "816",
+  "en": "PAUSED",
+  "fr": "EN PAUSE"
+ },
+ {
+  "id": "817",
+  "en": "PDF / file",
+  "fr": "PDF / fichier"
+ },
+ {
+  "id": "818",
+  "en": "PREPARING…",
+  "fr": "PRÉPARATION…"
+ },
+ {
+  "id": "819",
+  "en": "PREVIEW",
+  "fr": "APERÇU"
+ },
+ {
+  "id": "820",
+  "en": "PRIVACY",
+  "fr": "CONFIDENTIALITÉ"
+ },
+ {
+  "id": "821",
+  "en": "Pack counts keep this much in stock after the order arrives.",
+  "fr": "Le nombre de paquets garde ce stock une fois la commande arrivée."
+ },
+ {
+  "id": "822",
+  "en": "Packs of {q}",
+  "fr": "Paquets de {q}"
+ },
+ {
+  "id": "823",
+  "en": "Pantry",
+  "fr": "Garde-manger"
+ },
+ {
+  "id": "824",
+  "en": "Pantry reminders",
+  "fr": "Rappels du garde-manger"
+ },
+ {
+  "id": "825",
+  "en": "Pantry stocked",
+  "fr": "Garde-manger rempli"
+ },
+ {
+  "id": "826",
+  "en": "Part of an adventure?",
+  "fr": "Pendant une aventure ?"
+ },
+ {
+  "id": "827",
+  "en": "Partly cloudy",
+  "fr": "Éclaircies"
+ },
+ {
+  "id": "828",
+  "en": "Party animal",
+  "fr": "Fêtard"
+ },
+ {
+  "id": "829",
+  "en": "Password",
+  "fr": "Mot de passe"
+ },
+ {
+  "id": "830",
+  "en": "Pause",
+  "fr": "Pause"
+ },
+ {
+  "id": "831",
+  "en": "Pause a routine without deleting it.",
+  "fr": "Mettez une routine en pause sans la supprimer."
+ },
+ {
+  "id": "832",
+  "en": "Paused",
+  "fr": "En pause"
+ },
+ {
+  "id": "833",
+  "en": "Pavurio Pro: more pets, coats, stories & full history",
+  "fr": "Pavurio Pro : plus d’animaux, pelages, histoires et tout l’historique"
+ },
+ {
+  "id": "834",
+  "en": "Pavurio counts what {name} eats and tells you when to buy more.",
+  "fr": "Pavurio compte ce que mange {name} et vous dit quand racheter."
+ },
+ {
+  "id": "835",
+  "en": "Pavurio doesn’t know how fast this goes yet. Set how long a pack lasts.",
+  "fr": "Pavurio ne sait pas encore à quelle vitesse ça part. Indiquez combien de temps dure un paquet."
+ },
+ {
+  "id": "836",
+  "en": "Pavurio helps you keep track of the care you give. It does not give medical advice or judge your pet's health — your progress is simply how much of your own plan you logged today.",
+  "fr": "Pavurio vous aide à suivre les soins que vous donnez. L’app ne donne pas d’avis médical et ne juge pas la santé de votre animal — votre progression indique simplement la part de votre propre programme notée aujourd’hui."
+ },
+ {
+  "id": "837",
+  "en": "Pavurio starts with dogs and cats. More friends later.",
+  "fr": "Pavurio commence avec les chiens et les chats. D’autres amis suivront."
+ },
+ {
+  "id": "838",
+  "en": "Pavurio thinks {name} is out. Bought some? One tap restocks it.",
+  "fr": "Pavurio pense que {name} n’en a plus. Déjà acheté ? Un toucher pour réapprovisionner."
+ },
+ {
+  "id": "839",
+  "en": "Pavurio will add things here before they run out.",
+  "fr": "Pavurio ajoutera les articles ici avant qu’ils ne manquent."
+ },
+ {
+  "id": "840",
+  "en": "Paw Passport",
+  "fr": "Passeport des pattes"
+ },
+ {
+  "id": "841",
+  "en": "Paw pattern",
+  "fr": "Pattes en ordre"
+ },
+ {
+  "id": "842",
+  "en": "Paw pattern + treat jar · 1 min",
+  "fr": "Pattes en ordre + bocal · 1 min"
+ },
+ {
+  "id": "843",
+  "en": "Paw {n}",
+  "fr": "Patte {n}"
+ },
+ {
+  "id": "844",
+  "en": "Pawfect!",
+  "fr": "Patte-fait !"
+ },
+ {
+  "id": "845",
+  "en": "Pay once, yours forever",
+  "fr": "Payé une fois, à vous pour toujours"
+ },
+ {
+  "id": "846",
+  "en": "Payment is charged to your Apple ID at confirmation of purchase. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your App Store account settings.",
+  "fr": "Le paiement est débité de votre identifiant Apple à la confirmation de l’achat. L’abonnement se renouvelle automatiquement sauf annulation au moins 24 heures avant la fin de la période en cours. Gérez-le ou annulez-le dans les réglages de votre compte App Store."
+ },
+ {
+  "id": "847",
+  "en": "Per month",
+  "fr": "Par mois"
+ },
+ {
+  "id": "848",
+  "en": "Perfect",
+  "fr": "Parfait"
+ },
+ {
+  "id": "849",
+  "en": "Perfect Five, Brushing Habit, Playtime Fortnight and more — with badges to earn.",
+  "fr": "Cinq jours parfaits, L’habitude du brossage, Quinzaine du jeu et plus — avec des badges à gagner."
+ },
+ {
+  "id": "850",
+  "en": "Pet name",
+  "fr": "Nom de l’animal"
+ },
+ {
+  "id": "851",
+  "en": "Pet sitter",
+  "fr": "Pet-sitter"
+ },
+ {
+  "id": "852",
+  "en": "Pets",
+  "fr": "Animaux"
+ },
+ {
+  "id": "853",
+  "en": "Pets, care log, routines, visits, weights and records. Photos stay on this phone.",
+  "fr": "Animaux, soins, routines, rendez-vous, poids et dossiers. Les photos restent sur ce téléphone."
+ },
+ {
+  "id": "854",
+  "en": "Pets, care log, routines, visits, weights, records, pantry, memories and their photos.",
+  "fr": "Animaux, soins, routines, visites, poids, dossiers, garde-manger, souvenirs et leurs photos."
+ },
+ {
+  "id": "855",
+  "en": "Photo",
+  "fr": "Photo"
+ },
+ {
+  "id": "856",
+  "en": "Photo access is off for Pavurio. You can turn it on in Settings.",
+  "fr": "L’accès aux photos est désactivé pour Pavurio. Vous pouvez l’activer dans les Réglages."
+ },
+ {
+  "id": "857",
+  "en": "Photo of {name}",
+  "fr": "Photo de {name}"
+ },
+ {
+  "id": "858",
+  "en": "Photo or note",
+  "fr": "Photo ou note"
+ },
+ {
+  "id": "859",
+  "en": "Photo {n}",
+  "fr": "Photo {n}"
+ },
+ {
+  "id": "860",
+  "en": "Photos & milestones with {name}",
+  "fr": "Photos et grandes dates avec {name}"
+ },
+ {
+  "id": "861",
+  "en": "Photos you add to Memories show up here.",
+  "fr": "Les photos ajoutées aux Souvenirs apparaissent ici."
+ },
+ {
+  "id": "862",
+  "en": "Photos you add today will come back here next year.",
+  "fr": "Les photos ajoutées aujourd’hui reviendront ici l’an prochain."
+ },
+ {
+  "id": "863",
+  "en": "Pick a frame for your photos of {name}",
+  "fr": "Choisissez un cadre pour vos photos de {name}"
+ },
+ {
+  "id": "864",
+  "en": "Piebald",
+  "fr": "Pie"
+ },
+ {
+  "id": "865",
+  "en": "Plan, units, language, export",
+  "fr": "Programme, unités, langue, export"
+ },
+ {
+  "id": "866",
+  "en": "Planner",
+  "fr": "Organisé"
+ },
+ {
+  "id": "867",
+  "en": "Play",
+  "fr": "Jeu"
+ },
+ {
+  "id": "868",
+  "en": "Play again",
+  "fr": "Rejouer"
+ },
+ {
+  "id": "869",
+  "en": "Play like a hunter",
+  "fr": "Jouez comme un chasseur"
+ },
+ {
+  "id": "870",
+  "en": "Play this month story",
+  "fr": "Lire l’histoire du mois"
+ },
+ {
+  "id": "871",
+  "en": "Play this week story",
+  "fr": "Lire l’histoire de la semaine"
+ },
+ {
+  "id": "872",
+  "en": "Play time with {name}",
+  "fr": "Jouer avec {name}"
+ },
+ {
+  "id": "873",
+  "en": "Play time!",
+  "fr": "C’est l’heure de jouer !"
+ },
+ {
+  "id": "874",
+  "en": "Playtime",
+  "fr": "Jeu"
+ },
+ {
+  "id": "875",
+  "en": "Playtime together",
+  "fr": "Un moment de jeu ensemble"
+ },
+ {
+  "id": "876",
+  "en": "Playtime with {name}? 🎾",
+  "fr": "On joue avec {name} ? 🎾"
+ },
+ {
+  "id": "877",
+  "en": "Please choose a valid time.",
+  "fr": "Veuillez choisir une heure valide."
+ },
+ {
+  "id": "878",
+  "en": "Please give them a name.",
+  "fr": "Donnez-lui un nom."
+ },
+ {
+  "id": "879",
+  "en": "Please give your pet a name.",
+  "fr": "Donnez un nom à votre animal."
+ },
+ {
+  "id": "880",
+  "en": "Please wait before asking for another code.",
+  "fr": "Patientez avant de demander un nouveau code."
+ },
+ {
+  "id": "881",
+  "en": "Poop bags",
+  "fr": "Sacs à crottes"
+ },
+ {
+  "id": "882",
+  "en": "Post",
+  "fr": "Post"
+ },
+ {
+  "id": "883",
+  "en": "Post · 1080 × 1350",
+  "fr": "Post · 1080 × 1350"
+ },
+ {
+  "id": "884",
+  "en": "Predictable is calming",
+  "fr": "Prévisible, c’est rassurant"
+ },
+ {
+  "id": "885",
+  "en": "Prepared {date} with Pavurio. Entered by the owner; not a medical record.",
+  "fr": "Préparé le {date} avec Pavurio. Saisi par le propriétaire ; ce n’est pas un dossier médical."
+ },
+ {
+  "id": "886",
+  "en": "Preparing…",
+  "fr": "Préparation…"
+ },
+ {
+  "id": "887",
+  "en": "Preview",
+  "fr": "Aperçu"
+ },
+ {
+  "id": "888",
+  "en": "Preview prices — the store is not connected in this build.",
+  "fr": "Prix d’aperçu — le store n’est pas connecté dans cette version."
+ },
+ {
+  "id": "889",
+  "en": "Previous",
+  "fr": "Précédent"
+ },
+ {
+  "id": "890",
+  "en": "Previous day",
+  "fr": "Jour précédent"
+ },
+ {
+  "id": "891",
+  "en": "Previous month",
+  "fr": "Mois précédent"
+ },
+ {
+  "id": "892",
+  "en": "Previous week",
+  "fr": "Semaine précédente"
+ },
+ {
+  "id": "893",
+  "en": "Price of one pack (optional)",
+  "fr": "Prix d’un paquet (facultatif)"
+ },
+ {
+  "id": "894",
+  "en": "Privacy",
+  "fr": "Confidentialité"
+ },
+ {
+  "id": "895",
+  "en": "Privacy policy",
+  "fr": "Politique de confidentialité"
+ },
+ {
+  "id": "896",
+  "en": "Pro is active",
+  "fr": "Pro est actif"
+ },
+ {
+  "id": "897",
+  "en": "Pro is unlocked. {name} thanks you!",
+  "fr": "Pro est débloqué. {name} vous remercie !"
+ },
+ {
+  "id": "898",
+  "en": "Pro keeps Pavurio ad-free and independent.",
+  "fr": "Pro garde Pavurio sans pub et indépendant."
+ },
+ {
+  "id": "899",
+  "en": "Pro restored. Welcome back!",
+  "fr": "Pro restauré. Bon retour !"
+ },
+ {
+  "id": "900",
+  "en": "Pro · tap to see",
+  "fr": "Pro · touchez pour voir"
+ },
+ {
+  "id": "901",
+  "en": "Purchases are available in the iPhone and Android app.",
+  "fr": "Les achats sont disponibles dans l’app iPhone et Android."
+ },
+ {
+  "id": "902",
+  "en": "Questions for the vet, things to bring…",
+  "fr": "Questions pour le vétérinaire, choses à apporter…"
+ },
+ {
+  "id": "903",
+  "en": "Quiet spot",
+  "fr": "Un coin calme"
+ },
+ {
+  "id": "904",
+  "en": "REOPEN",
+  "fr": "ROUVRIR"
+ },
+ {
+  "id": "905",
+  "en": "RESTORE",
+  "fr": "RESTAURER"
+ },
+ {
+  "id": "906",
+  "en": "RESTORE PURCHASES",
+  "fr": "RESTAURER LES ACHATS"
+ },
+ {
+  "id": "907",
+  "en": "RESTORING…",
+  "fr": "RESTAURATION…"
+ },
+ {
+  "id": "908",
+  "en": "Rain is likely. A towel by the door helps.",
+  "fr": "La pluie est probable. Une serviette près de la porte, c’est pratique."
+ },
+ {
+  "id": "909",
+  "en": "Rainy",
+  "fr": "Pluvieux"
+ },
+ {
+  "id": "910",
+  "en": "Ran out — time to restock",
+  "fr": "Épuisé — à racheter"
+ },
+ {
+  "id": "911",
+  "en": "Rate Pavurio",
+  "fr": "Noter Pavurio"
+ },
+ {
+  "id": "912",
+  "en": "Read · 3 cards",
+  "fr": "Lire · 3 cartes"
+ },
+ {
+  "id": "913",
+  "en": "Ready for an adventure, {name}?",
+  "fr": "Prêt pour l’aventure, {name} ?"
+ },
+ {
+  "id": "914",
+  "en": "Ready for an adventure?",
+  "fr": "Prêts pour une aventure ?"
+ },
+ {
+  "id": "915",
+  "en": "Ready when you are",
+  "fr": "Prêt quand vous l’êtes"
+ },
+ {
+  "id": "916",
+  "en": "Ready when you are, {name}",
+  "fr": "Prêt quand vous l’êtes, {name}"
+ },
+ {
+  "id": "917",
+  "en": "Realistic coats come with Pro. Try any of them on — keep the one you love.",
+  "fr": "Les pelages réalistes sont inclus dans Pro. Essayez-les tous — gardez celui que vous aimez."
+ },
+ {
+  "id": "918",
+  "en": "Record",
+  "fr": "Fiche"
+ },
+ {
+  "id": "919",
+  "en": "Records",
+  "fr": "Dossiers"
+ },
+ {
+  "id": "920",
+  "en": "Records, routine, visits and weight — for the vet or a sitter",
+  "fr": "Dossiers, routine, visites et poids — pour le vétérinaire ou un pet-sitter"
+ },
+ {
+  "id": "921",
+  "en": "Red",
+  "fr": "Roux"
+ },
+ {
+  "id": "922",
+  "en": "Reduce motion",
+  "fr": "Réduire les animations"
+ },
+ {
+  "id": "923",
+  "en": "Regular meal times",
+  "fr": "Des repas à heure fixe"
+ },
+ {
+  "id": "924",
+  "en": "Relive every month together",
+  "fr": "Revivez chaque mois ensemble"
+ },
+ {
+  "id": "925",
+  "en": "Remember the paws",
+  "fr": "Retenez les pattes"
+ },
+ {
+  "id": "926",
+  "en": "Remind me",
+  "fr": "Me le rappeler"
+ },
+ {
+  "id": "927",
+  "en": "Remind me to buy",
+  "fr": "Me rappeler d’acheter"
+ },
+ {
+  "id": "928",
+  "en": "Reminder",
+  "fr": "Rappel"
+ },
+ {
+  "id": "929",
+  "en": "Reminder at {time}, then one follow-up {n} minutes later if it’s still open.",
+  "fr": "Rappel à {time}, puis une relance {n} minutes plus tard si ce n’est pas fait."
+ },
+ {
+  "id": "930",
+  "en": "Reminder off",
+  "fr": "Rappel désactivé"
+ },
+ {
+  "id": "931",
+  "en": "Reminder on",
+  "fr": "Rappel activé"
+ },
+ {
+  "id": "932",
+  "en": "Reminder {n} before it runs out, so there’s time to order.",
+  "fr": "Rappel {n} avant la fin, pour avoir le temps de commander."
+ },
+ {
+  "id": "933",
+  "en": "Reminders",
+  "fr": "Rappels"
+ },
+ {
+  "id": "934",
+  "en": "Reminders arrive on the iPhone and Android app.",
+  "fr": "Les rappels arrivent sur l’app iPhone et Android."
+ },
+ {
+  "id": "935",
+  "en": "Reminders need the phone app",
+  "fr": "Les rappels nécessitent l’app mobile"
+ },
+ {
+  "id": "936",
+  "en": "Reminders off",
+  "fr": "Rappels désactivés"
+ },
+ {
+  "id": "937",
+  "en": "Reminders on",
+  "fr": "Rappels activés"
+ },
+ {
+  "id": "938",
+  "en": "Reminders, health records, attachments, weekly stories and data export stay free — always.",
+  "fr": "Rappels, dossiers de santé, pièces jointes, histoires de la semaine et export restent gratuits — pour toujours."
+ },
+ {
+  "id": "939",
+  "en": "Reminds at {time}",
+  "fr": "Rappel à {time}"
+ },
+ {
+  "id": "940",
+  "en": "Remove",
+  "fr": "Retirer"
+ },
+ {
+  "id": "941",
+  "en": "Remove attachment",
+  "fr": "Retirer la pièce jointe"
+ },
+ {
+  "id": "942",
+  "en": "Remove from favorites",
+  "fr": "Retirer des favoris"
+ },
+ {
+  "id": "943",
+  "en": "Remove from {name}’s memories?",
+  "fr": "Retirer des souvenirs de {name} ?"
+ },
+ {
+  "id": "944",
+  "en": "Remove item",
+  "fr": "Retirer l’article"
+ },
+ {
+  "id": "945",
+  "en": "Remove photo",
+  "fr": "Retirer la photo"
+ },
+ {
+  "id": "946",
+  "en": "Remove supply",
+  "fr": "Retirer la fourniture"
+ },
+ {
+  "id": "947",
+  "en": "Remove this item?",
+  "fr": "Retirer cet article ?"
+ },
+ {
+  "id": "948",
+  "en": "Remove this supply?",
+  "fr": "Retirer cette fourniture ?"
+ },
+ {
+  "id": "949",
+  "en": "Remove time",
+  "fr": "Retirer l’horaire"
+ },
+ {
+  "id": "950",
+  "en": "Reopen {title}",
+  "fr": "Rouvrir {title}"
+ },
+ {
+  "id": "951",
+  "en": "Replace photo",
+  "fr": "Remplacer la photo"
+ },
+ {
+  "id": "952",
+  "en": "Resend in {s}s",
+  "fr": "Renvoyer dans {s} s"
+ },
+ {
+  "id": "953",
+  "en": "Resend the code",
+  "fr": "Renvoyer le code"
+ },
+ {
+  "id": "954",
+  "en": "Reset your password",
+  "fr": "Réinitialiser le mot de passe"
+ },
+ {
+  "id": "955",
+  "en": "Restock",
+  "fr": "Racheter"
+ },
+ {
+  "id": "956",
+  "en": "Restock {name}",
+  "fr": "Racheter {name}"
+ },
+ {
+  "id": "957",
+  "en": "Restocked!",
+  "fr": "Réapprovisionné !"
+ },
+ {
+  "id": "958",
+  "en": "Restore",
+  "fr": "Restaurer"
+ },
+ {
+  "id": "959",
+  "en": "Restore a purchase or see plans",
+  "fr": "Restaurer un achat ou voir les offres"
+ },
+ {
+  "id": "960",
+  "en": "Restore purchases",
+  "fr": "Restaurer les achats"
+ },
+ {
+  "id": "961",
+  "en": "Restoring, subscriptions, reminders",
+  "fr": "Restauration, abonnements, rappels"
+ },
+ {
+  "id": "962",
+  "en": "Resume",
+  "fr": "Reprendre"
+ },
+ {
+  "id": "963",
+  "en": "Right on time!",
+  "fr": "Pile à l’heure !"
+ },
+ {
+  "id": "964",
+  "en": "Room for the whole family",
+  "fr": "De la place pour toute la famille"
+ },
+ {
+  "id": "965",
+  "en": "Routine & reminder",
+  "fr": "Routine et rappel"
+ },
+ {
+  "id": "966",
+  "en": "Routines",
+  "fr": "Routines"
+ },
+ {
+  "id": "967",
+  "en": "Routines & visits",
+  "fr": "Routines et visites"
+ },
+ {
+  "id": "968",
+  "en": "Routines you create in Care send a reminder at each time. Nothing is ever marked done for you.",
+  "fr": "Les routines créées dans Soins envoient un rappel à chaque horaire. Rien n’est jamais coché à votre place."
+ },
+ {
+  "id": "969",
+  "en": "Runs out around {date}",
+  "fr": "Épuisé vers le {date}"
+ },
+ {
+  "id": "970",
+  "en": "Russian Blue",
+  "fr": "Bleu russe"
+ },
+ {
+  "id": "971",
+  "en": "SAVE",
+  "fr": "ENREGISTRER"
+ },
+ {
+  "id": "972",
+  "en": "SAVE CHANGES",
+  "fr": "ENREGISTRER"
+ },
+ {
+  "id": "973",
+  "en": "SAVE LOOK",
+  "fr": "ENREGISTRER LE LOOK"
+ },
+ {
+  "id": "974",
+  "en": "SAVE MY ACCOUNT",
+  "fr": "ENREGISTRER MON COMPTE"
+ },
+ {
+  "id": "975",
+  "en": "SAVE NEW PASSWORD",
+  "fr": "ENREGISTRER LE MOT DE PASSE"
+ },
+ {
+  "id": "976",
+  "en": "SAVE PLAN",
+  "fr": "ENREGISTRER"
+ },
+ {
+  "id": "977",
+  "en": "SAVE RECORD",
+  "fr": "ENREGISTRER"
+ },
+ {
+  "id": "978",
+  "en": "SAVE ROUTINE",
+  "fr": "ENREGISTRER"
+ },
+ {
+  "id": "979",
+  "en": "SAVE TO PHOTOS",
+  "fr": "ENREGISTRER DANS PHOTOS"
+ },
+ {
+  "id": "980",
+  "en": "SAVE WEIGHT",
+  "fr": "ENREGISTRER LE POIDS"
+ },
+ {
+  "id": "981",
+  "en": "SAVE {n}%",
+  "fr": "-{n} %"
+ },
+ {
+  "id": "982",
+  "en": "SAVED ✓",
+  "fr": "ENREGISTRÉ ✓"
+ },
+ {
+  "id": "983",
+  "en": "SEND CODE",
+  "fr": "ENVOYER LE CODE"
+ },
+ {
+  "id": "984",
+  "en": "SHARE",
+  "fr": "PARTAGER"
+ },
+ {
+  "id": "985",
+  "en": "SIGN IN",
+  "fr": "SE CONNECTER"
+ },
+ {
+  "id": "986",
+  "en": "SIGN IN WITH EMAIL",
+  "fr": "SE CONNECTER PAR E-MAIL"
+ },
+ {
+  "id": "987",
+  "en": "SKIP",
+  "fr": "PASSER"
+ },
+ {
+  "id": "988",
+  "en": "SKIP FOR NOW",
+  "fr": "PLUS TARD"
+ },
+ {
+  "id": "989",
+  "en": "START",
+  "fr": "C’EST PARTI"
+ },
+ {
+  "id": "990",
+  "en": "START NOW",
+  "fr": "COMMENCER"
+ },
+ {
+  "id": "991",
+  "en": "START WALK",
+  "fr": "DÉMARRER LA BALADE"
+ },
+ {
+  "id": "992",
+  "en": "Same as last time: {n} × {q}",
+  "fr": "Comme la dernière fois : {n} × {q}"
+ },
+ {
+  "id": "993",
+  "en": "Same scale, same time",
+  "fr": "Même balance, même moment"
+ },
+ {
+  "id": "994",
+  "en": "Same time, same place",
+  "fr": "Même heure, même endroit"
+ },
+ {
+  "id": "995",
+  "en": "Save",
+  "fr": "Enregistrer"
+ },
+ {
+  "id": "996",
+  "en": "Save a moment.",
+  "fr": "Enregistrez un moment."
+ },
+ {
+  "id": "997",
+  "en": "Save reminder",
+  "fr": "Enregistrer le rappel"
+ },
+ {
+  "id": "998",
+  "en": "Save your account",
+  "fr": "Enregistrer votre compte"
+ },
+ {
+  "id": "999",
+  "en": "Save your account to get your pets back on a new phone.",
+  "fr": "Enregistrez votre compte pour retrouver vos animaux sur un nouveau téléphone."
+ },
+ {
+  "id": "1000",
+  "en": "Saved to your photos!",
+  "fr": "Enregistrée dans vos photos !"
+ },
+ {
+  "id": "1001",
+  "en": "Saving…",
+  "fr": "Enregistrement…"
+ },
+ {
+  "id": "1002",
+  "en": "Schedule",
+  "fr": "Planning"
+ },
+ {
+  "id": "1003",
+  "en": "Scoop daily",
+  "fr": "Ramassez chaque jour"
+ },
+ {
+  "id": "1004",
+  "en": "Scoop the litter",
+  "fr": "Nettoyer la litière"
+ },
+ {
+  "id": "1005",
+  "en": "Search a town or city",
+  "fr": "Rechercher une ville"
+ },
+ {
+  "id": "1006",
+  "en": "Second reminder for meals & medicine",
+  "fr": "Second rappel pour repas et médicaments"
+ },
+ {
+  "id": "1007",
+  "en": "See Pavurio Pro",
+  "fr": "Découvrir Pavurio Pro"
+ },
+ {
+  "id": "1008",
+  "en": "See every week as good as this one",
+  "fr": "Voyez chaque semaine aussi belle que celle-ci"
+ },
+ {
+  "id": "1009",
+  "en": "See the whole story",
+  "fr": "Voyez toute l’histoire"
+ },
+ {
+  "id": "1010",
+  "en": "See what Pro adds",
+  "fr": "Voir ce qu’ajoute Pro"
+ },
+ {
+  "id": "1011",
+  "en": "Send me pet-care tips and Pavurio news by email (optional, unsubscribe anytime).",
+  "fr": "Recevoir par e-mail des conseils et les nouveautés Pavurio (facultatif, désinscription à tout moment)."
+ },
+ {
+  "id": "1012",
+  "en": "Set how long a pack lasts to get a forecast",
+  "fr": "Indiquez la durée d’un paquet pour avoir une prévision"
+ },
+ {
+  "id": "1013",
+  "en": "Set up a medication routine.",
+  "fr": "Créez une routine de médicament."
+ },
+ {
+  "id": "1014",
+  "en": "Set up a routine",
+  "fr": "Créer une routine"
+ },
+ {
+  "id": "1015",
+  "en": "Settings",
+  "fr": "Réglages"
+ },
+ {
+  "id": "1016",
+  "en": "Seven days straight. Pro lets you see every week like this one and turns each month into a story.",
+  "fr": "Sept jours d’affilée. Avec Pro, voyez chaque semaine comme celle-ci et transformez chaque mois en histoire."
+ },
+ {
+  "id": "1017",
+  "en": "Shake the treat jar",
+  "fr": "Secouez le bocal"
+ },
+ {
+  "id": "1018",
+  "en": "Shake your phone {n} times — or tap the jar.",
+  "fr": "Secouez votre téléphone {n} fois — ou touchez le bocal."
+ },
+ {
+  "id": "1019",
+  "en": "Shampoo",
+  "fr": "Shampooing"
+ },
+ {
+  "id": "1020",
+  "en": "Share Pavurio",
+  "fr": "Partager Pavurio"
+ },
+ {
+  "id": "1021",
+  "en": "Share a care summary",
+  "fr": "Partager un résumé des soins"
+ },
+ {
+  "id": "1022",
+  "en": "Share care summary",
+  "fr": "Partager le résumé des soins"
+ },
+ {
+  "id": "1023",
+  "en": "Share crash reports",
+  "fr": "Envoyer les rapports de plantage"
+ },
+ {
+  "id": "1024",
+  "en": "Share list",
+  "fr": "Partager la liste"
+ },
+ {
+  "id": "1025",
+  "en": "Share moment",
+  "fr": "Partager le moment"
+ },
+ {
+  "id": "1026",
+  "en": "Share photo",
+  "fr": "Partager la photo"
+ },
+ {
+  "id": "1027",
+  "en": "Share this slide",
+  "fr": "Partager cette diapo"
+ },
+ {
+  "id": "1028",
+  "en": "Share this tip",
+  "fr": "Partager ce conseil"
+ },
+ {
+  "id": "1029",
+  "en": "Share your care summary from Records at the next vet visit — they’ll know what the trend means.",
+  "fr": "Partagez le résumé depuis Dossiers lors de la prochaine visite — le vétérinaire saura interpréter la tendance."
+ },
+ {
+  "id": "1030",
+  "en": "Shopping list",
+  "fr": "Liste de courses"
+ },
+ {
+  "id": "1031",
+  "en": "Shopping list for {name} 🐾",
+  "fr": "Liste de courses pour {name} 🐾"
+ },
+ {
+  "id": "1032",
+  "en": "Short and often",
+  "fr": "Court et souvent"
+ },
+ {
+  "id": "1033",
+  "en": "Short, friendly guides for meals, weight, litter and a calm home.",
+  "fr": "De courts guides pour les repas, le poids, la litière et une maison sereine."
+ },
+ {
+  "id": "1034",
+  "en": "Shorter",
+  "fr": "Plus court"
+ },
+ {
+  "id": "1035",
+  "en": "Show",
+  "fr": "Afficher"
+ },
+ {
+  "id": "1036",
+  "en": "Show password",
+  "fr": "Afficher le mot de passe"
+ },
+ {
+  "id": "1037",
+  "en": "Show {name}'s name",
+  "fr": "Afficher le nom de {name}"
+ },
+ {
+  "id": "1038",
+  "en": "Sign in",
+  "fr": "Se connecter"
+ },
+ {
+  "id": "1039",
+  "en": "Sign in first.",
+  "fr": "Connectez-vous d’abord."
+ },
+ {
+  "id": "1040",
+  "en": "Sign in to get your pets back",
+  "fr": "Connectez-vous pour retrouver vos animaux"
+ },
+ {
+  "id": "1041",
+  "en": "Sign in with Google",
+  "fr": "Se connecter avec Google"
+ },
+ {
+  "id": "1042",
+  "en": "Sign out",
+  "fr": "Se déconnecter"
+ },
+ {
+  "id": "1043",
+  "en": "Sign out anyway",
+  "fr": "Se déconnecter quand même"
+ },
+ {
+  "id": "1044",
+  "en": "Sign out?",
+  "fr": "Se déconnecter ?"
+ },
+ {
+  "id": "1045",
+  "en": "Signed in",
+  "fr": "Connecté"
+ },
+ {
+  "id": "1046",
+  "en": "Signed in with {who}. Everything is backed up automatically.",
+  "fr": "Connecté avec {who}. Tout est sauvegardé automatiquement."
+ },
+ {
+  "id": "1047",
+  "en": "Signed in · backed up",
+  "fr": "Connecté · sauvegardé"
+ },
+ {
+  "id": "1048",
+  "en": "Signed in · photos uploading",
+  "fr": "Connecté · photos en cours d’envoi"
+ },
+ {
+  "id": "1049",
+  "en": "Signed in.",
+  "fr": "Connecté."
+ },
+ {
+  "id": "1050",
+  "en": "Signed in. There are no saved pets on this account yet — let’s set one up.",
+  "fr": "Connecté. Aucun animal n’est encore enregistré sur ce compte — créons-en un."
+ },
+ {
+  "id": "1051",
+  "en": "Signing in replaces the pets on this phone with the ones saved in that account.",
+  "fr": "La connexion remplace les animaux de ce téléphone par ceux enregistrés sur ce compte."
+ },
+ {
+  "id": "1052",
+  "en": "Silver",
+  "fr": "Argent"
+ },
+ {
+  "id": "1053",
+  "en": "Six photos from one month",
+  "fr": "Six photos d’un même mois"
+ },
+ {
+  "id": "1054",
+  "en": "Skip {title}",
+  "fr": "Passer {title}"
+ },
+ {
+  "id": "1055",
+  "en": "Skipped",
+  "fr": "Passé"
+ },
+ {
+  "id": "1056",
+  "en": "Slide to add to stock",
+  "fr": "Glissez pour ajouter au stock"
+ },
+ {
+  "id": "1057",
+  "en": "Slide when it’s done",
+  "fr": "Glissez quand c’est fait"
+ },
+ {
+  "id": "1058",
+  "en": "Smart Reminders",
+  "fr": "Rappels malins"
+ },
+ {
+  "id": "1059",
+  "en": "Sniffing is exercise for the brain",
+  "fr": "Renifler fait travailler le cerveau"
+ },
+ {
+  "id": "1060",
+  "en": "Snooze 30 min",
+  "fr": "Reporter de 30 min"
+ },
+ {
+  "id": "1061",
+  "en": "Snooze {title} 30 minutes",
+  "fr": "Reporter {title} de 30 minutes"
+ },
+ {
+  "id": "1062",
+  "en": "Snoozed",
+  "fr": "Reporté"
+ },
+ {
+  "id": "1063",
+  "en": "Snoozed to {time}",
+  "fr": "Reporté à {time}"
+ },
+ {
+  "id": "1064",
+  "en": "Snow",
+  "fr": "Neige"
+ },
+ {
+  "id": "1065",
+  "en": "Snow about. Watch for ice and wipe paws after.",
+  "fr": "De la neige. Attention au verglas et essuyez les pattes au retour."
+ },
+ {
+  "id": "1066",
+  "en": "Snowy",
+  "fr": "Neigeux"
+ },
+ {
+  "id": "1067",
+  "en": "Some data or photos on this phone haven’t reached your account (no connection?). If you sign out now they’ll be lost. Try again when you’re online.",
+  "fr": "Certaines données ou photos de ce téléphone n’ont pas encore atteint votre compte (pas de connexion ?). Si vous vous déconnectez maintenant, elles seront perdues. Réessayez une fois en ligne."
+ },
+ {
+  "id": "1068",
+  "en": "Something went wrong",
+  "fr": "Oups, un souci"
+ },
+ {
+  "id": "1069",
+  "en": "Something went wrong while saving. Please try again.",
+  "fr": "Un problème est survenu lors de l’enregistrement. Veuillez réessayer."
+ },
+ {
+  "id": "1070",
+  "en": "Something went wrong. Please try again.",
+  "fr": "Un problème est survenu. Veuillez réessayer."
+ },
+ {
+  "id": "1071",
+  "en": "Soon",
+  "fr": "Bientôt"
+ },
+ {
+  "id": "1072",
+  "en": "Source",
+  "fr": "Source"
+ },
+ {
+  "id": "1073",
+  "en": "Special Day",
+  "fr": "Jour spécial"
+ },
+ {
+  "id": "1074",
+  "en": "Special days",
+  "fr": "Les grands jours"
+ },
+ {
+  "id": "1075",
+  "en": "Species: {species}",
+  "fr": "Espèce : {species}"
+ },
+ {
+  "id": "1076",
+  "en": "Spring Walk",
+  "fr": "Balade de printemps"
+ },
+ {
+  "id": "1077",
+  "en": "Stacked charts of every care, so you can spot changes over time.",
+  "fr": "Des graphiques de tous les soins pour repérer les changements dans le temps."
+ },
+ {
+  "id": "1078",
+  "en": "Stalk, chase, catch",
+  "fr": "Guetter, poursuivre, attraper"
+ },
+ {
+  "id": "1079",
+  "en": "Stamps",
+  "fr": "Tampons"
+ },
+ {
+  "id": "1080",
+  "en": "Start Walk",
+  "fr": "Commencer la balade"
+ },
+ {
+  "id": "1081",
+  "en": "Start a Walk",
+  "fr": "Commencer une balade"
+ },
+ {
+  "id": "1082",
+  "en": "Start a streak",
+  "fr": "Lancez une série"
+ },
+ {
+  "id": "1083",
+  "en": "Start a walk with {name} and it’ll appear here, with the weather and the time of day.",
+  "fr": "Lancez une balade avec {name} : elle apparaîtra ici, avec la météo et le moment de la journée."
+ },
+ {
+  "id": "1084",
+  "en": "Start challenge",
+  "fr": "Lancer le défi"
+ },
+ {
+  "id": "1085",
+  "en": "Start my {n}-day free trial",
+  "fr": "Commencer mes {n} jours d’essai",
+  "plural": "other"
+ },
+ {
+  "id": "1086",
+  "en": "Start the walk",
+  "fr": "Commencer la balade"
+ },
+ {
+  "id": "1087",
+  "en": "Start tiny",
+  "fr": "Commencez petit"
+ },
+ {
+  "id": "1088",
+  "en": "Start with",
+  "fr": "Pour commencer"
+ },
+ {
+  "id": "1089",
+  "en": "Start →",
+  "fr": "Commencer →"
+ },
+ {
+  "id": "1090",
+  "en": "Started {time}",
+  "fr": "Partis à {time}"
+ },
+ {
+  "id": "1091",
+  "en": "Starts",
+  "fr": "Début"
+ },
+ {
+  "id": "1092",
+  "en": "Stay signed in",
+  "fr": "Rester connecté"
+ },
+ {
+  "id": "1093",
+  "en": "Steady as can be",
+  "fr": "Parfaitement stable"
+ },
+ {
+  "id": "1094",
+  "en": "Step {n} of {total}",
+  "fr": "Étape {n} sur {total}"
+ },
+ {
+  "id": "1095",
+  "en": "Still need {item}?",
+  "fr": "Toujours besoin de {item} ?"
+ },
+ {
+  "id": "1096",
+  "en": "Still to do for {name}",
+  "fr": "Encore à faire pour {name}"
+ },
+ {
+  "id": "1097",
+  "en": "Still walking with {name}?",
+  "fr": "Toujours en balade avec {name} ?"
+ },
+ {
+  "id": "1098",
+  "en": "Still walking? If you forgot to finish, finish now and correct the time after.",
+  "fr": "Toujours en balade ? Si vous avez oublié d’arrêter, terminez maintenant et corrigez la durée ensuite."
+ },
+ {
+  "id": "1099",
+  "en": "Stocked",
+  "fr": "En stock"
+ },
+ {
+  "id": "1100",
+  "en": "Stop",
+  "fr": "Arrêter"
+ },
+ {
+  "id": "1101",
+  "en": "Stop challenge",
+  "fr": "Arrêter le défi"
+ },
+ {
+  "id": "1102",
+  "en": "Stop this challenge?",
+  "fr": "Arrêter ce défi ?"
+ },
+ {
+  "id": "1103",
+  "en": "Stories",
+  "fr": "Histoires"
+ },
+ {
+  "id": "1104",
+  "en": "Stormy",
+  "fr": "Orageux"
+ },
+ {
+  "id": "1105",
+  "en": "Story",
+  "fr": "Story"
+ },
+ {
+  "id": "1106",
+  "en": "Story · 1080 × 1920",
+  "fr": "Story · 1080 × 1920"
+ },
+ {
+  "id": "1107",
+  "en": "Streak",
+  "fr": "Série"
+ },
+ {
+  "id": "1108",
+  "en": "Streaks, challenges and stories of your life together.",
+  "fr": "Séries, défis et histoires de votre vie ensemble."
+ },
+ {
+  "id": "1109",
+  "en": "Subscriptions and the fine print",
+  "fr": "Abonnements et conditions"
+ },
+ {
+  "id": "1110",
+  "en": "Subscriptions renew automatically until cancelled in your store account settings at least 24 hours before the period ends.",
+  "fr": "L’abonnement se renouvelle automatiquement, sauf résiliation dans les réglages de votre compte au moins 24 heures avant la fin de la période."
+ },
+ {
+  "id": "1111",
+  "en": "Summary",
+  "fr": "Résumé"
+ },
+ {
+  "id": "1112",
+  "en": "Sun",
+  "fr": "Soleil"
+ },
+ {
+  "id": "1113",
+  "en": "Sunny",
+  "fr": "Ensoleillé"
+ },
+ {
+  "id": "1114",
+  "en": "Supplements",
+  "fr": "Compléments"
+ },
+ {
+  "id": "1115",
+  "en": "Supplies",
+  "fr": "Fournitures"
+ },
+ {
+  "id": "1116",
+  "en": "Support a small team",
+  "fr": "Soutenez une petite équipe"
+ },
+ {
+  "id": "1117",
+  "en": "Switch to {name}",
+  "fr": "Passer à {name}"
+ },
+ {
+  "id": "1118",
+  "en": "TELL FRIENDS",
+  "fr": "PARTAGER"
+ },
+ {
+  "id": "1119",
+  "en": "TERMS",
+  "fr": "CONDITIONS"
+ },
+ {
+  "id": "1120",
+  "en": "TODAY'S PLAN",
+  "fr": "PROGRAMME DU JOUR"
+ },
+ {
+  "id": "1121",
+  "en": "TRY AGAIN",
+  "fr": "RÉESSAYER"
+ },
+ {
+  "id": "1122",
+  "en": "Tabby",
+  "fr": "Tigré"
+ },
+ {
+  "id": "1123",
+  "en": "Take Photo",
+  "fr": "Prendre une photo"
+ },
+ {
+  "id": "1124",
+  "en": "Take care out there, {name}",
+  "fr": "Prudence dehors, {name}"
+ },
+ {
+  "id": "1125",
+  "en": "Taking a break",
+  "fr": "Petite pause"
+ },
+ {
+  "id": "1126",
+  "en": "Tap Done once it’s given.",
+  "fr": "Touchez Fait une fois donné."
+ },
+ {
+  "id": "1127",
+  "en": "Tap Done when it’s done",
+  "fr": "Touchez Fait quand c’est fait"
+ },
+ {
+  "id": "1128",
+  "en": "Tap a care below to color {name} in",
+  "fr": "Touchez un soin ci-dessous pour colorier {name}"
+ },
+ {
+  "id": "1129",
+  "en": "Tap a stamp to see how to earn it.",
+  "fr": "Touchez un tampon pour voir comment l’obtenir."
+ },
+ {
+  "id": "1130",
+  "en": "Tap an entry to edit or delete it",
+  "fr": "Touchez une entrée pour la modifier ou la supprimer"
+ },
+ {
+  "id": "1131",
+  "en": "Tap it {n} times so {name} hears the treats.",
+  "fr": "Touchez-le {n} fois pour que {name} entende les friandises."
+ },
+ {
+  "id": "1132",
+  "en": "Tap one · it goes in the top pill",
+  "fr": "Touchez-en un · il va dans la pilule du haut"
+ },
+ {
+  "id": "1133",
+  "en": "Tap the floor to toss kibble",
+  "fr": "Touchez le sol pour lancer des croquettes"
+ },
+ {
+  "id": "1134",
+  "en": "Tap the treat jar",
+  "fr": "Touchez le bocal"
+ },
+ {
+  "id": "1135",
+  "en": "Tap to finish the walk — you can correct the time after.",
+  "fr": "Touchez pour terminer la balade — vous pourrez corriger la durée ensuite."
+ },
+ {
+  "id": "1136",
+  "en": "Tap to log it when it’s done.",
+  "fr": "Touchez pour le noter une fois fait."
+ },
+ {
+  "id": "1137",
+  "en": "Tap to play",
+  "fr": "Touchez pour lire"
+ },
+ {
+  "id": "1138",
+  "en": "Tap to start the walk — the timer does the rest.",
+  "fr": "Touchez pour commencer la balade — le chrono s’occupe du reste."
+ },
+ {
+  "id": "1139",
+  "en": "Tap to wake",
+  "fr": "Touchez pour réveiller"
+ },
+ {
+  "id": "1140",
+  "en": "Tap ♡ on a photo to keep it here.",
+  "fr": "Touchez ♡ sur une photo pour la garder ici."
+ },
+ {
+  "id": "1141",
+  "en": "Teal",
+  "fr": "Turquoise"
+ },
+ {
+  "id": "1142",
+  "en": "Tell Pavurio how fast it goes",
+  "fr": "Dites à Pavurio à quelle vitesse ça part"
+ },
+ {
+  "id": "1143",
+  "en": "Tell a friend who loves their pet",
+  "fr": "Parlez-en à un ami qui adore son animal"
+ },
+ {
+  "id": "1144",
+  "en": "Template",
+  "fr": "Modèle"
+ },
+ {
+  "id": "1145",
+  "en": "Ten walks together.",
+  "fr": "Dix balades ensemble."
+ },
+ {
+  "id": "1146",
+  "en": "Terms of use",
+  "fr": "Conditions d’utilisation"
+ },
+ {
+  "id": "1147",
+  "en": "Thank you for supporting Pavurio.",
+  "fr": "Merci de soutenir Pavurio."
+ },
+ {
+  "id": "1148",
+  "en": "Thanks for taking such good care of {name}.",
+  "fr": "Merci de si bien prendre soin de {name}."
+ },
+ {
+  "id": "1149",
+  "en": "That code has expired. Ask for a new one.",
+  "fr": "Ce code a expiré. Demandez-en un nouveau."
+ },
+ {
+  "id": "1150",
+  "en": "That code isn’t right. Check the email and try again.",
+  "fr": "Ce code n’est pas bon. Vérifiez l’e-mail et réessayez."
+ },
+ {
+  "id": "1151",
+  "en": "That email address doesn’t look right.",
+  "fr": "Cette adresse e-mail semble incorrecte."
+ },
+ {
+  "id": "1152",
+  "en": "That email and password don’t match an account.",
+  "fr": "Cet e-mail et ce mot de passe ne correspondent à aucun compte."
+ },
+ {
+  "id": "1153",
+  "en": "That file is larger than 6 MB.",
+  "fr": "Ce fichier dépasse 6 Mo."
+ },
+ {
+  "id": "1154",
+  "en": "That sign-in belongs to another Pavurio account. Sign in to it? The pets on this phone will be replaced by the ones saved there.",
+  "fr": "Cet identifiant appartient à un autre compte Pavurio. S’y connecter ? Les animaux de ce téléphone seront remplacés par ceux qui y sont enregistrés."
+ },
+ {
+  "id": "1155",
+  "en": "That's not here any more",
+  "fr": "Ce n’est plus là"
+ },
+ {
+  "id": "1156",
+  "en": "That’s real care. Pro keeps all of it in one place — weeks and months of charts, stories and every pet.",
+  "fr": "Ça, c’est du vrai soin. Pro garde tout au même endroit — des semaines et des mois de graphiques, d’histoires et tous vos animaux."
+ },
+ {
+  "id": "1157",
+  "en": "The Little Things",
+  "fr": "Les petits riens"
+ },
+ {
+  "id": "1158",
+  "en": "The card couldn’t be saved. Please try again.",
+  "fr": "La carte n’a pas pu être enregistrée. Réessayez."
+ },
+ {
+  "id": "1159",
+  "en": "The care record could not be saved.",
+  "fr": "Le soin n’a pas pu être enregistré."
+ },
+ {
+  "id": "1160",
+  "en": "The day you found each other",
+  "fr": "Le jour où vous vous êtes trouvés"
+ },
+ {
+  "id": "1161",
+  "en": "The email could not be sent. Try again in a moment.",
+  "fr": "L’e-mail n’a pas pu être envoyé. Réessayez dans un instant."
+ },
+ {
+  "id": "1162",
+  "en": "The end date is before the start date.",
+  "fr": "La date de fin est avant la date de début."
+ },
+ {
+  "id": "1163",
+  "en": "The free plan covers one pet. Go Pro to add more.",
+  "fr": "L’offre gratuite couvre un animal. Passez à Pro pour en ajouter."
+ },
+ {
+  "id": "1164",
+  "en": "The image shows only what's on the slide: care counts, your photos and {name}'s look. No location, health records or notes are included.",
+  "fr": "L’image montre seulement ce qui est sur la diapo : le nombre de soins, vos photos et le look de {name}. Aucun lieu, dossier de santé ni note n’est inclus."
+ },
+ {
+  "id": "1165",
+  "en": "The little things",
+  "fr": "Les petits riens"
+ },
+ {
+  "id": "1166",
+  "en": "The next due date is before the record date.",
+  "fr": "La prochaine échéance est avant la date de la fiche."
+ },
+ {
+  "id": "1167",
+  "en": "The photo is removed from Pavurio (your camera roll keeps its copy).",
+  "fr": "La photo est retirée de Pavurio (votre pellicule garde sa copie)."
+ },
+ {
+  "id": "1168",
+  "en": "The purchase did not go through. You were not charged.",
+  "fr": "L’achat n’a pas abouti. Rien ne vous a été facturé."
+ },
+ {
+  "id": "1169",
+  "en": "The store isn't connected in this build yet.",
+  "fr": "La boutique n’est pas encore connectée dans cette version."
+ },
+ {
+  "id": "1170",
+  "en": "The subscription renews automatically unless cancelled in Google Play at least 24 hours before the end of the current period.",
+  "fr": "L’abonnement se renouvelle automatiquement sauf annulation dans Google Play au moins 24 heures avant la fin de la période en cours."
+ },
+ {
+  "id": "1171",
+  "en": "The timer keeps going if you close the app.",
+  "fr": "Le chrono continue si vous fermez l’app."
+ },
+ {
+  "id": "1172",
+  "en": "The timer keeps going if you lock your phone or close the app.",
+  "fr": "Le chrono continue même si vous verrouillez le téléphone ou fermez l’app."
+ },
+ {
+  "id": "1173",
+  "en": "Their history is kept. Bring them back any time.",
+  "fr": "Leur historique est conservé. Ramenez-les quand vous voulez."
+ },
+ {
+  "id": "1174",
+  "en": "Then & Now",
+  "fr": "Avant & maintenant"
+ },
+ {
+  "id": "1175",
+  "en": "Then & now",
+  "fr": "Avant & maintenant"
+ },
+ {
+  "id": "1176",
+  "en": "There isn’t enough storage left to save this photo.",
+  "fr": "Il n’y a plus assez d’espace pour enregistrer cette photo."
+ },
+ {
+  "id": "1177",
+  "en": "They light up in order. Tap them back the same way.",
+  "fr": "Elles s’allument dans l’ordre. Touchez-les dans le même ordre."
+ },
+ {
+  "id": "1178",
+  "en": "This account has no email yet.",
+  "fr": "Ce compte n’a pas encore d’e-mail."
+ },
+ {
+  "id": "1179",
+  "en": "This care type isn't available.",
+  "fr": "Ce type de soin n’est pas disponible."
+ },
+ {
+  "id": "1180",
+  "en": "This entry will be removed from the day.",
+  "fr": "Cette entrée sera retirée de la journée."
+ },
+ {
+  "id": "1181",
+  "en": "This is in the past — fine for keeping a record of a visit.",
+  "fr": "C’est dans le passé — parfait pour garder une trace d’une visite."
+ },
+ {
+  "id": "1182",
+  "en": "This moment no longer exists.",
+  "fr": "Ce moment n’existe plus."
+ },
+ {
+  "id": "1183",
+  "en": "This month",
+  "fr": "Ce mois-ci"
+ },
+ {
+  "id": "1184",
+  "en": "This pet no longer exists.",
+  "fr": "Cet animal n’existe plus."
+ },
+ {
+  "id": "1185",
+  "en": "This photo couldn’t be opened."
+ },
+ {
+  "id": "1186",
+  "en": "This photo couldn’t be saved. Please try another one.",
+  "fr": "Cette photo n’a pas pu être enregistrée. Essayez-en une autre."
+ },
+ {
+  "id": "1187",
+  "en": "This record no longer exists.",
+  "fr": "Cette entrée n’existe plus."
+ },
+ {
+  "id": "1188",
+  "en": "This walk no longer exists.",
+  "fr": "Cette balade n’existe plus."
+ },
+ {
+  "id": "1189",
+  "en": "This walk was discarded.",
+  "fr": "Cette balade a été abandonnée."
+ },
+ {
+  "id": "1190",
+  "en": "This week",
+  "fr": "Cette semaine"
+ },
+ {
+  "id": "1191",
+  "en": "Three quick games with {name}. Two minutes, tops.",
+  "fr": "Trois petits jeux avec {name}. Deux minutes, pas plus."
+ },
+ {
+  "id": "1192",
+  "en": "Thunderstorms around. Waiting it out may be wiser today.",
+  "fr": "Orages dans le coin. Mieux vaut peut-être attendre aujourd’hui."
+ },
+ {
+  "id": "1193",
+  "en": "Time",
+  "fr": "Heure"
+ },
+ {
+  "id": "1194",
+  "en": "Time 5 walks with the walk timer.",
+  "fr": "Chronométrez 5 balades."
+ },
+ {
+  "id": "1195",
+  "en": "Time a walk and save it",
+  "fr": "Chronométrez une balade et enregistrez-la"
+ },
+ {
+  "id": "1196",
+  "en": "Time and note",
+  "fr": "Heure et note"
+ },
+ {
+  "id": "1197",
+  "en": "Time of day",
+  "fr": "Moment"
+ },
+ {
+  "id": "1198",
+  "en": "Time to order {item} 🛒",
+  "fr": "C’est le moment de commander : {item} 🛒"
+ },
+ {
+  "id": "1199",
+  "en": "Time together",
+  "fr": "Temps ensemble"
+ },
+ {
+  "id": "1200",
+  "en": "Times",
+  "fr": "Horaires"
+ },
+ {
+  "id": "1201",
+  "en": "Timing",
+  "fr": "Timing"
+ },
+ {
+  "id": "1202",
+  "en": "Title",
+  "fr": "Titre"
+ },
+ {
+  "id": "1203",
+  "en": "Title (optional)",
+  "fr": "Titre (facultatif)"
+ },
+ {
+  "id": "1204",
+  "en": "Titles can be up to 60 characters.",
+  "fr": "Le titre peut contenir 60 caractères au maximum."
+ },
+ {
+  "id": "1205",
+  "en": "To buy ({n})",
+  "fr": "À acheter ({n})"
+ },
+ {
+  "id": "1206",
+  "en": "Today",
+  "fr": "Aujourd’hui"
+ },
+ {
+  "id": "1207",
+  "en": "Today is done — see you tomorrow!",
+  "fr": "Journée terminée — à demain !"
+ },
+ {
+  "id": "1208",
+  "en": "Today!",
+  "fr": "Aujourd’hui !"
+ },
+ {
+  "id": "1209",
+  "en": "Today's care",
+  "fr": "Soins du jour"
+ },
+ {
+  "id": "1210",
+  "en": "Today's little moment",
+  "fr": "Le petit moment du jour"
+ },
+ {
+  "id": "1211",
+  "en": "Today's plan is all colored in",
+  "fr": "Le programme du jour est tout colorié"
+ },
+ {
+  "id": "1212",
+  "en": "Today, {pct} percent colored in. Open today's care",
+  "fr": "Aujourd’hui, {pct} pour cent colorié. Ouvrir les soins du jour"
+ },
+ {
+  "id": "1213",
+  "en": "Today, {pct} percent colored in. Open your summary",
+  "fr": "Aujourd’hui, colorié à {pct} pour cent. Ouvrir le résumé"
+ },
+ {
+  "id": "1214",
+  "en": "Told by the clinic",
+  "fr": "Communiqué par la clinique"
+ },
+ {
+  "id": "1215",
+  "en": "Tomorrow",
+  "fr": "Demain"
+ },
+ {
+  "id": "1216",
+  "en": "Too many tries. Ask for a new code.",
+  "fr": "Trop d’essais. Demandez un nouveau code."
+ },
+ {
+  "id": "1217",
+  "en": "Too many tries. Wait a minute and try again.",
+  "fr": "Trop d’essais. Patientez une minute puis réessayez."
+ },
+ {
+  "id": "1218",
+  "en": "Tools",
+  "fr": "Accessoires"
+ },
+ {
+  "id": "1219",
+  "en": "Toss a scoop of kibble",
+  "fr": "Lancer une poignée de croquettes"
+ },
+ {
+  "id": "1220",
+  "en": "Toss another scoop",
+  "fr": "Encore une poignée"
+ },
+ {
+  "id": "1221",
+  "en": "Total walks",
+  "fr": "Balades"
+ },
+ {
+  "id": "1222",
+  "en": "Toys",
+  "fr": "Jouets"
+ },
+ {
+  "id": "1223",
+  "en": "Track every care",
+  "fr": "Suivez chaque soin"
+ },
+ {
+  "id": "1224",
+  "en": "Track this bag — get told before it runs out",
+  "fr": "Suivre ce sac — être prévenu avant qu’il soit vide"
+ },
+ {
+  "id": "1225",
+  "en": "Track {name}'s weight over time. Your vet will love the chart.",
+  "fr": "Suivez le poids de {name} dans le temps. Votre vétérinaire adorera le graphique."
+ },
+ {
+  "id": "1226",
+  "en": "Track {name}’s food and supplies",
+  "fr": "Suivre la nourriture et les fournitures de {name}"
+ },
+ {
+  "id": "1227",
+  "en": "Trail buddy",
+  "fr": "Compagnon de route"
+ },
+ {
+  "id": "1228",
+  "en": "Treat jar",
+  "fr": "Bocal à friandises"
+ },
+ {
+  "id": "1229",
+  "en": "Treat time!",
+  "fr": "Friandise !"
+ },
+ {
+  "id": "1230",
+  "en": "Treats",
+  "fr": "Friandises"
+ },
+ {
+  "id": "1231",
+  "en": "Treats add up. Your vet can tell you a sensible daily amount for your pet.",
+  "fr": "Les friandises s’additionnent. Votre vétérinaire peut vous indiquer une quantité raisonnable."
+ },
+ {
+  "id": "1232",
+  "en": "Trying on {coat} ✨",
+  "fr": "Essai : {coat} ✨"
+ },
+ {
+  "id": "1233",
+  "en": "Turn on Remind me below",
+  "fr": "Activez « Me le rappeler » ci-dessous"
+ },
+ {
+  "id": "1234",
+  "en": "Turn on reminders",
+  "fr": "Activer les rappels"
+ },
+ {
+  "id": "1235",
+  "en": "Tuxedo",
+  "fr": "Smoking"
+ },
+ {
+  "id": "1236",
+  "en": "Twelve photos, one year",
+  "fr": "Douze photos, une année"
+ },
+ {
+  "id": "1237",
+  "en": "Two or three 10-minute sessions a day suit most cats better than one long one.",
+  "fr": "Deux ou trois séances de 10 minutes par jour conviennent mieux à la plupart des chats qu’une longue."
+ },
+ {
+  "id": "1238",
+  "en": "Two quick games with {name}. One minute, tops.",
+  "fr": "Deux petits jeux avec {name}. Une minute, pas plus."
+ },
+ {
+  "id": "1239",
+  "en": "Two weeks in a row! 🌟",
+  "fr": "Deux semaines d’affilée ! 🌟"
+ },
+ {
+  "id": "1240",
+  "en": "Type",
+  "fr": "Type"
+ },
+ {
+  "id": "1241",
+  "en": "UNDO",
+  "fr": "ANNULER"
+ },
+ {
+  "id": "1242",
+  "en": "UPCOMING APPOINTMENTS",
+  "fr": "RENDEZ-VOUS À VENIR"
+ },
+ {
+  "id": "1243",
+  "en": "UPCOMING VISIT",
+  "fr": "PROCHAINE VISITE"
+ },
+ {
+  "id": "1244",
+  "en": "Under a month",
+  "fr": "Moins d’un mois"
+ },
+ {
+  "id": "1245",
+  "en": "Undo",
+  "fr": "Annuler"
+ },
+ {
+  "id": "1246",
+  "en": "Units",
+  "fr": "Unités"
+ },
+ {
+  "id": "1247",
+  "en": "Units & language",
+  "fr": "Unités et langue"
+ },
+ {
+  "id": "1248",
+  "en": "Unknown",
+  "fr": "Inconnu"
+ },
+ {
+  "id": "1249",
+  "en": "Unlock every care tip",
+  "fr": "Débloquez tous les conseils"
+ },
+ {
+  "id": "1250",
+  "en": "Unlock every challenge",
+  "fr": "Débloquez tous les défis"
+ },
+ {
+  "id": "1251",
+  "en": "Unlock with Pro",
+  "fr": "Débloquer avec Pro"
+ },
+ {
+  "id": "1252",
+  "en": "Up to 12 times a day.",
+  "fr": "12 horaires par jour au maximum."
+ },
+ {
+  "id": "1253",
+  "en": "Upcoming",
+  "fr": "À venir"
+ },
+ {
+  "id": "1254",
+  "en": "Upcoming visits",
+  "fr": "Visites à venir"
+ },
+ {
+  "id": "1255",
+  "en": "Update stock",
+  "fr": "Mettre à jour le stock"
+ },
+ {
+  "id": "1256",
+  "en": "Use a scale or measuring cup rather than guessing — portions creep up over time.",
+  "fr": "Utilisez une balance ou un verre doseur plutôt qu’à l’œil — les portions augmentent sans qu’on s’en rende compte."
+ },
+ {
+  "id": "1257",
+  "en": "Use another email",
+  "fr": "Utiliser un autre e-mail"
+ },
+ {
+  "id": "1258",
+  "en": "Use at least 6 characters for the password.",
+  "fr": "Utilisez au moins 6 caractères pour le mot de passe."
+ },
+ {
+  "id": "1259",
+  "en": "Use it for doses from now on",
+  "fr": "L’utiliser pour les doses désormais"
+ },
+ {
+  "id": "1260",
+  "en": "Use it for meals from now on",
+  "fr": "L’utiliser pour les repas désormais"
+ },
+ {
+  "id": "1261",
+  "en": "Use the same Apple, Google or email you used before. Your care history comes right back.",
+  "fr": "Utilisez le même compte Apple, Google ou e-mail qu’avant. Tout l’historique de soins revient aussitôt."
+ },
+ {
+  "id": "1262",
+  "en": "Use the same Google, Apple or email you used before. Your care history comes right back.",
+  "fr": "Utilisez le même compte Google, Apple ou e-mail qu’avant. Tout l’historique de soins revient aussitôt."
+ },
+ {
+  "id": "1263",
+  "en": "Use this for {name}’s doses from now on",
+  "fr": "Utiliser pour les doses de {name} désormais"
+ },
+ {
+  "id": "1264",
+  "en": "Use this for {name}’s meals from now on",
+  "fr": "Utiliser pour les repas de {name} désormais"
+ },
+ {
+  "id": "1265",
+  "en": "Use your saved data?",
+  "fr": "Utiliser vos données enregistrées ?"
+ },
+ {
+  "id": "1266",
+  "en": "Used by",
+  "fr": "Utilisé par"
+ },
+ {
+  "id": "1267",
+  "en": "Used only to look up the weather. Pavurio never tracks where you walk.",
+  "fr": "Sert uniquement à consulter la météo. Pavurio ne suit jamais vos balades."
+ },
+ {
+  "id": "1268",
+  "en": "VIEW PAW PASSPORT",
+  "fr": "VOIR LE PASSEPORT"
+ },
+ {
+  "id": "1269",
+  "en": "Vaccination",
+  "fr": "Vaccination"
+ },
+ {
+  "id": "1270",
+  "en": "Vaccine",
+  "fr": "Vaccin"
+ },
+ {
+  "id": "1271",
+  "en": "Vaccines",
+  "fr": "Vaccins"
+ },
+ {
+  "id": "1272",
+  "en": "Vaccines, vet visits, medication and allergies — with photos of the paperwork. Share a summary with {name}'s vet or sitter in one tap.",
+  "fr": "Vaccins, visites, médicaments et allergies — avec les photos des documents. Partagez un résumé avec le vétérinaire ou le pet-sitter de {name} en un geste."
+ },
+ {
+  "id": "1273",
+  "en": "Very cold out. Keep it short and check paws for ice and salt.",
+  "fr": "Il fait très froid. Faites court et vérifiez les pattes (glace, sel)."
+ },
+ {
+  "id": "1274",
+  "en": "Very hot out. Keep it short, stay in the shade and test the pavement with your hand.",
+  "fr": "Il fait très chaud. Faites court, restez à l’ombre et testez le bitume avec la main."
+ },
+ {
+  "id": "1275",
+  "en": "Very windy. Hold the lead a little tighter.",
+  "fr": "Beaucoup de vent. Tenez la laisse un peu plus fermement."
+ },
+ {
+  "id": "1276",
+  "en": "Vet check-up",
+  "fr": "Bilan véto"
+ },
+ {
+  "id": "1277",
+  "en": "Vet hero",
+  "fr": "Héros chez le véto"
+ },
+ {
+  "id": "1278",
+  "en": "Vet visit",
+  "fr": "Visite véto"
+ },
+ {
+  "id": "1279",
+  "en": "Vet visits",
+  "fr": "Visites vétérinaires"
+ },
+ {
+  "id": "1280",
+  "en": "Vet, groomer or sitter — add a visit and get reminded the day before.",
+  "fr": "Vétérinaire, toiletteur ou pet-sitter — ajoutez une visite et recevez un rappel la veille."
+ },
+ {
+  "id": "1281",
+  "en": "Vet, groomer, sitter",
+  "fr": "Vétérinaire, toiletteur, pet-sitter"
+ },
+ {
+  "id": "1282",
+  "en": "Visits",
+  "fr": "Visites"
+ },
+ {
+  "id": "1283",
+  "en": "WEEKLY REPORT",
+  "fr": "BILAN DE LA SEMAINE"
+ },
+ {
+  "id": "1284",
+  "en": "WEIGHT HISTORY",
+  "fr": "HISTORIQUE DU POIDS"
+ },
+ {
+  "id": "1285",
+  "en": "Wait for {name} to get it all",
+  "fr": "Attendez que {name} ramasse tout"
+ },
+ {
+  "id": "1286",
+  "en": "Walk",
+  "fr": "Balade"
+ },
+ {
+  "id": "1287",
+  "en": "Walk gear",
+  "fr": "Équipement de balade"
+ },
+ {
+  "id": "1288",
+  "en": "Walk in progress",
+  "fr": "Balade en cours"
+ },
+ {
+  "id": "1289",
+  "en": "Walk in progress. Open it",
+  "fr": "Balade en cours. L’ouvrir"
+ },
+ {
+  "id": "1290",
+  "en": "Walk paused",
+  "fr": "Balade en pause"
+ },
+ {
+  "id": "1291",
+  "en": "Walk time",
+  "fr": "Durée"
+ },
+ {
+  "id": "1292",
+  "en": "Walk timer",
+  "fr": "Chrono de balade"
+ },
+ {
+  "id": "1293",
+  "en": "Walking time",
+  "fr": "Durée de la balade"
+ },
+ {
+  "id": "1294",
+  "en": "Walking with {name}",
+  "fr": "En balade avec {name}"
+ },
+ {
+  "id": "1295",
+  "en": "Walks",
+  "fr": "Balades"
+ },
+ {
+  "id": "1296",
+  "en": "Walks and days out",
+  "fr": "Balades et sorties"
+ },
+ {
+  "id": "1297",
+  "en": "Walks are for dogs.",
+  "fr": "Les balades, c’est pour les chiens."
+ },
+ {
+  "id": "1298",
+  "en": "Warm out. Bring water and avoid hot pavement.",
+  "fr": "Il fait chaud. Prenez de l’eau et évitez le bitume brûlant."
+ },
+ {
+  "id": "1299",
+  "en": "Wash the bowl",
+  "fr": "Lavez la gamelle"
+ },
+ {
+  "id": "1300",
+  "en": "Watch…",
+  "fr": "Regardez…"
+ },
+ {
+  "id": "1301",
+  "en": "Water",
+  "fr": "Eau"
+ },
+ {
+  "id": "1302",
+  "en": "We send you a reminder that your trial is ending.",
+  "fr": "Nous vous rappelons que votre essai se termine."
+ },
+ {
+  "id": "1303",
+  "en": "We sent a 6-digit code to {email}.",
+  "fr": "Nous avons envoyé un code à 6 chiffres à {email}."
+ },
+ {
+  "id": "1304",
+  "en": "Weather",
+  "fr": "Météo"
+ },
+ {
+  "id": "1305",
+  "en": "Weather isn’t available right now. Check the sky before you go.",
+  "fr": "La météo n’est pas disponible pour l’instant. Jetez un œil au ciel avant de partir."
+ },
+ {
+  "id": "1306",
+  "en": "Weather not recorded",
+  "fr": "Météo non enregistrée"
+ },
+ {
+  "id": "1307",
+  "en": "Weather unavailable",
+  "fr": "Météo indisponible"
+ },
+ {
+  "id": "1308",
+  "en": "Week of care",
+  "fr": "Semaine de soins"
+ },
+ {
+  "id": "1309",
+  "en": "Weekdays",
+  "fr": "En semaine"
+ },
+ {
+  "id": "1310",
+  "en": "Weekends",
+  "fr": "Week-ends"
+ },
+ {
+  "id": "1311",
+  "en": "Weekly",
+  "fr": "Hebdomadaire"
+ },
+ {
+  "id": "1312",
+  "en": "Weeks",
+  "fr": "Semaines"
+ },
+ {
+  "id": "1313",
+  "en": "Weeks & months of history",
+  "fr": "Des semaines et des mois d’historique"
+ },
+ {
+  "id": "1314",
+  "en": "Weigh at the same time of day for comparable numbers. Small pets: weigh yourself holding them, then subtract.",
+  "fr": "Pesez au même moment de la journée. Petit animal : pesez-vous en le portant, puis soustrayez."
+ },
+ {
+  "id": "1315",
+  "en": "Weigh-in",
+  "fr": "Pesée"
+ },
+ {
+  "id": "1316",
+  "en": "Weigh-ins",
+  "fr": "Pesées"
+ },
+ {
+  "id": "1317",
+  "en": "Weighed on",
+  "fr": "Pesé le"
+ },
+ {
+  "id": "1318",
+  "en": "Weight",
+  "fr": "Poids"
+ },
+ {
+  "id": "1319",
+  "en": "Weight chart, {n} entries",
+  "fr": "Graphique du poids, {n} mesures"
+ },
+ {
+  "id": "1320",
+  "en": "Weight in {unit}",
+  "fr": "Poids en {unit}"
+ },
+ {
+  "id": "1321",
+  "en": "Weight: {weight} on {date}",
+  "fr": "Poids : {weight} le {date}"
+ },
+ {
+  "id": "1322",
+  "en": "Weights can't be in the future.",
+  "fr": "Un poids ne peut pas être dans le futur."
+ },
+ {
+  "id": "1323",
+  "en": "Welcome back",
+  "fr": "Bon retour"
+ },
+ {
+  "id": "1324",
+  "en": "Wellbeing",
+  "fr": "Bien-être"
+ },
+ {
+  "id": "1325",
+  "en": "Wet food",
+  "fr": "Pâtée"
+ },
+ {
+  "id": "1326",
+  "en": "What",
+  "fr": "Quoi"
+ },
+ {
+  "id": "1327",
+  "en": "What happened?",
+  "fr": "Que s’est-il passé ?"
+ },
+ {
+  "id": "1328",
+  "en": "What it’s for: {label}. Tap to change",
+  "fr": "Pour : {label}. Touchez pour changer"
+ },
+ {
+  "id": "1329",
+  "en": "What to do",
+  "fr": "Que faire"
+ },
+ {
+  "id": "1330",
+  "en": "What we keep and why",
+  "fr": "Ce que nous conservons et pourquoi"
+ },
+ {
+  "id": "1331",
+  "en": "What you get",
+  "fr": "Ce que vous obtenez"
+ },
+ {
+  "id": "1332",
+  "en": "What's their name?",
+  "fr": "Comment s’appelle-t-il ?"
+ },
+ {
+  "id": "1333",
+  "en": "What’s it for?",
+  "fr": "C’est pour quoi ?"
+ },
+ {
+  "id": "1334",
+  "en": "What’s left now",
+  "fr": "Ce qui reste maintenant"
+ },
+ {
+  "id": "1335",
+  "en": "What’s left now (optional)",
+  "fr": "Ce qui reste maintenant (facultatif)"
+ },
+ {
+  "id": "1336",
+  "en": "When and notes",
+  "fr": "Quand et notes"
+ },
+ {
+  "id": "1337",
+  "en": "When it’s time to order food and supplies, and if something has run out.",
+  "fr": "Quand il est temps de commander nourriture et fournitures, et si quelque chose manque."
+ },
+ {
+  "id": "1338",
+  "en": "When they came home",
+  "fr": "Son arrivée à la maison"
+ },
+ {
+  "id": "1339",
+  "en": "When they go there, let them rest — especially with visitors and kids.",
+  "fr": "Quand il s’y installe, laissez-le se reposer — surtout avec des invités et des enfants."
+ },
+ {
+  "id": "1340",
+  "en": "Where (optional)",
+  "fr": "Où (facultatif)"
+ },
+ {
+  "id": "1341",
+  "en": "Where do you walk?",
+  "fr": "Où vous baladez-vous ?"
+ },
+ {
+  "id": "1342",
+  "en": "Who are we caring for?",
+  "fr": "De qui prend-on soin ?"
+ },
+ {
+  "id": "1343",
+  "en": "Who uses it",
+  "fr": "Qui l’utilise"
+ },
+ {
+  "id": "1344",
+  "en": "Who’s in it?",
+  "fr": "Qui est dessus ?"
+ },
+ {
+  "id": "1345",
+  "en": "Why this estimate?",
+  "fr": "Pourquoi cette estimation ?"
+ },
+ {
+  "id": "1346",
+  "en": "Why weigh regularly",
+  "fr": "Pourquoi peser régulièrement"
+ },
+ {
+  "id": "1347",
+  "en": "Wonderful {day}!",
+  "fr": "Quel beau {day} !"
+ },
+ {
+  "id": "1348",
+  "en": "Woof! Hi there!",
+  "fr": "Wouf ! Coucou !"
+ },
+ {
+  "id": "1349",
+  "en": "YOUR WEEK",
+  "fr": "VOTRE SEMAINE"
+ },
+ {
+  "id": "1350",
+  "en": "Yearly",
+  "fr": "Annuel"
+ },
+ {
+  "id": "1351",
+  "en": "Yellow Lab",
+  "fr": "Labrador sable"
+ },
+ {
+  "id": "1352",
+  "en": "Yesterday",
+  "fr": "Hier"
+ },
+ {
+  "id": "1353",
+  "en": "You already have an account",
+  "fr": "Vous avez déjà un compte"
+ },
+ {
+  "id": "1354",
+  "en": "You and {name} have a real rhythm. Pro keeps months of it, so you can spot changes early.",
+  "fr": "{name} et vous avez trouvé votre rythme. Pro en garde des mois, pour repérer les changements tôt."
+ },
+ {
+  "id": "1355",
+  "en": "You can miss up to {n} day.",
+  "fr": "Vous pouvez manquer jusqu’à {n} jour."
+ },
+ {
+  "id": "1356",
+  "en": "You can miss up to {n} days.",
+  "fr": "Vous pouvez manquer jusqu’à {n} jours."
+ },
+ {
+  "id": "1357",
+  "en": "You can restore them from the Pets tab.",
+  "fr": "Vous pourrez le restaurer depuis l’onglet Animaux."
+ },
+ {
+  "id": "1358",
+  "en": "You decide what a good day looks like. Each thing you log colors in a bit more of {name}.",
+  "fr": "C’est vous qui décidez d’une bonne journée. Chaque soin noté colorie un peu plus {name}."
+ },
+ {
+  "id": "1359",
+  "en": "You did it! The badge is in your collection.",
+  "fr": "Bravo ! Le badge rejoint votre collection."
+ },
+ {
+  "id": "1360",
+  "en": "You have Pro",
+  "fr": "Vous avez Pro"
+ },
+ {
+  "id": "1361",
+  "en": "You have Pro. Thank you!",
+  "fr": "Vous avez Pro. Merci !"
+ },
+ {
+  "id": "1362",
+  "en": "You're all set!",
+  "fr": "Tout est prêt !"
+ },
+ {
+  "id": "1363",
+  "en": "Your Pavurio Pro trial ends in 2 days",
+  "fr": "Votre essai Pavurio Pro se termine dans 2 jours"
+ },
+ {
+  "id": "1364",
+  "en": "Your account, your backup and every pet and record on this phone will be deleted. This cannot be undone.",
+  "fr": "Votre compte, votre sauvegarde et tous les animaux et dossiers de ce téléphone seront supprimés. C’est définitif."
+ },
+ {
+  "id": "1365",
+  "en": "Your care history is backed up while you use Pavurio. Save your account to get it back on a new phone.",
+  "fr": "Votre historique est sauvegardé pendant que vous utilisez Pavurio. Enregistrez votre compte pour le retrouver sur un nouveau téléphone."
+ },
+ {
+  "id": "1366",
+  "en": "Your data",
+  "fr": "Vos données"
+ },
+ {
+  "id": "1367",
+  "en": "Your data is safe on this device. Let’s try that again.",
+  "fr": "Vos données sont en sécurité sur cet appareil. On réessaie ?"
+ },
+ {
+  "id": "1368",
+  "en": "Your data stays on your phone",
+  "fr": "Vos données restent sur votre téléphone"
+ },
+ {
+  "id": "1369",
+  "en": "Your family",
+  "fr": "Votre famille"
+ },
+ {
+  "id": "1370",
+  "en": "Your first moment",
+  "fr": "Votre premier moment"
+ },
+ {
+  "id": "1371",
+  "en": "Your first recorded adventure together.",
+  "fr": "Votre première aventure enregistrée ensemble."
+ },
+ {
+  "id": "1372",
+  "en": "Your first report is on its way.",
+  "fr": "Votre premier bilan arrive bientôt."
+ },
+ {
+  "id": "1373",
+  "en": "Your first walk earns the first stamp.",
+  "fr": "Votre première balade gagne le premier tampon."
+ },
+ {
+  "id": "1374",
+  "en": "Your pets are backed up to your account. This phone will be cleared until you sign in again.",
+  "fr": "Vos animaux sont sauvegardés sur votre compte. Ce téléphone sera vidé jusqu’à votre prochaine connexion."
+ },
+ {
+  "id": "1375",
+  "en": "Your pets are safe",
+  "fr": "Vos animaux sont à l’abri"
+ },
+ {
+  "id": "1376",
+  "en": "Your phone may deliver reminders a few minutes late. Allow alarms & reminders so meals and medicine are on time.",
+  "fr": "Votre téléphone peut retarder les rappels de quelques minutes. Autorisez « Alarmes et rappels » pour que repas et médicaments tombent pile à l’heure."
+ },
+ {
+  "id": "1377",
+  "en": "Your progress",
+  "fr": "Votre progression"
+ },
+ {
+  "id": "1378",
+  "en": "Your progress so far will be cleared.",
+  "fr": "Votre progression sera effacée."
+ },
+ {
+  "id": "1379",
+  "en": "Your subscription starts, unless you cancel before.",
+  "fr": "Votre abonnement commence, sauf annulation avant."
+ },
+ {
+  "id": "1380",
+  "en": "Your town",
+  "fr": "Votre ville"
+ },
+ {
+  "id": "1381",
+  "en": "Your turn",
+  "fr": "À vous"
+ },
+ {
+  "id": "1382",
+  "en": "Your week",
+  "fr": "Votre semaine"
+ },
+ {
+  "id": "1383",
+  "en": "Zoom in",
+  "fr": "Zoomer"
+ },
+ {
+  "id": "1384",
+  "en": "Zoom out",
+  "fr": "Dézoomer"
+ },
+ {
+  "id": "1385",
+  "en": "at {time}",
+  "fr": "à {time}"
+ },
+ {
+  "id": "1386",
+  "en": "attachment",
+  "fr": "pièce jointe"
+ },
+ {
+  "id": "1387",
+  "en": "badges",
+  "fr": "badges"
+ },
+ {
+  "id": "1388",
+  "en": "cares logged",
+  "fr": "soins notés"
+ },
+ {
+  "id": "1389",
+  "en": "challenges",
+  "fr": "défis"
+ },
+ {
+  "id": "1390",
+  "en": "day",
+  "fr": "jour",
+  "plural": "one"
+ },
+ {
+  "id": "1391",
+  "en": "day fully colored in",
+  "fr": "jour tout colorié",
+  "plural": "one"
+ },
+ {
+  "id": "1392",
+  "en": "day left",
+  "fr": "jour restant"
+ },
+ {
+  "id": "1393",
+  "en": "day with care logged",
+  "fr": "jour avec des soins notés",
+  "plural": "one"
+ },
+ {
+  "id": "1394",
+  "en": "days",
+  "fr": "jours",
+  "plural": "other"
+ },
+ {
+  "id": "1395",
+  "en": "days fully colored in",
+  "fr": "jours tout coloriés",
+  "plural": "other"
+ },
+ {
+  "id": "1396",
+  "en": "days left",
+  "fr": "jours restants"
+ },
+ {
+  "id": "1397",
+  "en": "days with care logged",
+  "fr": "jours avec des soins notés",
+  "plural": "other"
+ },
+ {
+  "id": "1398",
+  "en": "dose",
+  "fr": "dose"
+ },
+ {
+  "id": "1399",
+  "en": "doses",
+  "fr": "doses"
+ },
+ {
+  "id": "1400",
+  "en": "e.g. Annual check-up",
+  "fr": "ex. Bilan annuel"
+ },
+ {
+  "id": "1401",
+  "en": "e.g. Breakfast",
+  "fr": "ex. Petit-déjeuner"
+ },
+ {
+  "id": "1402",
+  "en": "e.g. Chicken",
+  "fr": "ex. Poulet"
+ },
+ {
+  "id": "1403",
+  "en": "e.g. Flea & tick treatment",
+  "fr": "ex. Anti-puces et tiques"
+ },
+ {
+  "id": "1404",
+  "en": "e.g. Heartworm pill",
+  "fr": "ex. Comprimé vermifuge"
+ },
+ {
+  "id": "1405",
+  "en": "e.g. Microchip number",
+  "fr": "ex. Numéro de puce"
+ },
+ {
+  "id": "1406",
+  "en": "e.g. Rabies",
+  "fr": "ex. Rage"
+ },
+ {
+  "id": "1407",
+  "en": "e.g. Royal Canin Medium Adult",
+  "fr": "ex. Royal Canin Medium Adult"
+ },
+ {
+  "id": "1408",
+  "en": "earned",
+  "fr": "obtenu"
+ },
+ {
+  "id": "1409",
+  "en": "estimated",
+  "fr": "estimé"
+ },
+ {
+  "id": "1410",
+  "en": "full days",
+  "fr": "jours complets"
+ },
+ {
+  "id": "1411",
+  "en": "grooming",
+  "fr": "toilettage",
+  "plural": "one"
+ },
+ {
+  "id": "1412",
+  "en": "groomings",
+  "fr": "toilettages",
+  "plural": "other"
+ },
+ {
+  "id": "1413",
+  "en": "hr",
+  "fr": "h"
+ },
+ {
+  "id": "1414",
+  "en": "in the card",
+  "fr": "dans la carte"
+ },
+ {
+  "id": "1415",
+  "en": "in {h} h",
+  "fr": "dans {h} h"
+ },
+ {
+  "id": "1416",
+  "en": "in {h} h {m} min",
+  "fr": "dans {h} h {m}"
+ },
+ {
+  "id": "1417",
+  "en": "in {n} day",
+  "fr": "dans {n} jour",
+  "plural": "one"
+ },
+ {
+  "id": "1418",
+  "en": "in {n} days",
+  "fr": "dans {n} jours",
+  "plural": "other"
+ },
+ {
+  "id": "1419",
+  "en": "in {n} min",
+  "fr": "dans {n} min"
+ },
+ {
+  "id": "1420",
+  "en": "kg (kilograms)",
+  "fr": "kg (kilogrammes)"
+ },
+ {
+  "id": "1421",
+  "en": "lb (pounds)",
+  "fr": "lb (livres)"
+ },
+ {
+  "id": "1422",
+  "en": "litter",
+  "fr": "litière",
+  "plural": "one"
+ },
+ {
+  "id": "1423",
+  "en": "litters",
+  "fr": "litières",
+  "plural": "other"
+ },
+ {
+  "id": "1424",
+  "en": "locked",
+  "fr": "verrouillé"
+ },
+ {
+  "id": "1425",
+  "en": "meal",
+  "fr": "repas",
+  "plural": "one"
+ },
+ {
+  "id": "1426",
+  "en": "meals",
+  "fr": "repas",
+  "plural": "other"
+ },
+ {
+  "id": "1427",
+  "en": "medicine",
+  "fr": "médicament",
+  "plural": "one"
+ },
+ {
+  "id": "1428",
+  "en": "medicines",
+  "fr": "médicaments",
+  "plural": "other"
+ },
+ {
+  "id": "1429",
+  "en": "min",
+  "fr": "min"
+ },
+ {
+  "id": "1430",
+  "en": "month",
+  "fr": "mois"
+ },
+ {
+  "id": "1431",
+  "en": "next due {date}",
+  "fr": "prochaine échéance {date}"
+ },
+ {
+  "id": "1432",
+  "en": "next {date}",
+  "fr": "prochain {date}"
+ },
+ {
+  "id": "1433",
+  "en": "no change",
+  "fr": "pas de changement"
+ },
+ {
+  "id": "1434",
+  "en": "not set",
+  "fr": "non défini"
+ },
+ {
+  "id": "1435",
+  "en": "now",
+  "fr": "maintenant"
+ },
+ {
+  "id": "1436",
+  "en": "once",
+  "fr": "une fois"
+ },
+ {
+  "id": "1437",
+  "en": "or with email",
+  "fr": "ou avec un e-mail"
+ },
+ {
+  "id": "1438",
+  "en": "pcs",
+  "fr": "pcs"
+ },
+ {
+  "id": "1439",
+  "en": "per month",
+  "fr": "par mois"
+ },
+ {
+  "id": "1440",
+  "en": "play",
+  "fr": "jeu",
+  "plural": "one"
+ },
+ {
+  "id": "1441",
+  "en": "plays",
+  "fr": "jeux",
+  "plural": "other"
+ },
+ {
+  "id": "1442",
+  "en": "reminder {n} before",
+  "fr": "rappel {n} avant"
+ },
+ {
+  "id": "1443",
+  "en": "today",
+  "fr": "aujourd’hui"
+ },
+ {
+  "id": "1444",
+  "en": "tomorrow",
+  "fr": "demain"
+ },
+ {
+  "id": "1445",
+  "en": "walk",
+  "fr": "balade",
+  "plural": "one"
+ },
+ {
+  "id": "1446",
+  "en": "walks",
+  "fr": "balades",
+  "plural": "other"
+ },
+ {
+  "id": "1447",
+  "en": "water",
+  "fr": "eau",
+  "plural": "one"
+ },
+ {
+  "id": "1448",
+  "en": "waters",
+  "fr": "eaux",
+  "plural": "other"
+ },
+ {
+  "id": "1449",
+  "en": "year",
+  "fr": "an"
+ },
+ {
+  "id": "1450",
+  "en": "your cat",
+  "fr": "votre chat"
+ },
+ {
+  "id": "1451",
+  "en": "your dog",
+  "fr": "votre chien"
+ },
+ {
+  "id": "1452",
+  "en": "your pet",
+  "fr": "votre animal"
+ },
+ {
+  "id": "1453",
+  "en": "{delta} since last",
+  "fr": "{delta} depuis la dernière fois"
+ },
+ {
+  "id": "1454",
+  "en": "{delta} since {from}",
+  "fr": "{delta} depuis {from}"
+ },
+ {
+  "id": "1455",
+  "en": "{done} of {planned} cares logged — colour {name} in before bedtime.",
+  "fr": "{done} soins sur {planned} notés — coloriez {name} avant le coucher."
+ },
+ {
+  "id": "1456",
+  "en": "{done} of {target} days",
+  "fr": "{done} jours sur {target}"
+ },
+ {
+  "id": "1457",
+  "en": "{given} of {goal} today",
+  "fr": "{given} sur {goal} aujourd’hui"
+ },
+ {
+  "id": "1458",
+  "en": "{have} of {goal} walks",
+  "fr": "{have} balades sur {goal}"
+ },
+ {
+  "id": "1459",
+  "en": "{h} h {m} min",
+  "fr": "{h} h {m}"
+ },
+ {
+  "id": "1460",
+  "en": "{h}h {m}m",
+  "fr": "{h} h {m}"
+ },
+ {
+  "id": "1461",
+  "en": "{item} runs out today",
+  "fr": "{item} : épuisé aujourd’hui"
+ },
+ {
+  "id": "1462",
+  "en": "{label} down",
+  "fr": "{label}, moins"
+ },
+ {
+  "id": "1463",
+  "en": "{label} isn't a valid date.",
+  "fr": "{label} : date invalide."
+ },
+ {
+  "id": "1464",
+  "en": "{label} saved",
+  "fr": "{label} : c’est noté"
+ },
+ {
+  "id": "1465",
+  "en": "{label} up",
+  "fr": "{label}, plus"
+ },
+ {
+  "id": "1466",
+  "en": "{label}, {amount}, at {time}. Edit",
+  "fr": "{label}, {amount}, à {time}. Modifier"
+ },
+ {
+  "id": "1467",
+  "en": "{label}: {value}",
+  "fr": "{label} : {value}"
+ },
+ {
+  "id": "1468",
+  "en": "{month} with {name}",
+  "fr": "{month} avec {name}"
+ },
+ {
+  "id": "1469",
+  "en": "{name} & the household",
+  "fr": "{name} et la maison"
+ },
+ {
+  "id": "1470",
+  "en": "{name} already has one logged a minute ago.",
+  "fr": "{name} en a déjà un noté il y a une minute.",
+  "plural": "one"
+ },
+ {
+  "id": "1471",
+  "en": "{name} already has one logged {n} minutes ago.",
+  "fr": "{name} en a déjà un noté il y a {n} minutes.",
+  "plural": "other"
+ },
+ {
+  "id": "1472",
+  "en": "{name} bandana",
+  "fr": "Bandana {name}"
+ },
+ {
+  "id": "1473",
+  "en": "{name} coat",
+  "fr": "Pelage {name}"
+ },
+ {
+  "id": "1474",
+  "en": "{name} collar",
+  "fr": "Collier {name}"
+ },
+ {
+  "id": "1475",
+  "en": "{name} didn’t even have to ask. Respect.",
+  "fr": "{name} n’a même pas eu à demander. Respect."
+ },
+ {
+  "id": "1476",
+  "en": "{name} eats about {q} a day, measured from the last two weeks of logged meals.",
+  "fr": "{name} mange environ {q} par jour, mesuré sur les repas notés ces deux dernières semaines."
+ },
+ {
+  "id": "1477",
+  "en": "{name} has about {n} left. Order today and it arrives before it runs out.",
+  "fr": "Il reste environ {n} pour {name}. Commandez aujourd’hui, ça arrivera avant la rupture."
+ },
+ {
+  "id": "1478",
+  "en": "{name} is getting hungry 🍽️",
+  "fr": "{name} commence à avoir faim 🍽️"
+ },
+ {
+  "id": "1479",
+  "en": "{name} is ready for a walk 🐾",
+  "fr": "{name} est prêt pour la balade 🐾"
+ },
+ {
+  "id": "1480",
+  "en": "{name} is settling into a routine. Pro keeps every week of it — charts, monthly stories and every pet in one place.",
+  "fr": "{name} prend ses habitudes. Pro garde chaque semaine — graphiques, histoires du mois et tous vos animaux au même endroit."
+ },
+ {
+  "id": "1481",
+  "en": "{name} preview",
+  "fr": "Aperçu de {name}"
+ },
+ {
+  "id": "1482",
+  "en": "{name} says: again, again!",
+  "fr": "{name} dit : encore, encore !"
+ },
+ {
+  "id": "1483",
+  "en": "{name} turns {n}",
+  "fr": "{name} fête ses {n} ans"
+ },
+ {
+  "id": "1484",
+  "en": "{name} uses about {q} a day — from your logs",
+  "fr": "{name} utilise environ {q} par jour — d’après vos saisies"
+ },
+ {
+  "id": "1485",
+  "en": "{name} · {n}-day streak · best {b}",
+  "fr": "{name} · série de {n} jours · record {b}"
+ },
+ {
+  "id": "1486",
+  "en": "{name} — care summary",
+  "fr": "{name} — résumé des soins"
+ },
+ {
+  "id": "1487",
+  "en": "{name}'s daily plan",
+  "fr": "Le programme de {name}"
+ },
+ {
+  "id": "1488",
+  "en": "{name}'s day",
+  "fr": "La journée de {name}"
+ },
+ {
+  "id": "1489",
+  "en": "{name}'s health file",
+  "fr": "Le dossier santé de {name}"
+ },
+ {
+  "id": "1490",
+  "en": "{name}'s month",
+  "fr": "Le mois de {name}"
+ },
+ {
+  "id": "1491",
+  "en": "{name}'s routines & visits",
+  "fr": "Routines et visites de {name}"
+ },
+ {
+  "id": "1492",
+  "en": "{name}'s story",
+  "fr": "L’histoire de {name}"
+ },
+ {
+  "id": "1493",
+  "en": "{name}'s week",
+  "fr": "La semaine de {name}"
+ },
+ {
+  "id": "1494",
+  "en": "{name}'s week in a story",
+  "fr": "La semaine de {name} en histoire"
+ },
+ {
+  "id": "1495",
+  "en": "{name}'s weight",
+  "fr": "Le poids de {name}"
+ },
+ {
+  "id": "1496",
+  "en": "{name}, active. Open Home",
+  "fr": "{name}, actif. Ouvrir l’accueil"
+ },
+ {
+  "id": "1497",
+  "en": "{name}, {pct} percent colored in today",
+  "fr": "{name}, {pct} pour cent colorié aujourd’hui"
+ },
+ {
+  "id": "1498",
+  "en": "{name}’s Paw Passport",
+  "fr": "Le Passeport des pattes de {name}"
+ },
+ {
+  "id": "1499",
+  "en": "{name}’s day isn’t finished yet",
+  "fr": "La journée de {name} n’est pas finie"
+ },
+ {
+  "id": "1500",
+  "en": "{name}’s litter box needs you 🧹",
+  "fr": "La litière de {name} a besoin de vous 🧹"
+ },
+ {
+  "id": "1501",
+  "en": "{name}’s tummy is full.",
+  "fr": "Le ventre de {name} est plein."
+ },
+ {
+  "id": "1502",
+  "en": "{name}’s week",
+  "fr": "La semaine de {name}"
+ },
+ {
+  "id": "1503",
+  "en": "{name}’s week: {grade}",
+  "fr": "La semaine de {name} : {grade}"
+ },
+ {
+  "id": "1504",
+  "en": "{n} a day",
+  "fr": "{n} par jour",
+  "plural": "other"
+ },
+ {
+  "id": "1505",
+  "en": "{n} adventure together",
+  "fr": "{n} aventure ensemble",
+  "plural": "one"
+ },
+ {
+  "id": "1506",
+  "en": "{n} adventures together",
+  "fr": "{n} aventures ensemble",
+  "plural": "other"
+ },
+ {
+  "id": "1507",
+  "en": "{n} attachment",
+  "fr": "{n} pièce jointe",
+  "plural": "one"
+ },
+ {
+  "id": "1508",
+  "en": "{n} attachment in the app",
+  "fr": "{n} pièce jointe dans l’app",
+  "plural": "one"
+ },
+ {
+  "id": "1509",
+  "en": "{n} attachments",
+  "fr": "{n} pièces jointes",
+  "plural": "other"
+ },
+ {
+  "id": "1510",
+  "en": "{n} attachments in the app",
+  "fr": "{n} pièces jointes dans l’app",
+  "plural": "other"
+ },
+ {
+  "id": "1511",
+  "en": "{n} care entries logged",
+  "fr": "{n} soins notés",
+  "plural": "other"
+ },
+ {
+  "id": "1512",
+  "en": "{n} care entry logged",
+  "fr": "{n} soin noté",
+  "plural": "one"
+ },
+ {
+  "id": "1513",
+  "en": "{n} care record for {name}, stored on this device. Nothing is uploaded.",
+  "fr": "{n} soin noté pour {name}, stocké sur cet appareil. Rien n’est envoyé en ligne.",
+  "plural": "one"
+ },
+ {
+  "id": "1514",
+  "en": "{n} care record for {name}, stored on this phone and backed up to your account.",
+  "fr": "{n} soin enregistré pour {name}, sur ce téléphone et sauvegardé sur votre compte.",
+  "plural": "one"
+ },
+ {
+  "id": "1515",
+  "en": "{n} care records for {name}, stored on this device. Nothing is uploaded.",
+  "fr": "{n} soins notés pour {name}, stockés sur cet appareil. Rien n’est envoyé en ligne.",
+  "plural": "other"
+ },
+ {
+  "id": "1516",
+  "en": "{n} care records for {name}, stored on this phone and backed up to your account.",
+  "fr": "{n} soins enregistrés pour {name}, sur ce téléphone et sauvegardés sur votre compte.",
+  "plural": "other"
+ },
+ {
+  "id": "1517",
+  "en": "{n} care tip",
+  "fr": "{n} conseil soin",
+  "plural": "one"
+ },
+ {
+  "id": "1518",
+  "en": "{n} care tips",
+  "fr": "{n} conseils soins",
+  "plural": "other"
+ },
+ {
+  "id": "1519",
+  "en": "{n} cares for {name} 💛",
+  "fr": "{n} soins pour {name} 💛"
+ },
+ {
+  "id": "1520",
+  "en": "{n} cares for {name}! 🎉",
+  "fr": "{n} soins pour {name} ! 🎉"
+ },
+ {
+  "id": "1521",
+  "en": "{n} cares for {name}. Keep every one",
+  "fr": "{n} soins pour {name}. Gardez-les tous"
+ },
+ {
+  "id": "1522",
+  "en": "{n} challenge",
+  "fr": "{n} défi"
+ },
+ {
+  "id": "1523",
+  "en": "{n} challenges",
+  "fr": "{n} défis"
+ },
+ {
+  "id": "1524",
+  "en": "{n} coat",
+  "fr": "{n} pelage",
+  "plural": "one"
+ },
+ {
+  "id": "1525",
+  "en": "{n} coats",
+  "fr": "{n} pelages",
+  "plural": "other"
+ },
+ {
+  "id": "1526",
+  "en": "{n} day",
+  "fr": "{n} jour",
+  "plural": "one"
+ },
+ {
+  "id": "1527",
+  "en": "{n} day before",
+  "fr": "{n} jour avant",
+  "plural": "one"
+ },
+ {
+  "id": "1528",
+  "en": "{n} day free, then {price}{per}",
+  "fr": "{n} jour offert, puis {price}{per}",
+  "plural": "one"
+ },
+ {
+  "id": "1529",
+  "en": "{n} day of {item}",
+  "fr": "{n} jour de {item}",
+  "plural": "one"
+ },
+ {
+  "id": "1530",
+  "en": "{n} days",
+  "fr": "{n} jours",
+  "plural": "other"
+ },
+ {
+  "id": "1531",
+  "en": "{n} days before",
+  "fr": "{n} jours avant",
+  "plural": "other"
+ },
+ {
+  "id": "1532",
+  "en": "{n} days coloured in",
+  "fr": "{n} jours colorés",
+  "plural": "other"
+ },
+ {
+  "id": "1533",
+  "en": "{n} days free, then {price}{per}",
+  "fr": "{n} jours offerts, puis {price}{per}",
+  "plural": "other"
+ },
+ {
+  "id": "1534",
+  "en": "{n} days in a row. Keep {name}’s story going",
+  "fr": "{n} jours d’affilée. Continuez l’histoire de {name}"
+ },
+ {
+  "id": "1535",
+  "en": "{n} days of {item}",
+  "fr": "{n} jours de {item}",
+  "plural": "other"
+ },
+ {
+  "id": "1536",
+  "en": "{n} extra challenge",
+  "fr": "{n} défi en plus"
+ },
+ {
+  "id": "1537",
+  "en": "{n} extra challenges",
+  "fr": "{n} défis en plus"
+ },
+ {
+  "id": "1538",
+  "en": "{n} fresh bowl of water for {name}.",
+  "fr": "{n} gamelle d’eau fraîche pour {name}.",
+  "plural": "one"
+ },
+ {
+  "id": "1539",
+  "en": "{n} fresh bowls of water for {name}.",
+  "fr": "{n} gamelles d’eau fraîche pour {name}.",
+  "plural": "other"
+ },
+ {
+  "id": "1540",
+  "en": "{n} grooming session. Looking sharp, {name}.",
+  "fr": "{n} séance de toilettage. Très chic, {name}.",
+  "plural": "one"
+ },
+ {
+  "id": "1541",
+  "en": "{n} grooming sessions. Looking sharp, {name}.",
+  "fr": "{n} séances de toilettage. Très chic, {name}.",
+  "plural": "other"
+ },
+ {
+  "id": "1542",
+  "en": "{n} in the family",
+  "fr": "{n} dans la famille"
+ },
+ {
+  "id": "1543",
+  "en": "{n} litter cleanup. Thank you!",
+  "fr": "{n} nettoyage de litière. Merci !",
+  "plural": "one"
+ },
+ {
+  "id": "1544",
+  "en": "{n} litter cleanups. Thank you!",
+  "fr": "{n} nettoyages de litière. Merci !",
+  "plural": "other"
+ },
+ {
+  "id": "1545",
+  "en": "{n} logged in total",
+  "fr": "{n} notés au total"
+ },
+ {
+  "id": "1546",
+  "en": "{n} meal served. {name} ate well.",
+  "fr": "{n} repas servi. {name} s’est régalé.",
+  "plural": "one"
+ },
+ {
+  "id": "1547",
+  "en": "{n} meals served. {name} ate well.",
+  "fr": "{n} repas servis. {name} s’est régalé.",
+  "plural": "other"
+ },
+ {
+  "id": "1548",
+  "en": "{n} medicine given to {name}, right on time.",
+  "fr": "{n} médicament donné à {name}, pile à l’heure.",
+  "plural": "one"
+ },
+ {
+  "id": "1549",
+  "en": "{n} medicines given to {name}, right on time.",
+  "fr": "{n} médicaments donnés à {name}, pile à l’heure.",
+  "plural": "other"
+ },
+ {
+  "id": "1550",
+  "en": "{n} min",
+  "fr": "{n} min"
+ },
+ {
+  "id": "1551",
+  "en": "{n} min after, only if it’s still open",
+  "fr": "{n} min après, seulement si ce n’est pas fait"
+ },
+ {
+  "id": "1552",
+  "en": "{n} moments",
+  "fr": "{n} moments",
+  "plural": "other"
+ },
+ {
+  "id": "1553",
+  "en": "{n} moments saved!",
+  "fr": "{n} moments enregistrés !",
+  "plural": "other"
+ },
+ {
+  "id": "1554",
+  "en": "{n} month",
+  "fr": "{n} mois",
+  "plural": "one"
+ },
+ {
+  "id": "1555",
+  "en": "{n} months",
+  "fr": "{n} mois",
+  "plural": "other"
+ },
+ {
+  "id": "1556",
+  "en": "{n} more care tip",
+  "fr": "{n} conseil en plus",
+  "plural": "one"
+ },
+ {
+  "id": "1557",
+  "en": "{n} more care tips",
+  "fr": "{n} conseils en plus",
+  "plural": "other"
+ },
+ {
+  "id": "1558",
+  "en": "{n} more today",
+  "fr": "encore {n} aujourd’hui"
+ },
+ {
+  "id": "1559",
+  "en": "{n} of 7 days coloured in this week",
+  "fr": "{n} jours sur 7 colorés cette semaine"
+ },
+ {
+  "id": "1560",
+  "en": "{n} of 7 days coloured in · {c} cares",
+  "fr": "{n} jours sur 7 coloriés · {c} soins"
+ },
+ {
+  "id": "1561",
+  "en": "{n} of {d} days coloured in · {c} cares",
+  "fr": "{n} jours sur {d} coloriés · {c} soins"
+ },
+ {
+  "id": "1562",
+  "en": "{n} of {total}",
+  "fr": "{n} sur {total}"
+ },
+ {
+  "id": "1563",
+  "en": "{n} of {total} days with care logged",
+  "fr": "{n} jours sur {total} avec des soins notés"
+ },
+ {
+  "id": "1564",
+  "en": "{n} photos",
+  "fr": "{n} photos",
+  "plural": "other"
+ },
+ {
+  "id": "1565",
+  "en": "{n} photos couldn’t be brought back yet. Pavurio will try again next time it opens.",
+  "fr": "{n} photos n’ont pas encore pu être récupérées. Pavurio réessaiera à la prochaine ouverture.",
+  "plural": "other"
+ },
+ {
+  "id": "1566",
+  "en": "{n} photos couldn’t be saved.",
+  "fr": "{n} photos n’ont pas pu être enregistrées.",
+  "plural": "other"
+ },
+ {
+  "id": "1567",
+  "en": "{n} photos of {name} today",
+  "fr": "{n} photos de {name} aujourd’hui",
+  "plural": "other"
+ },
+ {
+  "id": "1568",
+  "en": "{n} photos or documents are still waiting to upload. Keep Pavurio open on Wi-Fi for a moment.",
+  "fr": "{n} photos ou documents attendent encore d’être envoyés. Gardez Pavurio ouvert en Wi-Fi un instant.",
+  "plural": "other"
+ },
+ {
+  "id": "1569",
+  "en": "{n} play session with {name}.",
+  "fr": "{n} séance de jeu avec {name}.",
+  "plural": "one"
+ },
+ {
+  "id": "1570",
+  "en": "{n} play sessions with {name}.",
+  "fr": "{n} séances de jeu avec {name}.",
+  "plural": "other"
+ },
+ {
+  "id": "1571",
+  "en": "{n} realistic coat",
+  "fr": "{n} pelage réaliste",
+  "plural": "one"
+ },
+ {
+  "id": "1572",
+  "en": "{n} realistic coats",
+  "fr": "{n} pelages réalistes",
+  "plural": "other"
+ },
+ {
+  "id": "1573",
+  "en": "{n} things to buy soon",
+  "fr": "{n} choses à acheter bientôt"
+ },
+ {
+  "id": "1574",
+  "en": "{n} things to buy this week",
+  "fr": "{n} choses à acheter cette semaine"
+ },
+ {
+  "id": "1575",
+  "en": "{n} to add",
+  "fr": "{n} à ajouter",
+  "plural": "other"
+ },
+ {
+  "id": "1576",
+  "en": "{n} today",
+  "fr": "{n} aujourd’hui"
+ },
+ {
+  "id": "1577",
+  "en": "{n} tries",
+  "fr": "{n} essais"
+ },
+ {
+  "id": "1578",
+  "en": "{n} walk out with {name}.",
+  "fr": "{n} balade avec {name}.",
+  "plural": "one"
+ },
+ {
+  "id": "1579",
+  "en": "{n} walks out with {name}.",
+  "fr": "{n} balades avec {name}.",
+  "plural": "other"
+ },
+ {
+  "id": "1580",
+  "en": "{n} week",
+  "fr": "{n} semaine",
+  "plural": "one"
+ },
+ {
+  "id": "1581",
+  "en": "{n} weeks",
+  "fr": "{n} semaines",
+  "plural": "other"
+ },
+ {
+  "id": "1582",
+  "en": "{n} year together",
+  "fr": "{n} an ensemble",
+  "plural": "one"
+ },
+ {
+  "id": "1583",
+  "en": "{n} years",
+  "fr": "{n} ans"
+ },
+ {
+  "id": "1584",
+  "en": "{n} years ago today",
+  "fr": "Il y a {n} ans aujourd’hui",
+  "plural": "other"
+ },
+ {
+  "id": "1585",
+  "en": "{n} years together",
+  "fr": "{n} ans ensemble",
+  "plural": "other"
+ },
+ {
+  "id": "1586",
+  "en": "{n}% of the plan coloured in. Pro shows how every week and month compares.",
+  "fr": "{n} % du programme colorié. Pro compare chaque semaine et chaque mois."
+ },
+ {
+  "id": "1587",
+  "en": "{n}% of the plan on average",
+  "fr": "{n} % du programme en moyenne"
+ },
+ {
+  "id": "1588",
+  "en": "{n}% rain",
+  "fr": "{n} % de pluie"
+ },
+ {
+  "id": "1589",
+  "en": "{n}-DAY CHALLENGE",
+  "fr": "DÉFI DE {n} JOURS"
+ },
+ {
+  "id": "1590",
+  "en": "{n}-day streak",
+  "fr": "Série de {n} jours"
+ },
+ {
+  "id": "1591",
+  "en": "{n}-day streak. Open your summary",
+  "fr": "Série de {n} jours. Ouvrir le résumé"
+ },
+ {
+  "id": "1592",
+  "en": "{n}× a day",
+  "fr": "{n}× par jour"
+ },
+ {
+  "id": "1593",
+  "en": "{q} left",
+  "fr": "Il reste {q}"
+ },
+ {
+  "id": "1594",
+  "en": "{q} of {item} left after this",
+  "fr": "Il restera {q} de {item}"
+ },
+ {
+  "id": "1595",
+  "en": "{q} on hand",
+  "fr": "{q} en stock"
+ },
+ {
+  "id": "1596",
+  "en": "{q} on hand now",
+  "fr": "{q} en stock maintenant"
+ },
+ {
+  "id": "1597",
+  "en": "{q} on hand · about {n}",
+  "fr": "{q} en stock · environ {n}"
+ },
+ {
+  "id": "1598",
+  "en": "{title} due {date}",
+  "fr": "{title}, échéance le {date}"
+ },
+ {
+  "id": "1599",
+  "en": "{title} for {name}",
+  "fr": "{title} pour {name}"
+ },
+ {
+  "id": "1600",
+  "en": "{title} for {name} 💊",
+  "fr": "{title} pour {name} 💊"
+ },
+ {
+  "id": "1601",
+  "en": "{title} is still open. Tap Done if it’s done.",
+  "fr": "{title} n’est pas encore coché. Touchez Fait si c’est fait."
+ },
+ {
+  "id": "1602",
+  "en": "{title} is still open. Tap Given if it’s done.",
+  "fr": "{title} n’est pas encore coché. Touchez Donné si c’est fait."
+ },
+ {
+  "id": "1603",
+  "en": "{title} {price} per {period}",
+  "fr": "{title} {price} par {period}"
+ },
+ {
+  "id": "1604",
+  "en": "{title} · tap Done when it’s done",
+  "fr": "{title} · touchez Fait quand c’est fait"
+ },
+ {
+  "id": "1605",
+  "en": "{title}. Tap Given once it’s done.",
+  "fr": "{title}. Touchez Donné une fois fait."
+ },
+ {
+  "id": "1606",
+  "en": "{title}: {days} at {times}",
+  "fr": "{title} : {days} à {times}"
+ },
+ {
+  "id": "1607",
+  "en": "{title}: {done} of {target} days",
+  "fr": "{title} : {done} jours sur {target}"
+ },
+ {
+  "id": "1608",
+  "en": "{title}: {dose}. Tap Given once it’s done.",
+  "fr": "{title} : {dose}. Touchez Donné une fois fait."
+ },
+ {
+  "id": "1609",
+  "en": "{type} is not available for a {species}.",
+  "fr": "Ce soin n’est pas disponible pour cette espèce."
+ },
+ {
+  "id": "1610",
+  "en": "{weekday}, {month} {day}",
+  "fr": "{weekday} {day} {month}"
+ },
+ {
+  "id": "1611",
+  "en": "▶  Resume",
+  "fr": "▶  Reprendre"
+ },
+ {
+  "id": "1612",
+  "en": "★ Featured today",
+  "fr": "★ Mise en avant du jour"
+ },
+ {
+  "id": "1613",
+  "en": "★ Milestone",
+  "fr": "★ Grande date"
+ },
+ {
+  "id": "1614",
+  "en": "♡ Favorite",
+  "fr": "♡ Favori"
+ },
+ {
+  "id": "1615",
+  "en": "♥ Favorite",
+  "fr": "♥ Favori"
+ },
+ {
+  "id": "1616",
+  "en": "✓ 1 photo or document protected",
+  "fr": "✓ 1 photo ou document protégé",
+  "plural": "one"
+ },
+ {
+  "id": "1617",
+  "en": "✓ Earned {date}",
+  "fr": "✓ Obtenu le {date}"
+ },
+ {
+  "id": "1618",
+  "en": "✓ Saved to {name}’s day, calendar, moments and Paw Passport",
+  "fr": "✓ Enregistrée dans la journée, le calendrier, les moments et le Passeport de {name}"
+ },
+ {
+  "id": "1619",
+  "en": "✓ {n} photos and documents protected",
+  "fr": "✓ {n} photos et documents protégés",
+  "plural": "other"
+ },
+ {
+  "id": "1620",
+  "en": "❚❚  Pause",
+  "fr": "❚❚  Pause"
+ },
+ {
+  "id": "1621",
+  "en": "🐾 Walk in progress · started {time}",
+  "fr": "🐾 Balade en cours · partie à {time}"
+ },
+ {
+  "id": "1622",
+  "en": "🐾 Walk paused · tap to continue",
+  "fr": "🐾 Balade en pause · touchez pour reprendre"
+ }
+]

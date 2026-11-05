@@ -60,7 +60,7 @@ function Column({ col, max, h, index }: { col: Col; max: number; h: number; inde
 
 export default function Summary() {
   const { pet, plan, pro } = useApp();
-  const { byDay, streak } = useEngagement();
+  const { byDay } = useEngagement();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [range, setRange] = useState<Range>('days');
@@ -144,13 +144,10 @@ export default function Summary() {
                 </T>
               </View>
             </Ring>
-            <T weight="xbold" style={{ color: colors.muted, marginTop: 10 }}>
-              {t('{name} · {n}-day streak · best {b}', { name: pet.name, n: streak.current, b: streak.best })}
-            </T>
           </View>
 
           <WeekReport plan={plan} byDay={byDay} today={today} species={pet.species} name={pet.name} since={dayKeyOf(new Date(pet.createdAt))} />
-          <StatChips plan={plan} byDay={byDay} today={today} streak={streak.current} />
+          <StatChips plan={plan} byDay={byDay} today={today} />
           <DaysColoured plan={plan} byDay={byDay} today={today} />
           <CareHeatmap plan={plan} byDay={byDay} today={today} />
 

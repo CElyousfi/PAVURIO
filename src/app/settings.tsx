@@ -21,7 +21,8 @@ import { PlanEditor } from '../features/PetEditors';
 import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
-import { LANGS, LANG_NAMES, t, tn } from '../i18n';
+import { LANG_NAMES, t, tn } from '../i18n';
+import { LanguagePicker } from '../ui/LanguagePicker';
 
 export default function Settings() {
   const { pet, pets, plan, portions, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
@@ -31,6 +32,7 @@ export default function Settings() {
   const [nudge, setNudge] = useState(true);
   const [nudgeTime, setNudgeTime] = useState('19:30');
   const [followUps, setFollowUps] = useState(true);
+  const [langOpen, setLangOpen] = useState(false);
   const [pantryRem, setPantryRem] = useState(true);
   useEffect(() => {
     void getSettingRaw(db, 'followUps').then((v) => setFollowUps(v !== '0'));
@@ -272,14 +274,16 @@ export default function Settings() {
               <Chip label="lb" on={settings.weightUnit === 'lb'} onPress={() => setWeightUnit('lb')} />
             </View>
             <View style={styles.sep} />
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <T weight="xbold" style={{ fontSize: 17, flex: 1, minWidth: 100 }}>
+            <Bouncy scaleTo={0.98} onPress={() => setLangOpen(true)} accessibilityRole="button" accessibilityLabel={`${t('Language')}: ${LANG_NAMES[language]}`} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 }} testID="settings-language">
+              <T weight="xbold" style={{ fontSize: 17, flex: 1 }}>
                 {t('Language')}
               </T>
-              {LANGS.map((l) => (
-                <Chip key={l} label={LANG_NAMES[l]} on={language === l} onPress={() => setLanguage(l)} />
-              ))}
-            </View>
+              <T weight="black" style={{ fontSize: 16, color: colors.brand }}>
+                {LANG_NAMES[language]}
+              </T>
+              <Icon name="chevR" size={16} color={colors.faint} />
+            </Bouncy>
+            <LanguagePicker visible={langOpen} value={language} onChange={(l) => void setLanguage(l)} onClose={() => setLangOpen(false)} />
           </View>
 
           <Label style={styles.section}>Pavurio Pro</Label>

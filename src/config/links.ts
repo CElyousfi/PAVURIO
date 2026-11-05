@@ -2,7 +2,8 @@ import { lang } from '../i18n/core';
 
 /** Public pages (site/ → pavurio.com). Override with EXPO_PUBLIC_*. */
 const SITE = 'https://pavurio.com';
-const fr = () => (lang() === 'en' ? '' : `/${lang()}`);
+// the site is in English, French, Spanish and Portuguese; other languages get the English pages
+const fr = () => (lang() === 'fr' || lang() === 'es' || lang() === 'pt' ? `/${lang()}` : '');
 export const LEGAL = {
   get privacy() {
     return process.env.EXPO_PUBLIC_PRIVACY_URL || `${SITE}${fr()}/privacy.html`;
