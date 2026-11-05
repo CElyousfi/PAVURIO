@@ -2,7 +2,7 @@
 
 Pages (each in en at the root and in fr/es/pt under /fr/, /es/, /pt/):
   /                        landing page
-  /features/<slug>/        one page per search intent (medication reminders, food tracker, …)
+  /features/<slug>.html    one page per search intent (medication reminders, food tracker, …)
   /privacy.html …          legal pages from site/content/<lang>/*.md (URLs kept stable: the store listings link them)
 Copy lives in site/copy/<lang>.json (en is the source; missing keys fall back to en).
 Art is taken from assets/art at build time; app screenshots live in site/img/s; social cards in site/img/og
@@ -94,7 +94,7 @@ def pre(l): return '' if l == 'en' else f'/{l}'
 def path(l, page):
     if page == 'index': return f'{pre(l)}/'
     if page in LEGAL: return f'{pre(l)}/{page}.html'
-    return f'{pre(l)}/features/{page}/'
+    return f'{pre(l)}/features/{page}.html'
 def url(l, page): return BASE + path(l, page)
 def play(l, placement):
     ref = urllib.parse.quote(f'utm_source=pavurio.com&utm_medium=website&utm_campaign={l}&utm_content={placement}', safe='')
