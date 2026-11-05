@@ -5,8 +5,11 @@
  * - "Save your account" links Apple / Google / email to that same account (same uid, same backup).
  * - The backup is a snapshot of the local database (src/data/snapshot.ts), uploaded a few seconds
  *   after changes and when the app goes to the background. The phone stays the source of truth.
+ * - Photos and documents are files, not rows: they're uploaded to the owner's cloud storage before
+ *   each snapshot (src/data/mediaBackup.ts), and the snapshot lists them. A restore brings them back
+ *   and checks each one. "Backed up" is only shown when the files are in the cloud too.
  * - Signing in on a new phone restores the latest backup. If another phone backed up more recently
- *   and this one has nothing new, the newer backup is pulled on launch.
+ *   and this one has nothing new (no unsaved data, no photos waiting to upload), it's pulled on launch.
  */
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
@@ -14,6 +17,9 @@ import { cloud } from '../cloud/firebase';
 import type { AuthResult, CloudUser } from '../cloud/types';
 import { dumpSnapshot, fromChunks, petCount, restoreSnapshot, toChunks } from '../data/snapshot';
 import { getSetting, resetAll, setSetting } from '../data/repo';
+import { adoptManifest, backupState, manifest, relinkFiles, restoreMissing, uploadPending } from '../data/mediaBackup';
+import { documentsRoot, localFiles, remoteFiles } from '../native/backupFiles';
+import { removeAllMemoryFiles } from '../native/media';
 import { identify } from '../native/purchases';
 import { useApp } from './AppState';
 
@@ -25,6 +31,8 @@ type Cloud = {
   user: CloudUser | null;
   appleAvailable: boolean;
   lastBackupAt: number | null;
+  /** photos & documents: how many are still waiting to upload, and how many couldn't be restored yet */
+  files: { referenced: number; pending: number; missing: number };
   busy: boolean;
   crashReports: boolean;
   setCrashReports: (on: boolean) => Promise<void>;
@@ -45,7 +53,8 @@ type Cloud = {
   setMarketing: (optIn: boolean, source: string) => Promise<void>;
   /** does the signed-in account have a backup with pets? */
   cloudPets: () => Promise<number>;
-  signOut: () => Promise<void>;
+  /** false (and nothing cleared) when this phone has data or photos that couldn't be backed up */
+  signOut: (force?: boolean) => Promise<boolean>;
   deleteAccount: (reauth?: { m: Method; email?: string; password?: string }) => Promise<AuthResult>;
 };
 
@@ -58,6 +67,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
   const [appleAvailable, setAppleAvailable] = useState(false);
   const [lastBackupAt, setLastBackupAt] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const [files, setFiles] = useState({ referenced: 0, pending: 0, missing: 0 });
   const [crashReports, setCrashState] = useState(true);
   const quiet = useRef(true); // ignore the version change caused by our own restore / first load
   const paused = useRef(false);
@@ -74,17 +84,39 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     if (!enabled || !uid || paused.current) return false;
     try {
       const snap = await dumpSnapshot(db);
-      if (!petCount(snap)) return false; // nothing worth saving yet (mid-onboarding)
+      if (!petCount(snap)) return true; // nothing worth saving yet (mid-onboarding): nothing to lose either
+      // files first, so the snapshot only lists files that are really in the cloud
+      const st = await uploadPending(db, uid, localFiles, remoteFiles(uid)).catch((e) => {
+        cloud.crash.record(e, 'backup:files');
+        return null;
+      });
+      if (st) setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending }));
+      snap.files = await manifest(db, uid);
       const meta = await cloud.upload(uid, toChunks(snap), { updatedAt: snap.createdAt, pets: petCount(snap), schema: snap.schema, platform: Platform.OS });
       await setSetting(db, 'cloud.syncedAt', String(meta.updatedAt));
       await setSetting(db, 'cloud.dirty', '0');
       setLastBackupAt(meta.updatedAt);
-      return true;
+      return !st || st.pending === 0;
     } catch (e) {
       cloud.crash.record(e, 'backup:upload');
       return false;
     }
   }, [db, enabled]);
+
+  /** Downloads photos/documents this phone is missing (after a restore, or a failed earlier try). */
+  const fetchFiles = useCallback(
+    async (uid: string) => {
+      try {
+        const r = await restoreMissing(db, uid, localFiles, remoteFiles(uid));
+        const st = await backupState(db, uid, localFiles);
+        setFiles({ referenced: st.referenced, pending: st.pending, missing: r.missing.length });
+        if (r.restored || r.rebuilt) bump();
+      } catch (e) {
+        cloud.crash.record(e, 'backup:files-restore');
+      }
+    },
+    [db, bump],
+  );
 
   const pull = useCallback(
     async (uid: string): Promise<boolean> => {
@@ -93,13 +125,17 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       const snap = fromChunks(await cloud.download(uid, meta));
       quiet.current = true;
       await restoreSnapshot(db, snap);
+      // the rows now point at the other phone's folder: point them here, then fetch the files
+      await relinkFiles(db, documentsRoot());
+      await adoptManifest(db, uid, snap.files);
       await setSetting(db, 'cloud.syncedAt', String(meta.updatedAt));
       await setSetting(db, 'cloud.dirty', '0');
       setLastBackupAt(meta.updatedAt);
       bump();
+      await fetchFiles(uid);
       return true;
     },
-    [db, bump],
+    [db, bump, fetchFiles],
   );
 
   // ---------------------------------------------------------------- account lifecycle
@@ -130,15 +166,19 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     void (async () => {
       try {
         const meta = await cloud.readMeta(uid);
-        if (!meta) return;
         const synced = Number((await getSetting(db, 'cloud.syncedAt')) ?? 0);
         const dirty = (await getSetting(db, 'cloud.dirty')) === '1';
-        if (meta.updatedAt > synced && (!dirty || pets.length === 0)) await pull(uid);
+        // photos that exist only on this phone count as unsaved: never replace them with an older backup
+        const st = await backupState(db, uid, localFiles);
+        setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending }));
+        if (meta && meta.updatedAt > synced && ((!dirty && st.pending === 0) || pets.length === 0)) await pull(uid);
+        else await fetchFiles(uid);
+        if (st.pending > 0 && !paused.current) void backupNow();
       } catch (e) {
         cloud.crash.record(e, 'backup:launch-check');
       }
     })();
-  }, [enabled, user?.uid, ready, db, pull, pets.length]);
+  }, [enabled, user?.uid, ready, db, pull, pets.length, fetchFiles, backupNow]);
 
   // every data change: mark dirty, back up shortly after
   useEffect(() => {
@@ -275,19 +315,24 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     await setSetting(db, 'cloud.syncedAt', '0');
     await setSetting(db, 'cloud.dirty', '0');
     setLastBackupAt(null);
+    setFiles({ referenced: 0, pending: 0, missing: 0 });
     bump();
   }, [db, bump]);
 
   const signOut = useCallback(
-    () =>
+    (force = false) =>
       run(async () => {
-        await backupNow();
+        const safe = await backupNow();
+        // never clear a phone whose photos or data aren't in the cloud yet (offline, upload failed)
+        if (!safe && !force) return false;
         paused.current = true;
         await cloud.signOut();
         await wipeLocal();
+        removeAllMemoryFiles();
         checked.current = null;
         paused.current = false;
         await cloud.ensureGuest();
+        return true;
       }),
     [run, backupNow, wipeLocal],
   );
@@ -304,6 +349,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
           const r = await cloud.deleteAccount();
           if (r.kind !== 'ok') return r;
           await wipeLocal();
+          removeAllMemoryFiles();
           checked.current = null;
           setUser(null);
           paused.current = false;
@@ -331,6 +377,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       user,
       appleAvailable,
       lastBackupAt,
+      files,
       busy,
       crashReports,
       setCrashReports,
@@ -347,7 +394,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       resetPasswordWithCode: (email, code, password) => cloud.resetPasswordWithCode(email, code, password),
       setMarketing: (optIn, source) => cloud.setMarketing(optIn, source),
     }),
-    [enabled, user, appleAvailable, lastBackupAt, busy, crashReports, setCrashReports, run, backupNow, save, signIn, cloudPets, signOut, deleteAccount, sendCode, verifyCode, cancelEmail],
+    [enabled, user, appleAvailable, lastBackupAt, files, busy, crashReports, setCrashReports, run, backupNow, save, signIn, cloudPets, signOut, deleteAccount, sendCode, verifyCode, cancelEmail],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -163,9 +163,11 @@ export const daysLeftLabel = (f: Forecast) => (Number.isFinite(f.daysLeft) ? tn(
 export function headline(f: Forecast, now: number): string {
   if (f.status === 'out') return t('Ran out — time to restock');
   if (f.status === 'unknown') return t('Tell Pavurio how fast it goes');
-  if (f.status === 'buy') return f.buyBy != null && f.buyBy <= now ? t('Order today — about {n} left', { n: tn(Math.max(1, Math.round(f.daysLeft)), '{n} day', '{n} days') }) : t('Order by {day}', { day: dayName(f.buyBy!, now) });
-  if (f.status === 'soon') return t('Order by {day}', { day: dayName(f.buyBy!, now) });
-  return t('Good until {day}', { day: dayName(f.runOutAt!, now) });
+  // a forecast from the routine or a guess says "about": only logged use gets a firm date
+  const firm = f.source === 'logs' && f.confidence === 'tracked';
+  if (f.status === 'buy') return f.buyBy != null && f.buyBy <= now ? t('Order today — about {n} left', { n: tn(Math.max(1, Math.round(f.daysLeft)), '{n} day', '{n} days') }) : firm ? t('Order by {day}', { day: dayName(f.buyBy!, now) }) : t('Order around {day}', { day: dayName(f.buyBy!, now) });
+  if (f.status === 'soon') return firm ? t('Order by {day}', { day: dayName(f.buyBy!, now) }) : t('Order around {day}', { day: dayName(f.buyBy!, now) });
+  return firm ? t('Good until {day}', { day: dayName(f.runOutAt!, now) }) : t('Good until about {day}', { day: dayName(f.runOutAt!, now) });
 }
 
 /** Names of the pets using a product ("Honey & Tabby"). */
@@ -253,14 +255,20 @@ export function BuySheet({ forecast: f, purchases, visible, onClose }: { forecas
   const s = f?.supply;
   const after = f && s ? f.left + packs * s.packSize : 0;
   const afterDays = f && f.perDay > 0 ? Math.round(after / f.perDay) : null;
+  const saving = React.useRef(false);
   const confirm = useCallback(async () => {
-    if (!f || !s) return;
-    const now = Date.now();
-    const id = await addPurchase(db, s, packs, f.left, s.price, now, now - when * DAY);
-    successFeedback();
-    setDone({ id, days: afterDays, q: qty(after, s.unit) });
-    bump();
-  }, [db, f, s, packs, when, after, afterDays, bump]);
+    if (!f || !s || saving.current || done) return;
+    saving.current = true;
+    try {
+      const now = Date.now();
+      const id = await addPurchase(db, s, packs, f.left, s.price, now, now - when * DAY);
+      successFeedback();
+      setDone({ id, days: afterDays, q: qty(after, s.unit) });
+      bump();
+    } finally {
+      saving.current = false;
+    }
+  }, [db, f, s, packs, when, after, afterDays, bump, done]);
   const undo = useCallback(async () => {
     if (!done) return;
     await undoPurchase(db, done.id);
@@ -349,55 +357,52 @@ const styles = StyleSheet.create({
 // ------------------------------------------------------------------ Home card
 
 /**
- * On Home, "What needs buying?": the products that need attention with their bars, or a quiet
- * "all stocked" line; before anything is set up, the offer to track the food.
+ * On Home, "What should I buy?": only when something actually needs attention (out, order now, or
+ * soon). A compact card with the most urgent item and two direct actions; nothing when all is fine.
  */
 export function SuppliesCard() {
   const { pet } = useApp();
-  const { forecasts, now } = useSupplies();
+  const { forecasts, purchases, now } = useSupplies();
+  const [buying, setBuying] = useState<Forecast | null>(null);
   if (!pet || !forecasts) return null;
-  if (forecasts.length === 0)
-    return (
-      <Bouncy scaleTo={0.97} onPress={() => (tapFeedback(), router.push('/supplies'))} accessibilityRole="button" accessibilityLabel={t('Track {name}’s food and supplies', { name: pet.name })} style={homeStyles.card} testID="feed-supplies-setup">
-        <Image source={SCENES.welcome} style={{ width: 92, height: 70 }} resizeMode="contain" />
-        <View style={{ flex: 1 }}>
-          <T weight="black" style={{ fontSize: 18 }}>
-            {t('Never run out of food')}
-          </T>
-          <T weight="xbold" style={{ color: colors.muted, fontSize: 14 }}>
-            {t('Pavurio counts what {name} eats and tells you when to buy more.', { name: pet.name })}
-          </T>
-        </View>
-        <Icon name="chevR" size={18} color={colors.faint} />
-      </Bouncy>
-    );
   const need = forecasts.filter((f) => f.status === 'out' || f.status === 'buy' || f.status === 'soon');
-  const rows = (need.length ? need : forecasts).slice(0, 3);
+  if (!need.length) return null;
+  const top = need[0];
+  const st = STATUS_META[top.status];
   return (
-    <Bouncy scaleTo={0.97} onPress={() => (tapFeedback(), router.push(need.length ? { pathname: '/supplies', params: { tab: 'list' } } : '/supplies'))} accessibilityRole="button" accessibilityLabel={`${t('Pantry')}: ${rows.map((f) => `${f.supply.name}, ${headline(f, now)}`).join('; ')}`} style={[homeStyles.card, { flexDirection: 'column', alignItems: 'stretch', gap: 10 }]} testID="feed-supplies">
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <T weight="black" style={{ fontSize: 18, flex: 1 }}>
-          {need.length ? tn(need.length, '1 thing to buy soon', '{n} things to buy soon') : t('Pantry stocked')}
-        </T>
-        <Icon name="chevR" size={18} color={colors.faint} />
-      </View>
-      {rows.map((f, i) => (
-        <View key={f.supply.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <PantryIcon kind={f.supply.kind} size={40} />
-          <View style={{ flex: 1, gap: 5 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <T weight="black" style={{ fontSize: 15, flex: 1 }} numberOfLines={1}>
-                {f.supply.name}
-              </T>
-              <T weight="black" style={{ fontSize: 13, color: STATUS_META[f.status].color }} numberOfLines={1}>
-                {need.length ? headline(f, now) : daysLeftLabel(f)}
-              </T>
-            </View>
-            <StockBar f={f} height={7} delay={i * 60} />
-          </View>
+    <View style={homeStyles.card} testID="feed-supplies">
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <PantryIcon kind={top.supply.kind} size={52} level={top.level} />
+        <View style={{ flex: 1, gap: 4 }}>
+          <T weight="black" style={{ fontSize: 16 }} numberOfLines={1}>
+            {top.supply.name}
+          </T>
+          <T weight="xbold" style={{ fontSize: 13, color: st.color }} numberOfLines={1}>
+            {top.status === 'out' ? '⚠︎ ' : ''}
+            {headline(top, now)}
+          </T>
+          <StockBar f={top} height={7} />
         </View>
-      ))}
-    </Bouncy>
+      </View>
+      <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+        <Bouncy scaleTo={0.95} onPress={() => setBuying(top)} accessibilityRole="button" accessibilityLabel={t('Restock {name}', { name: top.supply.name })} style={[homeStyles.btn, { backgroundColor: colors.ink }]} testID="feed-restock">
+          <T weight="black" style={{ color: '#FFFFFF', fontSize: 14 }}>
+            {t('I bought it')}
+          </T>
+        </Bouncy>
+        <Bouncy
+          scaleTo={0.95}
+          onPress={() => router.push(need.length > 1 ? { pathname: '/supplies', params: { tab: 'list' } } : { pathname: '/supply', params: { id: top.supply.id } })}
+          accessibilityRole="button"
+          style={[homeStyles.btn, { backgroundColor: '#FFFFFF' }]}
+        >
+          <T weight="black" style={{ fontSize: 14 }} numberOfLines={1}>
+            {need.length > 1 ? tn(need.length - 1, '+1 more to buy', '+{n} more to buy') : t('Check stock')}
+          </T>
+        </Bouncy>
+      </View>
+      <BuySheet forecast={buying} purchases={purchases} visible={!!buying} onClose={() => setBuying(null)} />
+    </View>
   );
 }
 
@@ -419,7 +424,17 @@ export function ProductPicker({ type, amount, value, onChange }: { type: CareTyp
   useEffect(() => {
     if (value == null && list.length) onChange(def && list.some((s) => s.id === def) ? def : list[0].id);
   }, [list, def, value, onChange]);
-  if (!list.length || !forecasts) return null;
+  if (!forecasts) return null;
+  if (!list.length)
+    return type === 'meal' && !forecasts.length ? (
+      // the pantry introduces itself where it's useful: the first time food is logged
+      <Bouncy scaleTo={0.95} onPress={() => router.push({ pathname: '/supply-edit', params: { template: 'food' } })} accessibilityRole="button" style={[pickStyles.left, { backgroundColor: colors.line, marginTop: 10 }]} testID="pantry-intro">
+        <PantryIcon kind="food" size={20} />
+        <T weight="xbold" style={{ color: colors.inkSoft, fontSize: 13 }} numberOfLines={1}>
+          {t('Track this bag — get told before it runs out')}
+        </T>
+      </Bouncy>
+    ) : null;
   const chosen = list.find((s) => s.id === value) ?? list[0];
   const f = forecasts.find((x) => x.supply.id === chosen.id);
   const leftAfter = f ? Math.max(0, f.left - (chosen.unit === 'g' || chosen.unit === 'dose' ? amount : 0)) : null;
@@ -458,5 +473,6 @@ const pickStyles = StyleSheet.create({
 });
 
 const homeStyles = StyleSheet.create({
-  card: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.card, borderRadius: 28, padding: 16, marginTop: 14 },
+  card: { backgroundColor: colors.card, borderRadius: 28, padding: 16, marginTop: 14 },
+  btn: { flex: 1, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
 });

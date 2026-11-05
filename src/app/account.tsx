@@ -21,7 +21,7 @@ import { colors } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
 import { formatRelative } from '../i18n/dates';
 import { lang } from '../i18n/core';
-import { t } from '../i18n';
+import { t, tn } from '../i18n';
 
 type Method = 'apple' | 'google' | 'email';
 /** create: new account (links this phone's guest) · signin: existing account · code: 6-digit check
@@ -38,7 +38,7 @@ export default function Account() {
   const { mode } = useLocalSearchParams<{ mode?: string }>();
   const signinMode = mode === 'signin';
   const cloudState = useCloud();
-  const { enabled, user, busy, lastBackupAt, appleAvailable, crashReports } = cloudState;
+  const { enabled, user, busy, lastBackupAt, appleAvailable, crashReports, files } = cloudState;
   const { pets, reload } = useApp();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -205,7 +205,19 @@ export default function Account() {
       { text: t('Sign out'), style: 'destructive', value: 'go' },
     ]);
     if (v !== 'go') return;
-    await cloudState.signOut();
+    if (!(await cloudState.signOut())) {
+      // something on this phone isn't in the cloud yet: say so instead of clearing it
+      const v2 = await ask(
+        t('Not everything is backed up yet'),
+        t('Some data or photos on this phone haven’t reached your account (no connection?). If you sign out now they’ll be lost. Try again when you’re online.'),
+        [
+          { text: t('Stay signed in'), style: 'cancel', value: 'cancel' },
+          { text: t('Sign out anyway'), style: 'destructive', value: 'go' },
+        ],
+      );
+      if (v2 !== 'go') return;
+      await cloudState.signOut(true);
+    }
     await reload();
     router.replace('/onboarding');
   };
@@ -324,10 +336,24 @@ export default function Account() {
             </View>
           ) : saved && !signinMode ? (
             <View style={[styles.card, { marginTop: 22 }]}>
-              <T weight="xbold" style={{ fontSize: 17 }}>
-                {lastBackupAt ? t('Backed up {when}', { when: formatRelative(lastBackupAt) }) : t('Not backed up yet')}
+              <T weight="xbold" style={{ fontSize: 17 }} testID="backup-status">
+                {!lastBackupAt ? t('Not backed up yet') : files.pending > 0 ? t('Data backed up {when}', { when: formatRelative(lastBackupAt) }) : t('Backed up {when}', { when: formatRelative(lastBackupAt) })}
               </T>
-              <T style={{ color: colors.muted, fontSize: 13, marginTop: 2, lineHeight: 18 }}>{t('Pets, care log, routines, visits, weights and records. Photos stay on this phone.')}</T>
+              <T style={{ color: colors.muted, fontSize: 13, marginTop: 2, lineHeight: 18 }}>{t('Pets, care log, routines, visits, weights, records, pantry, memories and their photos.')}</T>
+              {files.pending > 0 ? (
+                <T weight="xbold" style={{ color: '#E26A00', fontSize: 13, marginTop: 6, lineHeight: 18 }}>
+                  {tn(files.pending, '1 photo or document is still waiting to upload. Keep Pavurio open on Wi-Fi for a moment.', '{n} photos or documents are still waiting to upload. Keep Pavurio open on Wi-Fi for a moment.')}
+                </T>
+              ) : lastBackupAt && files.referenced > 0 ? (
+                <T weight="xbold" style={{ color: '#3FA34D', fontSize: 13, marginTop: 6 }}>
+                  {tn(files.referenced, '✓ 1 photo or document protected', '✓ {n} photos and documents protected')}
+                </T>
+              ) : null}
+              {files.missing > 0 ? (
+                <T weight="xbold" style={{ color: colors.danger, fontSize: 13, marginTop: 6, lineHeight: 18 }}>
+                  {tn(files.missing, '1 photo couldn’t be brought back yet. Pavurio will try again next time it opens.', '{n} photos couldn’t be brought back yet. Pavurio will try again next time it opens.')}
+                </T>
+              ) : null}
               <SoftPill label={busy ? t('Backing up…') : t('Back up now')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => void cloudState.backupNow()} />
             </View>
           ) : (

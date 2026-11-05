@@ -7,7 +7,7 @@ import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { Moment, deleteMoment, getMoment, milestoneLabel, momentsOn, setFavorite, setFeatured } from '../data/memoriesRepo';
+import { Moment, deleteMoment, getMoment, removeMomentFromPet, milestoneLabel, momentsOn, setFavorite, setFeatured } from '../data/memoriesRepo';
 import { MILESTONE_EMOJI, momentLabel } from '../domain/memories';
 import { deleteFiles, sharePhoto } from '../native/media';
 import { successFeedback } from '../native/haptics';
@@ -77,6 +77,15 @@ export default function MomentViewer() {
     bump();
   };
   const remove = async () => {
+    // a moment shared with other pets: take it out of this pet's scrapbook only, the photo stays
+    const others = pets.filter((p) => m.petIds.includes(p.id) && p.id !== pet?.id);
+    if (pet && others.length && m.petIds.includes(pet.id)) {
+      if (!(await confirmAsync(t('Remove from {name}’s memories?', { name: pet.name }), t('It stays in {others}’s memories with its photo.', { others: others.map((p) => p.name).join(' & ') })))) return;
+      await removeMomentFromPet(db, m.id, pet.id);
+      bump();
+      router.back();
+      return;
+    }
     if (!(await confirmAsync(t('Delete this moment?'), t('The photo is removed from Pavurio (your camera roll keeps its copy).')))) return;
     deleteFiles(await deleteMoment(db, m.id));
     bump();

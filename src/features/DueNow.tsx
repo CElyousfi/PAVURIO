@@ -11,7 +11,6 @@ import type { Occurrence } from '../domain/schedule';
 import { formatTime24to12 } from '../domain/schedule';
 import { CARE, careAllowedFor, isCareType } from '../domain/care';
 import { portionOf } from '../domain/progress';
-import { newId } from '../domain/ids';
 import { logCare } from '../data/repo';
 import { setMark } from '../data/careRepo';
 import { confirmOccurrence } from './careLink';
@@ -40,7 +39,7 @@ export function DueNowCard({ o }: { o: Occurrence }) {
     try {
       if (isCareType(o.type) && careAllowedFor(pet.species, o.type)) {
         const spec = CARE[o.type].amount;
-        const saved = await logCare(db, { petId: pet.id, type: o.type, occurredAt: now, amount: spec ? portionOf(o.type, portions) : null, note: null, mutationId: newId() });
+        const saved = await logCare(db, { petId: pet.id, type: o.type, occurredAt: now, amount: spec ? portionOf(o.type, portions) : null, note: null, mutationId: `notif:${o.key}` });
         await confirmOccurrence(db, schedules, saved, { scheduleId: o.scheduleId, key: o.key }).catch(() => {});
         markLogged();
         signalLogged({ eventId: saved.id, type: o.type });

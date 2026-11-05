@@ -29,6 +29,10 @@ export interface CloudApi {
   readMeta(uid: string): Promise<BackupMeta | null>;
   upload(uid: string, chunks: string[], meta: Omit<BackupMeta, 'gen' | 'chunks'>): Promise<BackupMeta>;
   download(uid: string, meta: BackupMeta): Promise<string[]>;
+  /** photo/document files: users/{uid}/files/{path} in Cloud Storage */
+  putFile(uid: string, path: string, localUri: string, mime?: string | null): Promise<{ size: number }>;
+  getFile(uid: string, path: string, localUri: string): Promise<{ size: number }>;
+  removeFile(uid: string, path: string): Promise<void>;
   /** the user as Firebase knows it now (after a server-side change such as email verification) */
   refresh(): Promise<CloudUser | null>;
   /** remove the email+password sign-in from this account (to use another email) */

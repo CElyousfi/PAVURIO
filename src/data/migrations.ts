@@ -289,6 +289,17 @@ export const MIGRATIONS: string[] = [
     created_at INTEGER NOT NULL
   );
   `,
+  // v8 — photo and document backup: which files this device has put in the cloud for which account
+  // (device-local bookkeeping, never part of the snapshot itself)
+  `
+  CREATE TABLE IF NOT EXISTS backup_files (
+    uid TEXT NOT NULL,
+    path TEXT NOT NULL,
+    size INTEGER NOT NULL,
+    uploaded_at INTEGER NOT NULL,
+    PRIMARY KEY (uid, path)
+  );
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

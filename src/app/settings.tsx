@@ -30,7 +30,11 @@ export default function Settings() {
   const [exact, setExact] = useState(true);
   const [nudge, setNudge] = useState(true);
   const [nudgeTime, setNudgeTime] = useState('19:30');
+  const [followUps, setFollowUps] = useState(true);
+  const [pantryRem, setPantryRem] = useState(true);
   useEffect(() => {
+    void getSettingRaw(db, 'followUps').then((v) => setFollowUps(v !== '0'));
+    void getSettingRaw(db, 'pantryReminders').then((v) => setPantryRem(v !== '0'));
     void getPermission().then(setPerm);
     void exactAlarmsAllowed().then(setExact);
     void getSettingRaw(db, 'eveningNudge').then((v) => setNudge(v !== '0'));
@@ -148,7 +152,7 @@ export default function Settings() {
                 {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 17 }}>
-                    {cloudState.user && !cloudState.user.anonymous ? t('Signed in · backed up') : t('Save your account')}
+                    {cloudState.user && !cloudState.user.anonymous ? (cloudState.files.pending > 0 ? t('Signed in · photos uploading') : cloudState.lastBackupAt ? t('Signed in · backed up') : t('Signed in')) : t('Save your account')}
                   </T>
                   <T style={{ color: colors.muted, fontSize: 13 }}>
                     {cloudState.user && !cloudState.user.anonymous ? (cloudState.user.email ?? t('Backup, sign out, delete account')) : t('Keep your pets safe if you change phones')}
@@ -209,8 +213,30 @@ export default function Settings() {
             {perm === 'denied' && Platform.OS !== 'web' ? <SoftPill label={t('Open phone settings')} small style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings()} /> : null}
             <View style={styles.sep} />
             <ToggleRow
-              label={t('Evening nudge')}
-              hint={t('A reminder in the evening only if today’s plan isn’t coloured in yet — it also protects your streak.')}
+              label={t('Second reminder for meals & medicine')}
+              hint={t('If a meal or dose is still open 30 minutes later, one gentle follow-up.')}
+              value={followUps}
+              onChange={async (v) => {
+                setFollowUps(v);
+                await setSettingRaw(db, 'followUps', v ? '1' : '0');
+                bump();
+              }}
+            />
+            <View style={styles.sep} />
+            <ToggleRow
+              label={t('Pantry reminders')}
+              hint={t('When it’s time to order food and supplies, and if something has run out.')}
+              value={pantryRem}
+              onChange={async (v) => {
+                setPantryRem(v);
+                await setSettingRaw(db, 'pantryReminders', v ? '1' : '0');
+                bump();
+              }}
+            />
+            <View style={styles.sep} />
+            <ToggleRow
+              label={t('Evening check-in')}
+              hint={t('One reminder in the evening, only if some of today’s care isn’t logged yet.')}
               value={nudge}
               onChange={async (v) => {
                 setNudge(v);

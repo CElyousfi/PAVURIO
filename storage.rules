@@ -1,0 +1,12 @@
+rules_version = '2';
+// Pavurio: each owner can only read and write their own photos and documents.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{uid}/files/{path=**} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      // photos and record attachments only, up to 40 MB each
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 40 * 1024 * 1024;
+    }
+  }
+}

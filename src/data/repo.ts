@@ -504,7 +504,7 @@ export async function exportCareCsv(db: Db): Promise<string> {
 
 export async function resetAll(db: Db): Promise<void> {
   await db.withTransactionAsync(async () => {
-    for (const tbl of ['shopping_items', 'supply_defaults', 'supply_purchases', 'supplies', 'walk_badges', 'walks', 'challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memory_pets', 'memories', 'media']) {
+    for (const tbl of ['backup_files', 'shopping_items', 'supply_defaults', 'supply_purchases', 'supplies', 'walk_badges', 'walks', 'challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memory_pets', 'memories', 'media']) {
       await db.runAsync(`DELETE FROM ${tbl}`, []);
     }
     await db.runAsync('DELETE FROM care_events', []);

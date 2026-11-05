@@ -1,16 +1,17 @@
 /**
- * The cards under the pet on Home, in the order an owner needs them: what needs doing (next care),
- * what needs buying (pantry), what's worth remembering (today's moment, visits), then the week's
- * rhythm, care tips, the week's story and Paw Passport milestones.
+ * Under the pet on Home, in the order an owner needs them:
+ *  1. what does my pet need today? (next care)
+ *  2. what should I buy? (pantry — only when something actually needs attention)
+ *  3. a moment worth remembering (today's photo, birthdays, visits)
+ * then the week's rhythm and one row of shortcuts. Everything else lives one tap away.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { PetAvatar } from '../animation/PetAvatar';
 import { TIPS, tipText } from '../content/tips';
 import { Appointment, upcomingAppointments } from '../data/careRepo';
-import { badgesFor } from '../domain/badges';
 import { CareType } from '../domain/care';
 import { dayComplete } from '../domain/streak';
 import { addDays, dayKeyOf, formatClock, parseDayKey } from '../domain/time';
@@ -18,7 +19,6 @@ import { weekdayInitials } from '../i18n/dates';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
-import { Medal } from './Medal';
 import { NextCareCard } from './NextCare';
 import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
@@ -43,30 +43,10 @@ export function Flame({ size = 34, color = '#FF7A1A', lit = true }: { size?: num
   );
 }
 
-function Section({ title, action, onAction, children }: { title: string; action?: string; onAction?: () => void; children: React.ReactNode }) {
-  return (
-    <View style={{ marginTop: 26 }}>
-      <View style={styles.sectionHead}>
-        <T weight="black" style={{ fontSize: 21, flex: 1 }} accessibilityRole="header">
-          {title}
-        </T>
-        {action && onAction ? (
-          <Bouncy accessibilityRole="button" accessibilityLabel={action} onPress={onAction} hitSlop={8}>
-            <T weight="black" style={{ color: colors.brand, fontSize: 14 }}>
-              {action}
-            </T>
-          </Bouncy>
-        ) : null}
-      </View>
-      {children}
-    </View>
-  );
-}
-
 export function HomeFeed({ width }: { width: number }) {
   const { pet, pro, db, plan, version } = useApp();
   const cloudState = useCloud();
-  const { byDay, earned } = useEngagement();
+  const { byDay } = useEngagement();
   const [visits, setVisits] = useState<Appointment[]>([]);
   useEffect(() => {
     if (pet) upcomingAppointments(db, pet.id, Date.now(), 2).then((a) => setVisits(a.filter((x) => x.at < Date.now() + 7 * 86_400_000)));
@@ -81,7 +61,7 @@ export function HomeFeed({ width }: { width: number }) {
 
   if (!pet) return null;
   const tips = TIPS.filter((x) => x.species.includes(pet.species));
-  const cardW = Math.min(width - 40, 300);
+  const tipOfDay = tips.length ? tips[Math.floor(parseDayKey(today).getTime() / 86_400_000) % tips.length] : null;
   const days = weekdayInitials();
   const weekDone = week.filter((k) => k <= today && dayComplete(plan, byDay.get(k))).length;
 
@@ -172,70 +152,51 @@ export function HomeFeed({ width }: { width: number }) {
       </Enter>
 
 
-      {/* tips */}
-      <Section title={t('Care tips')}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingRight: 20 }} style={{ marginHorizontal: -20, paddingLeft: 20 }} decelerationRate="fast" snapToInterval={cardW * 0.72 + 12}>
-          {tips.map((tip) => {
-            const locked = tip.pro && !pro;
-            return (
-              <Bouncy
-                key={tip.id}
-                onPress={() => (locked ? router.push({ pathname: '/paywall', params: { reason: 'tip' } }) : router.push({ pathname: '/tip', params: { id: tip.id } }))}
-                style={[styles.tip, { width: cardW * 0.72, backgroundColor: tip.tint }]}
-                accessibilityRole="button"
-                accessibilityLabel={tipText(tip.title)}
-                testID={`tip-${tip.id}`}
-              >
-                <T weight="black" style={{ color: tip.color, fontSize: 11, letterSpacing: 1.4 }}>
-                  {tipText(tip.kicker).toUpperCase()}
-                </T>
-                <T weight="black" style={{ fontSize: 18, marginTop: 4, lineHeight: 22 }} numberOfLines={3}>
-                  {tipText(tip.title)}
-                </T>
-                <View style={{ flex: 1 }} />
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                  {locked ? <LockChip /> : <T weight="black" style={{ color: tip.color, fontSize: 13 }}>{t('Read · 3 cards')}</T>}
-                  {ART.tips[tip.id] ? <Scene source={ART.tips[tip.id]!} width={78} height={86} border={3} tilt={4} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={64} />}
-                </View>
-              </Bouncy>
-            );
-          })}
-        </ScrollView>
-      </Section>
-
-      {/* story */}
-      <Enter index={6}>
-        <Bouncy onPress={() => router.push({ pathname: '/story', params: { range: 'week' } })} style={[styles.story]} accessibilityRole="button" accessibilityLabel={t('Play this week story')}>
-          <View style={styles.storyRing}>
-            <PetAvatar species={pet.species} appearance={pet.appearance} size={64} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <T weight="black" style={{ color: '#FFFFFFC8', fontSize: 12, letterSpacing: 1.4 }}>
-              {t('YOUR WEEK')}
-            </T>
-            <T weight="black" style={{ color: '#FFFFFF', fontSize: 19 }}>
-              {t("{name}'s week in a story", { name: pet.name })}
-            </T>
-          </View>
-          <View style={styles.play}>
-            <Svg width={16} height={16} viewBox="0 0 24 24">
-              <Path d="M7 4.5v15l12-7.5z" fill={colors.brand} />
-            </Svg>
-          </View>
-        </Bouncy>
+      {/* everything else, one tap away (not a long feed of big cards) */}
+      <Enter index={3}>
+        <View style={styles.shortcuts}>
+          {[
+            { key: 'moments', label: t('Memories'), icon: ART.icons.gift, go: () => router.push('/moments') },
+            { key: 'records', label: t('Records'), icon: ART.icons.heart, go: () => router.push('/records') },
+            { key: 'summary', label: t('Summary'), icon: ART.icons.chart, go: () => router.push('/summary') },
+            pet.species === 'dog'
+              ? { key: 'passport', label: t('Paw Passport'), icon: ART.icons.paw, go: () => router.push('/passport') }
+              : { key: 'achievements', label: t('Milestones'), icon: ART.icons.trophy, go: () => router.push('/achievements') },
+          ].map((x) => (
+            <Bouncy key={x.key} scaleTo={0.94} onPress={x.go} accessibilityRole="button" accessibilityLabel={x.label} style={styles.shortcut} testID={`home-${x.key}`}>
+              {x.icon ? <Image source={x.icon} style={{ width: 40, height: 40 }} resizeMode="contain" /> : null}
+              <T weight="black" style={{ fontSize: 12.5, textAlign: 'center' }} numberOfLines={1}>
+                {x.label}
+              </T>
+            </Bouncy>
+          ))}
+        </View>
       </Enter>
 
-      {/* badges */}
-      <Section title={t('Achievements')} action={t('{n} of {total}', { n: badgesFor(pet.species).filter((b) => earned.includes(b.key)).length, total: badgesFor(pet.species).length })} onAction={() => router.push('/achievements')}>
-        <Bouncy onPress={() => router.push('/achievements')} style={[styles.badges]} accessibilityRole="button" accessibilityLabel={t('Open achievements')}>
-          {badgesFor(pet.species)
-            .sort((a, b) => Number(earned.includes(b.key)) - Number(earned.includes(a.key)))
-            .slice(0, 5)
-            .map((b) => (
-              <Medal key={b.key} def={b} size={54} locked={!earned.includes(b.key)} />
-            ))}
-        </Bouncy>
-      </Section>
+      {/* one care tip a day, small */}
+      {tipOfDay ? (
+        <Enter index={4}>
+          <Bouncy
+            scaleTo={0.97}
+            onPress={() => (tipOfDay.pro && !pro ? router.push({ pathname: '/paywall', params: { reason: 'tip' } }) : router.push({ pathname: '/tip', params: { id: tipOfDay.id } }))}
+            style={[styles.tipRow, { backgroundColor: tipOfDay.tint }]}
+            accessibilityRole="button"
+            accessibilityLabel={`${t('Care tip')}: ${tipText(tipOfDay.title)}`}
+            testID={`tip-${tipOfDay.id}`}
+          >
+            {ART.tips[tipOfDay.id] ? <Scene source={ART.tips[tipOfDay.id]!} width={52} height={58} border={3} tilt={4} /> : <CareIcon type={TIP_ICON[tipOfDay.id] ?? 'meal'} size={48} />}
+            <View style={{ flex: 1 }}>
+              <T weight="black" style={{ color: tipOfDay.color, fontSize: 11, letterSpacing: 1.2 }}>
+                {t('CARE TIP')}
+              </T>
+              <T weight="black" style={{ fontSize: 15, lineHeight: 19 }} numberOfLines={2}>
+                {tipText(tipOfDay.title)}
+              </T>
+            </View>
+            {tipOfDay.pro && !pro ? <LockChip /> : <Icon name="chevR" size={18} color={colors.faint} />}
+          </Bouncy>
+        </Enter>
+      ) : null}
 
       {/* account: guests are backed up, but only a saved account survives a new phone */}
       {cloudState.enabled && cloudState.user?.anonymous ? (
@@ -253,32 +214,14 @@ export function HomeFeed({ width }: { width: number }) {
         </Enter>
       ) : null}
 
-      {/* pro */}
+      {/* Pro: one quiet line (the timely offers come from Pro moments, never from a big card) */}
       {!pro ? (
-        <Enter index={8}>
-          <View style={styles.pro}>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-              <View style={{ flex: 1 }}>
-                <T weight="black" style={{ color: colors.brand, fontSize: 22, lineHeight: 26 }}>
-                  {t('Go Pro for {name}', { name: pet.name })}
-                </T>
-                <T style={{ color: colors.inkSoft, fontSize: 14, lineHeight: 20, marginTop: 6 }}>{t('Every care tip, more pets, monthly stories and the full history. Free trial included when available.')}</T>
-              </View>
-              {ART.scenes.premium ? (
-                <Scene source={ART.scenes.premium} width={86} height={112} border={3} tilt={5} style={{ marginLeft: 10 }} />
-              ) : (
-                <View style={styles.proAv}>
-                  <PetAvatar species={pet.species} appearance={pet.appearance} size={76} />
-                </View>
-              )}
-            </View>
-            <Bouncy onPress={() => router.push({ pathname: '/paywall', params: { reason: 'feed' } })} style={styles.proBtn} accessibilityRole="button" testID="feed-pro">
-              <T weight="black" style={{ color: '#FFFFFF', fontSize: 17 }}>
-                {t('See Pavurio Pro')}
-              </T>
-            </Bouncy>
-          </View>
-        </Enter>
+        <Bouncy scaleTo={0.97} onPress={() => router.push({ pathname: '/paywall', params: { reason: 'feed' } })} style={styles.proRow} accessibilityRole="button" testID="feed-pro">
+          <T weight="black" style={{ color: colors.brand, fontSize: 15, flex: 1 }}>
+            {t('Pavurio Pro: more pets, coats, stories & full history')}
+          </T>
+          <Icon name="chevR" size={18} color={colors.brand} />
+        </Bouncy>
       ) : null}
     </View>
   );
@@ -314,6 +257,10 @@ const styles = StyleSheet.create({
   storyRing: { width: 72, height: 72, borderRadius: 36, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   play: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
   badges: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: colors.card, borderRadius: 24, padding: 16 },
+  shortcuts: { flexDirection: 'row', gap: 10, marginTop: 14 },
+  shortcut: { flex: 1, alignItems: 'center', gap: 4, backgroundColor: colors.card, borderRadius: 22, paddingVertical: 12, paddingHorizontal: 4 },
+  tipRow: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 22, padding: 12, marginTop: 14 },
+  proRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 14, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#E8FAFB' },
   pro: { marginTop: 26, borderRadius: 28, padding: 20, backgroundColor: '#E8FAFB', borderWidth: 1.5, borderColor: '#BDEEF1' },
   proAv: { width: 90, height: 90, borderRadius: 30, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginLeft: 10 },
   proBtn: { marginTop: 16, height: 54, borderRadius: 27, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' },

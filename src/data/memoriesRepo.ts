@@ -127,11 +127,11 @@ export async function releaseMedia(db: Db, mediaId: string): Promise<string[]> {
   return files;
 }
 
-/** True when any row still points at this file (another media, a memory's legacy photo, a walk). */
+/** True when any row still points at this file (another media, a memory's legacy photo, a walk, a record attachment). */
 export async function fileStillReferenced(db: Db, uri: string): Promise<boolean> {
   const r = await db.getFirstAsync<{ n: number }>(
-    `SELECT (SELECT COUNT(*) FROM media WHERE uri = ? OR thumb_uri = ?) + (SELECT COUNT(*) FROM memories WHERE photo_uri = ?) + (SELECT COUNT(*) FROM walks WHERE photo_uri = ?) AS n`,
-    [uri, uri, uri, uri],
+    `SELECT (SELECT COUNT(*) FROM media WHERE uri = ? OR thumb_uri = ?) + (SELECT COUNT(*) FROM memories WHERE photo_uri = ?) + (SELECT COUNT(*) FROM walks WHERE photo_uri = ?) + (SELECT COUNT(*) FROM attachments WHERE uri = ?) AS n`,
+    [uri, uri, uri, uri, uri],
   );
   return (r?.n ?? 0) > 0;
 }
@@ -231,6 +231,20 @@ export async function updateMoment(db: Db, id: string, i: MomentInput, now = Dat
   if (i.featured !== undefined && i.featured !== before.featured) await setFeatured(db, id, i.featured);
   const freedFiles = before.mediaId && before.mediaId !== (i.mediaId ?? null) ? await releaseMedia(db, before.mediaId) : [];
   return { moment: (await getMoment(db, id))!, freedFiles };
+}
+
+/**
+ * Takes a moment shared by several pets out of one pet's scrapbook only: it (and its photo) stays with
+ * the others. Returns false when it isn't shared (the caller should delete it instead).
+ */
+export async function removeMomentFromPet(db: Db, id: string, petId: string, now = Date.now()): Promise<boolean> {
+  const others = await db.getAllAsync<{ pet_id: string }>('SELECT pet_id FROM memory_pets WHERE memory_id = ? AND pet_id != ?', [id, petId]);
+  if (!others.length) return false;
+  await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM memory_pets WHERE memory_id = ? AND pet_id = ?', [id, petId]);
+    await db.runAsync('UPDATE memories SET pet_id = ?, updated_at = ? WHERE id = ? AND pet_id = ?', [others[0].pet_id, now, id, petId]);
+  });
+  return true;
 }
 
 /** Deletes a moment; returns the files no longer referenced by anything (caller removes them). */
