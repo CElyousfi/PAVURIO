@@ -1,0 +1,689 @@
+{
+  "lang": "fr",
+  "locale": "fr_FR",
+  "name": "Français",
+  "ui": {
+    "features": "Fonctionnalités",
+    "faq": "FAQ",
+    "download": "Télécharger",
+    "get_app": "Obtenir l’appli",
+    "play_small": "DISPONIBLE SUR",
+    "play": "Google Play",
+    "ios_small": "BIENTÔT SUR",
+    "ios": "App Store",
+    "free_badge": "GRATUIT",
+    "home": "Accueil",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "support": "Assistance",
+    "delete": "Supprimer le compte",
+    "contact": "Contact",
+    "press": "Presse",
+    "footer_tag": "Un compagnon serein pour prendre vraiment soin de votre animal.",
+    "rights": "© 2026 Pavurio. Fait avec soin pour les chiens, les chats et ceux qui les aiment.",
+    "scan": "Scannez pour obtenir Pavurio",
+    "scan_sub": "Pointez l’appareil photo de votre téléphone ici",
+    "skip": "Aller au contenu",
+    "menu": "Menu",
+    "related": "Découvrir d’autres fonctionnalités de Pavurio",
+    "how": "Comment ça marche",
+    "questions": "Questions",
+    "learn_more": "En savoir plus",
+    "back_home": "Accueil Pavurio",
+    "language": "Langue",
+    "copied": "E-mail copié"
+  },
+  "home": {
+    "title": "Pavurio : appli soins chien et chat, rappels et suivi croquettes",
+    "desc": "L’application soins chien chat : rappels médicaments et repas, suivi croquettes, balades, carnet de santé et widgets. Gratuite, sans pub.",
+    "eyebrow": "Pour chiens et chats",
+    "h1": "Prenez soin de votre animal. Pavurio se souvient du reste.",
+    "sub": "Repas, médicaments, balades et sac de croquettes, dans une seule appli sereine. Votre animal se colore à mesure que les soins du jour sont faits.",
+    "try_hint": "Touchez un soin, et Honey se colore",
+    "try_done": "Tout est fait aujourd’hui. Honey est entièrement coloré !",
+    "try_logged": "{n} sur 5 faits aujourd’hui",
+    "try_again": "Recommencer",
+    "cares": [
+      "Repas",
+      "Eau",
+      "Balade",
+      "Médicament",
+      "Jeu"
+    ],
+    "laurels": [
+      [
+        "Chiens",
+        "et chats"
+      ],
+      [
+        "30",
+        "langues"
+      ],
+      [
+        "0",
+        "pub, jamais"
+      ]
+    ],
+    "img_alt": "Honey le chien et Tabby le chat, les mascottes de Pavurio",
+    "tour_h": "Votre journée, en un coup d’œil.",
+    "tour_p": "L’accueil répond à trois questions, dans l’ordre : de quoi mon animal a-t-il besoin aujourd’hui, que dois-je acheter, et y a-t-il un moment à garder ?",
+    "tabs": [
+      [
+        "Accueil",
+        "Le programme du jour, avec votre animal qui se colore au fil des soins."
+      ],
+      [
+        "Soins",
+        "Ce qui est à faire maintenant, validé d’un simple glissement."
+      ],
+      [
+        "Réserve",
+        "Chaque sac, boîte et plaquette, avec les jours restants."
+      ],
+      [
+        "Bilan",
+        "Un bilan hebdomadaire tout en douceur des soins donnés."
+      ]
+    ],
+    "rem_k": "Rappels",
+    "rem_h": "Plus jamais de dose oubliée.",
+    "rem_p": "Réglez l’heure une fois. Pavurio vous le rappelle, vous laisse valider depuis la notification et revient vers vous 30 minutes plus tard si un repas ou un médicament n’est pas encore fait.",
+    "rem_points": [
+      "Validez directement depuis la notification",
+      "Une seule relance, en douceur, pour les repas et médicaments",
+      "Rappel des visites chez le vétérinaire la veille"
+    ],
+    "rem_card_t": "Apoquel · 1 comprimé",
+    "rem_card_s": "À 8:00 · Honey",
+    "rem_slide": "Glisser pour donner",
+    "rem_given": "Donné à {time}. Merci ! 🐾",
+    "rem_reset": "Annuler",
+    "pan_k": "Réserve",
+    "pan_h": "Plus jamais à court de croquettes.",
+    "pan_p": "Notez un repas et Pavurio sait ce qu’il reste. Il vous dit quand racheter, avant que le sac soit vide, et prépare la liste de courses pour vous.",
+    "pan_points": [
+      "Une prévision basée sur ce que mange vraiment votre animal",
+      "« Pourquoi cette estimation ? » expliqué simplement",
+      "Une liste de courses pour une semaine, deux ou un mois",
+      "Nourriture partagée pour les foyers à plusieurs animaux"
+    ],
+    "pan_item": "Croquettes · 12 kg",
+    "pan_left": "{kg} kg restants",
+    "pan_days": "{n} jours restants",
+    "pan_order": "Commander avant {day}",
+    "pan_out": "Plus de croquettes !",
+    "pan_ok": "Largement de quoi tenir",
+    "pan_today": "Aujourd’hui",
+    "pan_log": "Noter un repas",
+    "pan_restock": "Réapprovisionner",
+    "pan_note": "Chaque repas : 250 g. Honey mange environ 500 g par jour.",
+    "wid_k": "Widgets",
+    "wid_h": "Sur votre écran d’accueil. Et votre écran verrouillé.",
+    "wid_p": "Les widgets affichent la seule chose qui compte maintenant : la prochaine dose, ce qu’il faut acheter, ou que tout est fait aujourd’hui. Une activité en direct (Live Activity) décompte jusqu’à l’heure du médicament, avec un bouton Donné.",
+    "wid_note": "Widgets d’écran d’accueil sur Android. Les widgets d’écran verrouillé et les Live Activities arrivent avec l’appli iPhone.",
+    "wid_today": "Médicament pour Honey",
+    "wid_today_s": "dans 12 min",
+    "wid_pantry": "Réserve",
+    "wid_rows": [
+      [
+        "Croquettes",
+        "Commander avant jeu.",
+        18
+      ],
+      [
+        "Friandises",
+        "20 jours restants",
+        62
+      ],
+      [
+        "Sacs à crottes",
+        "35 jours restants",
+        85
+      ]
+    ],
+    "wid_la_t": "Apoquel pour Honey",
+    "wid_la_s": "À 8:00",
+    "wid_la_btn": "Donné",
+    "walk_k": "Balades",
+    "walk_h": "Les balades, chronométrées depuis l’écran verrouillé.",
+    "walk_p": "Lancez une balade, rangez le téléphone. Mettez en pause et terminez depuis l’écran verrouillé : chaque balade rejoint l’historique de Honey.",
+    "walk_title": "Balade avec Honey",
+    "walk_sub": "En cours",
+    "walk_pause": "Pause",
+    "walk_resume": "Reprendre",
+    "walk_finish": "Terminer",
+    "walk_paused": "En pause",
+    "walk_saved": "Balade enregistrée. Bon chien ! 🐕",
+    "walk_new": "Nouvelle balade",
+    "health_k": "Santé",
+    "health_h": "Le carnet de santé, toujours dans votre poche.",
+    "health_p": "Vaccins, visites chez le vétérinaire, traitements, allergies et poids, avec les photos des documents. Partagez un résumé des soins clair avec votre vétérinaire ou votre pet-sitter en un geste.",
+    "health_chips": [
+      "Vaccins",
+      "Visites véto",
+      "Traitements",
+      "Allergies",
+      "Courbe de poids",
+      "Résumé des soins"
+    ],
+    "mem_k": "Souvenirs",
+    "mem_h": "Des moments à garder.",
+    "mem_p": "Jour d’adoption, anniversaires, première balade. Transformez vos propres photos en cartes souvenirs et partagez-les avec ceux qui aiment aussi votre animal.",
+    "mem_hint": "Touchez une carte pour la mettre en avant",
+    "calm_h": "Pas de séries. Pas de culpabilité.",
+    "calm_p": "Pavurio est un compagnon, pas un jeu. Pas de série à préserver, pas de défis, pas d’urgence inventée. Juste ce dont votre animal a besoin, quand ça compte.",
+    "calm_points": [
+      [
+        "🌙",
+        "Calme la nuit",
+        "Des rappels en douceur, seulement quand il y a quelque chose à faire."
+      ],
+      [
+        "🐾",
+        "Votre animal, pas des points",
+        "Le progrès, c’est votre animal qui se colore, rien de plus."
+      ],
+      [
+        "☕",
+        "Fait en quelques secondes",
+        "Notez un soin d’un geste, puis reprenez votre journée."
+      ]
+    ],
+    "lang_h": "Parle 30 langues.",
+    "lang_p": "De Deutsch à 日本語, avec les bonnes dates et les bons pluriels dans chacune.",
+    "priv_h": "Pas de pub. Pas de commerce de données.",
+    "priv_p": "Les données de votre animal restent sur votre téléphone, avec une sauvegarde privée que vous seul pouvez lire. Aucun SDK publicitaire, aucun SDK d’analyse, et nous ne vendons jamais de données.",
+    "priv_link": "Comment nous les protégeons",
+    "pro_h": "Gratuit pour commencer. Pro si vous voulez plus.",
+    "pro_free_h": "Gratuit",
+    "pro_free": [
+      "Suivi des soins et rappels",
+      "Réserve et liste de courses",
+      "Balades, carnet de santé et widgets",
+      "Un animal"
+    ],
+    "pro_pro_h": "Pavurio Pro",
+    "pro_pro": [
+      "Tous les animaux de votre foyer",
+      "Pelages réalistes dans le Studio",
+      "Des semaines et des mois d’historique",
+      "Récits mensuels et plus de conseils de soins"
+    ],
+    "pro_note": "Pro est facultatif et permet à Pavurio de rester sans pub et indépendant.",
+    "faq_h": "Vos questions, nos réponses.",
+    "faq": [
+      [
+        "Pavurio est-il gratuit ?",
+        "Oui. Le suivi des soins, les rappels, la réserve, les balades, le carnet de santé et les widgets sont gratuits pour un animal. Pavurio Pro ajoute tous les animaux de votre foyer, des pelages réalistes, des semaines et des mois d’historique, des récits mensuels et plus de conseils de soins."
+      ],
+      [
+        "Ça marche pour les chiens et les chats ?",
+        "Oui. Chaque animal a son apparence, son programme du jour, ses rappels, sa réserve et son historique. Les chats ont le suivi de la litière ; les chiens, le chrono de balade."
+      ],
+      [
+        "Comment Pavurio sait-il quand les croquettes vont manquer ?",
+        "Quand vous notez un repas, Pavurio retire cette portion du sac en cours. À partir des repas des deux dernières semaines, il calcule combien votre animal mange par jour, puis affiche les jours restants et la date limite pour commander. Touchez « Pourquoi cette estimation ? » pour voir exactement le calcul."
+      ],
+      [
+        "Faut-il créer un compte ?",
+        "Non. Pavurio fonctionne sur votre téléphone dès la première seconde. Vos données sont sauvegardées en privé sur votre compte pour pouvoir les restaurer sur un nouveau téléphone ; vous pouvez ajouter une connexion Google, Apple ou e-mail quand vous voulez."
+      ],
+      [
+        "Existe-t-il une appli iPhone ?",
+        "Pavurio est déjà sur Google Play. L’appli iPhone, avec les widgets d’écran verrouillé et les Live Activities, arrive bientôt."
+      ],
+      [
+        "Quelles langues parle Pavurio ?",
+        "30 langues, dont English, Français, Español, Português, Deutsch, Italiano, Nederlands, Polski, Türkçe, العربية, 日本語, 한국어 et 中文."
+      ],
+      [
+        "Est-ce un avis vétérinaire ?",
+        "Non. Pavurio vous aide à suivre les soins que vous donnez et à ne pas oublier vos rendez-vous. Pour toute question sur la santé de votre animal, parlez-en à votre vétérinaire."
+      ]
+    ],
+    "cta_h": "Offrez à votre animal une journée sereine et colorée.",
+    "cta_p": "Téléchargez Pavurio et notez le premier soin en moins d’une minute.",
+    "cta_note": "Gratuit · Sans pub · 30 langues"
+  },
+  "pages": {
+    "pet-medication-reminder": {
+      "nav": "Rappels de médicaments",
+      "title": "Rappel médicament chien et chat : appli gratuite | Pavurio",
+      "desc": "Ne ratez plus le médicament de votre chien ou chat. Pavurio vous le rappelle à l’heure, se valide depuis la notification et relance si besoin. Gratuit.",
+      "h1": "Des rappels de médicaments qui vérifient pour vous",
+      "lead": "Comprimés, gouttes, antipuces et vermifuges : réglez l’heure une fois et Pavurio veille à ce que la dose soit donnée, même les matins chargés.",
+      "art": "medication",
+      "blocks": [
+        [
+          "Un rappel à l’heure exacte",
+          "Choisissez l’heure et la fréquence : tous les jours, plusieurs fois par jour ou une seule fois. Pavurio programme le rappel sur votre téléphone, il sonne même sans connexion.",
+          "shot:care"
+        ],
+        [
+          "Donné, directement depuis la notification",
+          "Touchez Fait sur la notification et la dose est enregistrée pour le bon animal. Inutile d’ouvrir l’appli.",
+          "art:reminders"
+        ],
+        [
+          "Une relance, jamais d’insistance",
+          "Si un médicament n’est toujours pas donné 30 minutes plus tard, Pavurio le redemande une fois. Puis il se fait discret.",
+          "art:medication"
+        ],
+        [
+          "Sachez quand la boîte sera vide",
+          "Liez le médicament à votre réserve et chaque dose décompte la boîte. Pavurio vous dit quand en racheter, avant le dernier comprimé.",
+          "shot:supply"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez le médicament",
+          "Nom, dose et heure, en quelques gestes."
+        ],
+        [
+          "Recevez le rappel",
+          "À l’heure choisie, les jours choisis."
+        ],
+        [
+          "Marquez-le comme donné",
+          "Depuis la notification ou l’appli, d’un geste."
+        ]
+      ],
+      "faq": [
+        [
+          "Puis-je régler plusieurs doses par jour ?",
+          "Oui. Ajoutez autant d’horaires que nécessaire, chacun avec son rappel."
+        ],
+        [
+          "Et si deux personnes s’occupent de l’animal ?",
+          "Celui qui donne la dose la marque comme faite, et le rappel ne relance pas. Chaque dose est enregistrée avec son heure."
+        ],
+        [
+          "Le rappel fonctionne-t-il hors connexion ?",
+          "Oui. Les rappels sont programmés sur votre téléphone, ils fonctionnent sans connexion."
+        ],
+        [
+          "Pavurio me dit-il quel médicament donner ?",
+          "Non. Pavurio vous rappelle le traitement défini avec votre vétérinaire. Il ne donne pas d’avis médical."
+        ]
+      ],
+      "related": [
+        "pet-food-tracker",
+        "pet-health-records",
+        "pet-care-widgets"
+      ]
+    },
+    "pet-food-tracker": {
+      "nav": "Suivi des croquettes",
+      "title": "Suivi croquettes chien et chat : quand racheter ? | Pavurio",
+      "desc": "Pavurio suit croquettes, friandises, litière et médicaments, prévoit les jours restants et vous dit quand commander. Liste de courses incluse. Sans pub.",
+      "h1": "Un suivi des croquettes qui vous dit quand racheter",
+      "lead": "Fini le sac vide au mauvais moment. Pavurio décompte croquettes, friandises, litière et médicaments selon ce que votre animal consomme vraiment, et vous dit quand commander.",
+      "art": "pantry",
+      "blocks": [
+        [
+          "Les jours restants, calculés pour vous",
+          "Chaque repas noté est retiré du sac en cours. Pavurio fait la moyenne des deux dernières semaines et affiche les jours restants, la date de rupture et la date limite pour commander.",
+          "shot:pantry"
+        ],
+        [
+          "« Pourquoi cette estimation ? »",
+          "Pas de boîte noire. Touchez une fois pour voir d’où vient la quantité quotidienne, quels repas ont été comptés et le stock de départ.",
+          "shot:supply"
+        ],
+        [
+          "Une liste de courses qui s’écrit toute seule",
+          "Tout ce qui s’épuise rejoint la liste, avec assez de paquets pour la marge choisie : une semaine, deux semaines ou un mois. Partagez-la avec celui qui fait les courses.",
+          "shot:shopping"
+        ],
+        [
+          "Pensé pour les foyers à plusieurs animaux",
+          "Marquez un sac comme partagé et Pavurio compte chaque animal qui y mange.",
+          "art:pantry_list"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez un produit",
+          "Choisissez une catégorie, indiquez la taille du paquet et ce qu’il reste."
+        ],
+        [
+          "Notez les repas comme d’habitude",
+          "Chaque portion est retirée du bon sac."
+        ],
+        [
+          "Commandez à temps",
+          "Un rappel à la date limite, et la liste de courses prête."
+        ]
+      ],
+      "faq": [
+        [
+          "Pavurio achète-t-il les croquettes à ma place ?",
+          "Non. Rien n’est jamais acheté automatiquement. Pavurio vous dit quand commander et combien de paquets prendre."
+        ],
+        [
+          "Et si j’oublie de noter des repas ?",
+          "Pavurio repère les jours sans saisie, les compte au rythme habituel de votre animal et indique que la prévision est estimée, pour que le chiffre reste honnête."
+        ],
+        [
+          "Puis-je suivre aussi la litière, les friandises et les médicaments ?",
+          "Oui. Nourriture et médicaments se décomptent à partir de vos saisies ; les autres produits utilisent un rythme simple comme « un paquet dure environ un mois »."
+        ],
+        [
+          "Faut-il scanner des codes-barres ?",
+          "Non. Vous saisissez la taille du paquet une fois. Pas de scan, pas de service payant, pas de compte nécessaire."
+        ]
+      ],
+      "related": [
+        "pet-medication-reminder",
+        "pet-care-widgets",
+        "dog-care-app"
+      ]
+    },
+    "dog-walk-tracker": {
+      "nav": "Chrono de balade",
+      "title": "Chrono de balade chien : suivez chaque sortie | Pavurio",
+      "desc": "Chronométrez les balades de votre chien avec Pavurio : lancez, mettez en pause et terminez depuis l’écran verrouillé. Chaque sortie dans l’historique. Gratuit.",
+      "h1": "Un chrono de balade sur votre écran verrouillé",
+      "lead": "Lancez la balade, mettez le téléphone dans la poche. Pavurio chronomètre, vous laisse mettre en pause ou terminer sans déverrouiller, et garde chaque balade dans l’historique de votre chien.",
+      "art": "walk",
+      "blocks": [
+        [
+          "Lancement en un geste",
+          "C’est l’heure de la balade ? Le rappel et le widget vous mènent directement au chrono.",
+          "shot:walk"
+        ],
+        [
+          "Pause et fin depuis l’écran verrouillé",
+          "Le chrono tourne sur l’écran verrouillé, avec les boutons Pause et Terminer.",
+          "art:walk_wide"
+        ],
+        [
+          "Chaque balade, mémorisée",
+          "Les balades rejoignent le programme du jour, Honey se colore, et restent dans l’historique pour s’en souvenir.",
+          "shot:home"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez une routine de balade",
+          "Le matin, le soir, ou les deux."
+        ],
+        [
+          "Lancez le chrono",
+          "Depuis le rappel, le widget ou l’appli."
+        ],
+        [
+          "Terminez et enregistrez",
+          "La balade est notée pour aujourd’hui."
+        ]
+      ],
+      "faq": [
+        [
+          "Pavurio suit-il la distance ou le parcours GPS ?",
+          "Non. Pavurio chronomètre et enregistre vos balades ; il n’utilise pas votre position."
+        ],
+        [
+          "Puis-je noter une balade que j’ai oublié de chronométrer ?",
+          "Oui. Notez-la après coup depuis l’onglet Soins et choisissez quand elle a eu lieu."
+        ],
+        [
+          "Ça marche pour les chats ?",
+          "Le chrono de balade est pour les chiens. Les chats ont le temps de jeu et le suivi de la litière."
+        ]
+      ],
+      "related": [
+        "dog-care-app",
+        "pet-care-widgets",
+        "pet-medication-reminder"
+      ]
+    },
+    "pet-health-records": {
+      "nav": "Carnet de santé",
+      "title": "Carnet de santé chien et chat : vaccins, véto, poids | Pavurio",
+      "desc": "Vaccins, visites véto, traitements, allergies et poids de votre chien ou chat au même endroit, avec photos des documents. À partager avec votre vétérinaire.",
+      "h1": "Le carnet de santé de votre animal, prêt pour le vétérinaire",
+      "lead": "Vaccins, visites chez le vétérinaire, traitements, allergies et poids, dans un dossier bien rangé, toujours avec vous.",
+      "art": "records",
+      "blocks": [
+        [
+          "Tout ce que demande le vétérinaire",
+          "Vaccins avec leurs dates, visites passées, traitements, allergies, chacun avec les photos des documents.",
+          "shot:records"
+        ],
+        [
+          "Le poids au fil du temps",
+          "Notez le poids après chaque contrôle et suivez la courbe.",
+          "shot:weight"
+        ],
+        [
+          "Des rendez-vous que vous n’oublierez pas",
+          "Ajoutez la prochaine visite chez le vétérinaire, le toiletteur ou le pet-sitter et recevez un rappel la veille.",
+          "art:vet"
+        ],
+        [
+          "Un résumé des soins à partager",
+          "Routine, soins récents, dossiers et poids dans un résumé clair pour le vétérinaire ou le pet-sitter.",
+          "art:records_scene"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez une fiche",
+          "Vaccin, visite, traitement ou allergie."
+        ],
+        [
+          "Joignez les documents",
+          "Prenez en photo le certificat ou la facture."
+        ],
+        [
+          "Partagez au besoin",
+          "Envoyez le résumé des soins d’un geste."
+        ]
+      ],
+      "faq": [
+        [
+          "Puis-je tenir un carnet pour plusieurs animaux ?",
+          "Oui. Chaque animal a son propre carnet de santé. Pavurio Pro vous permet d’ajouter tous les animaux de votre foyer."
+        ],
+        [
+          "Où sont stockées mes données ?",
+          "Sur votre téléphone, avec une sauvegarde privée sur votre compte que vous seul pouvez lire."
+        ],
+        [
+          "Pavurio remplace-t-il mon vétérinaire ?",
+          "Non. Il organise vos dossiers ; c’est votre vétérinaire qui conseille."
+        ]
+      ],
+      "related": [
+        "pet-medication-reminder",
+        "cat-care-app",
+        "dog-care-app"
+      ]
+    },
+    "pet-care-widgets": {
+      "nav": "Widgets",
+      "title": "Widgets chien et chat : votre animal sur l’accueil | Pavurio",
+      "desc": "Les widgets Pavurio montrent ce dont votre chien ou chat a besoin : prochaine dose, croquettes à racheter ou journée bouclée. Gratuit sur Android.",
+      "h1": "Des widgets qui montrent ce qui compte maintenant",
+      "lead": "Honey et Tabby sur votre écran d’accueil, avec la seule chose utile à savoir maintenant, et rien quand il n’y a rien à faire.",
+      "art": "widgets",
+      "blocks": [
+        [
+          "La seule chose qui compte",
+          "Le médicament à donner passe toujours en premier. Puis les autres soins à faire, les croquettes à racheter, ou une petite fête quand la journée est bouclée.",
+          "art:widget_care"
+        ],
+        [
+          "Votre réserve en un coup d’œil",
+          "Le widget Réserve affiche vos trois principaux produits avec une jauge de stock et le jour limite pour commander.",
+          "art:restock_wide"
+        ],
+        [
+          "Il apprend votre rythme",
+          "Pavurio repère les moments où vous ouvrez l’appli ou prenez des photos, et ne vous sollicite qu’à ces moments-là. La nuit, votre animal dort aussi.",
+          "art:widget_sleep"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez le widget",
+          "Appuyez longuement sur l’écran d’accueil et choisissez Pavurio."
+        ],
+        [
+          "Choisissez une taille",
+          "Petit, moyen ou redimensionné à votre goût."
+        ],
+        [
+          "Touchez pour agir",
+          "Le widget ouvre le bon écran."
+        ]
+      ],
+      "faq": [
+        [
+          "Quels téléphones sont compatibles ?",
+          "Android dès maintenant, avec des widgets redimensionnables. Sur iPhone, les widgets d’écran d’accueil et d’écran verrouillé et les Live Activities arrivent avec l’appli iPhone."
+        ],
+        [
+          "Le widget va-t-il me harceler ?",
+          "Non. Pas de séries ni de messages culpabilisants. Quand il n’y a rien à faire, il montre simplement votre animal."
+        ],
+        [
+          "Est-ce qu’il vide la batterie ?",
+          "Non. Le widget se met à jour quand vos données changent et à quelques moments prévus de la journée."
+        ]
+      ],
+      "related": [
+        "pet-medication-reminder",
+        "pet-food-tracker",
+        "dog-walk-tracker"
+      ]
+    },
+    "dog-care-app": {
+      "nav": "Pour les chiens",
+      "title": "Appli chien : repas, balades, médicaments et véto | Pavurio",
+      "desc": "Pavurio, l’appli sereine pour votre chien : horaires des repas, chrono de balade, rappels de médicaments, suivi des croquettes et carnet de santé. Gratuite.",
+      "h1": "L’appli pour prendre soin de votre chien toute la journée",
+      "lead": "Repas, balades, médicaments, sac de croquettes et carnet de santé, au même endroit, avec votre chien qui se colore à mesure que les soins du jour sont faits.",
+      "art": "dog",
+      "blocks": [
+        [
+          "Un programme adapté à votre chien",
+          "Repas, eau, balades, jeu, toilettage et médicaments, aux heures qui conviennent à votre chien.",
+          "shot:home"
+        ],
+        [
+          "Les balades, chronométrées",
+          "Un chrono de balade sur votre écran verrouillé, avec les boutons Pause et Terminer.",
+          "art:walk_wide"
+        ],
+        [
+          "Jamais à court de croquettes",
+          "Pavurio décompte le sac à partir des repas notés et vous dit quand commander.",
+          "shot:pantry"
+        ],
+        [
+          "Le carnet de santé",
+          "Vaccins, visites, poids et documents, prêts à partager.",
+          "shot:records"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez votre chien",
+          "Nom, apparence et programme du jour, en une minute environ."
+        ],
+        [
+          "Notez les soins d’un geste",
+          "Ou directement depuis le rappel."
+        ],
+        [
+          "Regardez-le se colorer",
+          "Un peu plus à chaque soin."
+        ]
+      ],
+      "faq": [
+        [
+          "Est-ce adapté aux chiots ?",
+          "Oui. Prévoyez des repas et des balades fréquents, suivez le poids de votre chiot qui grandit et gardez le calendrier vaccinal au même endroit."
+        ],
+        [
+          "Toute la famille peut-elle l’utiliser ?",
+          "Pour l’instant, Pavurio gère un foyer par compte. Le partage entre membres de la famille est prévu."
+        ],
+        [
+          "C’est gratuit ?",
+          "Oui, pour un chien. Pavurio Pro ajoute tous les animaux de votre foyer, des pelages réalistes, l’historique et des récits mensuels."
+        ]
+      ],
+      "related": [
+        "dog-walk-tracker",
+        "pet-food-tracker",
+        "cat-care-app"
+      ]
+    },
+    "cat-care-app": {
+      "nav": "Pour les chats",
+      "title": "Appli chat : repas, litière, médicaments et véto | Pavurio",
+      "desc": "Pavurio, l’appli sereine pour votre chat : horaires des repas, suivi de la litière, rappels de médicaments, suivi des croquettes et carnet de santé. Gratuite.",
+      "h1": "L’appli qui suit le rythme de votre chat",
+      "lead": "Repas, eau, litière, jeu et médicaments, avec votre chat qui se colore à mesure que les soins du jour sont faits. Et un rappel avant que les croquettes ne manquent.",
+      "art": "cat",
+      "blocks": [
+        [
+          "Un programme du jour pour votre chat",
+          "Repas, eau fraîche, litière, jeu et toilettage, chacun à son heure.",
+          "art:cat_home"
+        ],
+        [
+          "La litière, suivie",
+          "Notez un changement de litière d’un geste et recevez un rappel quand il faut recommencer.",
+          "art:litter"
+        ],
+        [
+          "Croquettes et litière toujours en stock",
+          "Pavurio décompte croquettes et litière et les ajoute à temps à la liste de courses.",
+          "shot:pantry"
+        ],
+        [
+          "Un carnet de santé pour le vétérinaire",
+          "Vaccins, visites, poids et allergies, avec les photos des documents.",
+          "shot:records"
+        ]
+      ],
+      "steps": [
+        [
+          "Ajoutez votre chat",
+          "Nom, pelage et programme du jour."
+        ],
+        [
+          "Notez les soins d’un geste",
+          "Ou directement depuis le rappel."
+        ],
+        [
+          "Regardez-le se colorer",
+          "Un peu plus à chaque soin."
+        ]
+      ],
+      "faq": [
+        [
+          "Pavurio suit-il la litière ?",
+          "Oui. Pour les chats, le changement de litière est un soin, avec ses propres rappels, et la litière peut aussi être suivie dans la réserve."
+        ],
+        [
+          "Est-ce adapté aux chatons ?",
+          "Oui. Prévoyez de petits repas fréquents, suivez le poids de votre chaton qui grandit et gardez les vaccins au même endroit."
+        ],
+        [
+          "Puis-je aussi ajouter mon chien ?",
+          "Oui. Pavurio Pro vous permet d’ajouter tous les animaux de votre foyer, chacun avec son propre programme."
+        ]
+      ],
+      "related": [
+        "pet-food-tracker",
+        "pet-health-records",
+        "dog-care-app"
+      ]
+    }
+  }
+}

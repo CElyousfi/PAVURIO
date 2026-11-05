@@ -1,225 +1,353 @@
-"""Pavurio website → site/dist (landing page in en/fr/es/pt + privacy, terms, support, account deletion).
-Usage (repo root): python3 tools/site/build.py   (needs: pip install markdown pillow)
-Hosted on Vercel only (project `pavurio`): .github/workflows/site.yml publishes site/dist to the
-`site-dist` branch; the Vercel deployment in tools/site/vercel/ serves that branch at pavurio.com."""
-import json, os, shutil, sys, markdown
-from PIL import Image
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import landing as LP
+"""Pavurio website → site/dist.
 
+Pages (each in en at the root and in fr/es/pt under /fr/, /es/, /pt/):
+  /                        landing page
+  /features/<slug>/        one page per search intent (medication reminders, food tracker, …)
+  /privacy.html …          legal pages from site/content/<lang>/*.md (URLs kept stable: the store listings link them)
+Copy lives in site/copy/<lang>.json (en is the source; missing keys fall back to en).
+Art is taken from assets/art at build time; app screenshots live in site/img/s; social cards in site/img/og
+(regenerate with tools/site/og.py).
+
+Usage (repo root): python3 tools/site/build.py      needs: pip install markdown pillow
+Hosting: .github/workflows/site.yml publishes site/dist to the `site-dist` branch; the Vercel project `pavurio`
+(tools/site/vercel) serves it at pavurio.com."""
+import datetime, html, json, os, shutil, sys, urllib.parse
+import markdown
+from PIL import Image
+
+HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = 'site'; OUT = f'{ROOT}/dist'; BASE = 'https://pavurio.com'
 PLAY = 'https://play.google.com/store/apps/details?id=com.pavurio.app'
+EMAIL = 'lesepavistespro@gmail.com'
 LANGS = ['en', 'fr', 'es', 'pt']
 LEGAL = ['privacy', 'terms', 'support', 'delete-account']
+LEGAL_KEY = {'privacy': 'privacy', 'terms': 'terms', 'support': 'support', 'delete-account': 'delete'}
+TODAY = datetime.date.today().isoformat()
+E = lambda s: html.escape(str(s), quote=True)
 
+# ---------------------------------------------------------------- copy
+def merge(base, over):
+    if isinstance(base, dict):
+        return {k: merge(v, over.get(k, v) if isinstance(over, dict) else v) for k, v in base.items()} | {k: v for k, v in (over or {}).items() if k not in base}
+    return over if over is not None else base
+
+EN = json.load(open(f'{ROOT}/copy/en.json'))
+C = {l: merge(EN, json.load(open(f'{ROOT}/copy/{l}.json'))) if os.path.exists(f'{ROOT}/copy/{l}.json') else EN | {'lang': l} for l in LANGS}
+for l in LANGS:
+    if not os.path.exists(f'{ROOT}/copy/{l}.json'): print(f'warning: no site/copy/{l}.json, {l} uses English copy')
+SLUGS = list(EN['pages'].keys())
+
+# ---------------------------------------------------------------- output folders, fonts, art
 shutil.rmtree(OUT, ignore_errors=True)
-for l in LANGS[1:]: os.makedirs(f'{OUT}/{l}')
-shutil.copytree(f'{ROOT}/img', f'{OUT}/img')
-shutil.copytree(f'{ROOT}/fonts', f'{OUT}/fonts')  # Nunito (OFL), self-hosted
-FONTS = ''.join(f"@font-face{{font-family:Nunito;font-style:normal;font-weight:{w};font-display:swap;src:url(/fonts/nunito-{w}.woff2) format('woff2')}}" for w in (700, 800, 900))
-
+os.makedirs(f'{OUT}/img/a')
+for d in ('fonts',):
+    shutil.copytree(f'{ROOT}/{d}', f'{OUT}/{d}')
+for d in ('s', 'og', 'l'):
+    if os.path.isdir(f'{ROOT}/img/{d}'): shutil.copytree(f'{ROOT}/img/{d}', f'{OUT}/img/{d}')
+for f in ('icon-192.png', 'icon-512.png', 'og.jpg'):
+    shutil.copy(f'{ROOT}/img/{f}', f'{OUT}/img/{f}')
 Image.open('assets/icon.png').convert('RGBA').resize((64, 64), Image.LANCZOS).save(f'{OUT}/favicon.png')
+Image.open('assets/icon.png').convert('RGB').resize((180, 180), Image.LANCZOS).save(f'{OUT}/img/apple-touch-icon.png')
 
-S = {
- 'en': dict(
-  name='English', dir='', hl='en', home='Home', privacy='Privacy', terms='Terms', support='Support', delete='Delete account',
-  seo_title='Pavurio: Pet Care Tracker – Dog & Cat Care App with Reminders',
-  seo_desc='Pavurio is the pet care app where your dog or cat colours in as you log meals, water, walks and play. Smart reminders, streaks, challenges, vet visits, weight and health records. Free on Google Play.',
-  h1='The pet care app where your pet colours in',
-  sub='Log meals, water, walks and play in one tap, and watch your dog or cat fill with colour. Gentle reminders, streaks, challenges and a complete health file — in one cosy place.',
-  play='Get it on Google Play', ios='Coming soon on iPhone', free='Free · Pro with a 7-day trial',
-  sections=[
-   ('Care in one tap', 'Meals, fresh water, walks, play, grooming and litter — logged in a second. Set a daily plan that fits your pet and watch today\'s progress fill up. Undo, edit and add notes any time.', 'shot-{l}-02', 'Logging water in Pavurio'),
-   ('Smart reminders', 'A nudge at the times you choose, for every routine — meals, medication, walks. Mark it done right from the notification. An evening reminder only when today\'s plan isn\'t finished yet.', 'art-reminders', 'Smart pet care reminders'),
-   ('Streaks, challenges & badges', 'Keep the streak going day after day. Take on 7-day and 30-day care challenges, earn badges as healthy habits form, and read short care tips written for dogs and cats.', 'shot-{l}-04', 'Streaks, challenges and badges'),
-   ('Health & vet care, all in one place', 'Vet visits with a reminder the day before. Weight chart, vaccines, medication and allergies, photos of the paperwork — and a care summary to share with your vet or pet sitter.', 'art-health', 'Pet health records and vet visits'),
-   ('Made for dogs and cats', 'Several pets, each with their own look, daily plan and history. Weekly stories and moments to look back on. Works offline, backs up to your account, exports any time. No ads, ever.', 'shot-{l}-07', 'A cat colouring in as it is cared for'),
-  ],
-  pro_h='Pavurio Pro', pro_p='Every challenge and tip, more pets, monthly stories and your full history.', pro_items=['Yearly €34.99 — 7-day free trial', 'Monthly €5.99', 'Lifetime €79.99, one payment'],
-  faq_h='Questions', faq=[
-   ('Is Pavurio free?', 'Yes. Logging care, reminders, streaks and the health file are free. Pavurio Pro unlocks every challenge and tip, more pets, monthly stories and the full history, with a 7-day free trial on the yearly plan.'),
-   ('Does it work for cats and dogs?', 'Both. Each pet has its own look, daily plan, routines and history. Cats get litter tracking; dogs get a walk timer.'),
-   ('Do I need an account?', 'No. Everything works offline on your phone. Sign in with Google, Apple or email only if you want a backup you can restore on a new phone.'),
-   ('Is this veterinary advice?', 'No. Pavurio helps you keep track of the care you give and remember appointments. For anything health-related, talk to your vet.'),
-   ('Which languages are supported?', 'English, French, Spanish and Portuguese.'),
-  ],
-  cta_h='Give your pet a colourful day', cta_p='Download Pavurio and log the first care in under a minute.',
-  footer_tag='Pet care tracker for dogs and cats.', contact='Contact',
- ),
- 'fr': dict(
-  name='Français', dir='/fr', hl='fr', home='Accueil', privacy='Confidentialité', terms='Conditions', support='Aide', delete='Supprimer le compte',
-  seo_title='Pavurio : application de soins pour chien et chat avec rappels',
-  seo_desc='Pavurio est l’application de soins où votre chien ou votre chat se colore au fil des repas, de l’eau, des balades et des jeux notés. Rappels, séries, défis, rendez-vous véto, poids et carnet de santé. Gratuit sur Google Play.',
-  h1='L’application de soins où votre animal se colore',
-  sub='Notez repas, eau, promenades et jeux en un geste, et regardez votre chien ou votre chat se remplir de couleur. Rappels en douceur, séries, défis et un carnet de santé complet, au même endroit.',
-  play='Disponible sur Google Play', ios='Bientôt sur iPhone', free='Gratuit · Pro avec 7 jours d’essai',
-  sections=[
-   ('Des soins en un geste', 'Repas, eau fraîche, promenades, jeux, toilettage et litière : notés en une seconde. Un programme quotidien adapté à votre animal, et la progression du jour qui se remplit. Annulez, modifiez ou ajoutez une note à tout moment.', 'shot-{l}-02', 'Noter l’eau dans Pavurio'),
-   ('Des rappels intelligents', 'Un petit rappel aux heures que vous choisissez, pour chaque routine : repas, médicaments, balades. Marquez « Fait » depuis la notification. Un rappel le soir seulement si le programme du jour n’est pas terminé.', 'art-reminders', 'Rappels de soins pour animaux'),
-   ('Séries, défis et badges', 'Faites durer votre série jour après jour. Relevez des défis de 7 et 30 jours, gagnez des badges en prenant de bonnes habitudes et lisez de courts conseils pour chiens et chats.', 'shot-{l}-04', 'Séries, défis et badges'),
-   ('La santé et le véto au même endroit', 'Rendez-vous vétérinaires avec rappel la veille. Courbe de poids, vaccins, médicaments et allergies, photos des documents, et un résumé des soins à partager avec le vétérinaire ou le pet-sitter.', 'art-health', 'Carnet de santé et rendez-vous véto'),
-   ('Pour les chiens et les chats', 'Plusieurs animaux, chacun avec son apparence, son programme et son historique. Des histoires de la semaine et des moments à revoir. Fonctionne hors connexion, sauvegardé sur votre compte, export à tout moment. Jamais de publicité.', 'shot-{l}-07', 'Un chat qui se colore au fil des soins'),
-  ],
-  pro_h='Pavurio Pro', pro_p='Tous les défis et conseils, plus d’animaux, les histoires du mois et tout l’historique.', pro_items=['Annuel 34,99 € — 7 jours d’essai gratuit', 'Mensuel 5,99 €', 'À vie 79,99 €, un seul paiement'],
-  faq_h='Questions', faq=[
-   ('Pavurio est-il gratuit ?', 'Oui. Noter les soins, les rappels, les séries et le carnet de santé sont gratuits. Pavurio Pro débloque tous les défis et conseils, plus d’animaux, les histoires du mois et tout l’historique, avec 7 jours d’essai gratuit sur l’offre annuelle.'),
-   ('Pour les chats et les chiens ?', 'Les deux. Chaque animal a son apparence, son programme, ses routines et son historique. Les chats ont le suivi de la litière, les chiens le chrono de balade.'),
-   ('Faut-il un compte ?', 'Non. Tout fonctionne hors connexion sur votre téléphone. Connectez-vous avec Google, Apple ou un e-mail seulement pour une sauvegarde à retrouver sur un nouveau téléphone.'),
-   ('Est-ce un avis vétérinaire ?', 'Non. Pavurio vous aide à suivre les soins que vous donnez et à ne pas oublier les rendez-vous. Pour toute question de santé, parlez à votre vétérinaire.'),
-   ('Quelles langues ?', 'Anglais, français, espagnol et portugais.'),
-  ],
-  cta_h='Offrez une journée colorée à votre animal', cta_p='Téléchargez Pavurio et notez le premier soin en moins d’une minute.',
-  footer_tag='Suivi des soins pour chiens et chats.', contact='Contact',
- ),
- 'es': dict(
-  name='Español', dir='/es', hl='es', home='Inicio', privacy='Privacidad', terms='Términos', support='Ayuda', delete='Eliminar cuenta',
-  seo_title='Pavurio: app de cuidado de mascotas para perros y gatos con recordatorios',
-  seo_desc='Pavurio es la app de cuidado de mascotas en la que tu perro o gato se colorea al registrar comidas, agua, paseos y juegos. Recordatorios, rachas, retos, visitas al veterinario, peso e historial de salud. Gratis en Google Play.',
-  h1='La app de cuidado de mascotas en la que tu mascota se colorea',
-  sub='Registra comidas, agua, paseos y juegos con un toque y mira cómo tu perro o gato se llena de color. Recordatorios amables, rachas, retos y un historial de salud completo, todo en un mismo lugar.',
-  play='Disponible en Google Play', ios='Pronto en iPhone', free='Gratis · Pro con 7 días de prueba',
-  sections=[
-   ('Cuidados con un toque', 'Comidas, agua fresca, paseos, juego, cepillado y arenero: registrados en un segundo. Crea un plan diario a la medida de tu mascota y mira cómo se llena el progreso de hoy. Deshaz, edita y añade notas cuando quieras.', 'shot-en-02', 'Registrar agua en Pavurio'),
-   ('Recordatorios inteligentes', 'Un aviso a las horas que elijas, para cada rutina: comidas, medicación, paseos. Márcalo como hecho desde la notificación. Un recordatorio por la noche solo si el plan de hoy aún no está completo.', 'art-reminders', 'Recordatorios de cuidado de mascotas'),
-   ('Rachas, retos e insignias', 'Mantén la racha día tras día. Acepta retos de 7 y 30 días, gana insignias mientras creas hábitos saludables y lee consejos breves escritos para perros y gatos.', 'shot-en-04', 'Rachas, retos e insignias'),
-   ('Salud y veterinario en un solo lugar', 'Visitas al veterinario con recordatorio el día anterior. Gráfica de peso, vacunas, medicación y alergias, fotos de los documentos, y un resumen de cuidados para compartir con tu veterinario o cuidador.', 'art-health', 'Historial de salud y visitas al veterinario'),
-   ('Hecha para perros y gatos', 'Varias mascotas, cada una con su aspecto, su plan diario y su historial. Historias semanales y momentos para recordar. Funciona sin conexión, se guarda en tu cuenta y se exporta cuando quieras. Sin anuncios, nunca.', 'shot-en-07', 'Un gato que se colorea al cuidarlo'),
-  ],
-  pro_h='Pavurio Pro', pro_p='Todos los retos y consejos, más mascotas, historias mensuales y todo tu historial.', pro_items=['Anual 34,99 € — 7 días de prueba gratis', 'Mensual 5,99 €', 'De por vida 79,99 €, un solo pago'],
-  faq_h='Preguntas', faq=[
-   ('¿Pavurio es gratis?', 'Sí. Registrar cuidados, los recordatorios, las rachas y el historial de salud son gratis. Pavurio Pro desbloquea todos los retos y consejos, más mascotas, historias mensuales y el historial completo, con 7 días de prueba gratis en el plan anual.'),
-   ('¿Sirve para gatos y perros?', 'Para ambos. Cada mascota tiene su aspecto, su plan diario, sus rutinas y su historial. Los gatos tienen seguimiento del arenero; los perros, un cronómetro de paseo.'),
-   ('¿Necesito una cuenta?', 'No. Todo funciona sin conexión en tu teléfono. Inicia sesión con Google, Apple o correo solo si quieres una copia de seguridad para restaurar en un teléfono nuevo.'),
-   ('¿Es un consejo veterinario?', 'No. Pavurio te ayuda a llevar el registro de los cuidados que das y a recordar las citas. Para cualquier tema de salud, habla con tu veterinario.'),
-   ('¿Qué idiomas hay?', 'Inglés, francés, español y portugués.'),
-  ],
-  cta_h='Regálale a tu mascota un día lleno de color', cta_p='Descarga Pavurio y registra el primer cuidado en menos de un minuto.',
-  footer_tag='Registro de cuidados para perros y gatos.', contact='Contacto',
- ),
- 'pt': dict(
-  name='Português', dir='/pt', hl='pt', home='Início', privacy='Privacidade', terms='Termos', support='Ajuda', delete='Excluir conta',
-  seo_title='Pavurio: app de cuidados para cães e gatos com lembretes',
-  seo_desc='Pavurio é o app de cuidados com pets em que o seu cão ou gato se colore à medida que você registra refeições, água, passeios e brincadeiras. Lembretes, sequências, desafios, consultas no veterinário, peso e histórico de saúde. Grátis no Google Play.',
-  h1='O app de cuidados em que o seu pet se colore',
-  sub='Registre refeições, água, passeios e brincadeiras com um toque e veja o seu cão ou gato se encher de cor. Lembretes gentis, sequências, desafios e um histórico de saúde completo, tudo em um só lugar.',
-  play='Disponível no Google Play', ios='Em breve no iPhone', free='Grátis · Pro com 7 dias de teste',
-  sections=[
-   ('Cuidados com um toque', 'Refeições, água fresca, passeios, brincadeiras, escovação e caixa de areia: registrados em um segundo. Crie um plano diário na medida do seu pet e veja o progresso de hoje se encher. Desfaça, edite e adicione notas quando quiser.', 'shot-en-02', 'Registrar água no Pavurio'),
-   ('Lembretes inteligentes', 'Um aviso nos horários que você escolher, para cada rotina: refeições, medicação, passeios. Marque como feito direto da notificação. Um lembrete à noite só se o plano de hoje ainda não estiver completo.', 'art-reminders', 'Lembretes de cuidados com pets'),
-   ('Sequências, desafios e conquistas', 'Mantenha a sequência dia após dia. Aceite desafios de 7 e 30 dias, ganhe conquistas enquanto cria hábitos saudáveis e leia dicas curtas escritas para cães e gatos.', 'shot-en-04', 'Sequências, desafios e conquistas'),
-   ('Saúde e veterinário em um só lugar', 'Consultas no veterinário com lembrete no dia anterior. Gráfico de peso, vacinas, medicação e alergias, fotos dos documentos e um resumo dos cuidados para compartilhar com o veterinário ou o pet sitter.', 'art-health', 'Histórico de saúde e consultas no veterinário'),
-   ('Feito para cães e gatos', 'Vários pets, cada um com a sua aparência, o seu plano diário e o seu histórico. Histórias da semana e momentos para rever. Funciona offline, salva na sua conta e exporta quando quiser. Sem anúncios, nunca.', 'shot-en-07', 'Um gato que se colore ao ser cuidado'),
-  ],
-  pro_h='Pavurio Pro', pro_p='Todos os desafios e dicas, mais pets, histórias mensais e todo o seu histórico.', pro_items=['Anual € 34,99 — 7 dias de teste grátis', 'Mensal € 5,99', 'Vitalício € 79,99, pagamento único'],
-  faq_h='Perguntas', faq=[
-   ('O Pavurio é grátis?', 'Sim. Registrar cuidados, os lembretes, as sequências e o histórico de saúde são grátis. O Pavurio Pro desbloqueia todos os desafios e dicas, mais pets, histórias mensais e o histórico completo, com 7 dias de teste grátis no plano anual.'),
-   ('Serve para gatos e cães?', 'Para os dois. Cada pet tem a sua aparência, o seu plano diário, as suas rotinas e o seu histórico. Gatos têm o registro da caixa de areia; cães, um cronômetro de passeio.'),
-   ('Preciso de uma conta?', 'Não. Tudo funciona offline no seu telefone. Entre com Google, Apple ou e-mail só se quiser um backup para restaurar em um telefone novo.'),
-   ('É um conselho veterinário?', 'Não. O Pavurio ajuda você a acompanhar os cuidados que dá e a lembrar das consultas. Para qualquer questão de saúde, fale com o seu veterinário.'),
-   ('Quais idiomas?', 'Inglês, francês, espanhol e português.'),
-  ],
-  cta_h='Dê ao seu pet um dia cheio de cor', cta_p='Baixe o Pavurio e registre o primeiro cuidado em menos de um minuto.',
-  footer_tag='Registro de cuidados para cães e gatos.', contact='Contato',
- ),
+A = 'assets/art'
+ART = {  # name: (source, max width)
+    'meal': (f'{A}/care2/meal.webp', 160), 'water': (f'{A}/care2/water.webp', 160), 'walk': (f'{A}/care2/walk.webp', 160),
+    'medication': (f'{A}/care2/medication.webp', 200), 'play': (f'{A}/care2/play.webp', 160), 'records': (f'{A}/care2/records.webp', 160),
+    'litter': (f'{A}/care2/litter.webp', 160), 'grooming': (f'{A}/care2/grooming.webp', 160), 'calendar': (f'{A}/care2/calendar.webp', 160),
+    'dog_wave': (f'{A}/stickers/dog_wave.webp', 480), 'cat_wave': (f'{A}/stickers/cat_wave.webp', 480), 'duo_hug': (f'{A}/stickers/duo_hug.webp', 560),
+    'dog_love': (f'{A}/stickers/dog_love.webp', 400), 'cat_happy': (f'{A}/stickers/cat_happy.webp', 480), 'dog_party': (f'{A}/stickers/dog_party.webp', 360),
+    'cat_cheer': (f'{A}/stickers/cat_cheer.webp', 360), 'dog_trot': (f'{A}/stickers/dog_trot.webp', 480), 'cat_sleep': (f'{A}/stickers/cat_sleep.webp', 360),
+    'dog_sunny': (f'{A}/stickers/dog_sunny.webp', 360), 'cat_bed': (f'{A}/stickers/cat_bed.webp', 360),
+    'heart': (f'{A}/icons/ui_heart.webp', 140), 'shield': (f'{A}/icons/shield.webp', 240),
+    'food': (f'{A}/pantry/icon_food.webp', 240), 'treats': (f'{A}/pantry/icon_treats.webp', 120),
+    'pantry_list': (f'{A}/pantry/scene_list.webp', 600), 'reminders': (f'{A}/pantry/scene_reminder.webp', 600),
+    'restock': (f'{A}/pantry/scene_restock.webp', 600), 'pantry_welcome': (f'{A}/pantry/scene_welcome.webp', 600),
+    'widget_care': (f'{A}/widgets/care.png', 360), 'widget_done': (f'{A}/widgets/done.png', 560), 'widget_sleep': (f'{A}/widgets/sleep.png', 480),
+    'widget_pantry': (f'{A}/widgets/pantry.png', 300), 'widget_moment': (f'{A}/widgets/moment.png', 300),
+    'walk_wide': (f'{A}/widgets/walk_wide.png', 900), 'restock_wide': (f'{A}/widgets/restock_wide.png', 900),
+    's_medication': (f'{A}/scenes/medication.webp', 760), 's_vet': (f'{A}/scenes/vet.webp', 760), 's_weigh': (f'{A}/scenes/weigh.webp', 640),
+    's_records': (f'{A}/scenes/records.webp', 600), 's_walk': (f'{A}/scenes/walk.webp', 760), 's_litter': (f'{A}/scenes/litter.webp', 560),
+    's_duo': (f'{A}/scenes/duo.webp', 760), 's_moments': (f'{A}/scenes/moments.webp', 760),
 }
-TITLES = {'privacy': 'privacy', 'terms': 'terms', 'support': 'support', 'delete-account': 'delete'}
+for name, (src, w) in ART.items():
+    im = Image.open(src)
+    im = im.convert('RGBA') if im.mode in ('P', 'RGBA', 'LA') else im.convert('RGB')
+    if im.width > w: im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+    im.save(f'{OUT}/img/a/{name}.webp', 'WEBP', quality=86, method=4)
+SIZE = {n: Image.open(f'{OUT}/img/a/{n}.webp').size for n in ART}
 
-CSS = """
-:root{--ink:#163A4A;--soft:#3D4A63;--muted:#7C8494;--brand:#14B8C4;--brandDark:#0E8F99;--brandSoft:#DDF6F7;--sun:#FFD233;--line:#EEF0F3;--warm:#FFF6E6;--grass:#E6F7DA}
-*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{margin:0;font-family:Nunito,ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;line-height:1.6;font-size:17px}
-a{color:var(--brandDark);font-weight:800;text-decoration:none}a:hover{text-decoration:underline}
-img{max-width:100%;height:auto;display:block}
-header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
-.bar{max-width:1040px;margin:auto;display:flex;align-items:center;gap:18px;padding:12px 20px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:900;font-size:21px}.brand img{width:36px;height:36px;border-radius:10px}
-nav{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap;font-size:15px;align-items:center}nav a{color:var(--soft)}nav a.on{color:var(--brandDark)}
-.langs{display:flex;gap:6px}.langs a{padding:4px 9px;border-radius:999px;background:var(--line);font-size:13px;color:var(--soft)}.langs a.on{background:var(--brandSoft);color:var(--brandDark)}
-main{max-width:1040px;margin:auto;padding:0 20px 60px}
-.doc{max-width:760px;padding-top:24px}
-h1{font-weight:900;font-size:46px;line-height:1.08;margin:0 0 16px;letter-spacing:-.01em}
-h2{font-weight:900;font-size:32px;line-height:1.15;margin:0 0 12px}
-.doc h1{font-size:34px}.doc h2{font-size:22px;margin:1.6em 0 .4em}
-p,li{color:var(--soft)}strong{color:var(--ink)}em{color:var(--muted);font-style:normal;font-size:14px}
-table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}th{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
-.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;padding:48px 0 30px}
-.hero .sub{font-size:20px;margin:0 0 22px}
-.hero img{width:100%;max-width:420px;justify-self:center;border-radius:28px;box-shadow:0 24px 60px rgba(22,58,74,.14)}
-.btns{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:999px;padding:15px 24px;font-weight:900;font-size:17px;box-shadow:0 10px 24px rgba(22,58,74,.18)}.btn:hover{text-decoration:none;transform:translateY(-1px)}
-.btn.soft{background:var(--brandSoft);color:var(--brandDark);box-shadow:none}
-.free{font-size:14px;color:var(--muted);margin:12px 0 0;font-weight:800}
-.feat{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:56px 0;border-top:1px solid var(--line)}
-.feat:nth-child(even) .img{order:-1}
-.feat .img img{max-width:360px;margin:auto;border-radius:26px;box-shadow:0 20px 50px rgba(22,58,74,.12)}
-.feat p{font-size:18px}
-.pro{background:var(--warm);border-radius:32px;padding:40px;margin:30px 0;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
-.pro ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}.pro li{background:#fff;border-radius:16px;padding:14px 18px;font-weight:800;color:var(--ink)}
-.faq{padding:40px 0}.faq details{border-bottom:1px solid var(--line);padding:14px 0}.faq summary{font-weight:900;font-size:18px;cursor:pointer;color:var(--ink)}.faq p{margin:8px 0 0}
-.cta{text-align:center;padding:60px 20px;background:linear-gradient(180deg,var(--brandSoft),#fff);border-radius:32px;margin:20px 0}
-.cta h2{font-size:36px}
-footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding:10px 0}footer .bar{justify-content:space-between}footer nav{margin-left:0}
-@media(max-width:760px){.hero{grid-template-columns:1fr;padding-top:28px}h1{font-size:34px}h2{font-size:26px}.feat{grid-template-columns:1fr;gap:20px;padding:40px 0}.feat:nth-child(even) .img{order:0}.pro{grid-template-columns:1fr;padding:26px}nav{margin-left:0}.cta h2{font-size:28px}}
-"""
+def art(name, alt='', cls='', lazy=True, extra=''):
+    w, h = SIZE[name]
+    return f'<img class="{cls}" src="/img/a/{name}.webp" alt="{E(alt)}" width="{w}" height="{h}"{" loading=\"lazy\" decoding=\"async\"" if lazy else ""}{extra}>'
 
-def pre(lang): return S[lang]['dir']
-def rel(slug): return 'index.html' if slug == 'index' else f'{slug}.html'
-def url(lang, slug): return f"{BASE}{pre(lang)}/" + ('' if slug == 'index' else rel(slug))
+SHOTS = sorted(f[:-5] for f in os.listdir(f'{ROOT}/img/s') if f.endswith('.webp')) if os.path.isdir(f'{ROOT}/img/s') else []
+def shot(name, lang):
+    f = f'{name}_{lang}' if f'{name}_{lang}' in SHOTS else name
+    return f'/img/s/{f}.webp' if f in SHOTS else None
 
-def page(lang, slug, title, desc, body, jsonld=None):
-    t = S[lang]; up = '' if lang == 'en' else '../'
-    alts = ''.join(f'<link rel="alternate" hreflang="{S[l]["hl"]}" href="{url(l, slug)}">' for l in LANGS) + f'<link rel="alternate" hreflang="x-default" href="{url("en", slug)}">'
-    links = [('index', t['home']), ('support', t['support']), ('privacy', t['privacy']), ('terms', t['terms']), ('delete-account', t['delete'])]
-    nav = ''.join(f'<a href="{rel(s)}" class="{"on" if s == slug else ""}">{n}</a>' for s, n in links)
-    langs = '<span class="langs">' + ''.join(f'<a href="{url(l, slug)}" hreflang="{l}" class="{"on" if l == lang else ""}">{l.upper()}</a>' for l in LANGS) + '</span>'
-    ld = f'<script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>' if jsonld else ''
-    return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title}</title><meta name="description" content="{desc}"><link rel="canonical" href="{url(lang, slug)}">{alts}
-<meta property="og:type" content="website"><meta property="og:site_name" content="Pavurio"><meta property="og:title" content="{title}"><meta property="og:description" content="{desc}"><meta property="og:url" content="{url(lang, slug)}"><meta property="og:image" content="{BASE}/img/og.jpg"><meta property="og:locale" content="{ {'en':'en_US','fr':'fr_FR','es':'es_ES','pt':'pt_BR'}[lang] }">
-<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#14B8C4">
-<link rel="icon" href="{up}favicon.png"><link rel="apple-touch-icon" href="{up}img/icon-192.png">
+FONTS = ''.join(f"@font-face{{font-family:Nunito;font-style:normal;font-weight:{w};font-display:swap;src:url(/fonts/nunito-{w}.woff2) format('woff2')}}" for w in (700, 800, 900))
+CSS = FONTS + open(f'{HERE}/web.css').read()
+JS = open(f'{HERE}/web.js').read()
+
+# ---------------------------------------------------------------- urls
+def pre(l): return '' if l == 'en' else f'/{l}'
+def path(l, page):
+    if page == 'index': return f'{pre(l)}/'
+    if page in LEGAL: return f'{pre(l)}/{page}.html'
+    return f'{pre(l)}/features/{page}/'
+def url(l, page): return BASE + path(l, page)
+def play(l, placement):
+    ref = urllib.parse.quote(f'utm_source=pavurio.com&utm_medium=website&utm_campaign={l}&utm_content={placement}', safe='')
+    return f'{PLAY}&hl={l}&referrer={ref}'
+def og_img(l, page):
+    f = f'{page}-{l}.jpg'
+    return f'{BASE}/img/og/{f}' if os.path.exists(f'{ROOT}/img/og/{f}') else f'{BASE}/img/og.jpg'
+
+# ---------------------------------------------------------------- svg bits
+LEAF = '<svg viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg>'
+LEAF_R = LEAF.replace('<svg ', '<svg style="transform:scaleX(-1)" ')
+GPLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="m16.9 15.5-3.5-3.5 3.5-3.5 4 2.3c1.1.6 1.1 1.8 0 2.4z"/><path fill="#EA4335" d="M16.9 15.5 13.4 12l-9.8 9.7c.4.2.9.2 1.4-.1z"/><path fill="#4285F4" d="M16.9 8.5 5 1.4c-.5-.3-1-.3-1.4-.1l9.8 9.7z"/></svg>'
+APPLE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1.1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg>'
+
+PAGE_ICON = {'pet-medication-reminder': 'medication', 'pet-food-tracker': 'food', 'dog-walk-tracker': 'walk', 'pet-health-records': 'records',
+             'pet-care-widgets': 'widget_care', 'dog-care-app': 'dog_wave', 'cat-care-app': 'cat_wave'}
+PAGE_HERO = {'medication': 's_medication', 'pantry': 'pantry_welcome', 'walk': 's_walk', 'records': 's_records', 'widgets': 'widget_done', 'dog': 'dog_trot', 'cat': 'cat_happy'}
+BLOCK_ART = {'reminders': 'reminders', 'medication': 's_medication', 'pantry_list': 'pantry_list', 'walk_wide': 'walk_wide', 'weigh': 's_weigh', 'vet': 's_vet',
+             'records_scene': 's_duo', 'widget_care': 'widget_care', 'restock_wide': 'restock_wide', 'widget_sleep': 'widget_sleep', 'cat_home': 'cat_bed', 'litter': 's_litter'}
+
+def stores(l, placement, badge=False):
+    u = C[l]['ui']
+    fb = f'<span class="free">{E(u["free_badge"])}</span>' if badge else ''
+    return (f'<div class="stores"><a class="store" href="{E(play(l, placement))}" rel="noopener" data-cta="{placement}">{GPLAY}<span><small>{E(u["play_small"])}</small><b>{E(u["play"])}</b></span>{fb}</a>'
+            f'<span class="store soon" aria-disabled="true">{APPLE}<span><small>{E(u["ios_small"])}</small><b>{E(u["ios"])}</b></span></span></div>')
+
+def laurels(items):
+    return '<div class="laurels">' + ''.join(f'<div class="laurel">{LEAF}<span><b>{E(a)}</b><small>{E(b)}</small></span>{LEAF_R}</div>' for a, b in items) + '</div>'
+
+def phone(src, alt, cls=''):
+    return f'<div class="phone {cls}"><div class="scr"><img class="on" src="{src}" alt="{E(alt)}" loading="lazy" decoding="async" width="390" height="844"></div></div>'
+
+def faq_html(items):
+    return '<div class="faq">' + ''.join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in items) + '</div>'
+
+def faq_ld(items):
+    return {'@type': 'FAQPage', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in items]}
+
+APP_LD = lambda l: {'@type': 'MobileApplication', '@id': f'{BASE}/#app', 'name': 'Pavurio', 'alternateName': 'Pavurio: Pet Care Tracker',
+                    'operatingSystem': 'Android', 'applicationCategory': 'LifestyleApplication', 'description': C[l]['home']['desc'],
+                    'url': url(l, 'index'), 'image': f'{BASE}/img/icon-512.png', 'screenshot': [f'{BASE}{s}' for s in [shot(n, l) for n in ('home', 'pantry', 'care', 'records')] if s],
+                    'installUrl': PLAY, 'downloadUrl': PLAY, 'inLanguage': LANGS, 'isAccessibleForFree': True,
+                    'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'},
+                    'publisher': {'@id': f'{BASE}/#org'}}
+ORG_LD = {'@type': 'Organization', '@id': f'{BASE}/#org', 'name': 'Pavurio', 'url': BASE + '/', 'logo': f'{BASE}/img/icon-512.png', 'email': EMAIL}
+
+# ---------------------------------------------------------------- page shell
+def head(l, page, title, desc, ld):
+    alts = ''.join(f'<link rel="alternate" hreflang="{a}" href="{url(a, page)}">' for a in LANGS) + f'<link rel="alternate" hreflang="x-default" href="{url("en", page)}">'
+    ogl = ''.join(f'<meta property="og:locale:alternate" content="{C[a]["locale"]}">' for a in LANGS if a != l)
+    graph = json.dumps({'@context': 'https://schema.org', '@graph': ld}, ensure_ascii=False).replace('</', '<\\/')
+    return f"""<!doctype html><html lang="{l}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{url(l, page)}">{alts}
+<meta name="robots" content="index,follow,max-image-preview:large"><meta name="theme-color" content="#14B8C4">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Pavurio"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}">
+<meta property="og:url" content="{url(l, page)}"><meta property="og:image" content="{og_img(l, page)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="{C[l]['locale']}">{ogl}
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{E(title)}"><meta name="twitter:description" content="{E(desc)}"><meta name="twitter:image" content="{og_img(l, page)}">
+<meta name="google-play-app" content="app-id=com.pavurio.app">
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-900.woff2" crossorigin>
-<style>{FONTS}{CSS}</style>{ld}</head><body>
-<header><div class="bar"><a class="brand" href="{rel('index')}"><img src="{up}img/icon-192.png" alt="Pavurio" width="36" height="36">Pavurio</a><nav>{nav}{langs}</nav></div></header>
-<main>{body}</main>
-<footer><div class="bar"><span>© 2026 Pavurio · {t['footer_tag']}</span><nav>{nav}<a href="mailto:lesepavistespro@gmail.com">{t['contact']}</a></nav></div></footer>
-</body></html>"""
+<style>{CSS}</style><script type="application/ld+json">{graph}</script></head>"""
 
-def landing(lang):
-    """The one-page landing: full-screen colour bands (tools/site/landing.py), its own head (no site header)."""
-    t = S[lang]; up = '' if lang == 'en' else '../'
-    slug = 'index'
-    alts = ''.join(f'<link rel="alternate" hreflang="{S[l]["hl"]}" href="{url(l, slug)}">' for l in LANGS) + f'<link rel="alternate" hreflang="x-default" href="{url("en", slug)}">'
-    legal = [(rel(s), t[k]) for s, k in TITLES.items()]
-    lang_links = ''.join(f'<a href="{url(l, slug)}" hreflang="{l}" class="{"on" if l == lang else ""}">{S[l]["name"]}</a>' for l in LANGS)
-    ld = {'@context': 'https://schema.org', '@type': 'MobileApplication', 'name': 'Pavurio: Pet Care Tracker', 'operatingSystem': 'Android', 'applicationCategory': 'LifestyleApplication',
-          'description': t['seo_desc'], 'url': url(lang, 'index'), 'image': f'{BASE}/img/og.jpg', 'installUrl': PLAY, 'inLanguage': LANGS,
-          'offers': [{'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'}],
-          'author': {'@type': 'Organization', 'name': 'Pavurio', 'url': BASE, 'email': 'lesepavistespro@gmail.com'}}
-    title, desc = t['seo_title'], t['seo_desc']
-    return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>{title}</title><meta name="description" content="{desc}"><link rel="canonical" href="{url(lang, slug)}">{alts}
-<meta property="og:type" content="website"><meta property="og:site_name" content="Pavurio"><meta property="og:title" content="{title}"><meta property="og:description" content="{desc}"><meta property="og:url" content="{url(lang, slug)}"><meta property="og:image" content="{BASE}/img/og.jpg"><meta property="og:locale" content="{ {'en':'en_US','fr':'fr_FR','es':'es_ES','pt':'pt_BR'}[lang] }">
-<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#16B3D3">
-<link rel="icon" href="{up}favicon.png"><link rel="apple-touch-icon" href="{up}img/icon-192.png">
-<link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-900.woff2" crossorigin>
-<link rel="preload" as="image" href="{up}img/l/duo_hug.webp">
-<style>{FONTS}{LP.CSS}</style><script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script></head><body class="lp">
-{LP.body(lang, up, PLAY, legal, lang_links)}
-<script>{LP.JS}</script></body></html>"""
+def header(l, page):
+    u = C[l]['ui']
+    feats = ''.join(f'<a href="{path(l, s)}">{art(PAGE_ICON[s], "", lazy=False)}{E(C[l]["pages"][s]["nav"])}</a>' for s in SLUGS)
+    opts = ''.join(f'<option value="{path(a, page)}"{" selected" if a == l else ""}>{E(C[a]["name"])}</option>' for a in LANGS)
+    home = path(l, 'index')
+    return f"""<body><a class="skip" href="#main">{E(u['skip'])}</a><div class="progress" aria-hidden="true"></div>
+<header class="top"><div class="wrap"><a class="logo" href="{home}"><img src="/img/icon-192.png" alt="" width="38" height="38">Pavurio</a>
+<nav class="nav" aria-label="Main"><div class="dd"><button aria-expanded="false" aria-haspopup="true">{E(u['features'])}</button><div class="menu">{feats}</div></div>
+<a href="{home}#faq">{E(u['faq'])}</a><label class="lang"><span class="sr">{E(u['language'])}</span><select aria-label="{E(u['language'])}">{opts}</select></label>
+<a class="pill" href="{E(play(l, 'header'))}" rel="noopener" data-cta="header">{E(u['download'])}</a></nav>
+<button class="burger" aria-label="{E(u['menu'])}" aria-expanded="false"><i></i></button></div></header><main id="main">"""
 
-for lang in LANGS:
-    t = S[lang]; dest = OUT if lang == 'en' else f'{OUT}/{lang}'
-    open(f'{dest}/index.html', 'w').write(landing(lang))
-    for slug, key in TITLES.items():
-        src = f'{ROOT}/content/{lang}/{slug}.md'
-        if not os.path.exists(src): src = f'{ROOT}/content/en/{slug}.md'
-        html = markdown.markdown(open(src).read(), extensions=['tables'])
-        open(f'{dest}/{slug}.html', 'w').write(page(lang, slug, f'{t[key]} · Pavurio', t['seo_desc'], f'<div class="doc">{html}</div>'))
+def footer(l, page, strings):
+    u = C[l]['ui']
+    feats = ''.join(f'<li><a href="{path(l, s)}">{E(C[l]["pages"][s]["nav"])}</a></li>' for s in SLUGS)
+    legal = ''.join(f'<li><a href="{path(l, s)}">{E(u[LEGAL_KEY[s]])}</a></li>' for s in LEGAL)
+    langs = ''.join(f'<li><a href="{path(a, page)}" hreflang="{a}" lang="{a}">{E(C[a]["name"])}</a></li>' for a in LANGS)
+    return f"""</main><footer><div class="wrap"><div class="cols">
+<div><a class="logo" href="{path(l, 'index')}"><img src="/img/icon-192.png" alt="" width="38" height="38" loading="lazy">Pavurio</a><p class="tag">{E(u['footer_tag'])}</p>{stores(l, 'footer')}</div>
+<div><h4>{E(u['features'])}</h4><ul>{feats}</ul></div>
+<div><h4>Pavurio</h4><ul>{legal}<li><a href="mailto:{EMAIL}" data-copy="{EMAIL}">{E(u['contact'])}</a></li><li><a href="mailto:{EMAIL}?subject=Pavurio%20press">{E(u['press'])}</a></li></ul></div>
+<div><h4>{E(u['language'])}</h4><ul>{langs}</ul></div></div>
+<div class="legal"><span>{E(u['rights'])}</span><span>{EMAIL}</span></div></div></footer>
+<div class="toast" role="status" aria-live="polite"></div><div class="fx" aria-hidden="true"></div>
+<script type="application/json" id="pv">{json.dumps(strings, ensure_ascii=False).replace('</', '<\\/')}</script><script>{JS}</script></body></html>"""
 
-urls = [url(l, s) for l in LANGS for s in ['index'] + LEGAL]
-open(f'{OUT}/sitemap.xml', 'w').write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' + ''.join(
-    f'<url><loc>{url(l, s)}</loc>' + ''.join(f'<xhtml:link rel="alternate" hreflang="{S[a]["hl"]}" href="{url(a, s)}"/>' for a in LANGS) + '</url>' for l in LANGS for s in ['index'] + LEGAL) + '</urlset>')
-open(f'{OUT}/robots.txt', 'w').write(f'User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n')
+# ---------------------------------------------------------------- landing
+def landing(l):
+    c = C[l]; h = c['home']; u = c['ui']
+    shots_ok = [n for n in ('home', 'care', 'pantry', 'summary') if shot(n, l)]
+
+    cares = list(zip(['meal', 'water', 'walk', 'medication', 'play'], h['cares']))
+    care_btns = ''.join(f'<button class="care press" aria-pressed="false">{art(n, lazy=False)}<span>{E(lbl)}</span></button>' for n, lbl in cares)
+    hero = f"""<section class="panel hero"><div class="wrap split">
+<div class="reveal"><span class="eyebrow">{E(h['eyebrow'])}</span><h1>{E(h['h1'])}</h1><p class="lead">{E(h['sub'])}</p>{laurels(h['laurels'])}{stores(l, 'hero', True)}</div>
+<div class="demo reveal d1"><div class="hey" aria-hidden="true">{E(h['try_hint'])} 👉</div>
+<div class="phone"><div class="scr"><div class="app" id="demo" aria-live="polite"><div class="cnt"><b data-n>0</b><small>/5</small></div><div class="sub" data-sub></div>
+<div class="pet"><span class="mat"></span>{art('dog_wave', '', 'gray', False)}{art('dog_wave', 'Honey', 'col', False)}</div>
+<div class="cares">{care_btns}</div><button class="again" hidden>↺ {E(h['try_again'])}</button></div></div></div>
+{art('duo_hug', h['img_alt'], 'duo', False, ' role="button" tabindex="0"')}{art('heart', '', 'heart', False)}</div></div></section>"""
+
+    tour = ''
+    if shots_ok:
+        tabs = [(n, t) for n, t in zip(('home', 'care', 'pantry', 'summary'), h['tabs']) if n in shots_ok]
+        btns = ''.join(f'<button role="tab" aria-selected="{"true" if k == 0 else "false"}">{E(t[0])}</button>' for k, (n, t) in enumerate(tabs))
+        imgs = ''.join(f'<img class="{"on" if k == 0 else ""}" src="{shot(n, l)}" alt="{E(t[0])}: {E(t[1])}" width="390" height="844" loading="lazy" decoding="async">' for k, (n, t) in enumerate(tabs))
+        tour = f"""<section class="sec" id="tour"><div class="wrap center"><h2 class="reveal">{E(h['tour_h'])}</h2><p class="lead reveal d1">{E(h['tour_p'])}</p>
+<div class="seg reveal d1" role="tablist"><span class="thumb" aria-hidden="true"></span>{btns}</div>
+<div class="tour reveal d2"><div class="side l">{art('dog_love')}</div><div><div class="phone"><div class="scr">{imgs}</div></div></div><div class="side r"><p class="cap">{E(tabs[0][1][1])}</p>{art('cat_cheer')}</div></div></div></section>"""
+        h = dict(h, tabs=[t for _, t in tabs])
+
+    points = lambda xs: '<ul class="points">' + ''.join(f'<li>{E(x)}</li>' for x in xs) + '</ul>'
+    rem = f"""<section class="sec" id="reminders"><div class="wrap split">
+<div class="reveal"><span class="kicker">{E(h['rem_k'])}</span><h2>{E(h['rem_h'])}</h2><p class="lead">{E(h['rem_p'])}</p>{points(h['rem_points'])}
+<p style="margin-top:22px"><a class="pill soft" href="{path(l, 'pet-medication-reminder')}">{E(u['learn_more'])} →</a></p></div>
+<div class="reveal d1"><div class="card ink dose" id="dose" style="padding:34px"><div class="head">{art('medication', '', lazy=True)}<div><div class="t">{E(h['rem_card_t'])}</div><div class="s">{E(h['rem_card_s'])}</div></div></div>
+<div class="slide"><span class="fill"></span><span class="lbl">{E(h['rem_slide'])}</span><span class="knob" role="button" tabindex="0" aria-label="{E(h['rem_slide'])}">›</span></div>
+<div class="given" role="status"><span></span><button>{E(h['rem_reset'])}</button></div>
+<div class="follow"><i aria-hidden="true"></i>{E(h['rem_points'][1])}</div></div></div></div></section>"""
+
+    pan = f"""<section class="panel" style="background:var(--card)"><div class="sec"><div class="wrap split flip">
+<div class="reveal d1"><span class="kicker">{E(h['pan_k'])}</span><h2>{E(h['pan_h'])}</h2><p class="lead">{E(h['pan_p'])}</p>{points(h['pan_points'])}
+<p style="margin-top:22px"><a class="pill soft" href="{path(l, 'pet-food-tracker')}">{E(u['learn_more'])} →</a></p></div>
+<div class="reveal"><div class="bag" id="bag"><div class="row"><div class="fillart">{art('food', '', 'g')}{art('food', '', 'c')}</div>
+<div><div class="nm">{E(h['pan_item'])}</div><span class="status"></span></div></div><div class="bar"><i></i></div>
+<div class="stat"><div><small>{E(h['pan_left'].replace('{kg}', '').strip())}</small><b><span data-left>4.5</span> kg</b></div><div><small>{E(h['pan_days'].replace('{n}', '').strip())}</small><b data-days>9</b></div></div>
+<div class="stat" style="grid-template-columns:1fr;margin-top:-6px"><div><small>{E(h['pan_order'].replace('{day}', '').strip())}</small><b data-order>—</b></div></div>
+<div class="acts"><button class="press" data-log>− {E(h['pan_log'])}</button><button class="press alt" data-restock>↻ {E(h['pan_restock'])}</button></div>
+<p class="note">{E(h['pan_note'])}</p></div></div></div></div></section>"""
+
+    rows = ''.join(f'<div class="r"><span>{E(n)}</span><span class="b"><i style="width:{p}%;background:{"var(--meal)" if p < 30 else "var(--green)"}"></i></span><em>{E(s)}</em></div>' for n, s, p in h['wid_rows'])
+    wid = f"""<section class="panel wid"><div class="sec"><div class="wrap center"><span class="kicker reveal">{E(h['wid_k'])}</span><h2 class="reveal">{E(h['wid_h'])}</h2><p class="lead reveal d1">{E(h['wid_p'])}</p>
+<div class="home-scr reveal d2" style="margin-top:46px"><div class="w s"><b>{E(h['wid_today'])}</b><em>{E(h['wid_today_s'])}</em>{art('widget_care')}</div>
+<div class="w m"><h4>{E(h['wid_pantry'])}</h4>{rows}</div><div class="w s" style="background:#FFF6E6"><b>{E(h['try_done'].split('.')[0])}</b>{art('widget_done')}</div>
+<div class="la" id="la">{art('medication')}<div class="tx"><b>{E(h['wid_la_t'])}</b><small>{E(h['wid_la_s'])}</small></div><span class="clk">12:00</span><button class="press">{E(h['wid_la_btn'])}</button></div></div>
+<p class="wnote">{E(h['wid_note'])}</p><p><a class="pill soft" href="{path(l, 'pet-care-widgets')}">{E(u['learn_more'])} →</a></p></div></div></section>"""
+
+    walk = f"""<section class="sec"><div class="wrap split">
+<div class="reveal"><span class="kicker">{E(h['walk_k'])}</span><h2>{E(h['walk_h'])}</h2><p class="lead">{E(h['walk_p'])}</p><p><a class="pill soft" href="{path(l, 'dog-walk-tracker')}">{E(u['learn_more'])} →</a></p></div>
+<div class="walkart reveal d1">{art('s_walk', '', '')}<div class="live" id="walk"><div class="hd"><img src="/img/icon-192.png" alt="" width="40" height="40" loading="lazy"><div><div class="t">{E(h['walk_title'])}</div><div class="s">{E(h['walk_sub'])}</div></div></div>
+<div class="clock" aria-live="off">18:42</div><div class="saved">{E(h['walk_saved'])}</div><div class="b"><button class="p press">{E(h['walk_pause'])}</button><button class="f press">{E(h['walk_finish'])}</button><button class="n press">{E(h['walk_new'])}</button></div></div></div></div></section>"""
+
+    rec = shot('records', l)
+    health_vis = phone(rec, h['health_h']) if rec else art('s_records', '', 'artimg')
+    health = f"""<section class="panel" style="background:#EEF4FF"><div class="sec"><div class="wrap split flip">
+<div class="reveal d1"><span class="kicker" style="color:#2B62C6">{E(h['health_k'])}</span><h2>{E(h['health_h'])}</h2><p class="lead">{E(h['health_p'])}</p>
+<div class="chips">{''.join(f'<span class="chip">{E(x)}</span>' for x in h['health_chips'])}</div><p style="margin-top:26px"><a class="pill soft" href="{path(l, 'pet-health-records')}">{E(u['learn_more'])} →</a></p></div>
+<div class="reveal" style="position:relative">{health_vis}</div></div></div></section>"""
+
+    cards = [f for f in (f'card_gotcha_{l}', f'card_daily_{l}') if os.path.exists(f'{ROOT}/img/l/{f}.webp')] or ['card_gotcha_en', 'card_daily_en']
+    mem = f"""<section class="sec"><div class="wrap split">
+<div class="reveal"><span class="kicker" style="color:#C2185B">{E(h['mem_k'])}</span><h2>{E(h['mem_h'])}</h2><p class="lead">{E(h['mem_p'])}</p><p class="note" style="text-align:left">👆 {E(h['mem_hint'])}</p></div>
+<div class="mcards reveal d1"><img class="mcard a front" src="/img/l/{cards[0]}.webp" alt="Memory Card" loading="lazy" tabindex="0" role="button"><img class="mcard b" src="/img/l/{cards[-1]}.webp" alt="Memory Card" loading="lazy" tabindex="0" role="button"></div></div></section>"""
+
+    calm = f"""<section class="panel calm"><div class="sec"><div class="wrap center"><h2 class="reveal">{E(h['calm_h'])}</h2><p class="lead reveal d1">{E(h['calm_p'])}</p>
+<div class="trio reveal d2">{''.join(f'<div class="card"><span class="e" aria-hidden="true">{e}</span><h3>{E(t)}</h3><p>{E(p)}</p></div>' for e, t, p in h['calm_points'])}</div></div></div></section>"""
+
+    LN = json.load(open(f'{HERE}/languages.json'))
+    half = len(LN) // 2
+    row = lambda xs: ''.join(f'<span lang="{k}">{f} {E(n)}</span>' for k, f, n in xs)
+    langs_s = f"""<section class="sec"><div class="wrap center"><h2 class="reveal">{E(h['lang_h'])}</h2><p class="lead reveal d1">{E(h['lang_p'])}</p></div>
+<div class="marq" aria-label="{E(h['lang_h'])}"><div class="tr">{row(LN[:half]) * 2}</div></div><div class="marq r" aria-hidden="true"><div class="tr">{row(LN[half:]) * 2}</div></div></section>"""
+
+    priv = f"""<section class="wrap"><div class="card ink priv reveal">{art('shield')}<div><h2>{E(h['priv_h'])}</h2><p>{E(h['priv_p'])}</p></div><a class="pill" style="background:#fff;color:var(--ink)" href="{path(l, 'privacy')}">{E(h['priv_link'])} →</a></div></section>"""
+
+    pro = f"""<section class="sec"><div class="wrap center"><h2 class="reveal">{E(h['pro_h'])}</h2>
+<div class="plans reveal d1"><div class="card"><h3>{E(h['pro_free_h'])}</h3>{points(h['pro_free'])}</div><div class="card pro"><h3>{E(h['pro_pro_h'])}</h3>{points(h['pro_pro'])}</div></div>
+<p class="note">{E(h['pro_note'])}</p></div></section>"""
+
+    faq = f"""<section class="sec" id="faq" style="padding-top:20px"><div class="wrap center"><h2 class="reveal">{E(h['faq_h'])}</h2><div class="reveal d1">{faq_html(h['faq'])}</div></div></section>"""
+
+    cyc = [shot(n, l) for n in ('home', 'pantry', 'care', 'records') if shot(n, l)]
+    cphone = f'<div class="phone sm"><div class="scr"><img class="on" src="{cyc[0]}" alt="" loading="lazy" width="390" height="844"></div></div>' if cyc else art('duo_hug')
+    cta = f"""<section class="panel cta"><div class="wrap split">
+<div class="reveal"><img class="appicon" src="/img/icon-192.png" alt="Pavurio" width="96" height="96" loading="lazy"><h2>{E(h['cta_h'])}</h2><p class="lead">{E(h['cta_p'])}</p>{stores(l, 'final', True)}
+<p class="note" style="text-align:left">{E(h['cta_note'])}</p><div class="qr"><img src="/img/l/qr_{l}.svg" alt="QR code: Pavurio on Google Play" width="104" height="104" loading="lazy"><div><b>{E(u['scan'])}</b><small>{E(u['scan_sub'])}</small></div></div></div>
+<div class="reveal d1" style="position:relative">{cphone}{art('duo_hug', '', 'duo')}</div></div></section>"""
+
+    ld = [ORG_LD, APP_LD(l), {'@type': 'WebSite', '@id': f'{BASE}/#site', 'url': BASE + '/', 'name': 'Pavurio', 'inLanguage': l, 'publisher': {'@id': f'{BASE}/#org'}},
+          dict(faq_ld(h['faq']), url=url(l, 'index'))]
+    strings = {k: h[k] for k in ('try_done', 'try_logged', 'rem_given', 'pan_out', 'pan_ok', 'pan_order', 'pan_today', 'walk_pause', 'walk_resume', 'walk_paused', 'walk_saved')} | {'tabs': h['tabs'], 'copied': u['copied']}
+    body = hero + tour + rem + pan + wid + walk + health + mem + calm + langs_s + priv + pro + faq + cta
+    return head(l, 'index', h['title'], h['desc'], ld) + header(l, 'index') + body + footer(l, 'index', strings)
+
+# ---------------------------------------------------------------- feature pages
+def feature(l, slug):
+    c = C[l]; p = c['pages'][slug]; u = c['ui']
+    hero = f"""<section class="panel fhero"><div class="wrap split">
+<div class="reveal"><nav class="crumbs" aria-label="Breadcrumb"><a href="{path(l, 'index')}">Pavurio</a> › {E(p['nav'])}</nav><h1>{E(p['h1'])}</h1><p class="lead">{E(p['lead'])}</p>{stores(l, slug, True)}</div>
+<div class="reveal d1">{art(PAGE_HERO[p['art']], p['h1'], 'art', False)}</div></div></section>"""
+    blocks = ''
+    for k, (t, d, vis) in enumerate(p['blocks']):
+        kind, name = vis.split(':')
+        if kind == 'shot' and shot(name, l): v = phone(shot(name, l), t, 'sm')
+        else:
+            n = BLOCK_ART.get(name, 'duo_hug') if kind == 'art' else {'care': 'reminders', 'supply': 'restock', 'pantry': 'pantry_list', 'shopping': 'pantry_list', 'records': 's_records', 'walk': 's_walk', 'home': 'duo_hug'}.get(name, 'duo_hug')
+            v = art(n, t, 'wide' if n.endswith('_wide') or n.startswith('s_') else 'artimg')
+        blocks += f"""<section class="block"><div class="wrap split{' flip' if k % 2 else ''}"><div class="reveal"><h2>{E(t)}</h2><p class="lead">{E(d)}</p></div><div class="vis reveal d1">{v}</div></div></section>"""
+    steps = f"""<section class="panel" style="background:var(--card)"><div class="sec"><div class="wrap center"><h2 class="reveal">{E(u['how'])}</h2>
+<div class="steps reveal d1">{''.join(f'<div class="card" style="background:#fff"><h3>{E(a)}</h3><p>{E(b)}</p></div>' for a, b in p['steps'])}</div></div></div></section>"""
+    faq = f"""<section class="sec"><div class="wrap center"><h2 class="reveal">{E(u['questions'])}</h2><div class="reveal d1">{faq_html(p['faq'])}</div></div></section>"""
+    rel = f"""<section class="sec" style="padding-top:0"><div class="wrap center"><h2 class="reveal" style="font-size:clamp(28px,3vw,38px)">{E(u['related'])}</h2>
+<div class="rel reveal d1">{''.join(f'<a href="{path(l, r)}">{art(PAGE_ICON[r])}{E(c["pages"][r]["nav"])}</a>' for r in p['related'])}</div></div></section>"""
+    h = c['home']
+    cta = f"""<section class="panel cta"><div class="wrap center"><img class="appicon" src="/img/icon-192.png" alt="Pavurio" width="96" height="96" loading="lazy" style="margin:0 auto 22px"><h2>{E(h['cta_h'])}</h2><p class="lead">{E(h['cta_p'])}</p>
+<div style="display:flex;justify-content:center">{stores(l, slug + '_end', True)}</div><p class="note">{E(h['cta_note'])}</p></div></section>"""
+    ld = [ORG_LD, APP_LD(l),
+          {'@type': 'WebPage', '@id': url(l, slug), 'url': url(l, slug), 'name': p['title'], 'description': p['desc'], 'inLanguage': l, 'about': {'@id': f'{BASE}/#app'},
+           'primaryImageOfPage': f'{BASE}/img/a/{PAGE_HERO[p["art"]]}.webp'},
+          {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': 1, 'name': 'Pavurio', 'item': url(l, 'index')}, {'@type': 'ListItem', 'position': 2, 'name': p['nav'], 'item': url(l, slug)}]},
+          dict(faq_ld(p['faq']), url=url(l, slug))]
+    return head(l, slug, p['title'], p['desc'], ld) + header(l, slug) + hero + blocks + steps + faq + rel + cta + footer(l, slug, {'copied': u['copied']})
+
+# ---------------------------------------------------------------- legal pages
+def legal(l, slug):
+    u = C[l]['ui']
+    src = f'{ROOT}/content/{l}/{slug}.md'
+    if not os.path.exists(src): src = f'{ROOT}/content/en/{slug}.md'
+    md = open(src).read()
+    body = markdown.markdown(md, extensions=['tables'])
+    first = next((ln for ln in md.splitlines() if ln.strip() and not ln.startswith('#') and not ln.startswith('*')), '')
+    desc = (first.replace('**', '').strip()[:155]) or C[l]['home']['desc']
+    title = f"{u[LEGAL_KEY[slug]]} · Pavurio"
+    ld = [ORG_LD, {'@type': 'WebPage', 'url': url(l, slug), 'name': title, 'inLanguage': l}]
+    return head(l, slug, title, desc, ld) + header(l, slug) + f'<article class="doc">{body}</article>' + footer(l, slug, {'copied': u['copied']})
+
+# ---------------------------------------------------------------- write
+def write(rel, text):
+    p = OUT + rel + ('index.html' if rel.endswith('/') else '')
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    open(p, 'w').write(text)
+
+for l in LANGS:
+    write(path(l, 'index'), landing(l))
+    for s in SLUGS: write(path(l, s), feature(l, s))
+    for s in LEGAL: write(path(l, s), legal(l, s))
+
+pages = ['index'] + SLUGS + LEGAL
+prio = lambda pg: '1.0' if pg == 'index' else '0.8' if pg in SLUGS else '0.3'
+open(f'{OUT}/sitemap.xml', 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + ''.join(
+    f'<url><loc>{url(l, pg)}</loc><lastmod>{TODAY}</lastmod><priority>{prio(pg)}</priority>' + ''.join(f'<xhtml:link rel="alternate" hreflang="{a}" href="{url(a, pg)}"/>' for a in LANGS)
+    + f'<xhtml:link rel="alternate" hreflang="x-default" href="{url("en", pg)}"/></url>\n' for pg in pages for l in LANGS) + '</urlset>\n')
+open(f'{OUT}/robots.txt', 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n')
+open(f'{OUT}/site.webmanifest', 'w').write(json.dumps({'name': 'Pavurio', 'short_name': 'Pavurio', 'icons': [{'src': '/img/icon-192.png', 'sizes': '192x192', 'type': 'image/png'}, {'src': '/img/icon-512.png', 'sizes': '512x512', 'type': 'image/png'}],
+                                                        'theme_color': '#14B8C4', 'background_color': '#ffffff', 'display': 'browser', 'related_applications': [{'platform': 'play', 'id': 'com.pavurio.app', 'url': PLAY}]}))
+h = EN['home']
+open(f'{OUT}/llms.txt', 'w').write(f"# Pavurio\n\n> {h['desc']}\n\nPavurio is a pet care app for dogs and cats (Android on Google Play; iPhone coming soon). Website: {BASE}/ in English, French, Spanish and Portuguese. The app speaks 30 languages.\n\n## Features\n"
+    + ''.join(f"- [{EN['pages'][s]['nav']}]({url('en', s)}): {EN['pages'][s]['desc']}\n" for s in SLUGS)
+    + "\n## FAQ\n" + ''.join(f"- {q} {a}\n" for q, a in h['faq'])
+    + f"\n## Legal\n" + ''.join(f"- [{EN['ui'][LEGAL_KEY[s]]}]({url('en', s)})\n" for s in LEGAL)
+    + f"\n## Get the app\n- Google Play: {PLAY}\n- Contact: {EMAIL}\n")
 open(f'{OUT}/.nojekyll', 'w').write('')
 print('built', sum(len(f) for _, _, f in os.walk(OUT)), 'files →', OUT)
