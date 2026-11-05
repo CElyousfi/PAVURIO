@@ -21,7 +21,7 @@ import { PlanEditor } from '../features/PetEditors';
 import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
-import { LANG_NAMES, t, tn } from '../i18n';
+import { LANG_FLAGS, LANG_NAMES, t, tn } from '../i18n';
 import { LanguagePicker } from '../ui/LanguagePicker';
 
 export default function Settings() {
@@ -279,7 +279,7 @@ export default function Settings() {
                 {t('Language')}
               </T>
               <T weight="black" style={{ fontSize: 16, color: colors.brand }}>
-                {LANG_NAMES[language]}
+                {LANG_FLAGS[language]} {LANG_NAMES[language]}
               </T>
               <Icon name="chevR" size={16} color={colors.faint} />
             </Bouncy>

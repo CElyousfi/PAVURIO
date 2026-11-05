@@ -9,7 +9,7 @@ import { Bouncy } from './motion';
 import { Icon, T } from './primitives';
 import { colors } from './theme';
 import { tapFeedback } from '../native/haptics';
-import { LANGS, LANG_NAMES, Lang, t } from '../i18n';
+import { LANGS, LANG_FLAGS, LANG_NAMES, Lang, t } from '../i18n';
 
 export function LanguagePicker({ visible, value, onChange, onClose }: { visible: boolean; value: Lang; onChange: (l: Lang) => void; onClose: () => void }) {
   const { height } = useWindowDimensions();
@@ -34,7 +34,10 @@ export function LanguagePicker({ visible, value, onChange, onClose }: { visible:
                 style={[styles.item, on && styles.on]}
                 testID={`lang-${l}`}
               >
-                <T weight="black" style={{ flex: 1, fontSize: 16, color: on ? '#FFFFFF' : colors.ink }} numberOfLines={1}>
+                <T style={{ fontSize: 24 }} accessibilityElementsHidden importantForAccessibility="no">
+                  {LANG_FLAGS[l]}
+                </T>
+                <T weight="black" style={{ flex: 1, fontSize: 15, textAlign: 'left', color: on ? '#FFFFFF' : colors.ink }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
                   {LANG_NAMES[l]}
                 </T>
                 {on ? <Icon name="check" size={16} color="#FFFFFF" /> : null}
@@ -47,11 +50,11 @@ export function LanguagePicker({ visible, value, onChange, onClose }: { visible:
   );
 }
 
-/** Short label for the globe button: "EN", "FR", "中文"… */
-export const langShort = (l: Lang) => (l === 'zh-Hans' ? '简' : l === 'zh-Hant' ? '繁' : l.toUpperCase());
+/** Short label for the language button: the flag and "EN", "FR", "简"… */
+export const langShort = (l: Lang) => `${LANG_FLAGS[l]} ${l === 'zh-Hans' ? '简' : l === 'zh-Hant' ? '繁' : l.toUpperCase()}`;
 
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 8 },
-  item: { width: '48.5%', flexDirection: 'row', alignItems: 'center', gap: 8, height: 50, paddingHorizontal: 14, borderRadius: 16, backgroundColor: colors.card },
+  item: { width: '48.5%', flexDirection: 'row', alignItems: 'center', gap: 10, height: 54, paddingHorizontal: 12, borderRadius: 16, backgroundColor: colors.card },
   on: { backgroundColor: colors.ink },
 });

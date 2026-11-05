@@ -6,7 +6,7 @@
 import { getLocales } from 'expo-localization';
 import { type Lang, matchLanguage } from './core';
 
-export { type Lang, LANGS, LANG_NAMES, RTL_LANGS, isLang, isRtl, matchLanguage, setLang, lang, t, tn, pickL } from './core';
+export { type Lang, LANGS, LANG_FLAGS, LANG_NAMES, RTL_LANGS, isLang, isRtl, matchLanguage, setLang, lang, t, tn, pickL } from './core';
 
 export function deviceLanguage(): Lang {
   try {
