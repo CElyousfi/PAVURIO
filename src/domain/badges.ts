@@ -46,7 +46,6 @@ export const BADGES: BadgeDef[] = [
   B('weight', 'scale', '#E0A800', { en: 'Weigh-in', fr: 'Pesée' }, { en: 'Log a weight.', fr: 'Notez un poids.' }, (s) => s.weights, 1),
   B('birthday', 'star', '#E64980', { en: 'Party animal', fr: 'Fêtard' }, { en: 'Add a birthday or adoption day.', fr: 'Ajoutez un anniversaire ou un jour d’adoption.' }, (s) => (s.hasBirthday ? 1 : 0), 1),
   B('moment', 'camera', '#2F9E44', { en: 'Memory keeper', fr: 'Gardien des souvenirs' }, { en: 'Save a moment.', fr: 'Enregistrez un moment.' }, (s) => s.moments, 1),
-  B('challenge1', 'trophy', '#7C5CE6', { en: 'Challenger', fr: 'Challenger' }, { en: 'Complete a challenge.', fr: 'Réussissez un défi.' }, (s) => s.challengesDone, 1),
   B('family', 'paw', '#9C36B5', { en: 'Best friends', fr: 'Meilleurs amis' }, { en: 'Care for 2 pets.', fr: 'Prenez soin de 2 animaux.' }, (s) => s.pets, 2),
 ];
 

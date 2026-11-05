@@ -12,12 +12,12 @@ import { LONG_WALK_MS } from '../domain/walks';
 import { CARE, formatAmount, isCareType } from '../domain/care';
 import { listAllSchedules, marksBetween, upcomingAppointments } from '../data/careRepo';
 import { planReminders, type PlannedReminder } from '../domain/schedule';
-import { computeStreak, groupByDay } from '../domain/streak';
+import { groupByDay } from '../domain/streak';
 import { computeProgress, portionOf } from '../domain/progress';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { t, tn } from '../i18n';
-import { listAllSupplies, listPurchases } from '../data/suppliesRepo';
-import { forecastAll } from '../domain/supplies';
+import { loadPantry } from '../data/pantry';
+import { restockReminders } from '../domain/supplies';
 
 const DAY_MS = 86_400_000;
 
@@ -230,7 +230,6 @@ export function syncReminders(db: Db): Promise<number> {
           const from = parseDayKey(addDays(today, -60)).getTime();
           const events = await listEventsBetween(db, pet.id, from, now + 60_000);
           const byDay = groupByDay(events);
-          const streak = computeStreak(plan, byDay, today);
           const prog = computeProgress(plan, byDay.get(today) ?? []);
           const name = names.get(pet.id) ?? t('your pet');
           for (let i = 0; i < 2; i++) {
@@ -239,11 +238,10 @@ export function syncReminders(db: Db): Promise<number> {
             const at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm).getTime();
             if (at <= now) continue;
             if (i === 0 && prog.ratio >= 1) continue;
-            const streakN = streak.current;
             plans.push({
               id: `pv:nudge:${pet.id}:${day}`,
               at,
-              title: streakN >= 2 ? t('Keep your {n}-day streak 🔥', { n: streakN }) : t('{name}’s day isn’t finished yet', { name }),
+              title: t('{name}’s day isn’t finished yet', { name }),
               body:
                 i === 0 && prog.planned > 0
                   ? t('{done} of {planned} cares logged — colour {name} in before bedtime.', { done: prog.done, planned: prog.planned, name })
@@ -254,32 +252,20 @@ export function syncReminders(db: Db): Promise<number> {
           }
         }
       }
-      // supplies: one reminder on the buy-by day (10:00) and a last call on the run-out day (9:00)
+      // pantry: the buy-by day (10:00), a last call on the run-out day (9:00), then every 3 days while
+      // it's still not restocked. Household items name every pet that uses them.
       try {
-        const supplies = await listAllSupplies(db);
-        if (supplies.length) {
-          const purchases = await listPurchases(db, supplies.map((s) => s.id));
-          for (const pet of pets) {
-            const mine = supplies.filter((s) => s.petId === pet.id);
-            if (!mine.length) continue;
-            const from = Math.min(now - 31 * DAY_MS, ...mine.map((s) => s.stockAt));
-            const events = await listEventsBetween(db, pet.id, from, now + 60_000);
-            const plan = await getPlan(db, pet.id);
-            const portions = await getPortions(db, pet.id);
-            const name = names.get(pet.id) ?? t('your pet');
-            for (const f of forecastAll(mine, events, plan, portions, purchases, now, portionOf)) {
-              if (f.buyBy == null || f.runOutAt == null) continue;
-              const at10 = (ms: number, h: number) => {
-                const d = new Date(ms);
-                return new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, 0).getTime();
-              };
-              const buyAt = at10(f.buyBy, 10);
-              if (buyAt > now && buyAt - now < 21 * DAY_MS)
-                plans.push({ id: `pv:sup:${f.supply.id}`, at: buyAt, title: t('Time to order {item} 🛒', { item: f.supply.name }), body: t('{name} has about {n} left. Order today and it arrives before it runs out.', { name, n: tn(Math.max(1, Math.round((f.runOutAt - buyAt) / DAY_MS)), '{n} day', '{n} days') }), scheduleId: '', key: `supply:${pet.id}:${f.supply.id}` });
-              const lastAt = at10(f.runOutAt, 9);
-              if (lastAt > now && lastAt > buyAt + DAY_MS && lastAt - now < 21 * DAY_MS)
-                plans.push({ id: `pv:supx:${f.supply.id}`, at: lastAt, title: t('{item} runs out today', { item: f.supply.name }), body: t('Bought it already? Tap to add it to {name}’s shelf.', { name }), scheduleId: '', key: `supply:${pet.id}:${f.supply.id}` });
-            }
+        const { forecasts } = await loadPantry(db, now);
+        for (const f of forecasts) {
+          const who = f.petIds.map((id) => names.get(id)).filter(Boolean).join(' & ') || t('your pet');
+          const key = `supply:${f.supply.petId}:${f.supply.id}`;
+          for (const r of restockReminders(f, now)) {
+            if (r.kind === 'buy')
+              plans.push({ id: r.id, at: r.at, title: t('Time to order {item} 🛒', { item: f.supply.name }), body: t('{name} has about {n} left. Order today and it arrives before it runs out.', { name: who, n: tn(Math.max(1, Math.round((f.runOutAt! - r.at) / DAY_MS)), '{n} day', '{n} days') }), scheduleId: '', key });
+            else if (r.kind === 'last')
+              plans.push({ id: r.id, at: r.at, title: t('{item} runs out today', { item: f.supply.name }), body: t('Bought it already? Tap to add it to {name}’s shelf.', { name: who }), scheduleId: '', key });
+            else
+              plans.push({ id: r.id, at: r.at, title: t('Still need {item}?', { item: f.supply.name }), body: t('Pavurio thinks {name} is out. Bought some? One tap restocks it.', { name: who }), scheduleId: '', key });
           }
         }
       } catch (e) {

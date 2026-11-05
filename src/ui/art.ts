@@ -120,16 +120,6 @@ export const ART = {
     weigh: require('../../assets/art/scenes/weigh.webp') as Img,
     trophy: require('../../assets/art/scenes/trophy.webp') as Img,
   },
-  /** challenge key -> scene card; missing = care icon */
-  challenges: {
-    walk7: require('../../assets/art/scenes/walk.webp'),
-    walk30: require('../../assets/art/scenes/walk.webp'),
-    water7: require('../../assets/art/scenes/water.webp'),
-    play14: require('../../assets/art/scenes/play.webp'),
-    brush10: require('../../assets/art/scenes/brushing.webp'),
-    perfect5: require('../../assets/art/scenes/trophy.webp'),
-    litter7: require('../../assets/art/scenes/litter.webp'),
-  } as Record<string, Img>,
   /** tip id -> scene card; missing = care icon */
   tips: {
     water: require('../../assets/art/scenes/water.webp'),

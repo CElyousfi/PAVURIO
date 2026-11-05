@@ -27,6 +27,8 @@ export type CareEvent = {
   note: string | null;
   mutationId: string;
   voidedAt: number | null;
+  /** the pantry product this meal/dose came from (null = the pet's default product) */
+  supplyId: string | null;
 };
 
 export class ValidationError extends Error {
@@ -58,6 +60,7 @@ type EventRow = {
   note: string | null;
   mutation_id: string;
   voided_at: number | null;
+  supply_id?: string | null;
 };
 
 const toPet = (r: PetRow): Pet => ({
@@ -82,6 +85,7 @@ const toEvent = (r: EventRow): CareEvent => ({
   note: r.note,
   mutationId: r.mutation_id,
   voidedAt: r.voided_at,
+  supplyId: r.supply_id ?? null,
 });
 
 /** Allow small clock skew, but never accept care that "happens" in the future. */
@@ -308,6 +312,8 @@ export type LogCareInput = {
   note?: string | null;
   /** Idempotency key: a retried / double-tapped save with the same key writes once. */
   mutationId: string;
+  /** which pantry product it came from (meals / medication); omitted = the pet's default */
+  supplyId?: string | null;
 };
 
 export async function logCare(db: Db, input: LogCareInput, now = Date.now()): Promise<CareEvent> {
@@ -334,10 +340,10 @@ export async function logCare(db: Db, input: LogCareInput, now = Date.now()): Pr
   await db.withTransactionAsync(async () => {
     await db.runAsync(
       `INSERT INTO care_events
-         (id, pet_id, type, occurred_at, recorded_at, updated_at, amount, unit, note, source, mutation_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'manual', ?)
+         (id, pet_id, type, occurred_at, recorded_at, updated_at, amount, unit, note, source, mutation_id, supply_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'manual', ?, ?)
        ON CONFLICT(mutation_id) DO NOTHING`,
-      [newId(), pet.id, input.type, input.occurredAt, now, now, amount, spec?.unit ?? null, note, input.mutationId],
+      [newId(), pet.id, input.type, input.occurredAt, now, now, amount, spec?.unit ?? null, note, input.mutationId, input.supplyId ?? null],
     );
   });
   const saved = await db.getFirstAsync<EventRow>('SELECT * FROM care_events WHERE mutation_id = ?', [input.mutationId]);
@@ -394,7 +400,7 @@ export async function restoreEvent(db: Db, id: string, now = Date.now()): Promis
 export async function updateEvent(
   db: Db,
   id: string,
-  patch: { amount?: number | null; occurredAt?: number; note?: string | null },
+  patch: { amount?: number | null; occurredAt?: number; note?: string | null; supplyId?: string | null },
   now = Date.now(),
 ): Promise<CareEvent> {
   const current = await getEvent(db, id);
@@ -415,10 +421,12 @@ export async function updateEvent(
     occurredAt = patch.occurredAt;
   }
   const note = patch.note !== undefined ? (patch.note?.trim() ? patch.note.trim().slice(0, MAX_NOTE) : null) : current.note;
-  await db.runAsync('UPDATE care_events SET amount = ?, occurred_at = ?, note = ?, updated_at = ? WHERE id = ?', [
+  const supplyId = patch.supplyId !== undefined ? patch.supplyId : current.supplyId;
+  await db.runAsync('UPDATE care_events SET amount = ?, occurred_at = ?, note = ?, supply_id = ?, updated_at = ? WHERE id = ?', [
     amount,
     occurredAt,
     note,
+    supplyId,
     now,
     id,
   ]);
@@ -445,6 +453,8 @@ export async function exportAll(db: Db): Promise<string> {
   const challengeRuns = await q('SELECT * FROM challenge_runs ORDER BY created_at');
   const supplies = await q('SELECT * FROM supplies ORDER BY created_at');
   const supplyPurchases = await q('SELECT * FROM supply_purchases ORDER BY at');
+  const supplyDefaults = await q('SELECT * FROM supply_defaults');
+  const shoppingItems = await q('SELECT * FROM shopping_items ORDER BY created_at');
   return JSON.stringify(
     {
       app: 'pavurio',
@@ -463,6 +473,8 @@ export async function exportAll(db: Db): Promise<string> {
       challengeRuns,
       supplies,
       supplyPurchases,
+      supplyDefaults,
+      shoppingItems,
     },
     null,
     2,
@@ -492,7 +504,7 @@ export async function exportCareCsv(db: Db): Promise<string> {
 
 export async function resetAll(db: Db): Promise<void> {
   await db.withTransactionAsync(async () => {
-    for (const tbl of ['supply_purchases', 'supplies', 'walk_badges', 'walks', 'challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memory_pets', 'memories', 'media']) {
+    for (const tbl of ['shopping_items', 'supply_defaults', 'supply_purchases', 'supplies', 'walk_badges', 'walks', 'challenge_runs', 'schedule_marks', 'schedules', 'appointments', 'measurements', 'attachments', 'records', 'memory_pets', 'memories', 'media']) {
       await db.runAsync(`DELETE FROM ${tbl}`, []);
     }
     await db.runAsync('DELETE FROM care_events', []);

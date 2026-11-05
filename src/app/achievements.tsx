@@ -3,8 +3,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BadgeDef, badgeText, badgesFor } from '../domain/badges';
-import { CHALLENGES, careOk } from '../domain/challenges';
-import { ChallengeCard, Flame } from '../features/HomeFeed';
+import { Flame } from '../features/HomeFeed';
 import { Medal } from '../features/Medal';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
@@ -15,8 +14,8 @@ import { t, tn } from '../i18n';
 import { TabTitle } from '../ui/forms';
 
 export default function Achievements() {
-  const { pet, pro } = useApp();
-  const { streak, earned, stats, completedChallengeKeys } = useEngagement();
+  const { pet } = useApp();
+  const { streak, earned, stats } = useEngagement();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [sel, setSel] = useState<string | null>(null);
@@ -25,7 +24,6 @@ export default function Achievements() {
   const cols = 4;
   const gap = 8;
   const cell = (W - 40 - (cols - 1) * gap) / cols;
-  const list = CHALLENGES.filter((c) => careOk(c, pet.species));
   const mine = badgesFor(pet.species);
   const got = mine.filter((b) => earned.includes(b.key));
   // the header shows the tapped badge, else the latest earned one, else the first to earn
@@ -36,7 +34,7 @@ export default function Achievements() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={{ width: W, alignSelf: 'center', flex: 1 }}>
-        <TabTitle title={t('Achievements')} subtitle={t('Badges, streaks and challenges')} />
+        <TabTitle title={t('Achievements')} subtitle={t('Milestones from your life together')} />
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
           <Animated.View key={shown.key} entering={FadeIn.duration(200)} style={styles.head}>
             <View style={styles.headArt}>
@@ -99,7 +97,7 @@ export default function Achievements() {
                 </T>
               </View>
               <T weight="xbold" style={{ color: colors.muted, fontSize: 13 }}>
-                {t('Current streak · best {n}', { n: streak.best })}
+                {t('Days in a row · best {n}', { n: streak.best })}
               </T>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
@@ -110,14 +108,6 @@ export default function Achievements() {
             </View>
           </View>
 
-          <T weight="black" style={[styles.h2, { marginTop: 26, marginBottom: 12 }]}>
-            {t('Challenges')}
-          </T>
-          <View style={{ gap: 12 }}>
-            {list.map((c) => (
-              <ChallengeCard key={c.key} def={c} width={W - 40} locked={c.pro && !pro} done={completedChallengeKeys.includes(c.key)} />
-            ))}
-          </View>
         </ScrollView>
       </View>
     </View>

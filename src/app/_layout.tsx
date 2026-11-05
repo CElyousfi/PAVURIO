@@ -148,7 +148,6 @@ function Gate() {
         <Stack.Screen name="pet" options={{ presentation: 'modal' }} />
         <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
         <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="challenge" options={{ presentation: 'modal' }} />
         <Stack.Screen name="add" options={{ presentation: 'fullScreenModal', animation: 'none', gestureEnabled: false }} />
         <Stack.Screen name="supplies" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="supply" options={{ presentation: 'modal' }} />

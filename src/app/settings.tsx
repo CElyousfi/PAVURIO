@@ -13,7 +13,7 @@ import { shareText } from '../native/files';
 import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
 import { Chip, TabTitle } from '../ui/forms';
 import { DarkTile } from '../ui/Tiles';
-import { SupplyArt } from '../features/supplies';
+import { PantryIcon } from '../features/supplies';
 import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
@@ -110,9 +110,9 @@ export default function Settings() {
               testID="menu-care"
             />
             <DarkTile
-              title={t('Supplies')}
+              title={t('Pantry')}
               subtitle={t('Food, treats & meds — never run out')}
-              art={<View style={{ marginRight: 14, marginBottom: 4 }}><SupplyArt kind="food" level={0.6} size={70} /></View>}
+              art={<View style={{ marginRight: 10, marginBottom: 4 }}><PantryIcon kind="food" size={84} /></View>}
               onPress={() => router.push('/supplies')}
               height={112}
               testID="menu-supplies"
@@ -287,7 +287,7 @@ export default function Settings() {
             {[
               { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate, icon: ART.icons.heart },
               { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp, icon: ART.icons.gift },
-              { label: t('Achievements'), body: t('Badges, streaks and challenges'), go: () => router.push('/achievements'), icon: ART.icons.trophy },
+              { label: t('Achievements'), body: t('Milestones from your life together'), go: () => router.push('/achievements'), icon: ART.icons.trophy },
               { label: t('Help center'), body: t('Restoring, subscriptions, reminders'), go: () => Linking.openURL(LEGAL.help), icon: ART.icons.paw },
               { label: t('Contact support'), body: LEGAL.support, go: () => Linking.openURL(`mailto:${LEGAL.support}?subject=Pavurio`), icon: ART.icons.paw },
               { label: t('Privacy policy'), body: cloudState.enabled ? t('What we keep and why') : t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.icons.shield },

@@ -1,16 +1,12 @@
-/** Pops a full-screen celebration for each newly earned badge or finished challenge, one at a time. */
+/** Pops a full-screen celebration for each newly earned Paw Passport milestone, one at a time. */
 import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { usePathname } from 'expo-router';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { BADGES, badgeText } from '../domain/badges';
-import { challengeDef, pick } from '../domain/challenges';
 import { useEngagement } from '../state/Engagement';
 import { useApp } from '../state/AppState';
 import { Medal } from './Medal';
-import { CareIcon } from '../ui/CareIcon';
-import { ART } from '../ui/art';
-import { Scene } from '../ui/Scene';
 import { Bouncy, ConfettiRain, PopIn } from '../ui/motion';
 import { T } from '../ui/primitives';
 import { colors } from '../ui/theme';
@@ -48,8 +44,7 @@ export function CelebrationHost() {
   if (!head) return null;
 
   const badge = head.kind === 'badge' ? BADGES.find((b) => b.key === head.key) : null;
-  const ch = head.kind === 'challenge' ? challengeDef(head.key) : null;
-  const color = badge?.color ?? ch?.color ?? colors.brand;
+  const color = badge?.color ?? colors.brand;
   const close = () => {
     shift();
     if (queue.length <= 1) void maybeAskForReview(db);
@@ -61,26 +56,16 @@ export function CelebrationHost() {
         <Animated.View entering={FadeIn.duration(260)} style={[styles.arch, { backgroundColor: `${color}22` }]} />
         <View style={styles.center}>
           <PopIn delay={150}>
-            {badge ? (
-              <Medal def={badge} size={190} />
-            ) : ch ? (
-              ART.challenges[ch.key] ? (
-                <Scene source={ART.challenges[ch.key]!} width={170} height={210} border={6} tilt={-4} />
-              ) : (
-                <View style={[styles.chArt, { backgroundColor: ch.tint }]}>
-                  <CareIcon type={ch.rule.kind === 'care' ? ch.rule.type : 'meal'} size={130} />
-                </View>
-              )
-            ) : null}
+            {badge ? <Medal def={badge} size={190} /> : null}
           </PopIn>
           <Animated.View entering={ZoomIn.delay(260).springify().damping(14)} style={{ alignItems: 'center' }}>
             <T weight="black" style={[styles.kicker, { color }]}>
-              {badge ? t('NEW BADGE') : t('CHALLENGE COMPLETE')}
+              {t('NEW BADGE')}
             </T>
             <T weight="black" style={styles.title}>
-              {badge ? badgeText(badge.title) : ch ? pick(ch.title) : ''}
+              {badge ? badgeText(badge.title) : ''}
             </T>
-            <T style={styles.body}>{badge ? badgeText(badge.how) : t('You did it! The badge is in your collection.')}</T>
+            <T style={styles.body}>{badge ? badgeText(badge.how) : ''}</T>
           </Animated.View>
         </View>
         <Bouncy onPress={close} style={[styles.btn, { backgroundColor: color }]} accessibilityRole="button" testID="celebrate-ok">
@@ -99,7 +84,6 @@ const styles = StyleSheet.create({
   arch: { position: 'absolute', top: -220, width: 620, height: 620, borderRadius: 310 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 },
   kicker: { fontSize: 13, letterSpacing: 2 },
-  chArt: { width: 190, height: 190, borderRadius: 60, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 34, lineHeight: 40, textAlign: 'center', marginTop: 8 },
   body: { fontSize: 17, color: colors.inkSoft, textAlign: 'center', marginTop: 8, lineHeight: 24, maxWidth: 320 },
   btn: { height: 62, alignSelf: 'stretch', maxWidth: 360, width: '100%', borderRadius: 31, alignItems: 'center', justifyContent: 'center' },

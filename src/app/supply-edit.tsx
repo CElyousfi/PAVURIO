@@ -1,7 +1,8 @@
 /**
- * Add or edit a supply. Smart defaults from the pet's own plan: dry food follows logged meals,
- * medicine follows logged doses (when the plan has medicine), poop bags follow the number of walks;
- * the rest asks the one thing that matters — how long a pack lasts.
+ * Add or edit a pantry item. Pick a category (illustrated), and smart defaults come from the pet's own
+ * plan: dry food follows logged meals, medicine follows logged doses (when the plan has medicine), poop
+ * bags follow the number of walks; the rest asks the one thing that matters — how long a pack lasts.
+ * With several pets, an item can be just for this pet or for everyone.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -9,8 +10,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SupplyKind, SupplyUnit, perDayFromLasting } from '../domain/supplies';
 import type { CareType } from '../domain/care';
 import { ValidationError } from '../data/repo';
-import { archiveSupply, createSupply, getSupply, updateSupply } from '../data/suppliesRepo';
-import { KIND_META, SupplyArt, qty, templatesFor, useSupplies } from '../features/supplies';
+import { archiveSupply, createSupply, getDefaults, getSupply, setDefault, updateSupply } from '../data/suppliesRepo';
+import { KIND_META, PantryIcon, qty, templatesFor, useSupplies } from '../features/supplies';
 import { useApp } from '../state/AppState';
 import { confirmAsync } from '../ui/confirm';
 import { Chip, Field, ModalScreen } from '../ui/forms';
@@ -26,11 +27,16 @@ const LEAD = [1, 2, 3, 5, 7];
 
 export default function SupplyEditor() {
   const p = useLocalSearchParams<{ id?: string; template?: string; name?: string }>();
-  const { pet, db, bump, plan, portions } = useApp();
+  const { pet, pets, db, bump, plan, portions } = useApp();
   const { forecasts } = useSupplies();
   const templates = useMemo(() => (pet ? templatesFor(pet.species, plan) : []), [pet, plan]);
-  const [kind, setKind] = useState<SupplyKind>((p.template as SupplyKind) ?? 'food');
-  const tpl = templates.find((x) => x.kind === kind) ?? templates[0];
+  const [tplId, setTplId] = useState<string>(p.template ?? 'food');
+  const tpl = templates.find((x) => x.id === tplId) ?? templates[0];
+  const [kind, setKind] = useState<SupplyKind>(tpl?.kind ?? 'food');
+  const [shared, setShared] = useState(false);
+  // a second food for a pet that already has one: ask whether meals should come out of this one now
+  const [hasDefault, setHasDefault] = useState(false);
+  const [makeDefault, setMakeDefault] = useState(false);
   const [name, setName] = useState(p.name ?? tpl?.name() ?? '');
   const [nameTouched, setNameTouched] = useState(!!p.name || !!p.id);
   const [unit, setUnit] = useState<SupplyUnit>(tpl?.unit ?? 'g');
@@ -47,10 +53,11 @@ export default function SupplyEditor() {
   const [loaded, setLoaded] = useState(!p.id);
 
   // a template (or a kind tile) sets sensible defaults, until the owner changes them
-  const applyKind = (k: SupplyKind) => {
-    setKind(k);
-    const x = templates.find((y) => y.kind === k);
+  const applyKind = (id: string) => {
+    const x = templates.find((y) => y.id === id);
     if (!x) return;
+    setTplId(id);
+    setKind(x.kind);
     if (!nameTouched) setName(x.name());
     setUnit(x.unit);
     setPackSize(x.packSize);
@@ -61,7 +68,7 @@ export default function SupplyEditor() {
     setLasting(x.lasting && x.lasting.length ? 21 : null);
   };
   useEffect(() => {
-    if (!p.id && p.template) applyKind(p.template as SupplyKind);
+    if (!p.id && p.template) applyKind(p.template);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [templates.length]);
 
@@ -70,6 +77,9 @@ export default function SupplyEditor() {
     getSupply(db, p.id).then((s) => {
       if (!s) return router.back();
       setKind(s.kind);
+      setShared(s.shared);
+      const match = templates.find((y) => y.kind === s.kind);
+      if (match) setTplId(match.id);
       setName(s.name);
       setUnit(s.unit);
       setPackSize(s.packSize);
@@ -78,8 +88,7 @@ export default function SupplyEditor() {
       setPrice(s.price != null ? String(s.price) : '');
       if (!s.link && s.perDay) {
         const days = Math.round(s.packSize / s.perDay);
-        const x = templates.find((y) => y.kind === s.kind);
-        if (x?.lasting && x.lasting.length === 0) setPerDayN(s.perDay);
+        if (match?.lasting && match.lasting.length === 0) setPerDayN(s.perDay);
         else setLasting(days);
       }
       setLeftShare(null);
@@ -87,12 +96,17 @@ export default function SupplyEditor() {
     });
   }, [db, p.id, templates]);
 
+  useEffect(() => {
+    if (!pet || !link) return setHasDefault(false);
+    void getDefaults(db).then((d) => setHasDefault(!!d[pet.id]?.[link] && d[pet.id]?.[link] !== p.id));
+  }, [db, pet, link, p.id]);
+
   if (!pet || !loaded) return null;
   const meta = KIND_META[kind];
   const editingF = p.id ? forecasts?.find((f) => f.supply.id === p.id) : undefined;
   const effectivePack = packText ? Number(packText.replace(',', '.')) * (unit === 'g' ? 1000 : 1) : packSize;
-  const presets = (templates.find((x) => x.kind === kind)?.presets ?? [packSize]).filter((v, i, a) => a.indexOf(v) === i);
-  const lastingOptions = templates.find((x) => x.kind === kind)?.lasting;
+  const presets = (tpl?.presets ?? [packSize]).filter((v, i, a) => a.indexOf(v) === i);
+  const lastingOptions = tpl?.lasting;
   const perDay = link ? null : perDayN != null ? perDayN : lasting ? perDayFromLasting(effectivePack, lasting) : null;
 
   const save = async () => {
@@ -102,6 +116,7 @@ export default function SupplyEditor() {
     try {
       const input = {
         petId: pet.id,
+        shared,
         kind,
         name,
         unit,
@@ -113,7 +128,10 @@ export default function SupplyEditor() {
         price: price.trim() ? Number(price.replace(',', '.')) : null,
       };
       if (p.id) await updateSupply(db, p.id, { ...input, resetStock: leftShare != null });
-      else await createSupply(db, input);
+      else {
+        const created = await createSupply(db, input);
+        if (link && makeDefault) await setDefault(db, pet.id, link, created.id);
+      }
       requestPermission(db).catch(() => null);
       successFeedback();
       bump();
@@ -127,7 +145,7 @@ export default function SupplyEditor() {
 
   const remove = async () => {
     if (!p.id) return;
-    if (!(await confirmAsync(t('Remove this supply?'), t('Its reminders stop. Your care logs stay as they are.')))) return;
+    if (!(await confirmAsync(t('Remove this item?'), t('Its reminders stop. Your care logs stay as they are.')))) return;
     await archiveSupply(db, p.id);
     bump();
     router.dismissTo('/supplies');
@@ -135,13 +153,13 @@ export default function SupplyEditor() {
 
   return (
     <ModalScreen
-      title={p.id ? t('Edit supply') : t('New supply')}
+      title={p.id ? t('Edit item') : t('Add to pantry')}
       onClose={() => router.back()}
       error={error}
       footer={
         <>
-          <Pill label={p.id ? t('Save') : t('Add to the shelf')} color={meta.color} onPress={save} loading={saving} testID="supply-save" />
-          {p.id ? <SoftPill label={t('Remove supply')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} /> : null}
+          <Pill label={p.id ? t('Save') : t('Add to pantry')} color={meta.color} onPress={save} loading={saving} testID="supply-save" />
+          {p.id ? <SoftPill label={t('Remove item')} color={colors.danger} tint={colors.dangerSoft} onPress={remove} /> : null}
         </>
       }
     >
@@ -151,15 +169,16 @@ export default function SupplyEditor() {
           <View style={styles.kinds}>
             {templates.map((x) => (
               <DarkTile
-                key={x.kind}
+                key={x.id}
                 title={x.name()}
-                selected={x.kind === kind}
+                selected={x.id === tplId}
                 accent={KIND_META[x.kind].color}
                 accessibilityRole="radio"
-                art={<SupplyArt kind={x.kind} level={0.7} size={46} />}
-                onPress={() => applyKind(x.kind)}
+                art={<PantryIcon kind={x.kind} size={58} />}
+                onPress={() => applyKind(x.id)}
                 height={82}
                 style={styles.kind}
+                testID={`kind-${x.id}`}
               />
             ))}
           </View>
@@ -177,6 +196,16 @@ export default function SupplyEditor() {
         maxLength={60}
       />
 
+      {pets.length > 1 ? (
+        <View style={{ gap: 8 }}>
+          <Label>{t('Who uses it')}</Label>
+          <View style={styles.chips}>
+            <Chip label={t('Just {name}', { name: pet.name })} on={!shared} onPress={() => setShared(false)} />
+            <Chip label={t('Everyone')} on={shared} onPress={() => setShared(true)} />
+          </View>
+        </View>
+      ) : null}
+
       <View style={{ gap: 8 }}>
         <Label>{t('One pack')}</Label>
         <View style={styles.chips}>
@@ -190,7 +219,7 @@ export default function SupplyEditor() {
       <View style={{ gap: 8 }}>
         <Label>{p.id ? t('What’s left now (optional)') : t('What’s left now')}</Label>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-          <SupplyArt kind={kind} level={leftShare ?? editingF?.level ?? 1} size={58} />
+          <PantryIcon kind={kind} level={leftShare ?? editingF?.level ?? 1} size={62} />
           <View style={[styles.chips, { flex: 1 }]}>
             {LEFT.map((v) => (
               <Chip key={v} label={v === 1 ? t('Full') : v === 0.75 ? '¾' : v === 0.5 ? '½' : '¼'} on={leftShare === v} onPress={() => setLeftShare(leftShare === v && p.id ? null : v)} />
@@ -210,6 +239,12 @@ export default function SupplyEditor() {
                 ? t('Every meal you log takes its grams out of the bag. After a few days Pavurio learns how much {name} really eats.', { name: pet.name })
                 : t('Every dose you log comes out of the box.')}
             </T>
+            {hasDefault && !p.id ? (
+              <View style={styles.chips}>
+                <Chip label={link === 'meal' ? t('Use it for meals from now on') : t('Use it for doses from now on')} on={makeDefault} onPress={() => setMakeDefault(true)} />
+                <Chip label={t('Keep the current one')} on={!makeDefault} onPress={() => setMakeDefault(false)} />
+              </View>
+            ) : null}
           </>
         ) : lastingOptions && lastingOptions.length ? (
           <>
@@ -228,7 +263,7 @@ export default function SupplyEditor() {
               {t('How many a day?')}
             </T>
             <View style={styles.chips}>
-              {(kind === 'other' || kind === 'medicine' ? [1 / 30, 1 / 7, 1, 2] : [1, 2, 3, 4]).map((v) => (
+              {(tplId === 'flea' || kind === 'medicine' || kind === 'other' ? [1 / 30, 1 / 7, 1, 2] : [1, 2, 3, 4]).map((v) => (
                 <Chip key={v} label={v === 1 / 30 ? t('Once a month') : v === 1 / 7 ? t('Once a week') : tn(v, '{n} a day', '{n} a day')} on={perDayN != null && Math.abs(perDayN - v) < 1e-6} onPress={() => setPerDayN(v)} />
               ))}
             </View>
