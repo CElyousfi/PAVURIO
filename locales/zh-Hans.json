@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "拍摄兽医文件或与宠物的美好瞬间。",
+    "NSPhotoLibraryUsageDescription": "为记录和瞬间添加照片。",
+    "NSPhotoLibraryAddUsageDescription": "将宠物的故事和卡片保存到照片。"
+  }
+}

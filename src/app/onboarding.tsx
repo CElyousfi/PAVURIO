@@ -25,9 +25,9 @@ import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
 import { reminderCopy, requestPermission } from '../native/notifications';
 import { formatHM } from '../i18n/dates';
 import { newId } from '../domain/ids';
-import { LANGS, LANG_NAMES, Lang, t } from '../i18n';
+import { LANG_NAMES, Lang, t } from '../i18n';
+import { LanguagePicker, langShort } from '../ui/LanguagePicker';
 
-const LANG_FLAG: Record<Lang, string> = { en: '🇬🇧 EN', fr: '🇫🇷 FR', es: '🇪🇸 ES', pt: '🇵🇹 PT' };
 
 type Suggestion = { key: string; type: string; title: string; times: string[]; on: boolean };
 function suggestions(species: Species, plan: Plan): Suggestion[] {
@@ -67,6 +67,7 @@ export default function Onboarding() {
   const adding = params.add === '1';
   const [step, setStep] = useState<Step>(adding ? 'species' : 'welcome');
   const [unitsOpen, setUnitsOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [routines, setRoutines] = useState<Suggestion[]>([]);
   const [customize, setCustomize] = useState(false);
   const [species, setSpecies] = useState<Species>('dog');
@@ -199,7 +200,7 @@ export default function Onboarding() {
           bottomInset={insets.bottom}
           reduceMotion={reduceMotion}
           language={language}
-          onLanguage={() => setLanguage(LANGS[(LANGS.indexOf(language) + 1) % LANGS.length])}
+          onLanguage={() => setLangOpen(true)}
           onStart={() => setUnitsOpen(true)}
         />
       )}
@@ -398,6 +399,7 @@ export default function Onboarding() {
         </Animated.View>
       )}
 
+      <LanguagePicker visible={langOpen} value={language} onChange={(l) => void setLanguage(l)} onClose={() => setLangOpen(false)} />
       <Sheet visible={unitsOpen} onClose={() => setUnitsOpen(false)} title={t('Choose your units')}>
         <View style={{ gap: 10, paddingBottom: 8 }}>
           {(['kg', 'lb'] as const).map((u) => (
@@ -621,9 +623,9 @@ function WelcomePager({ width, bottomInset, reduceMotion, language, onLanguage, 
         ))}
       </View>
       <View style={[styles.welcomeBottom, { paddingBottom: bottomInset + 18 }]}>
-        <Bouncy onPress={onLanguage} style={styles.lang} accessibilityRole="button" accessibilityLabel={LANG_NAMES[LANGS[(LANGS.indexOf(language) + 1) % LANGS.length]]}>
+        <Bouncy onPress={onLanguage} style={styles.lang} accessibilityRole="button" accessibilityLabel={`${t('Language')}: ${LANG_NAMES[language]}`} testID="language">
           <T weight="black" style={{ fontSize: 14 }}>
-            {LANG_FLAG[language]}
+            🌐 {langShort(language)}
           </T>
         </Bouncy>
         <Pill label={t('GET STARTED')} onPress={onStart} style={{ flex: 1 }} testID="get-started" />

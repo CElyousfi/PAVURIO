@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Tire uma foto de um documento do veterinário ou de um momento com seu pet.",
+    "NSPhotoLibraryUsageDescription": "Anexe fotos aos registros e momentos.",
+    "NSPhotoLibraryAddUsageDescription": "Salve as histórias e cartões do seu pet em Fotos."
+  }
+}

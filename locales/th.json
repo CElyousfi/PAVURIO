@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "ถ่ายภาพเอกสารจากสัตวแพทย์หรือโมเมนต์กับสัตว์เลี้ยงของคุณ",
+    "NSPhotoLibraryUsageDescription": "แนบรูปภาพในบันทึกและโมเมนต์",
+    "NSPhotoLibraryAddUsageDescription": "บันทึกเรื่องราวและการ์ดของสัตว์เลี้ยงลงในรูปภาพ"
+  }
+}

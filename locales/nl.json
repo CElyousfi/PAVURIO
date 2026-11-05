@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Maak een foto van een dierenartsdocument of een moment met je huisdier.",
+    "NSPhotoLibraryUsageDescription": "Voeg foto's toe aan dossiers en momenten.",
+    "NSPhotoLibraryAddUsageDescription": "Bewaar de verhalen en kaarten van je huisdier in Foto's."
+  }
+}

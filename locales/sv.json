@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Fotografera ett veterinärdokument eller ett ögonblick med ditt husdjur.",
+    "NSPhotoLibraryUsageDescription": "Bifoga foton till journaler och ögonblick.",
+    "NSPhotoLibraryAddUsageDescription": "Spara ditt husdjurs berättelser och kort i Bilder."
+  }
+}

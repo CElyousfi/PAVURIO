@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Vyfoť dokument od veterináře nebo chvilku se svým mazlíčkem.",
+    "NSPhotoLibraryUsageDescription": "Přikládej fotky k záznamům a chvilkám.",
+    "NSPhotoLibraryAddUsageDescription": "Ukládej příběhy a karty mazlíčka do Fotek."
+  }
+}

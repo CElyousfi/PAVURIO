@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "التقط صورة لمستند من الطبيب البيطري أو للحظة مع حيوانك الأليف.",
+    "NSPhotoLibraryUsageDescription": "أرفق صورًا بالسجلات واللحظات.",
+    "NSPhotoLibraryAddUsageDescription": "احفظ قصص حيوانك الأليف وبطاقاته في الصور."
+  }
+}

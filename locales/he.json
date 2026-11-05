@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "צילום מסמך מהווטרינר או רגע עם חיית המחמד.",
+    "NSPhotoLibraryUsageDescription": "צירוף תמונות לרשומות ולרגעים.",
+    "NSPhotoLibraryAddUsageDescription": "שמירת הסיפורים והכרטיסים של חיית המחמד בתמונות."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Fă o poză unui document de la veterinar sau unui moment cu animalul tău.",
+    "NSPhotoLibraryUsageDescription": "Atașează poze la fișe și momente.",
+    "NSPhotoLibraryAddUsageDescription": "Salvează poveștile și cardurile animalului tău în Poze."
+  }
+}

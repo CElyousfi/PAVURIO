@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Veteriner belgesinin ya da evcil hayvanınla bir anın fotoğrafını çek.",
+    "NSPhotoLibraryUsageDescription": "Kayıtlara ve anlara fotoğraf ekle.",
+    "NSPhotoLibraryAddUsageDescription": "Evcil hayvanının hikâyelerini ve kartlarını Fotoğraflar'a kaydet."
+  }
+}

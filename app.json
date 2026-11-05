@@ -108,7 +108,35 @@
       "typedRoutes": false
     },
     "locales": {
-      "fr": "./locales/fr.json"
+      "fr": "./locales/fr.json",
+      "es": "./locales/es.json",
+      "pt": "./locales/pt.json",
+      "de": "./locales/de.json",
+      "it": "./locales/it.json",
+      "nl": "./locales/nl.json",
+      "pl": "./locales/pl.json",
+      "ru": "./locales/ru.json",
+      "uk": "./locales/uk.json",
+      "tr": "./locales/tr.json",
+      "ar": "./locales/ar.json",
+      "he": "./locales/he.json",
+      "ja": "./locales/ja.json",
+      "ko": "./locales/ko.json",
+      "zh-Hans": "./locales/zh-Hans.json",
+      "zh-Hant": "./locales/zh-Hant.json",
+      "hi": "./locales/hi.json",
+      "id": "./locales/id.json",
+      "ms": "./locales/ms.json",
+      "vi": "./locales/vi.json",
+      "th": "./locales/th.json",
+      "sv": "./locales/sv.json",
+      "da": "./locales/da.json",
+      "nb": "./locales/nb.json",
+      "fi": "./locales/fi.json",
+      "cs": "./locales/cs.json",
+      "ro": "./locales/ro.json",
+      "el": "./locales/el.json",
+      "hu": "./locales/hu.json"
     },
     "extra": {
       "eas": {

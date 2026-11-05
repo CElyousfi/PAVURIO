@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Сфотографуй документ від ветеринара або момент з улюбленцем.",
+    "NSPhotoLibraryUsageDescription": "Додавай фото до записів і моментів.",
+    "NSPhotoLibraryAddUsageDescription": "Зберігай історії та листівки улюбленця у Фото."
+  }
+}

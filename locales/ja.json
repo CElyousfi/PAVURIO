@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "動物病院の書類やペットとのひとこまを撮影します。",
+    "NSPhotoLibraryUsageDescription": "記録や思い出に写真を添付します。",
+    "NSPhotoLibraryAddUsageDescription": "ペットのストーリーやカードを写真に保存します。"
+  }
+}

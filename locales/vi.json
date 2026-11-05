@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Pavurio",
+    "NSCameraUsageDescription": "Chụp ảnh giấy tờ thú y hoặc khoảnh khắc với thú cưng của bạn.",
+    "NSPhotoLibraryUsageDescription": "Đính kèm ảnh vào hồ sơ và khoảnh khắc.",
+    "NSPhotoLibraryAddUsageDescription": "Lưu câu chuyện và thẻ của thú cưng vào Ảnh."
+  }
+}
