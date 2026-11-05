@@ -22,6 +22,8 @@ export type WalkLiveProps = {
   pause: string;
   resume: string;
   finish: string;
+  /** file URI of the walk illustration in the shared widgets folder (iOS banner), '' when unavailable */
+  art?: string;
 };
 
 export type WalkLiveAction = 'pause' | 'resume' | 'finish';

@@ -11,6 +11,7 @@ import type { CareType } from '../domain/care';
 import { listSchedules, marksBetween } from '../data/careRepo';
 import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
 import { configureNotifications, syncReminders } from '../native/notifications';
+import { listenToWidgetActions, syncWidgets } from '../native/widgets';
 import { registerBackgroundTasks } from '../native/backgroundTasks';
 import { isPro } from '../native/purchases';
 import { setMotionReduced } from '../ui/motion';
@@ -103,14 +104,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // reminders mirror the database: rebuild after every change (debounced) and on start
   useEffect(() => {
     configureNotifications();
-    const t = setTimeout(() => void syncReminders(db), 600);
+    const t = setTimeout(() => {
+      void syncReminders(db);
+      // home-screen widgets and the care Live Activity follow the same data
+      void syncWidgets(db);
+    }, 600);
     return () => clearTimeout(t);
   }, [db, version]);
+  // Done pressed on the care Live Activity
+  useEffect(() => listenToWidgetActions(db, () => setVersion((v) => v + 1)), [db]);
   // …and every time the app comes back (permissions may have changed in Settings, days may have passed)
   useEffect(() => {
     void registerBackgroundTasks();
     const sub = RNAppState.addEventListener('change', (s) => {
       if (s === 'active') void syncReminders(db);
+      // leaving the app: the widgets show the very latest state
+      if (s === 'active' || s === 'background') void syncWidgets(db);
     });
     return () => sub.remove();
   }, [db]);

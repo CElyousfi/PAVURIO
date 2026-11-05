@@ -8216,5 +8216,90 @@
   "id": "1622",
   "en": "🐾 Walk paused · tap to continue",
   "fr": "🐾 Balade en pause · touchez pour reprendre"
+ },
+ {
+  "id": "1623",
+  "en": "{done} of {planned} today",
+  "fr": "{done} sur {planned} aujourd’hui"
+ },
+ {
+  "id": "1624",
+  "en": "Tap to see the timer",
+  "fr": "Touchez pour voir le chrono"
+ },
+ {
+  "id": "1625",
+  "en": "First up: {care} at {time}",
+  "fr": "D’abord : {care} à {time}"
+ },
+ {
+  "id": "1626",
+  "en": "See you tomorrow",
+  "fr": "À demain"
+ },
+ {
+  "id": "1627",
+  "en": "Sweet dreams, {name}",
+  "fr": "Beaux rêves, {name}"
+ },
+ {
+  "id": "1628",
+  "en": "All done for {name} today 🎉",
+  "fr": "Tout est fait pour {name} aujourd’hui 🎉"
+ },
+ {
+  "id": "1629",
+  "en": "Every care is logged. Thank you!",
+  "fr": "Tous les soins sont notés. Merci !"
+ },
+ {
+  "id": "1630",
+  "en": "A little moment of {name} today?",
+  "fr": "Un petit moment avec {name} aujourd’hui ?"
+ },
+ {
+  "id": "1631",
+  "en": "Keep a photo of {name} today",
+  "fr": "Gardez une photo de {name} aujourd’hui"
+ },
+ {
+  "id": "1632",
+  "en": "One photo a day becomes a whole story.",
+  "fr": "Une photo par jour, et c’est toute une histoire."
+ },
+ {
+  "id": "1633",
+  "en": "How is {name} today?",
+  "fr": "Comment va {name} aujourd’hui ?"
+ },
+ {
+  "id": "1634",
+  "en": "Tap to log the first care.",
+  "fr": "Touchez pour noter le premier soin."
+ },
+ {
+  "id": "1635",
+  "en": "Next: {care}",
+  "fr": "Ensuite : {care}"
+ },
+ {
+  "id": "1636",
+  "en": "Tap to log care.",
+  "fr": "Touchez pour noter un soin."
+ },
+ {
+  "id": "1637",
+  "en": "Add a routine and Pavurio keeps track.",
+  "fr": "Ajoutez une routine, Pavurio s’occupe du suivi."
+ },
+ {
+  "id": "1638",
+  "en": "Add your pet’s food to see how long it lasts.",
+  "fr": "Ajoutez la nourriture de votre animal pour voir combien de temps elle dure."
+ },
+ {
+  "id": "1639",
+  "en": "Add your pet to get started",
+  "fr": "Ajoutez votre animal pour commencer"
  }
 ]

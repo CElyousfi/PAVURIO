@@ -20,6 +20,7 @@ import { CARE, careAllowedFor, isCareType } from '../domain/care';
 import { portionOf } from '../domain/progress';
 import { deviceLanguage, isLang, setLang } from '../i18n';
 import { SNOOZE_MS, syncReminders } from './notifications';
+import { syncWidgets } from './widgets';
 
 export const REFRESH_TASK = 'pavurio-refresh-reminders';
 export const ACTION_TASK = 'pavurio-notification-actions';
@@ -61,7 +62,10 @@ export async function handleReminderAction(db: Db, action: string, d: { kind?: s
 if (NATIVE) {
   TaskManager.defineTask(REFRESH_TASK, async () => {
     try {
-      await syncReminders(await openDb());
+      const db = await openDb();
+      await syncReminders(db);
+      // keep the widgets fresh (Android has no timeline: this is how the scene moves on)
+      await syncWidgets(db).catch(() => null);
       return BackgroundTask.BackgroundTaskResult.Success;
     } catch {
       return BackgroundTask.BackgroundTaskResult.Failed;
@@ -76,6 +80,8 @@ if (NATIVE) {
       if (await handleReminderAction(db, r.actionIdentifier, d)) {
         await Notifications.dismissNotificationAsync(r.notification.request.identifier).catch(() => {});
         await syncReminders(db);
+        // Done from a notification: the widget and the care Live Activity catch up right away
+        await syncWidgets(db).catch(() => null);
       }
     } catch (e) {
       console.warn('[pavurio] reminder action failed', e);
