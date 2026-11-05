@@ -34,7 +34,11 @@ export function liveProps(w: Walk, petName: string): WalkLiveProps {
 
 /** Keeps the lock screen in step with the walk (or clears it when there's no walk in progress). */
 export async function mirrorWalk(w: Walk | null, petName: string): Promise<void> {
-  if (w && (w.status === 'active' || w.status === 'paused')) await showWalkLive(liveProps(w, petName));
+  if (w && (w.status === 'active' || w.status === 'paused')) {
+    // the walk illustration on the Lock Screen (loaded lazily: native-only module)
+    const art = await import('../native/widgets/art').then((m) => m.widgetArt()).catch(() => null);
+    await showWalkLive({ ...liveProps(w, petName), art: art?.walk_wide ?? '' });
+  }
   else await endWalkLive();
 }
 

@@ -7,8 +7,8 @@
  * and can be paused or finished in the app.
  */
 import React from 'react';
-import { Button, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { buttonStyle, font, foregroundStyle, monospacedDigit, padding, tint } from '@expo/ui/swift-ui/modifiers';
+import { Button, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { aspectRatio, buttonStyle, font, foregroundStyle, frame, monospacedDigit, padding, resizable, tint } from '@expo/ui/swift-ui/modifiers';
 import { addUserInteractionListener, createLiveActivity, type LiveActivity } from 'expo-widgets';
 import type { WalkLiveAction, WalkLiveProps } from './types';
 export type { WalkLiveAction, WalkLiveProps } from './types';
@@ -42,6 +42,15 @@ const WalkActivity = createLiveActivity<WalkLiveProps>('PavurioWalk', (props: Wa
   return {
     banner: (
       <VStack alignment="leading" spacing={8} modifiers={[padding({ all: 16 })]}>
+        {props.art ? (
+          <HStack>
+            <Spacer />
+            <VStack modifiers={[frame({ height: 58 })]}>
+              <Image uiImage={props.art} modifiers={[resizable(), aspectRatio({ contentMode: 'fit' })]} />
+            </VStack>
+            <Spacer />
+          </HStack>
+        ) : null}
         <HStack>
           <VStack alignment="leading" spacing={2}>
             <Text modifiers={[font({ size: 15, weight: 'bold', design: 'rounded' })]}>{finished ? props.title : paused ? props.pausedText : props.walking}</Text>

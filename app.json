@@ -95,9 +95,61 @@
       ],
       "expo-document-picker",
       [
+        "./plugins/withWidgetTapOpens.js",
+        {
+          "widgets": [
+            "PavurioToday",
+            "PavurioPantry"
+          ]
+        }
+      ],
+      [
         "expo-widgets",
         {
-          "enableAndroid": true
+          "enableAndroid": true,
+          "widgets": [
+            {
+              "name": "PavurioToday",
+              "displayName": "Pavurio",
+              "description": "What your pet needs right now: the next care, medicine, food to buy, a moment to keep.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "accessoryCircular",
+                  "accessoryRectangular",
+                  "accessoryInline"
+                ],
+                "contentMarginsDisabled": true
+              },
+              "android": {
+                "minWidth": 250,
+                "minHeight": 110,
+                "targetCellWidth": 4,
+                "targetCellHeight": 2,
+                "resizeMode": "both"
+              }
+            },
+            {
+              "name": "PavurioPantry",
+              "displayName": "Pavurio Pantry",
+              "description": "Food and supplies at a glance: how long each one lasts.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ],
+                "contentMarginsDisabled": true
+              },
+              "android": {
+                "minWidth": 250,
+                "minHeight": 110,
+                "targetCellWidth": 4,
+                "targetCellHeight": 2,
+                "resizeMode": "both"
+              }
+            }
+          ]
         }
       ],
       "expo-background-task"
