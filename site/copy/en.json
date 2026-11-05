@@ -1,0 +1,689 @@
+{
+  "lang": "en",
+  "locale": "en_US",
+  "name": "English",
+  "ui": {
+    "features": "Features",
+    "faq": "FAQ",
+    "download": "Download",
+    "get_app": "Get the app",
+    "play_small": "GET IT ON",
+    "play": "Google Play",
+    "ios_small": "COMING SOON ON",
+    "ios": "App Store",
+    "free_badge": "FREE",
+    "home": "Home",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "support": "Support",
+    "delete": "Delete account",
+    "contact": "Contact",
+    "press": "Press",
+    "footer_tag": "A calm companion for real pet care.",
+    "rights": "© 2026 Pavurio. Made with care for dogs, cats and the people who love them.",
+    "scan": "Scan to get Pavurio",
+    "scan_sub": "Point your phone's camera here",
+    "skip": "Skip to content",
+    "menu": "Menu",
+    "related": "More of what Pavurio does",
+    "how": "How it works",
+    "questions": "Questions",
+    "learn_more": "Learn more",
+    "back_home": "Pavurio home",
+    "language": "Language",
+    "copied": "Email copied"
+  },
+  "home": {
+    "title": "Pavurio: Pet Care App for Dogs & Cats – Reminders & Food Tracker",
+    "desc": "A calm pet care app for dogs and cats: medicine and meal reminders, a food tracker that tells you when to buy, walks, vet records and widgets. Free, no ads.",
+    "eyebrow": "For dogs & cats",
+    "h1": "Care for your pet. Pavurio remembers the rest.",
+    "sub": "Meals, medicine, walks and the food bag, in one calm app. Your pet colours in as the day's care gets done.",
+    "try_hint": "Tap a care, and Honey colours in",
+    "try_done": "All done today. Honey is fully coloured in!",
+    "try_logged": "{n} of 5 done today",
+    "try_again": "Start again",
+    "cares": [
+      "Meal",
+      "Water",
+      "Walk",
+      "Medicine",
+      "Play"
+    ],
+    "laurels": [
+      [
+        "Dogs",
+        "& cats"
+      ],
+      [
+        "30",
+        "languages"
+      ],
+      [
+        "0",
+        "ads, ever"
+      ]
+    ],
+    "img_alt": "Honey the dog and Tabby the cat, Pavurio's mascots",
+    "tour_h": "Today, at a glance.",
+    "tour_p": "Home answers three questions, in order: what does my pet need today, what should I buy, and is there a moment worth keeping?",
+    "tabs": [
+      [
+        "Home",
+        "Today's plan, with your pet colouring in as you go."
+      ],
+      [
+        "Care",
+        "What's due now, with one slide to mark it done."
+      ],
+      [
+        "Pantry",
+        "Every bag, box and blister pack, with the days left."
+      ],
+      [
+        "Summary",
+        "A gentle weekly report of the care you gave."
+      ]
+    ],
+    "rem_k": "Reminders",
+    "rem_h": "Never miss a dose.",
+    "rem_p": "Set the time once. Pavurio nudges you, lets you tick it off from the notification, and checks back 30 minutes later if a meal or medicine is still open.",
+    "rem_points": [
+      "Mark it done right from the notification",
+      "One gentle follow-up for meals and medicine",
+      "Vet visits reminded the day before"
+    ],
+    "rem_card_t": "Apoquel · 1 tablet",
+    "rem_card_s": "Due at 8:00 · Honey",
+    "rem_slide": "Slide to give",
+    "rem_given": "Given at {time}. Thank you! 🐾",
+    "rem_reset": "Undo",
+    "pan_k": "Pantry",
+    "pan_h": "Never run out of food.",
+    "pan_p": "Log a meal and Pavurio knows how much is left. It tells you when to buy, before the bag is empty, and writes the shopping list for you.",
+    "pan_points": [
+      "A forecast from what your pet actually eats",
+      "“Why this estimate?” explained in plain words",
+      "A shopping list sized for one week, two or a month",
+      "Shared food for homes with several pets"
+    ],
+    "pan_item": "Dry food · 12 kg",
+    "pan_left": "{kg} kg left",
+    "pan_days": "{n} days left",
+    "pan_order": "Order by {day}",
+    "pan_out": "Out of food!",
+    "pan_ok": "Plenty left",
+    "pan_today": "Today",
+    "pan_log": "Log a meal",
+    "pan_restock": "Restock",
+    "pan_note": "Each meal: 250 g. Honey eats about 500 g a day.",
+    "wid_k": "Widgets",
+    "wid_h": "On your Home Screen. And your Lock Screen.",
+    "wid_p": "Widgets show the one thing that matters right now: the next dose, what to buy, or that today is all done. A Live Activity counts down to medicine time, with a Given button.",
+    "wid_note": "Home-screen widgets on Android. Lock Screen widgets and Live Activities come with the iPhone app.",
+    "wid_today": "Medicine for Honey",
+    "wid_today_s": "in 12 min",
+    "wid_pantry": "Pantry",
+    "wid_rows": [
+      [
+        "Dry food",
+        "Order by Thu",
+        18
+      ],
+      [
+        "Treats",
+        "20 days left",
+        62
+      ],
+      [
+        "Poop bags",
+        "35 days left",
+        85
+      ]
+    ],
+    "wid_la_t": "Apoquel for Honey",
+    "wid_la_s": "Due at 8:00",
+    "wid_la_btn": "Given",
+    "walk_k": "Walks",
+    "walk_h": "Walks, timed from the Lock Screen.",
+    "walk_p": "Start a walk, put the phone away. Pause and finish from the Lock Screen, and every walk lands in Honey's history.",
+    "walk_title": "Walk with Honey",
+    "walk_sub": "In progress",
+    "walk_pause": "Pause",
+    "walk_resume": "Resume",
+    "walk_finish": "Finish",
+    "walk_paused": "Paused",
+    "walk_saved": "Walk saved. Good dog! 🐕",
+    "walk_new": "New walk",
+    "health_k": "Health",
+    "health_h": "The vet file, always in your pocket.",
+    "health_p": "Vaccines, vet visits, medication, allergies and weight, with photos of the paperwork. Share a clear care summary with your vet or pet sitter in one tap.",
+    "health_chips": [
+      "Vaccines",
+      "Vet visits",
+      "Medication",
+      "Allergies",
+      "Weight chart",
+      "Care summary"
+    ],
+    "mem_k": "Memories",
+    "mem_h": "Moments worth keeping.",
+    "mem_p": "Gotcha day, birthdays, the first walk. Turn your own photos into Memory Cards and share them with the people who love your pet too.",
+    "mem_hint": "Tap a card to bring it forward",
+    "calm_h": "No streaks. No guilt trips.",
+    "calm_p": "Pavurio is a companion, not a game. No streaks to protect, no challenges, no made-up urgency. Just what your pet needs, when it matters.",
+    "calm_points": [
+      [
+        "🌙",
+        "Quiet at night",
+        "Gentle reminders, only when there's something to do."
+      ],
+      [
+        "🐾",
+        "Your pet, not points",
+        "Progress is your pet colouring in, nothing more."
+      ],
+      [
+        "☕",
+        "Done in seconds",
+        "Log a care in one tap, then get on with your day."
+      ]
+    ],
+    "lang_h": "Speaks 30 languages.",
+    "lang_p": "From Deutsch to 日本語, with the right dates and plurals in every one.",
+    "priv_h": "No ads. No data games.",
+    "priv_p": "Your pet's data lives on your phone, with a private backup only you can read. No ad SDKs, no analytics SDK, and we never sell data.",
+    "priv_link": "How we handle it",
+    "pro_h": "Free to start. Pro if you want more.",
+    "pro_free_h": "Free",
+    "pro_free": [
+      "Care logging and reminders",
+      "Pantry and shopping list",
+      "Walks, health file and widgets",
+      "One pet"
+    ],
+    "pro_pro_h": "Pavurio Pro",
+    "pro_pro": [
+      "Every pet in your home",
+      "Realistic coats in the Studio",
+      "Weeks and months of history",
+      "Monthly stories and more care tips"
+    ],
+    "pro_note": "Pro is optional and keeps Pavurio ad-free and independent.",
+    "faq_h": "Questions, answered.",
+    "faq": [
+      [
+        "Is Pavurio free?",
+        "Yes. Logging care, reminders, the pantry, walks, the health file and widgets are free for one pet. Pavurio Pro adds every pet in your home, realistic coats, weeks and months of history, monthly stories and more care tips."
+      ],
+      [
+        "Does it work for both dogs and cats?",
+        "Yes. Each pet has its own look, daily plan, reminders, pantry and history. Cats get litter tracking; dogs get the walk timer."
+      ],
+      [
+        "How does Pavurio know when the food will run out?",
+        "When you log a meal, Pavurio takes that portion off the bag you're using. From the last two weeks of meals it works out how much your pet eats a day, then shows the days left and the date to order by. Tap “Why this estimate?” to see exactly how it was worked out."
+      ],
+      [
+        "Do I need an account?",
+        "No. Pavurio works on your phone from the first second. Your data is backed up privately to your account so you can restore it on a new phone; you can add Google, Apple or email sign-in whenever you like."
+      ],
+      [
+        "Is there an iPhone app?",
+        "Pavurio is on Google Play now. The iPhone app, with Lock Screen widgets and Live Activities, is coming soon."
+      ],
+      [
+        "Which languages does Pavurio speak?",
+        "30 languages, including English, Français, Español, Português, Deutsch, Italiano, Nederlands, Polski, Türkçe, العربية, 日本語, 한국어 and 中文."
+      ],
+      [
+        "Is this veterinary advice?",
+        "No. Pavurio helps you keep track of the care you give and remember appointments. For anything about your pet's health, talk to your vet."
+      ]
+    ],
+    "cta_h": "Give your pet a calm, colourful day.",
+    "cta_p": "Download Pavurio and log the first care in under a minute.",
+    "cta_note": "Free · No ads · 30 languages"
+  },
+  "pages": {
+    "pet-medication-reminder": {
+      "nav": "Medication reminders",
+      "title": "Pet Medication Reminder App for Dogs & Cats | Pavurio",
+      "desc": "Never miss your dog's or cat's medicine. Pavurio reminds you at the right time, lets you mark it given from the notification and follows up if it's still open. Free.",
+      "h1": "Pet medication reminders that check back",
+      "lead": "Tablets, drops, flea and worming treatments: set the time once and Pavurio makes sure the dose is given, even on busy mornings.",
+      "art": "medication",
+      "blocks": [
+        [
+          "A reminder at the exact time",
+          "Choose the time and how often: every day, a few times a day, or just once. Pavurio schedules the reminder on your phone, so it rings even without a connection.",
+          "shot:care"
+        ],
+        [
+          "Given, right from the notification",
+          "Tap Done on the notification and the dose is logged for the right pet. No need to open the app.",
+          "art:reminders"
+        ],
+        [
+          "One follow-up, never a nag",
+          "If a medicine is still open 30 minutes later, Pavurio asks once more. Then it stays quiet.",
+          "art:medication"
+        ],
+        [
+          "Know when the box runs out",
+          "Link the medicine to your pantry and every dose counts down the pack. Pavurio tells you when to reorder, before the last tablet.",
+          "shot:supply"
+        ]
+      ],
+      "steps": [
+        [
+          "Add the medicine",
+          "Name, dose and time, in a few taps."
+        ],
+        [
+          "Get reminded",
+          "At the time you chose, on every day you chose."
+        ],
+        [
+          "Mark it given",
+          "From the notification or the app, in one tap."
+        ]
+      ],
+      "faq": [
+        [
+          "Can I set several doses a day?",
+          "Yes. Add as many times as you need, each with its own reminder."
+        ],
+        [
+          "What if two people share the pet's care?",
+          "Whoever gives the dose marks it done, and the reminder won't follow up. Each dose is logged with its time."
+        ],
+        [
+          "Does the reminder work offline?",
+          "Yes. Reminders are scheduled on your phone, so they work without a connection."
+        ],
+        [
+          "Does Pavurio tell me which medicine to give?",
+          "No. Pavurio reminds you of the plan you set with your vet. It doesn't give medical advice."
+        ]
+      ],
+      "related": [
+        "pet-food-tracker",
+        "pet-health-records",
+        "pet-care-widgets"
+      ]
+    },
+    "pet-food-tracker": {
+      "nav": "Pet food tracker",
+      "title": "Pet Food Tracker: Know When to Buy Dog & Cat Food | Pavurio",
+      "desc": "Pavurio tracks your pet's food, treats, litter and medicine, forecasts how many days are left and tells you when to order. Shopping list included. Free app, no ads.",
+      "h1": "A pet food tracker that tells you when to buy",
+      "lead": "Never stand in front of an empty bag again. Pavurio counts down food, treats, litter and medicine from what your pet really uses, and tells you when to order.",
+      "art": "pantry",
+      "blocks": [
+        [
+          "Days left, worked out for you",
+          "Every meal you log comes off the bag you're using. Pavurio averages the last two weeks and shows the days left, the run-out date and the date to order by.",
+          "shot:pantry"
+        ],
+        [
+          "“Why this estimate?”",
+          "No black box. Tap once to see where the daily amount comes from, which meals were counted and the starting stock.",
+          "shot:supply"
+        ],
+        [
+          "A shopping list that writes itself",
+          "Anything running low lands on the list, with enough packs for the buffer you choose: one week, two weeks or a month. Share it with whoever does the shopping.",
+          "shot:shopping"
+        ],
+        [
+          "Made for multi-pet homes",
+          "Mark a bag as shared and Pavurio counts every pet that eats from it.",
+          "art:pantry_list"
+        ]
+      ],
+      "steps": [
+        [
+          "Add a product",
+          "Pick a category, enter the pack size and what's left."
+        ],
+        [
+          "Log meals as usual",
+          "Each portion comes off the right bag."
+        ],
+        [
+          "Order on time",
+          "A reminder on the order-by date, and the shopping list ready."
+        ]
+      ],
+      "faq": [
+        [
+          "Does Pavurio buy food for me?",
+          "No. Nothing is ever bought automatically. Pavurio tells you when to order and how many packs to get."
+        ],
+        [
+          "What if I forget to log some meals?",
+          "Pavurio notices quiet days, counts them at your pet's usual rate and marks the forecast as estimated, so the number stays honest."
+        ],
+        [
+          "Can I track litter, treats and medicine too?",
+          "Yes. Food and medicine count down from your logs; other products use a simple daily rate like “a pack lasts about a month”."
+        ],
+        [
+          "Does it need barcode scanning?",
+          "No. You type the pack size once. No scanning, no paid service, no account needed."
+        ]
+      ],
+      "related": [
+        "pet-medication-reminder",
+        "pet-care-widgets",
+        "dog-care-app"
+      ]
+    },
+    "dog-walk-tracker": {
+      "nav": "Dog walk timer",
+      "title": "Dog Walk Timer & Log: Track Every Walk | Pavurio",
+      "desc": "Time your dog's walks with Pavurio. Start, pause and finish from the Lock Screen, see every walk in your dog's history, and get a gentle reminder at walk time. Free.",
+      "h1": "A dog walk timer that lives on your Lock Screen",
+      "lead": "Start the walk, put your phone in your pocket. Pavurio times it, lets you pause or finish without unlocking, and keeps every walk in your dog's history.",
+      "art": "walk",
+      "blocks": [
+        [
+          "Start in one tap",
+          "Walk time on the schedule? The reminder and the widget take you straight to the timer.",
+          "shot:walk"
+        ],
+        [
+          "Pause and finish from the Lock Screen",
+          "The timer runs on the Lock Screen, with Pause and Finish buttons.",
+          "art:walk_wide"
+        ],
+        [
+          "Every walk, remembered",
+          "Walks join today's plan, so Honey colours in, and stay in the history to look back on.",
+          "shot:home"
+        ]
+      ],
+      "steps": [
+        [
+          "Add a walk routine",
+          "Mornings, evenings, or both."
+        ],
+        [
+          "Start the timer",
+          "From the reminder, the widget or the app."
+        ],
+        [
+          "Finish and save",
+          "The walk is logged for today."
+        ]
+      ],
+      "faq": [
+        [
+          "Does Pavurio track distance or GPS routes?",
+          "No. Pavurio times your walks and logs them; it doesn't use your location."
+        ],
+        [
+          "Can I log a walk I forgot to time?",
+          "Yes. Log it afterwards from the Care tab and pick when it happened."
+        ],
+        [
+          "Does it work for cats?",
+          "The walk timer is for dogs. Cats get play time and litter tracking instead."
+        ]
+      ],
+      "related": [
+        "dog-care-app",
+        "pet-care-widgets",
+        "pet-medication-reminder"
+      ]
+    },
+    "pet-health-records": {
+      "nav": "Health records",
+      "title": "Pet Health Records App: Vaccines, Vet Visits & Weight | Pavurio",
+      "desc": "Keep your dog's or cat's vaccines, vet visits, medication, allergies and weight in one place, with photos of the paperwork. Share a care summary with your vet. Free.",
+      "h1": "Your pet's health records, ready for the vet",
+      "lead": "Vaccines, vet visits, medication, allergies and weight, in one tidy file you always have with you.",
+      "art": "records",
+      "blocks": [
+        [
+          "Everything the vet asks about",
+          "Vaccines with their dates, past visits, medication, allergies, each with photos of the paperwork.",
+          "shot:records"
+        ],
+        [
+          "Weight over time",
+          "Log a weight after each check-up and see the chart.",
+          "shot:weight"
+        ],
+        [
+          "Appointments you won't forget",
+          "Add the next vet, groomer or sitter visit and get a reminder the day before.",
+          "art:vet"
+        ],
+        [
+          "A care summary to share",
+          "Routine, recent care, records and weight in one clear summary for the vet or pet sitter.",
+          "art:records_scene"
+        ]
+      ],
+      "steps": [
+        [
+          "Add a record",
+          "Vaccine, visit, medication or allergy."
+        ],
+        [
+          "Attach the paperwork",
+          "Snap a photo of the certificate or invoice."
+        ],
+        [
+          "Share when needed",
+          "Send the care summary in one tap."
+        ]
+      ],
+      "faq": [
+        [
+          "Can I keep records for several pets?",
+          "Yes. Each pet has its own health file. Pavurio Pro lets you add every pet in your home."
+        ],
+        [
+          "Where are my records stored?",
+          "On your phone, with a private backup to your account that only you can read."
+        ],
+        [
+          "Is Pavurio a substitute for my vet?",
+          "No. It keeps your records organised; your vet gives the advice."
+        ]
+      ],
+      "related": [
+        "pet-medication-reminder",
+        "cat-care-app",
+        "dog-care-app"
+      ]
+    },
+    "pet-care-widgets": {
+      "nav": "Widgets",
+      "title": "Pet Care Widgets: Your Pet on Your Home Screen | Pavurio",
+      "desc": "Pavurio's widgets show what your dog or cat needs right now: the next dose, food to buy, or that today is all done. Pantry widget included. Free for Android.",
+      "h1": "Pet care widgets that show what matters now",
+      "lead": "Honey and Tabby on your Home Screen, showing the one thing worth knowing right now, and nothing when there's nothing to do.",
+      "art": "widgets",
+      "blocks": [
+        [
+          "The one thing that matters",
+          "Medicine due always comes first. Then other care that's due, food to buy, or a little celebration when the day is done.",
+          "art:widget_care"
+        ],
+        [
+          "Your pantry at a glance",
+          "The pantry widget shows your top three products with a stock bar and the order-by day.",
+          "art:restock_wide"
+        ],
+        [
+          "Learns your rhythm",
+          "Pavurio notices when you usually check in or take photos, and only nudges around those times. At night, your pet sleeps too.",
+          "art:widget_sleep"
+        ]
+      ],
+      "steps": [
+        [
+          "Add the widget",
+          "Long-press your Home Screen and pick Pavurio."
+        ],
+        [
+          "Choose a size",
+          "Small, medium or resized to fit."
+        ],
+        [
+          "Tap to act",
+          "The widget opens the right screen."
+        ]
+      ],
+      "faq": [
+        [
+          "Which phones are supported?",
+          "Android now, with resizable widgets. On iPhone, Home Screen and Lock Screen widgets and Live Activities come with the iPhone app."
+        ],
+        [
+          "Will the widget nag me?",
+          "No. There are no streaks or guilt messages. When nothing needs doing, it simply shows your pet."
+        ],
+        [
+          "Does it drain the battery?",
+          "No. The widget updates when your data changes and at a few planned moments of the day."
+        ]
+      ],
+      "related": [
+        "pet-medication-reminder",
+        "pet-food-tracker",
+        "dog-walk-tracker"
+      ]
+    },
+    "dog-care-app": {
+      "nav": "For dogs",
+      "title": "Dog Care App: Feeding, Walks, Medicine & Vet Log | Pavurio",
+      "desc": "Pavurio is the calm dog care app: feeding schedule, walk timer, medicine reminders, food stock tracker and vet records, with your dog colouring in as you go. Free.",
+      "h1": "The dog care app for the whole day",
+      "lead": "Meals, walks, medicine, the food bag and the vet file, in one place, with your dog colouring in as the day's care gets done.",
+      "art": "dog",
+      "blocks": [
+        [
+          "A plan that fits your dog",
+          "Meals, water, walks, play, grooming and medicine, at the times that suit your dog.",
+          "shot:home"
+        ],
+        [
+          "Walks, timed",
+          "A walk timer that runs on your Lock Screen, with Pause and Finish buttons.",
+          "art:walk_wide"
+        ],
+        [
+          "Never run out of kibble",
+          "Pavurio counts down the bag from the meals you log and tells you when to order.",
+          "shot:pantry"
+        ],
+        [
+          "The vet file",
+          "Vaccines, visits, weight and paperwork, ready to share.",
+          "shot:records"
+        ]
+      ],
+      "steps": [
+        [
+          "Add your dog",
+          "Name, look and daily plan, in about a minute."
+        ],
+        [
+          "Log care in one tap",
+          "Or straight from the reminder."
+        ],
+        [
+          "Watch them colour in",
+          "A little more with every care."
+        ]
+      ],
+      "faq": [
+        [
+          "Is it good for puppies?",
+          "Yes. Set frequent meals and walks, track weight as your puppy grows and keep the vaccine schedule in one place."
+        ],
+        [
+          "Can the whole family use it?",
+          "Today Pavurio keeps one household per account. Sharing it between family members is planned."
+        ],
+        [
+          "Is it free?",
+          "Yes, for one dog. Pavurio Pro adds every pet in your home, realistic coats, history and monthly stories."
+        ]
+      ],
+      "related": [
+        "dog-walk-tracker",
+        "pet-food-tracker",
+        "cat-care-app"
+      ]
+    },
+    "cat-care-app": {
+      "nav": "For cats",
+      "title": "Cat Care App: Feeding, Litter, Medicine & Vet Log | Pavurio",
+      "desc": "The calm cat care app: feeding times, litter tracking, medicine reminders, food stock forecasts and vet records, with your cat colouring in as you go. Free.",
+      "h1": "The cat care app that keeps up with your cat",
+      "lead": "Meals, water, litter, play and medicine, with your cat colouring in as the day's care gets done. And a reminder before the food runs out.",
+      "art": "cat",
+      "blocks": [
+        [
+          "A day plan for your cat",
+          "Meals, fresh water, litter, play and grooming, each at its own time.",
+          "art:cat_home"
+        ],
+        [
+          "Litter, tracked",
+          "Log a litter change in one tap and get reminded when it's due again.",
+          "art:litter"
+        ],
+        [
+          "Food and litter in stock",
+          "Pavurio counts down food and litter and puts them on the shopping list in time.",
+          "shot:pantry"
+        ],
+        [
+          "Health file for the vet",
+          "Vaccines, visits, weight and allergies, with photos of the paperwork.",
+          "shot:records"
+        ]
+      ],
+      "steps": [
+        [
+          "Add your cat",
+          "Name, coat and daily plan."
+        ],
+        [
+          "Log care in one tap",
+          "Or straight from the reminder."
+        ],
+        [
+          "See them colour in",
+          "A little more with every care."
+        ]
+      ],
+      "faq": [
+        [
+          "Does Pavurio track litter?",
+          "Yes. Cats get litter changes as a care, with their own reminders, and litter can be tracked in the pantry too."
+        ],
+        [
+          "Is it good for kittens?",
+          "Yes. Plan frequent small meals, track weight as your kitten grows and keep vaccines in one place."
+        ],
+        [
+          "Can I add my dog too?",
+          "Yes. Pavurio Pro lets you add every pet in your home, each with their own plan."
+        ]
+      ],
+      "related": [
+        "pet-food-tracker",
+        "pet-health-records",
+        "dog-care-app"
+      ]
+    }
+  }
+}

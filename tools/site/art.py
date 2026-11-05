@@ -1,4 +1,5 @@
-"""Prepares the landing-page art in site/img/l/ from the app's own illustrations (run when the art changes).
+"""Prepares the Memory Cards shown on the landing page (site/img/l/card_*); the new site only uses those and the QR codes.
+Other art now comes straight from assets/art at build time (tools/site/build.py), screenshots from tools/site/shots.py.
 Usage (repo root): python3 tools/site/art.py [screens_dir]
 - stickers / care / icon art → resized webp
 - Memory Cards (Post 1080×1350) composed from the real templates + scene art, title per language
