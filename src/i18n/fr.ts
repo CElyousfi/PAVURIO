@@ -601,4 +601,5 @@ export const FR: Record<string, string> = {
   "{type} is not available for a {species}.": "Ce soin n’est pas disponible pour cette espèce.",
   "{weekday}, {month} {day}": "{weekday} {day} {month}",
   "★ Milestone": "★ Grande date",
+  "A calm companion for real pet care.": "Un compagnon serein pour prendre vraiment soin de votre animal.",
 };

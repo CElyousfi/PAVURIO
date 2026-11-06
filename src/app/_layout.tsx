@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Stack, router, type ErrorBoundaryProps } from 'expo-router';
@@ -22,6 +22,7 @@ import { SNOOZE_MS, onReminderTap } from '../native/notifications';
 import { EngagementProvider } from '../state/Engagement';
 import { CelebrationHost } from '../features/CelebrationHost';
 import { WalkLiveBridge } from '../features/WalkLiveBridge';
+import { BrandSplash } from '../features/BrandSplash';
 import { Sticker } from '../ui/Sticker';
 import { CARE, careAllowedFor, isCareType } from '../domain/care';
 import { portionOf } from '../domain/progress';
@@ -109,53 +110,55 @@ export default function RootLayout() {
 
 function Gate() {
   const { ready, language } = useApp();
-  useEffect(() => {
-    if (ready) SplashScreen.hideAsync().catch(() => {});
-  }, [ready]);
+  // once per cold start the native splash (the store icon) hands over to BrandSplash, which hides it
+  const [brand, setBrand] = useState(true);
   // the native splash stays up until `ready`; this only shows for a few frames on web
   if (!ready) return <View style={{ flex: 1, backgroundColor: colors.canvas }} />;
   return (
-    <Animated.View key={language} entering={FadeIn.duration(260)} style={{ flex: 1 }}>
-      <ReminderRouter />
-      <WalkLiveBridge />
-      <CelebrationHost />
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true, freezeOnBlur: true }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="care" />
-        <Stack.Screen name="moments" />
-        <Stack.Screen name="records" />
-        <Stack.Screen name="pets" />
-        <Stack.Screen name="onboarding" options={{ gestureEnabled: false, animation: 'fade' }} />
-        <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 150 }} />
-        <Stack.Screen name="day" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="studio" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="account" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="schedule" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="appointment" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="weight" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="walk" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
-        <Stack.Screen name="passport" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="adventure" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="record" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="memory" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="moment" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220 }} />
-        <Stack.Screen name="cards" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="card" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
-        <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 320 }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
-        <Stack.Screen name="pet" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="add" options={{ presentation: 'fullScreenModal', animation: 'none', gestureEnabled: false }} />
-        <Stack.Screen name="supplies" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="supply" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="supply-edit" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
-        <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
-      </Stack>
-    </Animated.View>
+    <View style={{ flex: 1 }}>
+      <Animated.View key={language} entering={FadeIn.duration(260)} style={{ flex: 1 }}>
+        <ReminderRouter />
+        <WalkLiveBridge />
+        <CelebrationHost />
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true, freezeOnBlur: true }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="care" />
+          <Stack.Screen name="moments" />
+          <Stack.Screen name="records" />
+          <Stack.Screen name="pets" />
+          <Stack.Screen name="onboarding" options={{ gestureEnabled: false, animation: 'fade' }} />
+          <Stack.Screen name="log/[type]" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 150 }} />
+          <Stack.Screen name="day" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="studio" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="account" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="schedule" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="appointment" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="weight" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="walk" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
+          <Stack.Screen name="passport" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="adventure" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="record" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="memory" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="moment" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220 }} />
+          <Stack.Screen name="cards" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="card" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
+          <Stack.Screen name="story" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 320 }} />
+          <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', animationDuration: 300 }} />
+          <Stack.Screen name="pet" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="summary" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="achievements" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="add" options={{ presentation: 'fullScreenModal', animation: 'none', gestureEnabled: false }} />
+          <Stack.Screen name="supplies" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="supply" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="supply-edit" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
+          <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
+        </Stack>
+      </Animated.View>
+      {brand ? <BrandSplash onDone={() => setBrand(false)} /> : null}
+    </View>
   );
 }
 
