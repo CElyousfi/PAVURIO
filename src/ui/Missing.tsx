@@ -12,7 +12,7 @@ export function Missing({ title }: { title?: string }) {
   const insets = useSafeAreaInsets();
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32, paddingTop: insets.top }}>
-      <Sticker name="dog_please" size={150} />
+      <Sticker name="dog_eat" size={150} />
       <T weight="black" style={{ fontSize: 22, textAlign: 'center', marginTop: 12 }}>
         {title ?? t("That's not here any more")}
       </T>

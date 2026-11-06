@@ -14,6 +14,10 @@ Hosting: .github/workflows/site.yml publishes site/dist to the `site-dist` branc
 import datetime, html, json, os, shutil, sys, urllib.parse
 import markdown
 from PIL import Image
+import numpy as np
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'art'))
+from gifkit import frames as gif_frames  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = 'site'; OUT = f'{ROOT}/dist'; BASE = 'https://pavurio.com'
@@ -50,26 +54,46 @@ Image.open('assets/icon.png').convert('RGBA').resize((64, 64), Image.LANCZOS).sa
 Image.open('assets/icon.png').convert('RGB').resize((180, 180), Image.LANCZOS).save(f'{OUT}/img/apple-touch-icon.png')
 
 A = 'assets/art'
+G = 'gif:'  # an animated Honey & Tabby (docs/art/gifs), written as an animated WebP
 ART = {  # name: (source, max width)
     'meal': (f'{A}/care2/meal.webp', 160), 'water': (f'{A}/care2/water.webp', 160), 'walk': (f'{A}/care2/walk.webp', 160),
-    'medication': (f'{A}/care2/medication.webp', 200), 'play': (f'{A}/care2/play.webp', 160), 'records': (f'{A}/care2/records.webp', 160),
-    'litter': (f'{A}/care2/litter.webp', 160), 'grooming': (f'{A}/care2/grooming.webp', 160), 'calendar': (f'{A}/care2/calendar.webp', 160),
-    'dog_wave': (f'{A}/stickers/dog_wave.webp', 480), 'cat_wave': (f'{A}/stickers/cat_wave.webp', 480), 'duo_hug': (f'{A}/stickers/duo_hug.webp', 560),
-    'dog_love': (f'{A}/stickers/dog_love.webp', 400), 'cat_happy': (f'{A}/stickers/cat_happy.webp', 480), 'dog_party': (f'{A}/stickers/dog_party.webp', 360),
-    'cat_cheer': (f'{A}/stickers/cat_cheer.webp', 360), 'dog_trot': (f'{A}/stickers/dog_trot.webp', 480), 'cat_sleep': (f'{A}/stickers/cat_sleep.webp', 360),
-    'dog_sunny': (f'{A}/stickers/dog_sunny.webp', 360), 'cat_bed': (f'{A}/stickers/cat_bed.webp', 360),
+    'medication': (f'{A}/pantry/icon_supplements.webp', 200), 'play': (f'{A}/care2/play.webp', 160), 'records': (f'{A}/care2/records.webp', 160),
+    'litter': (f'{A}/pantry/icon_litter.webp', 160), 'grooming': (f'{A}/pantry/icon_tools.webp', 160), 'calendar': (f'{A}/icons/ui_calendar.webp', 160),
+    'dog_wave': (G + 'dog_wave', 480), 'cat_wave': (G + 'cat_wave', 480), 'duo_hug': (G + 'duo_hug', 560),
+    'dog_love': (G + 'duo_cuddle', 400), 'cat_happy': (G + 'cat_happy', 480), 'dog_party': (G + 'dog_cheer', 360),
+    'cat_cheer': (G + 'cat_yarn', 360), 'dog_trot': (G + 'dog_trot', 480), 'cat_sleep': (G + 'cat_doze', 360),
+    'dog_sunny': (G + 'dog_play', 360), 'cat_bed': (G + 'cat_bed', 360),
     'heart': (f'{A}/icons/ui_heart.webp', 140), 'shield': (f'{A}/icons/shield.webp', 240),
     'food': (f'{A}/pantry/icon_food.webp', 240), 'treats': (f'{A}/pantry/icon_treats.webp', 120),
-    'pantry_list': (f'{A}/pantry/scene_list.webp', 600), 'reminders': (f'{A}/pantry/scene_reminder.webp', 600),
-    'restock': (f'{A}/pantry/scene_restock.webp', 600), 'pantry_welcome': (f'{A}/pantry/scene_welcome.webp', 600),
+    'pantry_list': (G + 'cat_eat', 600), 'reminders': (G + 'dog_meds', 600),
+    'restock': (G + 'duo_party', 600), 'pantry_welcome': (G + 'dog_eat', 600),
     'widget_care': (f'{A}/widgets/care.png', 360), 'widget_done': (f'{A}/widgets/done.png', 560), 'widget_sleep': (f'{A}/widgets/sleep.png', 480),
     'widget_pantry': (f'{A}/widgets/pantry.png', 300), 'widget_moment': (f'{A}/widgets/moment.png', 300),
     'walk_wide': (f'{A}/widgets/walk_wide.png', 900), 'restock_wide': (f'{A}/widgets/restock_wide.png', 900),
-    's_medication': (f'{A}/scenes/medication.webp', 760), 's_vet': (f'{A}/scenes/vet.webp', 760), 's_weigh': (f'{A}/scenes/weigh.webp', 640),
-    's_records': (f'{A}/scenes/records.webp', 600), 's_walk': (f'{A}/scenes/walk.webp', 760), 's_litter': (f'{A}/scenes/litter.webp', 560),
-    's_duo': (f'{A}/scenes/duo.webp', 760), 's_moments': (f'{A}/scenes/moments.webp', 760),
+    's_medication': (G + 'dog_meds', 600), 's_vet': (G + 'duo_laugh', 600), 's_weigh': (G + 'dog_cheer', 560),
+    's_records': (G + 'cat_happy', 560), 's_walk': (G + 'dog_trot', 600), 's_litter': (G + 'cat_walk', 560),
+    's_duo': (G + 'duo_hug', 600), 's_moments': (G + 'duo_camera', 600),
 }
+
+
+def animated(name, w, out):
+    """One Honey & Tabby GIF as an animated WebP, cropped to where the pet moves."""
+    fr, durs = gif_frames(name)
+    U = np.zeros(fr[0].shape[:2], bool)
+    for f in fr:
+        U |= f[:, :, 3] > 10
+    ys, xs = np.where(U)
+    box = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+    ims = [Image.fromarray(f).crop(box) for f in fr]
+    if ims[0].width > w:
+        ims = [im.resize((w, round(im.height * w / im.width)), Image.LANCZOS) for im in ims]
+    ims[0].save(out, 'WEBP', save_all=True, append_images=ims[1:], duration=durs, loop=0, quality=84, method=4)
+
+
 for name, (src, w) in ART.items():
+    if src.startswith(G):
+        animated(src[len(G):], w, f'{OUT}/img/a/{name}.webp')
+        continue
     im = Image.open(src)
     im = im.convert('RGBA') if im.mode in ('P', 'RGBA', 'LA') else im.convert('RGB')
     if im.width > w: im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)

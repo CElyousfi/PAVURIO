@@ -268,7 +268,7 @@ export default function CareTab() {
           {upcoming.length === 0 ? (
             <Card enter={2} onPress={() => router.push('/appointment')} accessibilityLabel={t('Add an appointment')}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                {ART.scenes.appointments ? <Scene source={ART.scenes.appointments} width={78} height={66} radius={16} /> : null}
+                {ART.scenes.appointments ? <Scene art={ART.scenes.appointments} width={78} height={66} radius={16} /> : null}
                 <T style={{ color: colors.muted, lineHeight: 20, flex: 1 }}>{t('Vet, groomer or sitter — add a visit and get reminded the day before.')}</T>
               </View>
             </Card>
@@ -319,7 +319,7 @@ export default function CareTab() {
               </View>
             ) : (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                {ART.scenes.weigh ? <Scene source={ART.scenes.weigh} width={78} height={66} radius={16} /> : null}
+                {ART.scenes.weigh ? <Scene art={ART.scenes.weigh} width={78} height={66} radius={16} /> : null}
                 <T style={{ color: colors.muted, lineHeight: 20, flex: 1 }}>{t("Track {name}'s weight over time. Your vet will love the chart.", { name: pet.name })}</T>
               </View>
             )}

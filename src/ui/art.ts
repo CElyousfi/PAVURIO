@@ -6,22 +6,26 @@
  *   2. replace `null` with `require('<that path>')` (relative to this file: '../../assets/art/...').
  * Screens fall back to the built-in vector drawing while an entry is null, so nothing breaks.
  */
+import type { SceneArt } from './Scene';
+import type { StickerName } from './Sticker';
+
 type Img = number | null;
 
 export const ART = {
   /**
    * Care illustrations (ChatGPT, Nov 2026; tools/art/careicons.py → assets/art/care2, 512 px webp).
    * One picture per care: the log card and the Home row show it as a gray silhouette that fills
-   * with its real colours (FillArt), every list shows it in colour.
+   * with its real colours (FillArt), every list shows it in colour. Objects only: the pets themselves
+   * are always the animated Honey & Tabby (Sticker / PetRig).
    */
   care: {
     meal: require('../../assets/art/care2/meal.webp') as Img,
     water: require('../../assets/art/care2/water.webp') as Img,
     walk: require('../../assets/art/care2/walk.webp') as Img,
     play: require('../../assets/art/care2/play.webp') as Img,
-    grooming: require('../../assets/art/care2/grooming.webp') as Img,
-    litter: require('../../assets/art/care2/litter.webp') as Img,
-    medication: require('../../assets/art/care2/medication.webp') as Img,
+    grooming: require('../../assets/art/pantry/icon_tools.webp') as Img,
+    litter: require('../../assets/art/pantry/icon_litter.webp') as Img,
+    medication: require('../../assets/art/pantry/icon_supplements.webp') as Img,
   },
   /** Pavurio Adventures (ChatGPT final set, tools/art/adventures2.py) */
   adventures: {
@@ -55,23 +59,20 @@ export const ART = {
   } as Record<string, number>,
   /** section illustrations from the same set */
   section: {
-    calendar: require('../../assets/art/care2/calendar.webp'),
+    calendar: require('../../assets/art/icons/ui_calendar.webp'),
     records: require('../../assets/art/care2/records.webp'),
-    medication: require('../../assets/art/care2/medication.webp'),
-    sleep: require('../../assets/art/care2/sleep.webp'),
+    medication: require('../../assets/art/pantry/icon_supplements.webp'),
     leash: require('../../assets/art/care2/walk_leash.webp'),
   },
   ui: {
     /** assets/art/ui/welcome_badge.png — small icon above the welcome headline, 512×512 transparent */
     welcomeBadge: require('../../assets/art/ui/welcome_badge.png') as Img,
-    /** assets/art/ui/empty_day.png — pet next to an empty bowl, hopeful and happy, 1024×1024 transparent */
-    emptyDay: require('../../assets/art/stickers/dog_please.webp') as Img,
-    /** assets/art/ui/plan_header.png — dog and cat looking at a checklist, 1536×1024 transparent */
-    planHeader: null as Img,
-    /** Honey & Tabby hugging, transparent (ChatGPT duo hero, 1024 px) — Smart Reminders card */
-    remindersHero: require('../../assets/art/scenes/duo.webp') as Img,
-    /** crowned Honey & Tabby scene card (batch 01 #10, EDSR 4x) — paywall hero */
-    paywallHero: require('../../assets/art/scenes/premium.webp') as Img,
+    /** day with nothing logged: the pet by its bowl, hopeful */
+    emptyDay: 'dog_eat' as StickerName,
+    /** Smart Reminders card */
+    remindersHero: 'duo_hug' as StickerName,
+    /** paywall hero */
+    paywallHero: { pet: 'duo_party', tint: '#FFE7A8' } as SceneArt,
     /** streak flame (PR #4 atlas B, EDSR 4x) */
     streak: require('../../assets/art/icons/flame.webp') as Img,
   },
@@ -107,30 +108,26 @@ export const ART = {
     heart: require('../../assets/art/icons/ui_heart.webp'),
     calendar: require('../../assets/art/icons/ui_calendar.webp'),
   },
-  /**
-   * Scene cards (rounded, coloured backgrounds) cut from ChatGPT's illustration sheets and upscaled 4x
-   * (tools/art/scenes.py). Audit + screen mapping: docs/art/ILLUSTRATION_AUDIT_01_02.md.
-   * Render them as cards (rounded corners, cover), never on top of other art.
-   */
+  /** Scene cards: the animated pets on a soft tinted card (Scene). */
   scenes: {
-    premium: require('../../assets/art/scenes/premium.webp') as Img,
-    records: require('../../assets/art/scenes/records.webp') as Img,
-    moments: require('../../assets/art/scenes/moments.webp') as Img,
-    appointments: require('../../assets/art/scenes/appointments.webp') as Img,
-    weigh: require('../../assets/art/scenes/weigh.webp') as Img,
-    trophy: require('../../assets/art/scenes/trophy.webp') as Img,
-  },
+    premium: { pet: 'duo_party', tint: '#FFE7A8' },
+    records: { pet: 'dog_meds', tint: '#DDF3E4' },
+    moments: { pet: 'duo_camera', tint: '#FFE3EC' },
+    appointments: { pet: 'duo_laugh', tint: '#E3ECFF' },
+    weigh: { pet: 'dog_cheer', tint: '#E8F5D6' },
+    trophy: { pet: 'dog_cheer', tint: '#FFF0C2' },
+  } as Record<string, SceneArt>,
   /** tip id -> scene card; missing = care icon */
   tips: {
-    water: require('../../assets/art/scenes/water.webp'),
-    'walk-sniff': require('../../assets/art/scenes/walk.webp'),
-    'cat-play': require('../../assets/art/scenes/play.webp'),
-    brush: require('../../assets/art/scenes/brushing.webp'),
-    meals: require('../../assets/art/scenes/meals.webp'),
-    weigh: require('../../assets/art/scenes/weigh.webp'),
-    calm: require('../../assets/art/scenes/bed.webp'),
-    litter: require('../../assets/art/scenes/litter.webp'),
-  } as Record<string, Img>,
+    water: { pet: 'cat_drink', tint: '#DFF2FB' },
+    'walk-sniff': { pet: 'dog_trot', tint: '#E4F4DA' },
+    'cat-play': { pet: 'cat_play', tint: '#F3E6FB' },
+    brush: { pet: 'cat_happy', tint: '#FDEBDD' },
+    meals: { pet: 'dog_eat', tint: '#FFEBD9' },
+    weigh: { pet: 'dog_cheer', tint: '#E8F5D6' },
+    calm: { pet: 'cat_bed', tint: '#E7EAFB' },
+    litter: { pet: 'cat_walk', tint: '#F1ECE4' },
+  } as Record<string, SceneArt | undefined>,
 };
 
 export type CareArtType = keyof typeof ART.care;

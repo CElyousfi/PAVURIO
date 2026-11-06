@@ -5,7 +5,7 @@ import type { Burst } from './Burst';
 import { DogStage } from './DogStage';
 import { CatStage } from './CatStage';
 
-export type PetClipName = 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom' | 'litter' | 'hello' | 'idle2';
+export type PetClipName = 'celebrate' | 'eat' | 'drink' | 'walk' | 'play' | 'groom' | 'litter' | 'meds' | 'hello' | 'idle2';
 
 export type PetRigProps = {
   species: Species;
@@ -40,8 +40,8 @@ export type PetRigProps = {
 };
 
 /**
- * Pets are drawn only from the approved generated art: both are played from their Gemini videos
- * (DogStage, CatStage). The cat has fewer clips so far; missing ones fall back to its happy clip.
+ * Pets are drawn only from the Honey & Tabby GIFs (docs/art/gifs → tools/art/gifclips.py): DogStage and
+ * CatStage play them. A care without its own GIF plays the happy clip.
  */
 export function PetRig(props: PetRigProps) {
   return props.species === 'dog' ? <DogStage {...props} /> : <CatStage {...props} />;

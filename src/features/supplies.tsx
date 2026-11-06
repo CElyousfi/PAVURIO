@@ -5,6 +5,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AppState as RNAppState, Image, StyleSheet, View } from 'react-native';
+import { Sticker, type StickerName } from '../ui/Sticker';
 import { router } from 'expo-router';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import type { CareType, Species } from '../domain/care';
@@ -88,11 +89,11 @@ const ICONS = {
   comfort: require('../../assets/art/pantry/icon_comfort.webp'),
   tools: require('../../assets/art/pantry/icon_tools.webp'),
 };
-export const SCENES = {
-  welcome: require('../../assets/art/pantry/scene_welcome.webp'),
-  list: require('../../assets/art/pantry/scene_list.webp'),
-  reminder: require('../../assets/art/pantry/scene_reminder.webp'),
-  restock: require('../../assets/art/pantry/scene_restock.webp'),
+/** The pantry's moments, played by Honey & Tabby. */
+export const SCENES: Record<'welcome' | 'list' | 'restock', StickerName> = {
+  welcome: 'dog_eat',
+  list: 'cat_eat',
+  restock: 'duo_party',
 };
 
 export type Group = 'food' | 'treats' | 'health' | 'care';
@@ -286,7 +287,9 @@ export function BuySheet({ forecast: f, purchases, visible, onClose }: { forecas
                 <Sunburst size={190} color={meta.color} />
               </View>
             </View>
-            <Animated.Image entering={motionReduced() ? undefined : ZoomIn.springify().damping(12)} source={SCENES.restock} style={{ width: 170, height: 130 }} resizeMode="contain" />
+            <Animated.View entering={motionReduced() ? undefined : ZoomIn.springify().damping(12)}>
+              <Sticker name={SCENES.restock} size={150} />
+            </Animated.View>
           </View>
           <T weight="black" style={{ fontSize: 22 }}>
             {done.days != null ? tn(done.days, '{n} day of {item}', '{n} days of {item}', { item: s.name }) : done.q}

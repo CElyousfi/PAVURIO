@@ -20,7 +20,7 @@ const SOURCES: Record<WidgetArt | 'walk_wide' | 'restock_wide', number> = {
 export type ArtName = keyof typeof SOURCES;
 
 // bump when an illustration changes, so phones copy the new file
-const VERSION = 1;
+const VERSION = 2;
 let ready: Promise<Record<ArtName, string>> | null = null;
 
 const dir = () => (widgetsDirectory ? (widgetsDirectory.endsWith('/') ? widgetsDirectory : `${widgetsDirectory}/`) : null);

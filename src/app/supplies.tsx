@@ -7,6 +7,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { Image, ScrollView, Share, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Sticker } from '../ui/Sticker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -89,7 +90,7 @@ export default function Pantry() {
           {empty ? (
             <View style={{ gap: 14 }}>
               <View style={styles.intro}>
-                <Image source={SCENES.welcome} style={{ width: '100%', height: 170 }} resizeMode="contain" />
+                <Sticker name={SCENES.welcome} size={170} style={{ alignSelf: 'center' }} />
                 <T weight="black" style={{ fontSize: 22, textAlign: 'center' }}>
                   {t('Never run out of {name}’s food', { name: pet.name })}
                 </T>
@@ -181,7 +182,7 @@ export default function Pantry() {
             <>
               {!toBuy.length && !openExtras.length ? (
                 <View style={[styles.intro, { paddingVertical: 14 }]}>
-                  <Image source={SCENES.list} style={{ width: '100%', height: 130 }} resizeMode="contain" />
+                  <Sticker name={SCENES.list} size={130} style={{ alignSelf: 'center' }} />
                   <T weight="black" style={{ fontSize: 20, textAlign: 'center' }}>
                     {t('Nothing to buy right now')}
                   </T>

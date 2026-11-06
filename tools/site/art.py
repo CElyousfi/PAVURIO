@@ -1,8 +1,8 @@
 """Prepares the Memory Cards shown on the landing page (site/img/l/card_*); the new site only uses those and the QR codes.
 Other art now comes straight from assets/art at build time (tools/site/build.py), screenshots from tools/site/shots.py.
 Usage (repo root): python3 tools/site/art.py [screens_dir]
-- stickers / care / icon art → resized webp
-- Memory Cards (Post 1080×1350) composed from the real templates + scene art, title per language
+- Memory Cards (Post 1080×1350) composed from the real templates; the "photos" are Honey & Tabby
+  (docs/art/gifs) on soft backgrounds, title per language
 - app screenshots (from the web build, shots/site/*.png) → phone-sized webp
 """
 import json, os, sys
@@ -20,25 +20,32 @@ def save(im, name, max_side, q=88):
     im.save(f'{OUT}/{name}.webp', 'WEBP', quality=q, method=4)
 
 
-ART = {
-    'stickers': (['duo_hug', 'dog_love', 'cat_happy', 'dog_trophy', 'dog_wave', 'cat_wave', 'dog_party', 'cat_cheer', 'dog_trot', 'cat_sleep', 'dog_sunny', 'cat_passport'], 640),
-    'care2': (['meal', 'walk', 'walk_leash', 'grooming', 'medication', 'litter', 'records', 'water', 'sleep', 'play', 'calendar'], 320),
-    'icons': (['ui_heart', 'flame', 'ui_calendar', 'shield', 'ui_paw', 'ui_trophy', 'gem'], 220),
-    'badges': (['moment', 'streak7', 'walker', 'hydration'], 260),
-}
-for folder, (names, size) in ART.items():
-    for n in names:
-        save(Image.open(f'assets/art/{folder}/{n}.webp').convert('RGBA'), n, size)
 save(Image.open('assets/icon.png').convert('RGBA'), 'app_icon', 360)
 
-# ---- Memory Cards from the real templates (Post format), photos = the app's scene art
+# ---- Memory Cards from the real templates (Post format), photos = Honey & Tabby on a soft backdrop
 layout = json.load(open('assets/memories/layout_manifest.json'))
 TITLES = {
     'gotcha': {'en': "Honey's Gotcha Day", 'fr': 'Le jour où Honey est arrivé', 'es': 'El Día de adopción de Honey', 'pt': 'O dia de adoção da Honey'},
     'daily': {'en': 'First walk!', 'fr': 'Première balade !', 'es': '¡Primer paseo!', 'pt': 'Primeiro passeio!'},
 }
 FOOT = {'en': 'Honey · Nov 2, 2026', 'fr': 'Honey · 2 nov. 2026', 'es': 'Honey · 2 nov 2026', 'pt': 'Honey · 2 nov 2026'}
-PHOTOS = {'gotcha': ['bed', 'bath'], 'daily': ['walk']}
+PHOTOS = {'gotcha': [('duo_hug', '#FFE3C9', '#FFF6EC'), ('cat_bed', '#DCEBFF', '#F3F8FF')], 'daily': [('dog_trot', '#CDEFD6', '#F2FBF4')]}
+STILL = 'assets/art/pets/still'
+
+
+def photo(spec, w, h):
+    """a soft two-tone backdrop (sky and ground) with the pet standing on it"""
+    pet, ground, sky = spec
+    im = Image.new('RGB', (w, h), sky)
+    d = ImageDraw.Draw(im)
+    d.ellipse([-w * 0.3, h * 0.66, w * 1.3, h * 1.5], fill=ground)
+    p = Image.open(f'{STILL}/{pet}.png').convert('RGBA')
+    bb = p.getbbox()
+    p = p.crop(bb)
+    s = min(w * 0.82 / p.width, h * 0.78 / p.height)
+    p = p.resize((round(p.width * s), round(p.height * s)), Image.LANCZOS)
+    im.paste(p, ((w - p.width) // 2, int(h * 0.9) - p.height), p)
+    return im
 
 
 def cover(im, w, h):
@@ -64,11 +71,7 @@ for tid in ('gotcha', 'daily'):
     for lang in ('en', 'fr', 'es', 'pt'):
         card = Image.new('RGBA', (L['w'], L['h']), 'white')
         for slot, ph in zip(L['slots'], PHOTOS[tid]):
-            src = Image.open(f'assets/art/scenes/{ph}.webp').convert('RGB')
-            # the scene art has soft white corners: crop them away before cover-fitting
-            m = int(min(src.size) * 0.06)
-            src = src.crop((m, m, src.width - m, src.height - m))
-            card.paste(cover(src, slot['w'], slot['h']), (slot['x'], slot['y']))
+            card.paste(photo(ph, slot['w'], slot['h']), (slot['x'], slot['y']))
         card.alpha_composite(tpl)
         d = ImageDraw.Draw(card)
         for key, text, fp, ratio, color in (('title', TITLES[tid][lang], FONT, 0.42, (35, 48, 74)), ('footer', FOOT[lang], FONT2, 0.36, (61, 74, 99))):

@@ -17,17 +17,15 @@ def sm(x, a, b):
     t = np.clip((x - a) / (b - a), 0, 1)
     return t * t * (3 - 2 * t)
 
-def layers(rgba):
+def layers(rgba, props=None):
     rgb = rgba[:, :, :3].astype(np.float32) / 255
     A = rgba[:, :, 3].astype(np.float32) / 255
     hsv = cv2.cvtColor(rgba[:, :, :3], cv2.COLOR_RGB2HSV).astype(np.float32)
     H, S, V = hsv[:, :, 0], hsv[:, :, 1] / 255, hsv[:, :, 2] / 255
     if SPECIES == 'dog':
-        warm = sm(H, 2, 7) * (1 - sm(H, 34, 40))
-        furish = warm * sm(V, 0.42, 0.6)
-        # the bowl in the eat clip is a much more saturated orange than any fur: keep it as drawn
-        prop = sm(S, 0.78, 0.86) * sm(V, 0.78, 0.86)
-        furish = furish * (1 - prop)
+        warm = sm(H, 6, 10) * (1 - sm(H, 34, 40))
+        furish = warm * sm(V, 0.28, 0.42)
+        # props (bowl, ball, bottles) are separate shapes and are masked out by the caller
         patch = sm(S, 0.28, 0.5) * furish
         body = (1 - sm(S, 0.28, 0.5)) * furish
         white = (1 - sm(S, 0.08, 0.16)) * sm(V, 0.8, 0.9) * (1 - warm)
@@ -42,6 +40,9 @@ def layers(rgba):
         patch = furish * (1 - sm(Y, 0.42, 0.55))
         body = furish * sm(Y, 0.42, 0.55)
         ref_body, ref_patch = 0.6, 0.42
+    if props is not None:
+        body = np.where(props, 0, body)
+        patch = np.where(props, 0, patch)
     fur = np.clip(body + patch, 0, 1)
     shade = np.clip(np.where(patch > body, Y / ref_patch, Y / ref_body), 0, 1)
     a = lambda m: (np.clip(m * A, 0, 1) * 255).astype(np.uint8)
@@ -60,7 +61,18 @@ for name, c in manifest.items():
         continue
     for ci in range(c['chunks']):
         src = np.array(Image.open(f'{DIR}/{name}_{BASE}_{ci}.webp').convert('RGBA'))
-        for tag, im in layers(src).items():
+        # only the character is dyed: props, sparkles and confetti (separate shapes) keep their colours
+        props = np.zeros(src.shape[:2], bool)
+        fw, fh = c['fw'], c['fh']
+        for y in range(0, src.shape[0], fh):
+            for x in range(0, src.shape[1], fw):
+                cellA = src[y:y + fh, x:x + fw, 3]
+                n, lab, st, _ = cv2.connectedComponentsWithStats((cellA > 40).astype(np.uint8), 8)
+                if n > 2:
+                    i = 1 + int(np.argmax(st[1:, 4]))
+                    keep = cv2.dilate((lab == i).astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
+                    props[y:y + fh, x:x + fw] = ~keep
+        for tag, im in layers(src, props).items():
             p = f'{DIR}/{name}_{tag}_{ci}.webp'
             # soft masks lose nothing at half size (the app stretches every sheet to the same box)
             scale, q, aq = {'fur_body': (0.5, 60, 50), 'fur_patch': (0.5, 60, 50), 'fur_shade': (0.6, 70, 60), 'fur_feat': (1.0, 78, 80)}[tag]

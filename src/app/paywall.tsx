@@ -204,7 +204,7 @@ export default function Paywall() {
               </View>
             ) : ART.ui.paywallHero ? (
               <Float style={{ position: 'absolute', alignSelf: 'center', top: 0 }} period={2800} amount={6}>
-                <Scene source={ART.ui.paywallHero} width={142} height={178} border={5} tilt={-4} />
+                <Scene art={ART.ui.paywallHero} width={142} height={178} border={5} tilt={-4} />
               </Float>
             ) : (
               <>

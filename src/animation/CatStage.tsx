@@ -1,7 +1,7 @@
 /**
- * The cat, played from its Gemini videos (SPECIES=cat tools/art/clips.py → assets/pets/cat/clips).
- * Coats are recolored from the gray tabby video; the red collar is drawn in, other colors are overlays.
- * Cares without their own video yet (drink, play, groom, litter…) play the happy clip.
+ * Tabby, played from the cat GIFs (tools/art/gifclips.py cat → assets/pets/cat/clips).
+ * Coats are recolored from the gray tabby; the red collar is drawn in, other colors are overlays.
+ * Cares without their own GIF (groom, litter, medicine) play the happy clip.
  */
 import React from 'react';
 import { ClipKit, ClipMeta, ClipStage } from './ClipStage';
@@ -12,11 +12,9 @@ import { dyeOf } from '../domain/appearance';
 
 const HAS = new Set(Object.keys(CAT_CLIP_IMG));
 
-/** clip the cat really plays for a request, or null when it has nothing fitting (hello, idle variety) */
-export function catClip(name: PetClipName): string | null {
-  if (HAS.has(name)) return name;
-  if (name === 'hello' || name === 'idle2') return null;
-  return 'celebrate';
+/** clip the cat really plays for a request: cares without their own GIF play the happy clip */
+export function catClip(name: PetClipName): string {
+  return HAS.has(name) ? name : 'celebrate';
 }
 
 const CAT_KIT: ClipKit = {

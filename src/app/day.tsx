@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Sticker } from '../ui/Sticker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
@@ -72,7 +73,7 @@ export default function DayDetail() {
           <View style={styles.list}>
             {!loading && events.length === 0 ? (
               <View style={styles.empty}>
-                {ART.ui.emptyDay != null ? <Image source={ART.ui.emptyDay} style={{ width: 150, height: 150, marginBottom: 6 }} /> : null}
+                <Sticker name={ART.ui.emptyDay} size={150} style={{ marginBottom: 6 }} />
                 <T weight="xbold" style={{ fontSize: 17, color: colors.inkSoft }}>
                   {today ? t('Nothing logged yet today') : t('Nothing logged on this day')}
                 </T>

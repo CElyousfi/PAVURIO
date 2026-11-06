@@ -351,7 +351,7 @@ function ClipView({
       {/* the art's own shading laid over the flat colours (luminosity blend): eyes, ears and fur lines stay
           readable on the gray and pick up each band's colour, like the llama's face showing through its fill */}
       <View pointerEvents="none" style={[box, styles.detail]}>
-        <SheetLayer kit={kit} name={name} sheets={coat} frame={frame} keep={keep} s={r.s} smooth={smooth} />
+        <SheetLayer kit={kit} name={name} sheets={sheets.lum ?? coat} frame={frame} keep={keep} s={r.s} smooth={smooth} />
       </View>
     </>
   );

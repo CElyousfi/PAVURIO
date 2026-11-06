@@ -8,6 +8,7 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { RollingNumber } from '../ui/Rolling';
 import { PetRig, PetClipName } from '../animation/PetRig';
 import { catClip } from '../animation/CatStage';
+import { dogClip } from '../animation/DogStage';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
 import { Sticker, careSticker, moodSticker } from '../ui/Sticker';
@@ -122,7 +123,7 @@ function HomeScreen() {
     celebrateTimer.current = setTimeout(() => {
       const confetti = () => fire('confetti', [CARE[type].color, '#FFC83D', colors.brand, '#FF6B9A']);
       if (pet && !reduceMotion) {
-        // each care plays its own generated clip; anything without one gets the happy jump
+        // each care plays its own GIF clip; anything without one gets the happy jump
         const CLIP_FOR: Partial<Record<CareType, PetClipName>> = {
           meal: 'eat',
           water: 'drink',
@@ -130,10 +131,11 @@ function HomeScreen() {
           play: 'play',
           grooming: 'groom',
           litter: 'litter',
+          medication: 'meds',
         };
         const name = CLIP_FOR[type] ?? 'celebrate';
         setClip({ name, nonce: Date.now() });
-        const played = pet.species === 'cat' ? catClip(name) : name;
+        const played = pet.species === 'cat' ? catClip(name) : dogClip(name);
         if (played === 'celebrate') setTimeout(confetti, 600);
         else setTimeout(() => fire('hearts', ['#FF6B9A', '#FF8FA3', '#FFB3C4']), 400);
       } else {

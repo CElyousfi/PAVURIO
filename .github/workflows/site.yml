@@ -4,7 +4,7 @@ name: Website
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'tools/site/**', 'assets/icon.png', '.github/workflows/site.yml']
+    paths: ['site/**', 'tools/site/**', 'tools/art/gifkit.py', 'docs/art/gifs/**', 'assets/art/**', 'assets/icon.png', '.github/workflows/site.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - run: pip install markdown pillow
+      - run: pip install markdown pillow numpy opencv-python-headless
       - run: python3 tools/site/build.py
       - name: Publish to site-dist
         run: |
