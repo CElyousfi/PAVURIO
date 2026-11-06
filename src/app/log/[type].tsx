@@ -18,7 +18,7 @@ import { Sheet } from '../../ui/forms';
 import { confirmAsync } from '../../ui/confirm';
 import { CircleButton, Pill, SoftPill, T } from '../../ui/primitives';
 import { colors, font } from '../../ui/theme';
-import { errorFeedback, tapFeedback } from '../../native/haptics';
+import { errorFeedback, logFeedback, selectFeedback, tickFeedback } from '../../native/haptics';
 import { motionReduced, springs } from '../../ui/motion';
 import { t, tn } from '../../i18n';
 
@@ -159,7 +159,7 @@ export default function LogCard() {
   };
   const nudge = (dir: 1 | -1) => {
     if (!spec || !type) return;
-    tapFeedback();
+    tickFeedback();
     setAmount((a) => clampAmount(type, a + dir * spec.step));
     pop.value = withSequence(withTiming(dir > 0 ? 1.06 : 0.95, { duration: 80 }), withSpring(1, springs.pop));
   };
@@ -195,6 +195,8 @@ export default function LogCard() {
         const ok = await confirmAsync(
           t('Log {label} again?', { label: tpl.label.toLowerCase() }),
           tn(mins, '{name} already has one logged a minute ago.', '{name} already has one logged {n} minutes ago.', { name: pet.name }),
+          t('Log again'),
+          'confirm',
         );
         if (!ok) {
           setSaving(false);
@@ -217,6 +219,7 @@ export default function LogCard() {
         console.warn('[pavurio] could not link log to schedule', e),
       );
       // 3) … only then refresh UI. Badges wait for the pet's reaction (markLogged), which starts once Home is back.
+      logFeedback();
       markLogged();
       bump();
       signalLogged({ eventId: saved.id, type });
@@ -365,7 +368,7 @@ function Chip({ label, on, color, tint, onPress }: { label: string; on: boolean;
       accessibilityState={{ selected: on }}
       accessibilityLabel={label}
       onPress={() => {
-        tapFeedback();
+        selectFeedback();
         onPress();
       }}
       style={[styles.chip, { backgroundColor: on ? color : tint }]}

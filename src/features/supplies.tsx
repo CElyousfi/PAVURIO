@@ -23,7 +23,7 @@ import { SlideToConfirm } from '../ui/Slide';
 import { Bar, Bouncy, motionReduced } from '../ui/motion';
 import { Icon, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { successFeedback, tapFeedback } from '../native/haptics';
+import { restockFeedback, tapFeedback, undoFeedback } from '../native/haptics';
 import { capitalize, formatDayMonth, weekdayNames } from '../i18n/dates';
 import { t, tn } from '../i18n';
 
@@ -260,7 +260,7 @@ export function BuySheet({ forecast: f, purchases, visible, onClose }: { forecas
     try {
       const now = Date.now();
       const id = await addPurchase(db, s, packs, f.left, s.price, now, now - when * DAY);
-      successFeedback();
+      restockFeedback();
       setDone({ id, days: afterDays, q: qty(after, s.unit) });
       bump();
     } finally {
@@ -270,7 +270,7 @@ export function BuySheet({ forecast: f, purchases, visible, onClose }: { forecas
   const undo = useCallback(async () => {
     if (!done) return;
     await undoPurchase(db, done.id);
-    tapFeedback();
+    undoFeedback();
     bump();
     onClose();
   }, [db, done, bump, onClose]);

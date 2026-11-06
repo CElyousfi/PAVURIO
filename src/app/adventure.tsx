@@ -22,7 +22,7 @@ import { Bouncy } from '../ui/motion';
 import { formatDateLong } from '../ui/forms';
 import { colors, font } from '../ui/theme';
 import { confirmAsync } from '../ui/confirm';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { errorFeedback, photoFeedback, successFeedback, tickFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
 export default function Adventure() {
@@ -72,7 +72,7 @@ export default function Adventure() {
           throw e;
         }
       }
-      successFeedback();
+      photoFeedback();
       bump();
     } catch (e) {
       setErr(e instanceof Error ? e.message : t('Could not save the moment.'));
@@ -92,7 +92,7 @@ export default function Adventure() {
   const dayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
   const step = (dir: 1 | -1) => {
-    tapFeedback();
+    tickFeedback();
     setMinutes((m) => Math.max(1, Math.min(600, m + dir * (m >= 30 ? 5 : 1))));
   };
   const addPhoto = async () => {

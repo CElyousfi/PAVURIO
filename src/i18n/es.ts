@@ -984,4 +984,8 @@ export const ES: Record<string, string> = {
   "What to do": "Qué hacer",
   "START NOW": "EMPEZAR",
   "A calm companion for real pet care.": "Un compañero tranquilo para cuidar de verdad a tu mascota.",
+  "Sounds": "Sonidos",
+  "Little sounds when you log, slide and celebrate": "Pequeños sonidos al registrar, deslizar y celebrar",
+  "Vibrations": "Vibraciones",
+  "Log again": "Registrar otra vez",
 };

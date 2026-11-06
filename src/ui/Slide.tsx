@@ -1,6 +1,6 @@
 /**
  * Slide to confirm (Clucky's "slide to stop"): drag the round thumb along the track. The label fades
- * and the track fills behind the thumb, haptics get firmer at each quarter, and letting go before the end
+ * and the track fills behind the thumb, haptics get firmer and the sound climbs at each quarter, and letting go before the end
  * springs it back with a little rubber band. Reaching the end locks it and calls `onComplete` once.
  * A screen reader gets a plain button ("activate" completes it).
  */
@@ -10,7 +10,7 @@ import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withRe
 import { Icon, T } from './primitives';
 import { colors } from './theme';
 import { motionReduced } from './motion';
-import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { bumpFeedback, slideDoneFeedback, slideStepFeedback, tickFeedback } from '../native/haptics';
 
 const H = 72;
 const PAD = 6;
@@ -58,7 +58,7 @@ export function SlideToConfirm({
     if (doneRef.current) return;
     doneRef.current = true;
     setDone(true);
-    successFeedback();
+    slideDoneFeedback();
     x.value = motionReduced() ? max : withSpring(max, { damping: 18, stiffness: 260 });
     setTimeout(() => cb.current(), motionReduced() ? 0 : 280);
   };
@@ -72,7 +72,7 @@ export function SlideToConfirm({
         onPanResponderGrant: () => {
           quarter.current = 0;
           nudge.value = 0;
-          tapFeedback();
+          tickFeedback();
         },
         onPanResponderMove: (_e, g) => {
           // past the end it stretches a little instead of stopping dead
@@ -81,13 +81,20 @@ export function SlideToConfirm({
           x.value = v;
           const q = Math.min(3, Math.floor((v / max) * 4));
           if (q > quarter.current) {
+            // each quarter is felt firmer and sounds a note higher, so the slide is heard climbing
             quarter.current = q;
-            petFeedback();
+            slideStepFeedback(q);
+          } else if (q < quarter.current) {
+            quarter.current = q;
           }
         },
         onPanResponderRelease: (_e, g) => {
           if (g.dx >= max * 0.88 || (g.dx > max * 0.55 && g.vx > 0.9)) finish();
-          else x.value = withSpring(0, { damping: 11, stiffness: 240, mass: 0.7 });
+          else {
+            // let go too early: it springs back with a soft bump
+            if (g.dx > 12) bumpFeedback();
+            x.value = withSpring(0, { damping: 11, stiffness: 240, mass: 0.7 });
+          }
         },
         onPanResponderTerminate: () => {
           x.value = withSpring(0, { damping: 14, stiffness: 220 });

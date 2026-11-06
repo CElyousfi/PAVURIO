@@ -10,7 +10,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Moment, deleteMoment, getMoment, removeMomentFromPet, milestoneLabel, momentsOn, setFavorite, setFeatured } from '../data/memoriesRepo';
 import { MILESTONE_EMOJI, momentLabel } from '../domain/memories';
 import { deleteFiles, sharePhoto } from '../native/media';
-import { successFeedback } from '../native/haptics';
+import { toggleFeedback } from '../native/haptics';
 import { useApp } from '../state/AppState';
 import { confirmAsync } from '../ui/confirm';
 import { formatDateLong } from '../ui/forms';
@@ -68,7 +68,7 @@ export default function MomentViewer() {
   const toggleFav = async () => {
     await setFavorite(db, m.id, !m.favorite);
     setM({ ...m, favorite: !m.favorite });
-    if (!m.favorite) successFeedback();
+    toggleFeedback(!m.favorite);
     bump();
   };
   const toggleFeatured = async () => {

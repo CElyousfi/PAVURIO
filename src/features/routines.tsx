@@ -13,7 +13,7 @@ import { dayKeyOf } from '../domain/time';
 import { CareIcon } from '../ui/CareIcon';
 import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { successFeedback, tapFeedback } from '../native/haptics';
+import { logFeedback, tapFeedback, undoFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
 export const EXTRA_KINDS = {
@@ -88,12 +88,12 @@ export function completeOccurrence(db: Db, species: Species, o: Occurrence, bump
     return;
   }
   void setMark(db, o.scheduleId, o.key, 'done').then(() => {
-    successFeedback();
+    logFeedback();
     bump();
   });
 }
 export async function skipOccurrence(db: Db, o: Occurrence, bump: () => void) {
-  tapFeedback();
+  tapFeedback('undo');
   await setMark(db, o.scheduleId, o.key, 'skipped');
   bump();
 }
@@ -103,7 +103,7 @@ export async function snoozeOccurrence(db: Db, o: Occurrence, bump: () => void, 
   bump();
 }
 export async function reopenOccurrence(db: Db, o: Occurrence, bump: () => void) {
-  tapFeedback();
+  undoFeedback();
   await clearMark(db, o.scheduleId, o.key);
   bump();
 }

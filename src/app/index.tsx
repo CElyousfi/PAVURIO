@@ -25,7 +25,7 @@ import { CircleButton, Icon, T } from '../ui/primitives';
 import { FillArt } from '../ui/FillArt';
 import { ART } from '../ui/art';
 import { colors, font, softShadow } from '../ui/theme';
-import { petFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { completeFeedback, petFeedback, popFeedback, tapFeedback, undoFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { Bouncy, ConfettiRain, Pop, Ring, Splash, motionReduced, usePress } from '../ui/motion';
 import { HomeFeed } from '../features/HomeFeed';
@@ -95,6 +95,9 @@ function HomeScreen() {
   const [cheer, setCheer] = useState<number | null>(null);
   const wasComplete = useRef<boolean | null>(null);
   const isComplete = progress.planned > 0 && progress.ratio >= 1;
+  // read by the celebration below, after the log has reloaded the day: a log that completes the day sounds bigger
+  const completeRef = useRef(isComplete);
+  completeRef.current = isComplete;
   useEffect(() => {
     if (loading) return;
     if (wasComplete.current === false && isComplete && focused && !reduceMotion) setCheer(Date.now());
@@ -141,7 +144,8 @@ function HomeScreen() {
       } else {
         confetti();
       }
-      successFeedback();
+      // the log card already played the log sound; a log that completes the day adds the fanfare
+      if (completeRef.current) completeFeedback();
     }, 380);
     setSnack({ eventId, type });
     setSplash({ type, key: Date.now() });
@@ -163,7 +167,7 @@ function HomeScreen() {
     setSnack(null);
     await removeCareEvent(db, id);
     bump();
-    tapFeedback();
+    undoFeedback();
   }, [snack, db, bump]);
 
   if (!pet) return null;
@@ -408,7 +412,7 @@ function AddFab({ bottom, hidden }: { bottom: number; hidden: boolean }) {
   const reach = Math.hypot(width, height) / 30;
   const flood = useAnimatedStyle(() => ({ opacity: grow.value > 0 ? 1 : 0, transform: [{ scale: 1 + grow.value * reach }] }));
   const open = () => {
-    tapFeedback();
+    popFeedback();
     if (motionReduced()) return router.push('/add');
     grow.value = withTiming(1, { duration: 260, easing: Easing.in(Easing.quad) });
     setTimeout(() => router.push('/add'), 230);

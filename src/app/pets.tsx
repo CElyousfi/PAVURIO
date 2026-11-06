@@ -10,7 +10,7 @@ import { useApp } from '../state/AppState';
 import { Card, TabTitle } from '../ui/forms';
 import { CircleButton, Icon, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { successFeedback } from '../native/haptics';
+import { selectFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 
 function ageLabel(birth: string | null): string | null {
@@ -55,7 +55,7 @@ export default function PetsTab() {
               onPress={async () => {
                 if (!active) {
                   await switchPet(p.id);
-                  successFeedback();
+                  selectFeedback();
                 }
                 router.navigate('/');
               }}

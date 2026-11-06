@@ -19,7 +19,7 @@ import { weekGrade } from './Insights';
 import { Sheet } from '../ui/forms';
 import { Pill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { successFeedback } from '../native/haptics';
+import { badgeFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
 const KEY = 'proMoments';
@@ -65,7 +65,7 @@ export function ProMomentHost({ focused }: { focused: boolean }) {
       await saveProMoments(db, markShown(s, k));
       stateRef.current = markShown(s, k);
       setMoment(k);
-      successFeedback();
+      badgeFeedback();
       setTimeout(() => setClip({ name: 'celebrate', nonce: Date.now() }), 450);
     }, wait);
     return () => clearTimeout(timer);

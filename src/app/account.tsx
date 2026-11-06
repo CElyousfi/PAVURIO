@@ -282,7 +282,7 @@ export default function Account() {
           </View>
 
           <View style={{ alignItems: 'center', marginTop: 18 }}>
-            {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+            {ART.duo.privacy ? <Image source={ART.duo.privacy} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <T weight="black" style={styles.h1}>
               {title}
             </T>

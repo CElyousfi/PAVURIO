@@ -17,7 +17,7 @@ import { formatTime24to12 } from '../domain/schedule';
 import { KindIcon, kindMeta, routineKindsFor } from '../features/routines';
 import { useApp } from '../state/AppState';
 import { requestPermission } from '../native/notifications';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { bumpFeedback, errorFeedback, successFeedback, tapFeedback, tickFeedback } from '../native/haptics';
 import { ArcDurationPicker, ArcTimePicker } from '../ui/ArcTime';
 import { JellyPill } from '../ui/Jelly';
 import { Bouncy, motionReduced } from '../ui/motion';
@@ -78,7 +78,7 @@ export default function AddReminder() {
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > 4,
-        onPanResponderGrant: () => tapFeedback(),
+        onPanResponderGrant: () => tickFeedback(),
         onPanResponderMove: (_e, g) => {
           drop.value = Math.max(0, Math.min(1, g.dy / (height * 0.7)));
         },
@@ -87,7 +87,9 @@ export default function AddReminder() {
           const open = tap || g.dy > 70 || g.vy > 0.6;
           setGridOpen(open);
           drop.value = withSpring(open ? 1 : 0, { damping: 17, stiffness: 150, velocity: g.vy });
-          if (open) tapFeedback();
+          // the grid dropping open is a whoosh; snapping back is just a bump
+          if (open) tapFeedback('open');
+          else bumpFeedback();
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -10,7 +10,7 @@ import { Medal } from './Medal';
 import { Bouncy, ConfettiRain, PopIn } from '../ui/motion';
 import { T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { successFeedback } from '../native/haptics';
+import { badgeFeedback } from '../native/haptics';
 import { maybeAskForReview } from '../native/review';
 import { t } from '../i18n';
 
@@ -37,7 +37,7 @@ export function CelebrationHost() {
     if (!head) return;
     const timer = setTimeout(() => {
       setFire(Date.now());
-      successFeedback();
+      badgeFeedback();
     }, 250);
     return () => clearTimeout(timer);
   }, [head]);

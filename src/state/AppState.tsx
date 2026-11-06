@@ -7,6 +7,7 @@ import * as repo from '../data/repo';
 import { Plan, Portions, computeProgress } from '../domain/progress';
 import { dayRange, parseDayKey } from '../domain/time';
 import { setHapticsEnabled } from '../native/haptics';
+import { preloadSounds, setSoundsEnabled } from '../native/sound';
 import type { CareType } from '../domain/care';
 import { listSchedules, marksBetween } from '../data/careRepo';
 import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
@@ -18,7 +19,7 @@ import { setMotionReduced } from '../ui/motion';
 import { Lang, deviceLanguage, isLang, setLang } from '../i18n';
 
 export type WeightUnit = 'kg' | 'lb';
-export type Settings = { haptics: boolean; reduceMotion: boolean; weightUnit: WeightUnit };
+export type Settings = { haptics: boolean; sounds: boolean; reduceMotion: boolean; weightUnit: WeightUnit };
 
 export type LoggedSignal = { eventId: string; type: CareType; nonce: number };
 
@@ -38,7 +39,7 @@ type Ctx = {
   version: number;
   bump: () => void;
   reload: () => Promise<void>;
-  setSetting: (k: 'haptics' | 'reduceMotion', v: boolean) => Promise<void>;
+  setSetting: (k: 'haptics' | 'sounds' | 'reduceMotion', v: boolean) => Promise<void>;
   setWeightUnit: (u: WeightUnit) => Promise<void>;
   switchPet: (id: string) => Promise<void>;
   /** Pavurio Pro entitlement (cached locally, refreshed from the store when configured) */
@@ -67,7 +68,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [plan, setPlanState] = useState<Plan>({});
   const [portions, setPortions] = useState<Portions>({});
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [settings, setSettings] = useState<Settings>({ haptics: true, reduceMotion: false, weightUnit: 'kg' });
+  const [settings, setSettings] = useState<Settings>({ haptics: true, sounds: true, reduceMotion: false, weightUnit: 'kg' });
   const [version, setVersion] = useState(0);
   const [logged, setLogged] = useState<LoggedSignal | null>(null);
   const [pro, setProState] = useState(false);
@@ -81,10 +82,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPortions(p ? await repo.getPortions(db, p.id) : {});
     setSchedules(p ? await listSchedules(db, p.id) : []);
     const haptics = (await repo.getSetting(db, 'haptics')) !== '0';
+    const sounds = (await repo.getSetting(db, 'sounds')) !== '0';
     const reduceMotion = (await repo.getSetting(db, 'reduceMotion')) === '1';
     const weightUnit = ((await repo.getSetting(db, 'weightUnit')) as WeightUnit) || 'kg';
-    setSettings({ haptics, reduceMotion, weightUnit: weightUnit === 'lb' ? 'lb' : 'kg' });
+    setSettings({ haptics, sounds, reduceMotion, weightUnit: weightUnit === 'lb' ? 'lb' : 'kg' });
     setHapticsEnabled(haptics);
+    setSoundsEnabled(sounds);
+    if (sounds) preloadSounds();
     setProState((await repo.getSetting(db, 'proCache')) === '1');
     if (!(await repo.getSetting(db, 'firstOpenAt'))) await repo.setSetting(db, 'firstOpenAt', String(Date.now()));
     const storedLang = await repo.getSetting(db, 'lang');
@@ -154,10 +158,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
   const setSetting = useCallback(
-    async (k: 'haptics' | 'reduceMotion', v: boolean) => {
+    async (k: 'haptics' | 'sounds' | 'reduceMotion', v: boolean) => {
       await repo.setSetting(db, k, v ? '1' : '0');
       setSettings((s) => ({ ...s, [k]: v }));
       if (k === 'haptics') setHapticsEnabled(v);
+      if (k === 'sounds') {
+        setSoundsEnabled(v);
+        if (v) preloadSounds();
+      }
     },
     [db],
   );
