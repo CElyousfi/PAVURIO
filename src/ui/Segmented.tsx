@@ -9,7 +9,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import { T } from './primitives';
 import { colors } from './theme';
 import { motionReduced } from './motion';
-import { tapFeedback } from '../native/haptics';
+import { selectFeedback } from '../native/haptics';
 
 export type SegOption<K extends string> = { key: K; label: string; testID?: string };
 
@@ -52,7 +52,7 @@ export function Segmented<K extends string>({
             accessibilityState={{ selected: on }}
             accessibilityLabel={o.label}
             onPress={() => {
-              if (!on) tapFeedback();
+              if (!on) selectFeedback();
               onChange(o.key);
             }}
             style={[styles.btn, { height }]}

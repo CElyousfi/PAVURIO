@@ -602,4 +602,8 @@ export const FR: Record<string, string> = {
   "{weekday}, {month} {day}": "{weekday} {day} {month}",
   "★ Milestone": "★ Grande date",
   "A calm companion for real pet care.": "Un compagnon serein pour prendre vraiment soin de votre animal.",
+  "Sounds": "Sons",
+  "Little sounds when you log, slide and celebrate": "De petits sons quand vous notez, glissez et célébrez",
+  "Vibrations": "Vibrations",
+  "Log again": "Noter à nouveau",
 };

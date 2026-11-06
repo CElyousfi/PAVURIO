@@ -16,7 +16,7 @@ import { useApp } from '../state/AppState';
 import { CircleButton, Icon, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
 import { Bouncy, ConfettiRain, Enter, Float, PopIn, Pulse, Shimmer } from '../ui/motion';
-import { errorFeedback, successFeedback } from '../native/haptics';
+import { completeFeedback, errorFeedback, successFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 import { LEGAL } from '../config/links';
 import { ART } from '../ui/art';
@@ -153,7 +153,7 @@ export default function Paywall() {
       if (ok) {
         await setPro(true);
         if (selected.trialDays > 0) await scheduleTrialReminder(selected.trialDays).catch(() => null);
-        successFeedback();
+        completeFeedback();
         setConfetti(Date.now());
         setSuccess(true);
       }
@@ -175,6 +175,7 @@ export default function Paywall() {
         successFeedback();
         setConfetti(Date.now());
         setSuccess(true);
+        completeFeedback();
       } else setMsg(t('No previous Pro purchase was found for this account.'));
     } catch (e) {
       setMsg(e instanceof Error ? e.message : t('Could not restore right now.'));

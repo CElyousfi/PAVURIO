@@ -8,7 +8,7 @@ import { Sheet } from './forms';
 import { Bouncy } from './motion';
 import { Icon, T } from './primitives';
 import { colors } from './theme';
-import { tapFeedback } from '../native/haptics';
+import { selectFeedback } from '../native/haptics';
 import { LANGS, LANG_FLAGS, LANG_NAMES, Lang, t } from '../i18n';
 
 export function LanguagePicker({ visible, value, onChange, onClose }: { visible: boolean; value: Lang; onChange: (l: Lang) => void; onClose: () => void }) {
@@ -24,7 +24,7 @@ export function LanguagePicker({ visible, value, onChange, onClose }: { visible:
                 key={l}
                 scaleTo={0.95}
                 onPress={() => {
-                  tapFeedback();
+                  selectFeedback();
                   onChange(l);
                   onClose();
                 }}

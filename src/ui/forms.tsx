@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { CircleButton, Icon, Label, Pill, T } from './primitives';
 import { colors, font, radius } from './theme';
-import { tapFeedback } from '../native/haptics';
+import { selectFeedback, toggleFeedback } from '../native/haptics';
 import { Bouncy, Enter, motionReduced } from './motion';
 import { springs, usePress } from './springs';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
@@ -87,7 +87,7 @@ export function Chip({ label, on, onPress, color = colors.ink, tint = colors.lin
       accessibilityState={{ selected: on }}
       accessibilityLabel={label}
       onPress={() => {
-        tapFeedback();
+        selectFeedback();
         onPress();
       }}
       style={[styles.chip, { backgroundColor: on ? color : tint }, press.style]}
@@ -216,7 +216,7 @@ export function MonthGrid({
                 accessibilityLabel={formatDateLong(k)}
                 accessibilityState={{ selected: sel, disabled }}
                 onPress={() => {
-                  tapFeedback();
+                  selectFeedback();
                   onSelect(k);
                 }}
                 style={styles.dayCell}
@@ -416,7 +416,7 @@ export function Toggle({ label, body, value, onChange }: { label: string; body?:
       accessibilityState={{ checked: value }}
       accessibilityLabel={label}
       onPress={() => {
-        tapFeedback();
+        toggleFeedback(!value);
         onChange(!value);
       }}
       style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 6 }}

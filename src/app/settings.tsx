@@ -21,7 +21,7 @@ import { useCloud } from '../state/Cloud';
 import { PlanEditor } from '../features/PetEditors';
 import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
-import { successFeedback } from '../native/haptics';
+import { successFeedback, toggleFeedback } from '../native/haptics';
 import { LANG_FLAGS, LANG_NAMES, t, tn } from '../i18n';
 import { LanguagePicker } from '../ui/LanguagePicker';
 
@@ -111,7 +111,7 @@ export default function Settings() {
             <DarkTile
               title={t('Care')}
               subtitle={t('Routines & visits')}
-              art={<Image source={ART.section.calendar} style={{ width: 104, height: 104 }} resizeMode="contain" />}
+              art={<Image source={ART.duo.routines} style={{ width: 104, height: 104 }} resizeMode="contain" />}
               onPress={() => router.push('/care')}
               height={118}
               testID="menu-care"
@@ -126,7 +126,7 @@ export default function Settings() {
             />
             <View style={styles.hubRow}>
               <DarkTile title={t('Records')} subtitle={t('Health file')} art={<Image source={ART.section.records} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/records')} style={styles.half} testID="menu-records" />
-              <DarkTile title={t('Summary')} subtitle={t('Your week')} art={<Image source={ART.icons.chart} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/summary')} style={styles.half} testID="menu-summary" />
+              <DarkTile title={t('Summary')} subtitle={t('Your week')} art={<Image source={ART.duo.awards} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/summary')} style={styles.half} testID="menu-summary" />
             </View>
             <View style={styles.hubRow}>
               <DarkTile title={t('Memories')} art={<Image source={ART.icons.gift} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/moments')} style={styles.half} testID="menu-moments" />
@@ -143,7 +143,7 @@ export default function Settings() {
               {pet.species === 'dog' ? (
                 <DarkTile title={t('Paw Passport')} subtitle={t('Adventures')} art={<Image source={ART.care.walk!} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/passport')} style={styles.half} testID="menu-passport" />
               ) : null}
-              <DarkTile title={t('Achievements')} art={<Image source={ART.icons.trophy} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/achievements')} style={styles.half} testID="menu-achievements" />
+              <DarkTile title={t('Achievements')} art={<Image source={ART.duo.awards} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/achievements')} style={styles.half} testID="menu-achievements" />
             </View>
           </View>
           <View style={styles.divider} />
@@ -152,7 +152,7 @@ export default function Settings() {
             <>
               <Label style={styles.section}>{t('Account')}</Label>
               <Bouncy scaleTo={0.975} accessibilityRole="button" accessibilityLabel={t('Account')} onPress={() => router.push('/account')} style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="account-row">
-                {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 34, height: 40 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+                {ART.duo.privacy ? <Image source={ART.duo.privacy} style={{ width: 46, height: 46 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 17 }}>
                     {cloudState.user && !cloudState.user.anonymous ? (cloudState.files.pending > 0 ? t('Signed in · photos uploading') : cloudState.lastBackupAt ? t('Signed in · backed up') : t('Signed in')) : t('Save your account')}
@@ -182,7 +182,9 @@ export default function Settings() {
 
           <Label style={styles.section}>{t('Experience')}</Label>
           <View style={[styles.card]}>
-            <ToggleRow label={t('Haptics')} value={settings.haptics} onChange={(v) => setSetting('haptics', v)} />
+            <ToggleRow label={t('Sounds')} hint={t('Little sounds when you log, slide and celebrate')} value={settings.sounds} onChange={(v) => setSetting('sounds', v)} />
+            <View style={styles.sep} />
+            <ToggleRow label={t('Vibrations')} value={settings.haptics} onChange={(v) => setSetting('haptics', v)} />
             <View style={styles.sep} />
             <ToggleRow
               label={t('Reduce motion')}
@@ -318,14 +320,14 @@ export default function Settings() {
             {[
               { label: t('Rate Pavurio'), body: t('A review helps other pet parents find us'), go: rate, icon: ART.icons.heart },
               { label: t('Share Pavurio'), body: t('Tell a friend who loves their pet'), go: shareApp, icon: ART.icons.gift },
-              { label: t('Achievements'), body: t('Milestones from your life together'), go: () => router.push('/achievements'), icon: ART.icons.trophy },
+              { label: t('Achievements'), body: t('Milestones from your life together'), go: () => router.push('/achievements'), icon: ART.duo.awards },
               { label: t('Help center'), body: t('Restoring, subscriptions, reminders'), go: () => Linking.openURL(LEGAL.help), icon: ART.icons.paw },
               { label: t('Contact support'), body: LEGAL.support, go: () => Linking.openURL(`mailto:${LEGAL.support}?subject=Pavurio`), icon: ART.icons.paw },
-              { label: t('Privacy policy'), body: cloudState.enabled ? t('What we keep and why') : t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.icons.shield },
-              { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms), icon: ART.icons.calendar },
+              { label: t('Privacy policy'), body: cloudState.enabled ? t('What we keep and why') : t('Your data stays on your phone'), go: () => Linking.openURL(LEGAL.privacy), icon: ART.duo.privacy },
+              { label: t('Terms of use'), body: t('Subscriptions and the fine print'), go: () => Linking.openURL(LEGAL.terms), icon: ART.duo.privacy },
             ].map((r, i) => (
               <Bouncy scaleTo={0.975} key={r.label} accessibilityRole="button" accessibilityLabel={r.label} onPress={r.go} style={[styles.linkRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.line }]}>
-                {r.icon ? <Image source={r.icon} style={{ width: 30, height: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+                {r.icon ? <Image source={r.icon} style={{ width: 38, height: 38 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
                 <View style={{ flex: 1 }}>
                   <T weight="xbold" style={{ fontSize: 16 }}>
                     {r.label}
@@ -357,7 +359,11 @@ function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: str
         </T>
         {hint ? <T style={{ color: colors.muted, fontSize: 13 }}>{hint}</T> : null}
       </View>
-      <Switch value={value} onValueChange={onChange} trackColor={{ true: colors.brand, false: colors.line }} accessibilityLabel={label} />
+      <Switch value={value} onValueChange={(v) => {
+          // the switch you just turned on answers with its own feedback (turning sounds on plays one)
+          onChange(v);
+          setTimeout(() => toggleFeedback(v), 0);
+        }} trackColor={{ true: colors.brand, false: colors.line }} accessibilityLabel={label} />
     </View>
   );
 }

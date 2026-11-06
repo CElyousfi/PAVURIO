@@ -14,7 +14,7 @@ import { Bouncy, CountUp, Ring, motionReduced } from '../ui/motion';
 import { T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { Sticker, moodSticker } from '../ui/Sticker';
-import { tapFeedback } from '../native/haptics';
+import { selectFeedback } from '../native/haptics';
 import { CareHeatmap, DaysColoured, StatChips, WeekReport } from '../features/Insights';
 import { t } from '../i18n';
 import { Segmented } from '../ui/Segmented';
@@ -118,7 +118,7 @@ export default function Summary() {
 
   if (!pet) return null;
   const pick = (r: Range) => {
-    tapFeedback();
+    selectFeedback();
     if (r !== 'days' && !pro) return router.push({ pathname: '/paywall', params: { reason: 'stats' } });
     setRange(r);
   };

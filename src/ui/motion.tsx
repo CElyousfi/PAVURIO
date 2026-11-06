@@ -23,7 +23,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { T } from './primitives';
 import { springs } from './springs';
 import { colors } from './theme';
-import { tapFeedback } from '../native/haptics';
+import { selectFeedback, tapFeedback } from '../native/haptics';
 
 export { springs, usePress } from './springs';
 
@@ -106,7 +106,9 @@ export function CountUp({ value, format = (n) => String(Math.round(n)), duration
 
 const OUTER_KEYS = ['flex', 'flexGrow', 'flexShrink', 'flexBasis', 'alignSelf', 'width', 'minWidth', 'maxWidth', 'margin', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'marginHorizontal', 'marginVertical', 'position', 'top', 'left', 'right', 'bottom', 'zIndex'] as const;
 
-/** Press feedback: springy scale + light haptic. Layout props (flex, margins, width…) go on the touch target. */
+const CHOICE_ROLES = new Set(['radio', 'tab', 'checkbox', 'switch', 'menuitem']);
+
+/** Press feedback: springy scale + light haptic + sound. Layout props (flex, margins, width…) go on the touch target. */
 export function Bouncy({ children, onPress, style, scaleTo = 0.95, haptic = true, ...rest }: PressableProps & { children: React.ReactNode; style?: StyleProp<ViewStyle>; scaleTo?: number; haptic?: boolean }) {
   const s = useSharedValue(1);
   const a = useAnimatedStyle(() => ({ transform: [{ scale: s.value }] }));
@@ -132,7 +134,12 @@ export function Bouncy({ children, onPress, style, scaleTo = 0.95, haptic = true
         rest.onPressOut?.(e);
       }}
       onPress={(e) => {
-        if (haptic) tapFeedback();
+        // choices (coat swatches, species, tabs, check rows) answer with the "select" blip, everything else
+        // with the soft tap; a screen's own sound for the result replaces either
+        if (haptic) {
+          if (CHOICE_ROLES.has(rest.accessibilityRole as string)) selectFeedback();
+          else tapFeedback();
+        }
         onPress?.(e);
       }}
     >

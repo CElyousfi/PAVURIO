@@ -7,7 +7,7 @@ import { Plan, Portions, portionOf } from '../domain/progress';
 import { Icon, Label, T } from '../ui/primitives';
 import { CareIcon } from '../ui/CareIcon';
 import { colors } from '../ui/theme';
-import { tapFeedback } from '../native/haptics';
+import { tickFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
 export function LookPicker({ species, appearance, onChange, pro = false }: { species: Species; appearance: Appearance; onChange: (a: Appearance) => void; pro?: boolean }) {
@@ -101,12 +101,12 @@ export function PlanEditor({
         const spec = CARE[ct].amount;
         const portion = portionOf(ct, portions);
         const set = (v: number) => {
-          tapFeedback();
+          tickFeedback();
           onChange({ ...plan, [ct]: Math.max(0, Math.min(8, v)) }, portions);
         };
         const setPortion = (dir: 1 | -1) => {
           if (!spec) return;
-          tapFeedback();
+          tickFeedback();
           const next = Math.round((portion + dir * spec.step) * 100) / 100;
           onChange(plan, { ...portions, [ct]: Math.max(spec.min, Math.min(spec.max, next)) });
         };

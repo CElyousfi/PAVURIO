@@ -57,6 +57,15 @@ export const ART = {
     walk_ready: require('../../assets/art/adventures/walk_ready.webp'),
     walk_scene: require('../../assets/art/adventures/walk_scene.webp'),
   } as Record<string, number>,
+  /** Honey & Tabby scenes for whole sections (Nov 2026; sources in docs/art/duo-src) */
+  duo: {
+    /** Care: routines & visits */
+    routines: require('../../assets/art/duo/routines.webp'),
+    /** Summary and Achievements */
+    awards: require('../../assets/art/duo/awards.webp'),
+    /** Privacy policy, Terms of use, backup and data safety */
+    privacy: require('../../assets/art/duo/privacy.webp'),
+  },
   /** section illustrations from the same set */
   section: {
     calendar: require('../../assets/art/icons/ui_calendar.webp'),

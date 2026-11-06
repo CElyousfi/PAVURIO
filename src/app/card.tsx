@@ -18,7 +18,7 @@ import { CardCanvas, CardPhoto } from '../features/CardCanvas';
 import { CardFormat, FORMAT_SIZE, TEMPLATES, TemplateId, fillSlots, layoutFor, missingSlots, prefillPhotos, swapSlots, templateFor } from '../features/memoryCards';
 import { MomentThumb } from '../features/MemoriesKit';
 import { pickPhotos, saveImageToLibrary, shareImage } from '../native/media';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { errorFeedback, photoFeedback, selectFeedback } from '../native/haptics';
 import { useApp } from '../state/AppState';
 import { Sheet, formatDateLong } from '../ui/forms';
 import { Bouncy, ConfettiRain } from '../ui/motion';
@@ -168,7 +168,7 @@ export default function CardEditor() {
   const missing = missingSlots(tpl, slots);
 
   const changeTemplate = (id: TemplateId) => {
-    tapFeedback();
+    selectFeedback();
     touched.current = true;
     setTpl(id);
     setSlots((cur) => fillSlots(id, cur.filter(Boolean) as CardPhoto[]));
@@ -269,7 +269,7 @@ export default function CardEditor() {
       if (kind === 'save') {
         await saveImageToLibrary(uri);
         setDone(Date.now());
-        successFeedback();
+        photoFeedback();
       } else {
         await shareImage(uri, title || t('Memory Card'));
       }

@@ -11,7 +11,7 @@ import { PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import type { CareType } from '../domain/care';
 import { colors } from './theme';
-import { tapFeedback } from '../native/haptics';
+import { tickFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { ART } from './art';
 import { FillArt } from './FillArt';
@@ -55,13 +55,16 @@ export function Vessel({
         },
         onPanResponderMove: (_e, g) => {
           const steps = Math.trunc(-g.dy / 16);
+          // every step of a drag is felt and heard, like turning a dial
           while (acc.current < steps) {
             acc.current += 1;
             stepRef.current?.(1);
+            tickFeedback();
           }
           while (acc.current > steps) {
             acc.current -= 1;
             stepRef.current?.(-1);
+            tickFeedback();
           }
         },
       }),
@@ -89,7 +92,7 @@ export function Vessel({
             accessibilityLabel={t('More')}
             hitSlop={6}
             onPress={() => {
-              tapFeedback();
+              tickFeedback();
               onStep(1);
             }}
             style={{ position: 'absolute', left: cx - R, top: cy - R, width: 2 * R, height: R }}
@@ -100,7 +103,7 @@ export function Vessel({
             accessibilityLabel={t('Less')}
             hitSlop={6}
             onPress={() => {
-              tapFeedback();
+              tickFeedback();
               onStep(-1);
             }}
             style={{ position: 'absolute', left: cx - R, top: cy, width: 2 * R, height: R }}

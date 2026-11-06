@@ -6,7 +6,7 @@
  *    own extras. Ticking a tracked item restocks it; the whole list can be shared.
  */
 import React, { useMemo, useState } from 'react';
-import { Image, ScrollView, Share, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { ScrollView, Share, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { Sticker } from '../ui/Sticker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,7 +21,7 @@ import { Segmented } from '../ui/Segmented';
 import { Bouncy, motionReduced } from '../ui/motion';
 import { CircleButton, Icon, Pill, T } from '../ui/primitives';
 import { colors, font } from '../ui/theme';
-import { successFeedback, tapFeedback } from '../native/haptics';
+import { tapFeedback, toggleFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 
 type Tab = 'pantry' | 'list';
@@ -255,7 +255,7 @@ export default function Pantry() {
                       scaleTo={0.9}
                       onPress={async () => {
                         await toggleShoppingItem(db, x.id, !x.doneAt);
-                        if (!x.doneAt) successFeedback();
+                        toggleFeedback(!x.doneAt);
                         await refreshExtras();
                       }}
                       accessibilityRole="checkbox"

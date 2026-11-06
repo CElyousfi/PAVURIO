@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gifkit import frames as gif_frames, main_mask  # noqa: E402
+from gifkit import frames as gif_frames, main_mask, smooth_frames  # noqa: E402
 
 SPECIES = sys.argv[1] if len(sys.argv) > 1 else 'dog'
 OUT = f'assets/pets/{SPECIES}/clips'
@@ -44,6 +44,7 @@ CAT = {
     'play': ('cat_play', None, False, False, 0.84),
 }
 CLIPS = DOG if SPECIES == 'dog' else CAT
+TARGET_FPS = 20
 
 
 def smooth(x, a, b):
@@ -154,7 +155,13 @@ for name, (gif, pick, loop, pingpong, factor) in CLIPS.items():
     idx = pick if pick is not None else list(range(len(allf)))
     fr = [allf[i] for i in idx]
     dur = float(np.mean([durs[i] for i in idx]))
-    fps = round(1000 / dur, 2) if pick is None else 1.6  # the two-frame idle breathes slowly
+    fps = 1000 / dur if pick is None else 1.6  # the two-frame idle breathes slowly
+    # the GIFs have 6-9 drawn frames: motion-interpolated in-betweens bring every clip to >= 20 fps, so the
+    # app never cross-fades (which looked mushy and doubled every layer it draws)
+    factor = math.ceil(TARGET_FPS / fps)
+    # every GIF is drawn as a cycle, so the last frame flows back into the first (walks repeat seamlessly)
+    fr = smooth_frames(fr, factor, loop=not pingpong)
+    fps = round(fps * factor, 2)
     al = [f[:, :, 3] for f in fr]
     mains = [main_mask(a) for a in al]
     U = np.zeros_like(al[0], bool)

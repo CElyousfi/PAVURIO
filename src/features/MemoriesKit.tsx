@@ -12,7 +12,7 @@ import { getSetting, setSetting } from '../data/repo';
 import { Anniversary, anniversaryDismissKey, anniversaryPrompts, momentDay } from '../domain/memories';
 import { dayKeyOf } from '../domain/time';
 import { MediaError, PickedPhoto, deleteFiles, importPhoto, pickPhotos } from '../native/media';
-import { errorFeedback, successFeedback } from '../native/haptics';
+import { errorFeedback, photoFeedback } from '../native/haptics';
 import { useApp } from '../state/AppState';
 import { Sticker, moodSticker } from '../ui/Sticker';
 import { Bouncy, Enter } from '../ui/motion';
@@ -52,7 +52,7 @@ export function useCaptureMoment() {
       }
       if (!ids.length) throw new MediaError(t('This photo couldn’t be saved. Please try another one.'));
       bump();
-      successFeedback();
+      photoFeedback();
       router.push({ pathname: '/moment', params: { id: ids[0], fresh: String(ids.length), failed: failed ? String(failed) : undefined } });
     },
     [pet, db, bump],

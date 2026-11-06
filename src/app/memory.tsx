@@ -18,7 +18,7 @@ import { confirmAsync } from '../ui/confirm';
 import { Chip, DateField, Field, ModalScreen } from '../ui/forms';
 import { Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { errorFeedback, successFeedback } from '../native/haptics';
+import { errorFeedback, photoFeedback } from '../native/haptics';
 import { MEM_COLORS } from '../features/MemoriesKit';
 import { t } from '../i18n';
 
@@ -114,7 +114,7 @@ export default function MemoryEditor() {
       } else {
         await addMoment(db, input);
       }
-      successFeedback();
+      photoFeedback();
       bump();
       router.back();
     } catch (e) {

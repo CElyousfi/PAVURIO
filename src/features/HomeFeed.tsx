@@ -158,10 +158,10 @@ export function HomeFeed({ width }: { width: number }) {
           {[
             { key: 'moments', label: t('Memories'), icon: ART.icons.gift, go: () => router.push('/moments') },
             { key: 'records', label: t('Records'), icon: ART.icons.heart, go: () => router.push('/records') },
-            { key: 'summary', label: t('Summary'), icon: ART.icons.chart, go: () => router.push('/summary') },
+            { key: 'summary', label: t('Summary'), icon: ART.duo.awards, go: () => router.push('/summary') },
             pet.species === 'dog'
               ? { key: 'passport', label: t('Paw Passport'), icon: ART.icons.paw, go: () => router.push('/passport') }
-              : { key: 'achievements', label: t('Milestones'), icon: ART.icons.trophy, go: () => router.push('/achievements') },
+              : { key: 'achievements', label: t('Milestones'), icon: ART.duo.awards, go: () => router.push('/achievements') },
           ].map((x) => (
             <Bouncy key={x.key} scaleTo={0.94} onPress={x.go} accessibilityRole="button" accessibilityLabel={x.label} style={styles.shortcut} testID={`home-${x.key}`}>
               {x.icon ? <Image source={x.icon} style={{ width: 40, height: 40 }} resizeMode="contain" /> : null}
@@ -202,7 +202,7 @@ export function HomeFeed({ width }: { width: number }) {
       {cloudState.enabled && cloudState.user?.anonymous ? (
         <Enter index={7}>
           <Bouncy scaleTo={0.975} onPress={() => router.push('/account')} style={[styles.save]} accessibilityRole="button" testID="feed-save-account">
-            {ART.icons.shield ? <Image source={ART.icons.shield} style={{ width: 54, height: 54 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+            {ART.duo.privacy ? <Image source={ART.duo.privacy} style={{ width: 54, height: 54 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ fontSize: 17 }}>
                 {t('Keep {name} safe', { name: pet.name })}

@@ -24,7 +24,7 @@ import { PlacePicker, Stamp, TIME_ART, WEATHER_ART, WeatherCard } from '../featu
 import { CircleButton, Pill, SoftPill, T } from '../ui/primitives';
 import { ConfettiRain, Pulse } from '../ui/motion';
 import { colors } from '../ui/theme';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { completeFeedback, errorFeedback, tapFeedback, walkStartFeedback } from '../native/haptics';
 import { confirmAsync } from '../ui/confirm';
 import { ART } from '../ui/art';
 import { t } from '../i18n';
@@ -156,7 +156,7 @@ export default function WalkScreen() {
     markLogged();
     bump();
     if (r.walk.eventId) signalLogged({ eventId: r.walk.eventId, type: 'walk' });
-    successFeedback();
+    completeFeedback();
     if (!reduceMotion) setClip({ name: 'celebrate', nonce: Date.now() });
     setCheer(Date.now());
   }
@@ -166,7 +166,7 @@ export default function WalkScreen() {
     setBusy(true);
     setError(null);
     try {
-      tapFeedback();
+      walkStartFeedback();
       const snap = weather ?? placeOnlySnapshot(place, Date.now());
       const w = await startWalk(db, pet.id, snap);
       setWalk(w);

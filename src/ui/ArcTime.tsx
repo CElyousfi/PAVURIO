@@ -11,7 +11,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { T } from './primitives';
 import { colors, font } from './theme';
 import { motionReduced } from './motion';
-import { tapFeedback } from '../native/haptics';
+import { tickFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
 const STEP = 0.3; // radians between two numbers on the arc
@@ -108,7 +108,7 @@ export function ArcWheel({
         const k = Math.round(p);
         if (k !== last.current) {
           last.current = k;
-          tapFeedback();
+          tickFeedback();
         }
       },
       onPanResponderRelease: (e, g) => {
@@ -118,12 +118,12 @@ export function ArcWheel({
           // a tap: above the centre steps up, below steps down
           const above = e.nativeEvent.locationY < height / 2;
           target = Math.round(start) + (above ? 1 : -1);
-          tapFeedback();
+          tickFeedback();
         } else {
           // fling: carry on in the direction of travel, then snap
           const carry = Math.abs(g.vy) < 0.4 ? 0 : Math.max(-5, Math.min(5, -g.vy * 2.2));
           target = Math.round(live.current + carry);
-          if (target !== last.current) tapFeedback();
+          if (target !== last.current) tickFeedback();
         }
         live.current = target;
         last.current = target;
@@ -146,7 +146,7 @@ export function ArcWheel({
     live.current = target;
     last.current = target;
     pos.value = motionReduced() ? target : withSpring(target, { damping: 16, stiffness: 160 });
-    tapFeedback();
+    tickFeedback();
     commit(target);
   };
 

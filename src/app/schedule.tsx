@@ -15,7 +15,7 @@ import { confirmAsync } from '../ui/confirm';
 import { Chip, DateField, Field, ModalScreen, TimeField, Toggle } from '../ui/forms';
 import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { errorFeedback, selectFeedback, successFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { capitalize, weekdayNames } from '../i18n/dates';
 
@@ -88,7 +88,7 @@ export default function ScheduleEditor() {
   };
 
   const toggleDay = (d: number) => {
-    tapFeedback();
+    selectFeedback();
     const all = days.length === 0 ? [0, 1, 2, 3, 4, 5, 6] : days;
     const next = all.includes(d) ? all.filter((x) => x !== d) : [...all, d];
     setDays(next.length === 7 ? [] : next);

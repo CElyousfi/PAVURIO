@@ -10,7 +10,7 @@ import { confirmAsync } from '../ui/confirm';
 import { Chip, DateField, Field, ModalScreen } from '../ui/forms';
 import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { deleteFeedback, errorFeedback, selectFeedback, successFeedback } from '../native/haptics';
 import { KindGlyph } from '../features/RecordGlyph';
 import { t } from '../i18n';
 
@@ -132,7 +132,7 @@ export default function RecordEditor() {
                 accessibilityState={{ selected: on }}
                 accessibilityLabel={r.label}
                 onPress={() => {
-                  tapFeedback();
+                  selectFeedback();
                   setKind(r.kind);
                 }}
                 style={[styles.kind, { backgroundColor: on ? r.color : r.tint }]}
@@ -196,7 +196,7 @@ export default function RecordEditor() {
                   accessibilityLabel={t('Remove attachment')}
                   hitSlop={8}
                   onPress={() => {
-                    tapFeedback();
+                    deleteFeedback();
                     if (f.id) setRemoved((r) => [...r, { id: f.id!, ownerType: 'record', ownerId: params.id ?? '', uri: f.uri, mime: f.mime, name: f.name }]);
                     setFiles((all) => all.filter((_, j) => j !== i));
                   }}

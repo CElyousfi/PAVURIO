@@ -22,7 +22,7 @@ import { NotifPreview } from '../ui/NotifPreview';
 import { colors, font, shadow } from '../ui/theme';
 import { Sheet, TimeField, Toggle } from '../ui/forms';
 import { Bouncy, ConfettiRain, Float, Pulse } from '../ui/motion';
-import { errorFeedback, successFeedback, tapFeedback } from '../native/haptics';
+import { errorFeedback, logFeedback, petFeedback, selectFeedback, successFeedback } from '../native/haptics';
 import { reminderCopy, requestPermission } from '../native/notifications';
 import { formatHM } from '../i18n/dates';
 import { newId } from '../domain/ids';
@@ -104,7 +104,7 @@ export default function Onboarding() {
   };
 
   const chooseSpecies = (s: Species) => {
-    tapFeedback();
+    selectFeedback();
     setSpecies(s);
     setAppearance(defaultAppearance(s));
     setPlan(defaultPlan(s));
@@ -146,7 +146,7 @@ export default function Onboarding() {
       await logCare(db, { petId: created.id, type: firstType, occurredAt: Date.now(), amount: CARE[firstType].amount ? portionOf(firstType, portions) : undefined, mutationId: newId() });
       setFirstLogged(firstType);
       bump();
-      successFeedback();
+      logFeedback();
       if (!reduceMotion && CLIP_FOR[firstType]) setClip({ name: CLIP_FOR[firstType]!, nonce: Date.now() });
       setTimeout(() => setConfetti(Date.now()), 500);
     } catch {
@@ -477,7 +477,8 @@ function WakeIntro({ width, bottomInset, onAwake }: { width: number; bottomInset
   const wake = () => {
     if (phase === 'hi') return onAwake();
     if (phase !== 'asleep') return;
-    successFeedback();
+    petFeedback();
+    setTimeout(() => successFeedback(), 500);
     setPhase('waking');
     setClip({ name: 'hello', nonce: Date.now() });
     timers.current.push(setTimeout(() => setPhase('hi'), 900));

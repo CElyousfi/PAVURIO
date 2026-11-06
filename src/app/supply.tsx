@@ -17,7 +17,7 @@ import { RollingNumber } from '../ui/Rolling';
 import { Bouncy, motionReduced } from '../ui/motion';
 import { Icon, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
-import { successFeedback, tapFeedback } from '../native/haptics';
+import { successFeedback, tapFeedback, undoFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
 
 const CHECK = [1, 0.75, 0.5, 0.25, 0];
@@ -157,7 +157,7 @@ export default function SupplyDetail() {
                     scaleTo={0.92}
                     onPress={async () => {
                       await undoPurchase(db, h.id);
-                      tapFeedback();
+                      undoFeedback();
                       bump();
                     }}
                     accessibilityRole="button"
