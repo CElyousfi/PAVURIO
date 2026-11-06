@@ -983,4 +983,5 @@ export const ES: Record<string, string> = {
   "TELL FRIENDS": "CONTAR A AMIGOS",
   "What to do": "Qué hacer",
   "START NOW": "EMPEZAR",
+  "A calm companion for real pet care.": "Un compañero tranquilo para cuidar de verdad a tu mascota.",
 };
