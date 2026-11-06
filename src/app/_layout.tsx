@@ -167,7 +167,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   useEffect(() => cloud.crash.record(error, 'screen crashed'), [error]);
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-      <Sticker name="cat_curious" size={160} />
+      <Sticker name="cat_walk" size={160} />
       <T weight="black" style={{ fontSize: 24, textAlign: 'center', marginTop: 18 }}>
         {t('Something went wrong')}
       </T>

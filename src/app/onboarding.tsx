@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Sticker } from '../ui/Sticker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, ZoomIn } from 'react-native-reanimated';
@@ -56,7 +57,7 @@ const WELCOME_STACK_CAT = [
 type Step = 'welcome' | 'species' | 'name' | 'look' | 'plan' | 'first' | 'reminders';
 // birthday and adoption day are optional: they're set later in the pet's profile, not asked up front
 const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'plan', 'first', 'reminders'];
-const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom' };
+const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom', medication: 'meds' };
 
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
@@ -277,7 +278,6 @@ export default function Onboarding() {
           <T weight="black" style={styles.h2}>
             {t("{name}'s daily plan", { name: displayName })}
           </T>
-          {ART.ui.planHeader != null ? <Image source={ART.ui.planHeader} style={{ width: 240, height: 160, marginTop: 6 }} resizeMode="contain" /> : null}
           <T style={styles.sub}>{t('You decide what a good day looks like. Each thing you log colors in a bit more of {name}.', { name: displayName })}</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
             <PlanEditor
@@ -434,7 +434,7 @@ function ReminderPreview({ pet }: { pet: Pet }) {
       {!ART.ui.remindersHero ? <View style={styles.previewGround} /> : null}
       {ART.ui.remindersHero ? (
         <Float style={{ alignSelf: 'center', marginTop: 4, zIndex: -1 }} amount={6} period={2200}>
-          <Image source={ART.ui.remindersHero} style={{ width: 240, height: 240 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+          <Sticker name={ART.ui.remindersHero} size={240} />
         </Float>
       ) : (
         <Float style={{ alignSelf: 'center', marginTop: 10 }} amount={10} period={1600}>

@@ -184,7 +184,7 @@ export function HomeFeed({ width }: { width: number }) {
             accessibilityLabel={`${t('Care tip')}: ${tipText(tipOfDay.title)}`}
             testID={`tip-${tipOfDay.id}`}
           >
-            {ART.tips[tipOfDay.id] ? <Scene source={ART.tips[tipOfDay.id]!} width={52} height={58} border={3} tilt={4} /> : <CareIcon type={TIP_ICON[tipOfDay.id] ?? 'meal'} size={48} />}
+            {ART.tips[tipOfDay.id] ? <Scene art={ART.tips[tipOfDay.id]!} width={52} height={58} border={3} tilt={4} /> : <CareIcon type={TIP_ICON[tipOfDay.id] ?? 'meal'} size={48} />}
             <View style={{ flex: 1 }}>
               <T weight="black" style={{ color: tipOfDay.color, fontSize: 11, letterSpacing: 1.2 }}>
                 {t('CARE TIP')}

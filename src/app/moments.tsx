@@ -147,7 +147,7 @@ export default function MemoriesTab() {
         <EmptyState
           title={favOnly ? t('No favorites yet') : t('Your first moment')}
           body={favOnly ? t('Tap ♡ on a photo to keep it here.') : t("First bath, a new trick, a lazy Sunday — add a photo and it shows up in {name}'s stories.", { name: pet.name })}
-          art={!favOnly && ART.scenes.moments ? <Scene source={ART.scenes.moments} width={150} height={186} border={5} tilt={3} style={{ marginBottom: 8 }} /> : undefined}
+          art={!favOnly && ART.scenes.moments ? <Scene art={ART.scenes.moments} width={150} height={186} border={5} tilt={3} style={{ marginBottom: 8 }} /> : undefined}
         />
       )
     ) : null;

@@ -1,10 +1,13 @@
-/** A ChatGPT scene card (rounded illustration with its own background), shown as a framed card. */
+/** A scene card: Honey or Tabby (or both), animated, on a soft tinted card. */
 import React from 'react';
-import { Image, ImageSourcePropType, StyleProp, View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { softShadow } from './theme';
+import { Sticker, type StickerName } from './Sticker';
+
+export type SceneArt = { pet: StickerName; tint: string };
 
 export function Scene({
-  source,
+  art,
   width,
   height,
   radius = Math.round(Math.min(width, height) * 0.16),
@@ -12,7 +15,7 @@ export function Scene({
   tilt = 0,
   style,
 }: {
-  source: ImageSourcePropType;
+  art: SceneArt;
   width: number;
   height: number;
   radius?: number;
@@ -20,17 +23,21 @@ export function Scene({
   tilt?: number;
   style?: StyleProp<ViewStyle>;
 }) {
+  const inner = Math.min(width, height) - border * 2;
+  const size = Math.round(inner * 0.92);
   return (
     <View
       style={[
-        { width, height, borderRadius: radius, overflow: 'hidden', backgroundColor: '#FFFFFF', borderWidth: border, borderColor: '#FFFFFF' },
+        { width, height, borderRadius: radius, overflow: 'hidden', backgroundColor: art.tint, borderWidth: border, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'flex-end' },
         border ? softShadow : null,
         tilt ? { transform: [{ rotate: `${tilt}deg` }] } : null,
         style,
       ]}
       accessibilityIgnoresInvertColors
     >
-      <Image source={source} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+      {/* a soft light behind the pet */}
+      <View style={{ position: 'absolute', width: inner * 0.9, height: inner * 0.9, borderRadius: inner, backgroundColor: '#FFFFFF', opacity: 0.45, top: (height - border * 2 - inner * 0.9) / 2 }} />
+      <Sticker name={art.pet} size={size} style={{ marginBottom: Math.round((height - border * 2 - size) * 0.35) }} />
     </View>
   );
 }

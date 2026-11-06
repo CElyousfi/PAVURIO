@@ -1,97 +1,95 @@
 /**
- * Honey & Tabby stickers (ChatGPT sheets, tools/art/stickers.py): the mascots in moods and moments, used
- * wherever the app shows "the pet" as a small picture (avatars, covers, cards, empty and error states).
- * The animated pet on Home / walk / studio stays the PetRig.
+ * Honey & Tabby, animated (the GIFs in docs/art/gifs → tools/art/gifstickers.py): every small picture of
+ * "the pet" in the app (avatars, covers, cards, empty and error states). Each one is a single image with
+ * its frames side by side; the frame is stepped on the UI thread, so a busy JS thread never stalls it.
+ * The big animated pet on Home / walk / studio is the PetRig (same GIFs, with coats and the colour-in).
  */
-import React from 'react';
-import { Image, ImageStyle, StyleProp } from 'react-native';
+import React, { useEffect } from 'react';
+import { ImageStyle, StyleProp, View } from 'react-native';
+import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import type { CareType, Species } from '../domain/care';
 import type { WeatherArt } from '../domain/weather';
+import { PET_ART, type PetArtName } from './petArt.generated';
+import { motionReduced } from './motion';
 
-export const STICKERS = {
-  cat_bed: require('../../assets/art/stickers/cat_bed.webp'),
-  cat_cheer: require('../../assets/art/stickers/cat_cheer.webp'),
-  cat_cloudy: require('../../assets/art/stickers/cat_cloudy.webp'),
-  cat_curious: require('../../assets/art/stickers/cat_curious.webp'),
-  cat_drink: require('../../assets/art/stickers/cat_drink.webp'),
-  cat_happy: require('../../assets/art/stickers/cat_happy.webp'),
-  cat_hot: require('../../assets/art/stickers/cat_hot.webp'),
-  cat_medicine: require('../../assets/art/stickers/cat_medicine.webp'),
-  cat_night: require('../../assets/art/stickers/cat_night.webp'),
-  cat_passport: require('../../assets/art/stickers/cat_passport.webp'),
-  cat_sleep: require('../../assets/art/stickers/cat_sleep.webp'),
-  cat_wave: require('../../assets/art/stickers/cat_wave.webp'),
-  dog_bath: require('../../assets/art/stickers/dog_bath.webp'),
-  dog_cold: require('../../assets/art/stickers/dog_cold.webp'),
-  dog_eat: require('../../assets/art/stickers/dog_eat.webp'),
-  dog_jump: require('../../assets/art/stickers/dog_jump.webp'),
-  dog_love: require('../../assets/art/stickers/dog_love.webp'),
-  dog_party: require('../../assets/art/stickers/dog_party.webp'),
-  dog_please: require('../../assets/art/stickers/dog_please.webp'),
-  dog_rain: require('../../assets/art/stickers/dog_rain.webp'),
-  dog_sleep: require('../../assets/art/stickers/dog_sleep.webp'),
-  dog_sunny: require('../../assets/art/stickers/dog_sunny.webp'),
-  dog_trophy: require('../../assets/art/stickers/dog_trophy.webp'),
-  dog_trot: require('../../assets/art/stickers/dog_trot.webp'),
-  dog_wave: require('../../assets/art/stickers/dog_wave.webp'),
-  duo_hug: require('../../assets/art/stickers/duo_hug.webp'),
-} as const;
-export type StickerName = keyof typeof STICKERS;
+export type StickerName = PetArtName;
 
 export type Mood = 'hello' | 'happy' | 'sleep' | 'party' | 'please' | 'love' | 'trophy' | 'curious';
 
 const BY_MOOD: Record<Species, Record<Mood, StickerName>> = {
-  dog: { hello: 'dog_wave', happy: 'dog_jump', sleep: 'dog_sleep', party: 'dog_party', please: 'dog_please', love: 'dog_love', trophy: 'dog_trophy', curious: 'dog_wave' },
-  cat: { hello: 'cat_wave', happy: 'cat_happy', sleep: 'cat_sleep', party: 'cat_cheer', please: 'cat_curious', love: 'cat_cheer', trophy: 'cat_passport', curious: 'cat_curious' },
+  dog: { hello: 'dog_wave', happy: 'dog_cheer', sleep: 'dog_sleep', party: 'dog_cheer', please: 'dog_eat', love: 'duo_hug', trophy: 'dog_cheer', curious: 'dog_drink' },
+  cat: { hello: 'cat_wave', happy: 'cat_happy', sleep: 'cat_doze', party: 'cat_yarn', please: 'cat_eat', love: 'duo_cuddle', trophy: 'cat_wave', curious: 'cat_walk' },
 };
 
 export function moodSticker(species: Species, mood: Mood): StickerName {
   return BY_MOOD[species][mood];
 }
 
-/** The mascot doing this care (whichever of the two has that moment). */
+/** The pet doing this care (the other mascot steps in when this one has no picture for it). */
 export function careSticker(type: CareType | string | null | undefined, species: Species): StickerName {
+  const dog = species === 'dog';
   switch (type) {
     case 'meal':
-      return 'dog_eat';
+      return dog ? 'dog_eat' : 'cat_eat';
     case 'water':
-      return 'cat_drink';
+      return dog ? 'dog_drink' : 'cat_drink';
     case 'walk':
-      return 'dog_trot';
-    case 'grooming':
-      return 'dog_bath';
+      return dog ? 'dog_trot' : 'cat_trot';
+    case 'play':
+      return dog ? 'dog_play' : 'cat_play';
     case 'medication':
-      return 'cat_medicine';
+      return 'dog_meds';
     case 'litter':
       return 'cat_happy';
+    case 'grooming':
+      return dog ? 'dog_wave' : 'cat_happy';
     default:
       return moodSticker(species, 'happy');
   }
 }
 
-/** The mascot dressed for the weather. */
+/** The pet for the weather on a walk. */
 export function weatherSticker(w: WeatherArt | null): StickerName | null {
   switch (w) {
     case 'sunny':
-      return 'dog_sunny';
+      return 'dog_trot';
     case 'partly':
     case 'cloudy':
-      return 'cat_cloudy';
+      return 'cat_walk';
     case 'rain':
     case 'storm':
-      return 'dog_rain';
+      return 'dog_sleep';
     case 'hot':
-      return 'cat_hot';
+      return 'cat_drink';
     case 'cold':
     case 'snow':
-      return 'dog_cold';
+      return 'cat_bed';
     case 'night':
-      return 'cat_night';
+      return 'cat_doze';
     default:
       return null;
   }
 }
 
-export function Sticker({ name, size, style }: { name: StickerName; size: number; style?: StyleProp<ImageStyle> }) {
-  return <Image source={STICKERS[name]} style={[{ width: size, height: size }, style]} fadeDuration={0} accessibilityIgnoresInvertColors />;
+/** One Honey & Tabby animation, `size` points square. `still` (or Reduce Motion) holds the first frame. */
+export function Sticker({ name, size, style, still = false }: { name: StickerName; size: number; style?: StyleProp<ImageStyle>; still?: boolean }) {
+  const art = PET_ART[name];
+  const n = art.frames;
+  const t = useSharedValue(0);
+  const animate = !still && !motionReduced() && n > 1;
+  useEffect(() => {
+    if (!animate) {
+      t.value = 0;
+      return;
+    }
+    t.value = 0;
+    t.value = withRepeat(withTiming(n, { duration: n * art.ms, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(t);
+  }, [animate, n, art.ms, t]);
+  const strip = useAnimatedStyle(() => ({ transform: [{ translateX: -Math.min(n - 1, Math.floor(t.value)) * size }] }));
+  return (
+    <View style={[{ width: size, height: size, overflow: 'hidden' }, style as StyleProp<ImageStyle>]} pointerEvents="none">
+      <Animated.Image source={art.sheet} style={[{ width: size * n, height: size }, strip]} fadeDuration={0} accessibilityIgnoresInvertColors />
+    </View>
+  );
 }

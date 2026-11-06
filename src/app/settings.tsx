@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Linking, Platform, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { Sticker } from '../ui/Sticker';
 import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -132,7 +133,7 @@ export default function Settings() {
               <DarkTile
                 title={t('Pets')}
                 subtitle={pets.length > 1 ? String(pets.length) : pet.name}
-                art={<Image source={ART.section.sleep} style={styles.tileArt} resizeMode="contain" />}
+                art={<Sticker name={pet.species === 'cat' ? 'cat_bed' : 'dog_sleep'} size={86} />}
                 onPress={() => router.push('/pets')}
                 style={styles.half}
                 testID="menu-pets"

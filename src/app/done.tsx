@@ -19,7 +19,7 @@ import { ConfettiRain, motionReduced } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { t, tn } from '../i18n';
 
-const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom', litter: 'litter' };
+const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom', litter: 'litter', medication: 'meds' };
 
 /** a line for how it went: on time, a bit late, early */
 function timingText(lateMin: number): { value: string; caption: string; onTime: boolean } {

@@ -69,7 +69,7 @@ export default function TipReader() {
           ))}
         </ScrollView>
         <Float style={{ alignItems: 'center', marginBottom: 14 }} amount={6}>
-          {ART.tips[tip.id] ? <Scene source={ART.tips[tip.id]!} width={200} height={230} border={6} tilt={-2} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={170} />}
+          {ART.tips[tip.id] ? <Scene art={ART.tips[tip.id]!} width={200} height={230} border={6} tilt={-2} /> : <CareIcon type={TIP_ICON[tip.id] ?? 'meal'} size={170} />}
         </Float>
         <View style={{ paddingHorizontal: 22, gap: 6, alignItems: 'center' }}>
           <Bouncy onPress={() => (page < last ? go(page + 1) : router.back())} style={[styles.cta, { backgroundColor: colors.ink }]} accessibilityRole="button" testID="tip-next">

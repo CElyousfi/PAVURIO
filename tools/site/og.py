@@ -7,9 +7,10 @@ FONT = 'node_modules/@expo-google-fonts/nunito/{w}/Nunito_{w}.ttf'
 F900 = FONT.format(w='900Black'); F800 = FONT.format(w='800ExtraBold')
 OUT = 'site/img/og'; os.makedirs(OUT, exist_ok=True)
 A = 'assets/art'
-ART = {'index': f'{A}/stickers/duo_hug.webp', 'pet-medication-reminder': f'{A}/scenes/medication.webp', 'pet-food-tracker': f'{A}/pantry/scene_welcome.webp',
-       'dog-walk-tracker': f'{A}/scenes/walk.webp', 'pet-health-records': f'{A}/scenes/records.webp', 'pet-care-widgets': f'{A}/widgets/done.png',
-       'dog-care-app': f'{A}/stickers/dog_trot.webp', 'cat-care-app': f'{A}/stickers/cat_happy.webp'}
+P = 'assets/art/pets/still'
+ART = {'index': f'{P}/duo_hug.png', 'pet-medication-reminder': f'{P}/dog_meds.png', 'pet-food-tracker': f'{P}/dog_eat.png',
+       'dog-walk-tracker': f'{P}/dog_trot.png', 'pet-health-records': f'{P}/cat_happy.png', 'pet-care-widgets': f'{A}/widgets/done.png',
+       'dog-care-app': f'{P}/dog_wave.png', 'cat-care-app': f'{P}/cat_wave.png'}
 BG = {'index': '#16B8C6', 'pet-medication-reminder': '#8E6CEB', 'pet-food-tracker': '#FF9F43', 'dog-walk-tracker': '#38B6E8',
       'pet-health-records': '#2B62C6', 'pet-care-widgets': '#1C2F5A', 'dog-care-app': '#16B8C6', 'cat-care-app': '#E46FA6'}
 
