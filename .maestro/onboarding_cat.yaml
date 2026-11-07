@@ -1,0 +1,91 @@
+appId: com.pavurio.app
+name: First use, cat (name with keyboard, studio, plan, Home, first care)
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "get-started"
+    timeout: 20000
+- takeScreenshot: cat_01_welcome
+- tapOn:
+    id: "get-started"
+- tapOn:
+    id: "unit-kg"
+- tapOn:
+    id: "species-cat"
+# empty name: a clear message, no crash
+- tapOn:
+    id: "name-next"
+- assertVisible:
+    id: "name-error"
+- tapOn:
+    id: "name-input"
+- inputText: "Mochi-Ñ"
+# keyboard open: the field and the button must both still be on screen
+- assertVisible:
+    id: "name-input"
+- assertVisible:
+    id: "name-next"
+- takeScreenshot: cat_02_name_keyboard
+- pressKey: Enter
+# Pet Studio
+- assertVisible:
+    id: "studio-preview"
+- assertVisible:
+    id: "look-next"
+- tapOn:
+    id: "studio-tab-coat"
+- tapOn:
+    id: "studio-tab-accessory"
+- tapOn:
+    id: "accessory-teal"
+- assertVisible:
+    id: "studio-chosen"
+- takeScreenshot: cat_03_studio_accessory
+- tapOn:
+    id: "look-next"
+# about: age is optional
+- tapOn:
+    id: "about-age-unsure"
+- tapOn:
+    id: "about-next"
+- assertVisible:
+    id: "plan-next"
+- takeScreenshot: cat_04_plan
+- tapOn:
+    id: "plan-next"
+- assertVisible:
+    id: "home-enter"
+- takeScreenshot: cat_05_welcome_home
+- tapOn:
+    id: "home-enter"
+# Home, no paywall
+- extendedWaitUntil:
+    visible:
+      id: "menu"
+    timeout: 10000
+- assertNotVisible:
+    id: "paywall-close"
+- takeScreenshot: cat_06_home
+- tapOn:
+    id: "quick-meal"
+- tapOn:
+    id: "save-care"
+- extendedWaitUntil:
+    visible:
+      id: "tip-first_care"
+    timeout: 6000
+- tapOn:
+    id: "menu"
+- tapOn:
+    id: "explore-pantry"
+- takeScreenshot: cat_07_pantry
+- back
+- tapOn:
+    id: "explore-memories"
+- takeScreenshot: cat_08_memories
+- back
+- back
+- assertVisible:
+    id: "menu"

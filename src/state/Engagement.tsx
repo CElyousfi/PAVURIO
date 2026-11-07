@@ -63,7 +63,10 @@ export function EngagementProvider({ children }: { children: React.ReactNode }) 
         await markSeen(db, seenKey, newBadges);
         // the very first load after an update shouldn't flood: only celebrate when something was seen before
         // never flood (first launch after an update can unlock several at once): celebrate at most two
-        if (seen.size > 0 || newBadges.length <= 2) newBadges.slice(0, 2).forEach((k) => fresh.push({ kind: 'badge', key: k }));
+        // and what setup itself unlocks (e.g. "Planner" for the plan's reminders) is not a surprise to
+        // pop over the first visit to Home: it's in Achievements, uncelebrated
+        const justCreated = seen.size === 0 && Date.now() - pet.createdAt < 10 * 60_000;
+        if (!justCreated && (seen.size > 0 || newBadges.length <= 2)) newBadges.slice(0, 2).forEach((k) => fresh.push({ kind: 'badge', key: k }));
       }
       // celebrations were already marked as seen: queue them even if this load was superseded
       if (fresh.length) setQueue((q) => [...q, ...fresh.filter((f) => !q.some((x) => x.kind === f.kind && x.key === f.key))]);

@@ -32,6 +32,14 @@ export function BrandSplash({ onDone }: { onDone: () => void }) {
   const text = useSharedValue(0);
   const veil = useSharedValue(1);
   const hidden = useRef(false);
+  const done = useRef(false);
+  // finishes exactly once, whichever comes first: the fade's end or the safety timer
+  const finish = () => {
+    if (done.current) return;
+    done.current = true;
+    hideNative();
+    onDone();
+  };
 
   const hideNative = () => {
     if (hidden.current) return;
@@ -61,12 +69,19 @@ export function BrandSplash({ onDone }: { onDone: () => void }) {
       withTiming(
         0,
         { duration: reduced ? 150 : 320, easing: Easing.inOut(Easing.quad) },
-        (fin) => {
-          if (fin) runOnJS(onDone)();
+        // called even when the fade is cancelled (app sent to the background during start-up, Android
+        // battery savers…): a cancelled fade used to leave the logo over the app forever
+        () => {
+          runOnJS(finish)();
         },
       ),
     );
-    return () => clearTimeout(safety);
+    // never depend on the animation alone to reveal the app
+    const fallback = setTimeout(finish, HOLD_MS + 1800);
+    return () => {
+      clearTimeout(safety);
+      clearTimeout(fallback);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
