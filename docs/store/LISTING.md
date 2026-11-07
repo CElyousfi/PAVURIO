@@ -38,56 +38,68 @@ Everything to paste into **App Store Connect** and **Google Play Console**. Scre
 **Subtitle** (30): `Dog & cat care, colored in`
 
 **Promotional text** (170):
-> Log meals, water, walks and play, and watch your dog or cat fill with colour. Gentle reminders, streaks and challenges make daily care a happy habit.
+> A care plan made for your dog or cat's age and size, one-tap logging, gentle reminders, a pantry that remembers, and memories to keep. No ads.
 
 **Keywords** (100):
 `pet,dog,cat,care,tracker,reminder,feeding,walk,litter,vet,vaccine,weight,puppy,kitten,routine,health`
 
 **Description:**
 ```
-Pavurio turns everyday pet care into a little joy.
+Pavurio is a calm, friendly companion for everyday dog and cat care. Tell us a little about your pet and Pavurio builds their whole routine for you. Then you just tick things off, and your dog or cat colours in a little more with every care you give.
 
-Every time you log a meal, fresh water, a walk or playtime, your dog or cat colours in a little more. Finish today's plan and they're fully coloured — and your streak grows.
+A PLAN MADE FOR YOUR PET
+• Answer a few quick questions: age (or "I'm not sure"), size, weight and food
+• Get a starting plan for meals (with grams per meal), water, walks, play, grooming and litter
+• Every value shows the recommendation and the usual range, and you can change anything
+• The plan grows with your pet: portions and routines update as they get older or heavier
+• General guidance only, not veterinary advice. Your vet knows your pet best.
 
 CARE IN ONE TAP
-• Log meals, water, walks, play, grooming and litter in seconds
-• Set a daily plan that fits your pet and watch today's progress fill up
-• Undo, edit and add notes any time
+• Log a meal, water, a walk or playtime in seconds; the usual portion is already filled in
+• Undo, edit and add notes anytime
+• Watch Honey or Tabby fill with colour as the day's care is done
 
-GENTLE REMINDERS
-• Smart reminders for every routine, at the times you choose
-• Mark it done right from the notification
-• An evening nudge only when today's plan isn't finished yet
+REMINDERS ONLY WHERE THEY HELP
+• Gentle reminders for meals, walks, litter and brushing days, at the times you choose
+• Mark a care as done right from the notification
+• Optional rhythm for flea, tick and worm prevention, if your vet recommends it
 
-STREAKS, CHALLENGES & BADGES
-• Keep your streak going day after day
-• Take on 7-day and 30-day care challenges
-• Earn badges as you build healthy habits
-• Short care tips written for dogs and cats
+PANTRY
+• Add your pet's food and supplies once
+• Pavurio estimates how long they last and reminds you before you run out
 
-HEALTH IN ONE PLACE
-• Vet visits with reminders the day before
-• Weight chart, vaccines, medication and allergies
-• Photos of the paperwork, and a care summary to share with your vet or sitter
+MEMORIES
+• A photo a day becomes a scrapbook of your life together
+• Memory Cards to keep or share, and little milestones along the way
 
-MADE FOR DOGS AND CATS
-• Several pets, each with their own look, plan and history
-• Weekly stories and moments to look back on
+HEALTH RECORDS
+• Vet visits with a reminder the day before
+• Weight chart, vaccines, medicines, allergies and photos of documents in one place
+
+WALKS (DOGS)
+• A simple walk timer that keeps running when you lock your phone
+• Paw Passport collects your walks. No GPS, no location tracking.
+
+WIDGETS
+• See the next care on your home screen and Lock Screen, and food that's running low
+• Live Activities for the next care and your walk
+
+FOR THE WHOLE FAMILY
+• Dogs and cats, each with their own look, plan and history
+• 30 languages
 
 YOUR DATA, SAFE
-• Everything works offline on your phone
-• Automatic backup to your account — sign in with Apple, Google or email to get it back on a new phone
-• Export anytime. No ads, ever.
+• Works offline on your phone
+• Automatic backup to your account, including photos and documents; sign in on a new phone to get everything back
+• No ads, ever. Optional anonymous usage statistics, which you can turn off in Settings.
 
 PAVURIO PRO
-Unlock every challenge and tip, more pets, monthly stories and your full history. Try it free for 7 days with the yearly plan, or choose monthly or a one-time lifetime purchase.
+Realistic coats, more pets, monthly stories, every care tip and your full history. Try it free for 7 days with the yearly plan, or choose monthly or a one-time lifetime purchase. Everything you need for daily care stays free.
 
 Payment is charged to your Apple ID account at confirmation of purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period; your account is charged for renewal within 24 hours before the end of the current period. Manage or cancel in your App Store account settings. Any unused part of a free trial is forfeited when you buy a subscription.
 
 Terms: https://pavurio.com/terms.html
 Privacy: https://pavurio.com/privacy.html
-
-Pavurio helps you keep track of the care you give. It does not give veterinary advice.
 ```
 
 ### French (France)
@@ -97,56 +109,67 @@ Pavurio helps you keep track of the care you give. It does not give veterinary a
 **Sous-titre** (30): `Votre animal se colore`
 
 **Texte promotionnel** (170):
-> Notez repas, eau, promenades et jeux, et regardez votre chien ou votre chat se colorer. Rappels en douceur, séries et défis : les soins deviennent un plaisir.
+> Un programme de soins adapté à l'âge de votre chien ou chat, des soins notés en un geste, des rappels doux, un garde-manger malin et des souvenirs. Sans pub.
 
 **Mots-clés** (100):
 `animal,chien,chat,soins,suivi,rappel,repas,promenade,litière,véto,vaccin,poids,chiot,chaton,routine`
 
 **Description :**
 ```
-Pavurio rend les soins de tous les jours joyeux.
+Pavurio est un compagnon doux et bienveillant pour les soins de tous les jours de votre chien ou de votre chat. Parlez-nous un peu de votre animal et Pavurio prépare toute sa routine pour vous. Il ne vous reste qu'à cocher, et votre chien ou votre chat se colore un peu plus à chaque soin que vous lui donnez.
 
-À chaque repas, eau fraîche, promenade ou jeu que vous notez, votre chien ou votre chat se colore un peu plus. Terminez le programme du jour : il est entièrement colorié, et votre série grandit.
+UN PROGRAMME FAIT POUR VOTRE ANIMAL
+• Répondez à quelques questions rapides : âge (ou « Je ne sais pas »), taille, poids et alimentation
+• Obtenez un programme de départ pour les repas (avec les grammes par repas), l'eau, les balades, le jeu, le toilettage et la litière
+• Chaque valeur affiche la recommandation et la fourchette habituelle, et tout est modifiable
+• Le programme grandit avec votre animal : portions et routines s'adaptent quand il prend de l'âge ou du poids
+• Des repères généraux uniquement, pas un avis vétérinaire. Votre vétérinaire connaît votre animal mieux que personne.
 
 DES SOINS EN UN GESTE
-• Notez repas, eau, promenades, jeux, toilettage et litière en quelques secondes
-• Un programme quotidien adapté à votre animal, et la progression du jour qui se remplit
-• Annulez, modifiez ou ajoutez une note à tout moment
+• Notez un repas, de l'eau, une balade ou un moment de jeu en quelques secondes ; la portion habituelle est déjà remplie
+• Annulez, modifiez et ajoutez des notes à tout moment
+• Regardez Miel ou Tigré se remplir de couleur à mesure que les soins du jour sont faits
 
-DES RAPPELS EN DOUCEUR
-• Des rappels pour chaque routine, aux heures que vous choisissez
-• Marquez « Fait » directement depuis la notification
-• Un petit rappel le soir, seulement si le programme n'est pas terminé
+DES RAPPELS LÀ OÙ ILS AIDENT
+• De doux rappels pour les repas, les balades, la litière et les jours de brossage, aux heures que vous choisissez
+• Marquez un soin comme fait directement depuis la notification
+• Un rythme facultatif pour la prévention contre puces, tiques et vers, si votre vétérinaire le recommande
 
-SÉRIES, DÉFIS ET BADGES
-• Faites durer votre série jour après jour
-• Relevez des défis de 7 et 30 jours
-• Gagnez des badges en prenant de bonnes habitudes
-• De courts conseils pour chiens et chats
+GARDE-MANGER
+• Ajoutez une seule fois la nourriture et les fournitures de votre animal
+• Pavurio estime combien de temps elles vont durer et vous prévient avant que vous n'en manquiez
 
-LA SANTÉ AU MÊME ENDROIT
-• Rendez-vous vétérinaires avec rappel la veille
-• Courbe de poids, vaccins, médicaments et allergies
-• Photos des documents et un résumé des soins à partager avec le vétérinaire ou le pet-sitter
+SOUVENIRS
+• Une photo par jour devient l'album de votre vie ensemble
+• Des Cartes souvenir à garder ou à partager, et de petites étapes au fil du temps
 
-POUR LES CHIENS ET LES CHATS
-• Plusieurs animaux, chacun avec son apparence, son programme et son historique
-• Des histoires de la semaine et des moments à revoir
+DOSSIERS DE SANTÉ
+• Visites vétérinaires avec un rappel la veille
+• Courbe de poids, vaccins, médicaments, allergies et photos des documents au même endroit
+
+BALADES (CHIENS)
+• Un chrono de balade tout simple qui continue de tourner quand vous verrouillez votre téléphone
+• Le Passeport des pattes rassemble vos balades. Pas de GPS, aucun suivi de localisation.
+
+WIDGETS
+• Voyez le prochain soin sur votre écran d'accueil, ainsi que la nourriture qui commence à manquer
+
+POUR TOUTE LA FAMILLE
+• Chiens et chats, chacun avec son apparence, son programme et son historique
+• 30 langues
 
 VOS DONNÉES À L'ABRI
-• Tout fonctionne hors connexion sur votre téléphone
-• Sauvegarde automatique sur votre compte — connectez-vous avec Apple, Google ou un e-mail pour tout retrouver sur un nouveau téléphone
-• Export à tout moment. Jamais de publicité.
+• Fonctionne hors connexion sur votre téléphone
+• Sauvegarde automatique sur votre compte, photos et documents compris ; connectez-vous sur un nouveau téléphone pour tout retrouver
+• Jamais de publicité. Statistiques d'utilisation anonymes facultatives, que vous pouvez désactiver dans Réglages → Aider à améliorer Pavurio.
 
 PAVURIO PRO
-Débloquez tous les défis et conseils, plus d'animaux, les histoires du mois et tout l'historique. Essai gratuit de 7 jours avec l'offre annuelle, ou choisissez le mensuel ou l'achat unique à vie.
+Pelages réalistes, plus d'animaux, les histoires du mois, tous les conseils de soins et tout votre historique. Essai gratuit de 7 jours avec l'offre annuelle, ou choisissez le mensuel ou l'achat unique à vie. Tout ce qu'il faut pour les soins du quotidien reste gratuit.
 
 Le paiement est débité sur votre compte Apple à la confirmation de l'achat. L'abonnement se renouvelle automatiquement sauf résiliation au moins 24 heures avant la fin de la période en cours ; le renouvellement est débité dans les 24 heures précédant la fin de la période. Gérez ou résiliez l'abonnement dans les réglages de votre compte App Store. Toute partie inutilisée d'un essai gratuit est perdue lors de l'achat d'un abonnement.
 
 Conditions : https://pavurio.com/fr/terms.html
 Confidentialité : https://pavurio.com/fr/privacy.html
-
-Pavurio vous aide à suivre les soins que vous donnez. L'app ne donne pas d'avis vétérinaire.
 ```
 
 ### App Privacy ("nutrition label")
@@ -160,8 +183,10 @@ Pavurio vous aide à suivre les soins que vous donnez. L'app ne donne pas d'avis
 | User Content → **Other User Content** (pet care data in the backup) | Yes | Yes | No | App Functionality |
 | Purchases → **Purchase History** | Yes | Yes | No | App Functionality |
 | Diagnostics → **Crash Data** | Yes | Yes | No | App Functionality |
+| Usage Data → **Product Interaction** (screens opened, setup steps, care logged; no free text) | Yes, unless turned off in Settings → Help improve Pavurio | No | No | Analytics |
+| Identifiers → **Device ID** (Firebase Analytics app instance ID; no advertising identifier, no IDFA) | Yes, unless turned off | No | No | Analytics |
 
-Photos and attachments are backed up to the user's account (Cloud Storage), so declare **Photos** and **Files and docs** as collected for App functionality, linked to the user, not used for tracking. Answer **not collected** for everything else, including Videos, Location, Contacts, Health & Fitness (pet data is not the user's health), Browsing History, Usage Data and Advertising Data.
+Photos and attachments are backed up to the user's account (Cloud Storage), so declare **Photos** and **Files and docs** as collected for App functionality, linked to the user, not used for tracking. Answer **not collected** for everything else, including Videos, Location, Contacts, Health & Fitness (pet data is not the user's health), Browsing History, Search History and Advertising Data.
 
 **Tracking:** No. You don't need the App Tracking Transparency prompt.
 
@@ -209,9 +234,9 @@ In RevenueCat:
 
 **App name** (30): `Pavurio: Pet Care Tracker`
 
-**Short description** (80): `Log your dog or cat's care and watch them colour in. Reminders, streaks, vet.`
+**Short description** (80): `Dog & cat care made easy: a plan for their age, reminders, pantry & memories.`
 
-**Full description:** the same as the App Store description above, but replace the subscription paragraph with:
+**Full description:** `docs/store/listings.json` → `en-US.full` (the App Store description above, with this subscription paragraph and without the Live Activities line):
 ```
 Subscriptions renew automatically unless cancelled. Manage or cancel any time in Google Play → Payments & subscriptions. A free trial, when offered, becomes a paid subscription at the end of the trial unless you cancel before it ends.
 ```
@@ -220,7 +245,7 @@ Subscriptions renew automatically unless cancelled. Manage or cancel any time in
 
 **Nom** (30): `Pavurio : soins chien et chat`
 
-**Description courte** (80): `Notez les soins de votre chien ou chat et regardez-le se colorer. Rappels, véto.`
+**Description courte** (80): `Soins chien & chat faciles : programme par âge, rappels, garde-manger, souvenirs`
 
 **Description complète :** the French App Store description, with this subscription paragraph instead:
 ```
@@ -253,7 +278,9 @@ L'abonnement se renouvelle automatiquement sauf résiliation. Gérez-le ou rési
 | App activity → **App interactions** (screens opened, setup steps, care logged; no free text) | Yes | Optional (Settings → Help improve Pavurio) | Analytics |
 | Device or other IDs → **Device or other IDs** (Firebase Analytics app instance ID; no advertising ID) | Yes | Optional (Settings → Help improve Pavurio) | Analytics |
 
-Everything else is not collected. There is no location and no contacts.
+Everything else is not collected. There is no device location (no GPS) and no contacts.
+
+**Decide before submitting:** the optional walk weather sends the city the owner picks (name/coordinates) to Open-Meteo. It is user-entered and not the device's location; if you treat it as location data, declare **Location → Approximate location**: collected and shared with Open-Meteo, optional, for App functionality.
 
 **Is data processed ephemerally?** No.
 

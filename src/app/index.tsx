@@ -12,7 +12,7 @@ import { dogClip } from '../animation/DogStage';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
 import { Sticker, careSticker, moodSticker } from '../ui/Sticker';
-import { CARE, CareType, SPECIES_CARE } from '../domain/care';
+import { CARE, CareType, SPECIES_CARE, formatAmount, isCareType } from '../domain/care';
 import { careFill, fillStack, progressSentence } from '../domain/progress';
 import { dayKeyOf, formatClock } from '../domain/time';
 import { getLiveWalk, removeCareEvent } from '../data/walkRepo';
@@ -316,8 +316,15 @@ function HomeScreen() {
         <Bouncy
           scaleTo={0.98}
           accessibilityRole="button"
-          accessibilityLabel={next ? t('Next up') : t("Open today's care timeline")}
-          onPress={() => (occ.length ? router.push('/care') : router.push({ pathname: '/day', params: { day: todayKey } }))}
+          accessibilityLabel={next ? t('Log {label}', { label: next.title }) : t("Open today's care timeline")}
+          onPress={() => {
+            // the next care opens its own log card straight away (and ticks that routine when saved)
+            if (next && isCareType(next.type)) {
+              if (next.type === 'walk' && pet.species === 'dog') return router.push('/walk');
+              return router.push({ pathname: '/log/[type]', params: { type: next.type, day: todayKey, scheduleId: next.scheduleId, occ: next.key } });
+            }
+            return occ.length ? router.push('/care') : router.push({ pathname: '/day', params: { day: todayKey } });
+          }}
           style={[styles.peek, { backgroundColor: occ.length ? '#FFE3E8' : '#E3F6F8' }]}
           testID="home-peek"
         >
@@ -329,6 +336,7 @@ function HomeScreen() {
           <View style={{ flex: 1 }}>
             <T weight="black" style={[styles.peekTitle, { color: occ.length ? '#D6336C' : colors.brand }]} numberOfLines={1}>
               {next ? next.title : occ.length ? t('All done for today') : t("Today's care")}
+              {next && isCareType(next.type) && CARE[next.type].amount && portions[next.type] ? ` · ${formatAmount(next.type, portions[next.type]!)}` : ''}
             </T>
             {next ? (
               <T weight="xbold" style={styles.peekMeta} numberOfLines={1}>

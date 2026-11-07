@@ -32,7 +32,8 @@ export async function firstTimeTip(db: Db, key: TipKey): Promise<void> {
   try {
     if (await getSetting(db, `tip:${key}`)) return;
     await setSetting(db, `tip:${key}`, String(Date.now()));
-    if (key === 'first_care') track('first_care_logged');
+    // the first care already gets its "First care" badge moment: no second message on top of it
+    if (key === 'first_care') return track('first_care_logged');
     listeners.forEach((l) => l(key));
   } catch {
     // a tip is never worth an error

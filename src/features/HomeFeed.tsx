@@ -19,7 +19,6 @@ import { weekdayInitials } from '../i18n/dates';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
-import { NextCareCard } from './NextCare';
 import { GuideCard } from './RoutineGuide';
 import { PlanNewsCard, WeighNudgeCard } from './PlanCards';
 import { HomeIntro } from './HomeIntro';
@@ -73,10 +72,7 @@ export function HomeFeed({ width }: { width: number }) {
       {/* first visit: the four places to know, and an optional short tour */}
       <HomeIntro />
 
-      {/* next scheduled care, Clucky's "Next wakeup" */}
-      <Enter index={0}>
-        <NextCareCard width={width} />
-      </Enter>
+      {/* the next care is shown once, under the pet (tap = its log card); no second copy here */}
 
       {/* the automatic plan: what changed as the pet grew, and a weigh-in when portions need it */}
       <PlanNewsCard enter={0} />

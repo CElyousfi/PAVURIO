@@ -15,9 +15,10 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { AppState, Platform } from 'react-native';
 import { cloud } from '../cloud/firebase';
 import type { AuthResult, CloudUser } from '../cloud/types';
-import { dumpSnapshot, fromChunks, petCount, restoreSnapshot, toChunks } from '../data/snapshot';
+import { fromChunks, restoreSnapshot } from '../data/snapshot';
+import { runBackup } from '../data/backupRun';
 import { getSetting, resetAll, setSetting } from '../data/repo';
-import { adoptManifest, backupState, manifest, relinkFiles, restoreMissing, uploadPending } from '../data/mediaBackup';
+import { adoptManifest, backupState, relinkFiles, restoreMissing } from '../data/mediaBackup';
 import { documentsRoot, localFiles, remoteFiles } from '../native/backupFiles';
 import { removeAllMemoryFiles } from '../native/media';
 import { identify } from '../native/purchases';
@@ -79,29 +80,40 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
   }, [user?.uid]);
 
   // ---------------------------------------------------------------- backup / restore
+  // files that didn't make it (no network, too many at once) are retried with a growing delay
+  const retry = useRef<{ timer: ReturnType<typeof setTimeout> | null; n: number }>({ timer: null, n: 0 });
   const backupNow = useCallback(async (): Promise<boolean> => {
     const uid = uidRef.current;
     if (!enabled || !uid || paused.current) return false;
-    try {
-      const snap = await dumpSnapshot(db);
-      if (!petCount(snap)) return true; // nothing worth saving yet (mid-onboarding): nothing to lose either
-      // files first, so the snapshot only lists files that are really in the cloud
-      const st = await uploadPending(db, uid, localFiles, remoteFiles(uid)).catch((e) => {
-        cloud.crash.record(e, 'backup:files');
-        return null;
-      });
-      if (st) setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending }));
-      snap.files = await manifest(db, uid);
-      const meta = await cloud.upload(uid, toChunks(snap), { updatedAt: snap.createdAt, pets: petCount(snap), schema: snap.schema, platform: Platform.OS });
-      await setSetting(db, 'cloud.syncedAt', String(meta.updatedAt));
-      await setSetting(db, 'cloud.dirty', '0');
-      setLastBackupAt(meta.updatedAt);
-      return !st || st.pending === 0;
-    } catch (e) {
-      cloud.crash.record(e, 'backup:upload');
+    const r = await runBackup(db, uid, {
+      local: localFiles,
+      remote: remoteFiles(uid),
+      upload: (chunks, meta) => cloud.upload(uid, chunks, { ...meta, platform: Platform.OS }),
+    });
+    if (r.status === 'empty') return true; // nothing worth saving yet (mid-onboarding): nothing to lose either
+    if (r.status === 'failed') {
+      cloud.crash.record(r.error, 'backup:upload');
       return false;
     }
+    if (r.fileError) cloud.crash.record(r.fileError, 'backup:files');
+    setFiles((f) => ({ ...f, referenced: r.files.referenced, pending: r.files.pending }));
+    setLastBackupAt(r.updatedAt);
+    if (retry.current.timer) clearTimeout(retry.current.timer);
+    if (r.complete) retry.current = { timer: null, n: 0 };
+    else if (retry.current.n < 6) {
+      // 30 s, 1 min, 2 min… up to 16 min; "unsaved changes" stays set until every file is up
+      const delay = 30_000 * Math.pow(2, retry.current.n++);
+      retry.current.timer = setTimeout(() => void backupNowRef.current?.(), delay);
+    }
+    return r.complete;
   }, [db, enabled]);
+  const backupNowRef = useRef<(() => Promise<boolean>) | null>(null);
+  useEffect(() => {
+    backupNowRef.current = backupNow;
+    return () => {
+      if (retry.current.timer) clearTimeout(retry.current.timer);
+    };
+  }, [backupNow]);
 
   /** Downloads photos/documents this phone is missing (after a restore, or a failed earlier try). */
   const fetchFiles = useCallback(

@@ -1331,4 +1331,6 @@ export const PT: Record<string, string> = {
   "This is taking longer than usual": "Está demorando mais do que o normal",
   "We couldn’t open your data": "Não conseguimos abrir seus dados",
   "Your pets are safe on this phone. Let’s try again.": "Seus pets estão seguros neste celular. Vamos tentar de novo.",
+  "A walk timer and a passport of your walks together. No GPS, no tracking.": "Um cronômetro de passeio e um passaporte dos seus passeios juntos. Sem GPS nem rastreamento.",
+  "Everything your pet needs today starts here: tap the next care just above to log it, and find the full day in Care.": "Tudo o que seu pet precisa hoje começa aqui: toque no próximo cuidado logo acima para registrá-lo e veja o dia completo em Cuidados.",
 };

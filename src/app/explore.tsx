@@ -56,7 +56,7 @@ export default function Explore() {
       title: t('Adventures & milestones'),
       items: [
         ...(pet.species === 'dog'
-          ? [{ key: 'passport', title: t('Paw Passport'), body: t('Walk adventures, with the places you explored together.'), art: img(ART.care.walk), go: open('passport', '/passport') }]
+          ? [{ key: 'passport', title: t('Paw Passport'), body: t('A walk timer and a passport of your walks together. No GPS, no tracking.'), art: img(ART.care.walk), go: open('passport', '/passport') }]
           : []),
         { key: 'achievements', title: t('Milestones'), body: t('Little badges for your life together.'), art: img(ART.duo.awards), go: open('achievements', '/achievements') },
         { key: 'cards', title: t('Memory Cards'), body: t('Turn a photo into a card to keep or share.'), art: img(ART.icons.gift), go: open('cards', '/cards') },

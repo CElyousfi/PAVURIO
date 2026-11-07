@@ -8,16 +8,14 @@ import { cloud } from '../cloud/firebase';
 import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, PALETTES, defaultAppearance, isProCoat } from '../domain/appearance';
 import { Plan, Portions } from '../domain/progress';
-import { Pet, ValidationError, createPet, getSetting, setSetting } from '../data/repo';
-import { addMeasurement } from '../data/careRepo';
-import { applyChoices, setProfile } from '../data/autoPlan';
+import { Pet, ValidationError, getSetting, setSetting } from '../data/repo';
 import { Choice, defaultProfile, estimateWeightKg, planBasis, recommendedChoice, targetsFor } from '../domain/carePlan';
 import { approxBirthDate } from '../domain/lifeStage';
 import { About, AboutPet, CarePage, PlanReview, targetHeadline } from '../features/AutoPlan';
 import { useScreenBudget } from '../ui/layout';
+import { DRAFT_KEY, finishSetup, startPetSetup } from '../data/setup';
 import { PetPreview } from '../ui/PetPreview';
 import { StudioPicker } from '../features/PetEditors';
-import { markGuideSeen } from '../features/RoutineGuide';
 import { track } from '../native/analytics';
 import { useApp } from '../state/AppState';
 import { CircleButton, Pill, T } from '../ui/primitives';
@@ -50,7 +48,6 @@ type Step = 'welcome' | 'species' | 'name' | 'look' | 'about' | 'plan' | 'care' 
 // the first plan on ONE screen ('care' = optional page-by-page customising with the bowl controls) →
 // welcome home. No paywall on the way: the free app is the first experience.
 const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'about', 'plan', 'care', 'home'];
-const DRAFT_KEY = 'onboardingDraft';
 
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
@@ -185,7 +182,6 @@ export default function Onboarding() {
 
   const createTheirPet = async () => {
     if (saving || !basis) return;
-    if (created) return go('home');
     setSaving(true);
     setError(null);
     try {
@@ -195,17 +191,25 @@ export default function Onboarding() {
         p[c.care] = c.on && c.kind === 'daily' ? c.count : 0;
         if (c.on && c.portion != null) por[c.care] = c.portion;
       }
-      const birthDate = about.months != null ? approxBirthDate(about.months) : undefined;
-      const pet = await createPet(db, { species, name: name.trim(), appearance, plan: p, portions: por, birthDate });
-      // from here the pet exists: a second tap or a retry must never create a twin
-      setCreated(pet);
-      if (birthDate) await setSetting(db, `birthApprox:${pet.id}`, '1');
-      await setProfile(db, pet.id, about.profile);
-      if (about.kgTouched) {
-        const unit = settings.weightUnit;
-        await addMeasurement(db, { petId: pet.id, kind: 'weight', value: Math.round((unit === 'lb' ? about.kg / 0.45359237 : about.kg) * 10) / 10, unit, at: Date.now() });
+      const unit = settings.weightUnit;
+      // the pet is created once; a retry (or a restart) only finishes its setup — never a twin
+      let pet = created;
+      if (!pet) {
+        pet = await startPetSetup(
+          db,
+          { species, name: name.trim(), appearance, plan: p, portions: por, birthDate: about.months != null ? approxBirthDate(about.months) : undefined },
+          {
+            profile: about.profile,
+            months: basis.months,
+            weight: about.kgTouched ? { value: Math.round((unit === 'lb' ? about.kg / 0.45359237 : about.kg) * 10) / 10, unit, at: Date.now() } : null,
+            weighedKg: about.kgTouched ? about.kg : null,
+            choices,
+            birthApprox: about.months != null,
+          },
+        );
+        setCreated(pet);
       }
-      await applyChoices(db, pet, basis, choices);
+      await finishSetup(db, pet.id);
       track('onboarding_complete', {
         species,
         stage: basis.stage,
@@ -218,15 +222,13 @@ export default function Onboarding() {
           return !rec || !c.on || rec.count !== c.count || rec.portion !== c.portion;
         }).length,
       });
-      // the plan was just built for this age: no "new for this age" card on day one
-      if (birthDate) await markGuideSeen(db, { ...pet, birthDate });
-      await setSetting(db, DRAFT_KEY, '').catch(() => null);
       await reload();
       successFeedback();
       go('home');
       if (!reduceMotion) setTimeout(() => setClip({ name: 'celebrate', nonce: Date.now() }), 450);
       setTimeout(() => setConfetti(Date.now()), 350);
     } catch (e) {
+      // the pet (if created) is kept; tapping again finishes its setup, and so does the next app start
       setError(e instanceof ValidationError ? e.message : t('Something went wrong while saving. Please try again.'));
       errorFeedback();
     } finally {

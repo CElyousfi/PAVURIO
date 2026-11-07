@@ -46,18 +46,22 @@ Pavurio es una aplicación para llevar el seguimiento del cuidado de tus mascota
 
 **Notificaciones.** Los recordatorios se programan en tu teléfono; no se nos envía ningún contenido de los recordatorios.
 
+**Tiempo para los paseos (opcional).** Pavurio nunca usa el GPS ni la ubicación de tu teléfono. Si eliges una ciudad para ver el tiempo en los paseos, su nombre o sus coordenadas se envían a **Open-Meteo** para obtener el pronóstico.
+
 ## Qué no hace Pavurio
 
 - Sin publicidad y sin SDK publicitarios.
 - Sin venta ni cesión de datos personales.
 - Sin rastreo a través de otras aplicaciones o sitios web.
-- Sin SDK de analítica. Pavurio no ofrece consejos médicos.
+- Sin analítica publicitaria ni entre aplicaciones: las únicas estadísticas de uso son las anónimas descritas arriba, y puedes desactivarlas.
+- Pavurio no ofrece consejos médicos. Las recomendaciones de cuidado son orientaciones generales; tu veterinario conoce mejor a tu mascota.
 
 ## Quién trata los datos por nosotros
 
 | Servicio | Finalidad | Datos |
 |---|---|---|
 | Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics, Analytics) | cuenta, códigos por correo electrónico, copia de seguridad, informes de fallos, estadísticas de uso | ID de cuenta, correo electrónico de inicio de sesión, elección sobre el boletín, copia de seguridad (incluidas fotos y archivos adjuntos), informes de fallos, eventos de uso anónimos |
+| Open-Meteo | tiempo para los paseos (solo si eliges una ciudad) | la ciudad elegida (nombre o coordenadas) |
 | Resend | envío de los correos con códigos y, si lo aceptas, del boletín | dirección de correo electrónico, contenido del mensaje |
 | RevenueCat | verificación de Pavurio Pro | ID de cuenta, recibos de compra |
 | Apple / Google | inicio de sesión, pagos, distribución de la app | según se describe en sus propias políticas |

@@ -72,10 +72,13 @@ name: First use, dog (name with keyboard, studio, plan, Home, first care)
     id: "quick-meal"
 - tapOn:
     id: "save-care"
+# the first care gets its badge moment
 - extendedWaitUntil:
     visible:
-      id: "tip-first_care"
+      text: ".*First care.*"
     timeout: 6000
+- tapOn:
+    text: "AWESOME!"
 - tapOn:
     id: "menu"
 - tapOn:

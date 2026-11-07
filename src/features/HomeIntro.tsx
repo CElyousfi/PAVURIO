@@ -103,7 +103,7 @@ export function HomeIntro() {
 
   const n = Math.max(0, Math.min(3, Number(state.split(':')[1] ?? 0)));
   const tour = [
-    { place: places[0], text: t('Everything your pet needs today is right here: the next care is just below, and the full day is in Care.') },
+    { place: places[0], text: t('Everything your pet needs today starts here: tap the next care just above to log it, and find the full day in Care.') },
     { place: places[1], text: t('Add your pet’s food once. Pavurio helps you remember when to buy more.') },
     { place: places[2], text: t('A photo today becomes a memory to treasure later.') },
     { place: places[3], text: t('Health records, visits, adventures, milestones, widgets and settings: it’s all in Explore, anytime.') },

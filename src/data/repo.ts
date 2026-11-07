@@ -107,6 +107,11 @@ export async function setSetting(db: Db, key: string, value: string): Promise<vo
   );
 }
 
+/** Settings whose key matches a LIKE pattern (e.g. 'setupPending:%'). */
+export async function listSettingsLike(db: Db, pattern: string): Promise<{ key: string; value: string }[]> {
+  return db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM settings WHERE key LIKE ?', [pattern]);
+}
+
 // ---------------------------------------------------------------- pets
 
 export type NewPetInput = {
