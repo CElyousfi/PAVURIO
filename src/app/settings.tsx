@@ -20,6 +20,7 @@ import { useCloud } from '../state/Cloud';
 import { Icon, Label, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
 import { toggleFeedback } from '../native/haptics';
+import { analyticsEnabled, setAnalyticsEnabled } from '../native/analytics';
 import { LANG_FLAGS, LANG_NAMES, t, tn } from '../i18n';
 import { LanguagePicker } from '../ui/LanguagePicker';
 
@@ -54,6 +55,7 @@ export default function Settings() {
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
   const [total, setTotal] = useState(0);
+  const [stats, setStats] = useState(analyticsEnabled());
   useEffect(() => {
     if (pet) countAllEvents(db, pet.id).then(setTotal);
   }, [db, pet]);
@@ -171,6 +173,16 @@ export default function Settings() {
               hint={t('Calmer pet. Care logging works exactly the same.')}
               value={settings.reduceMotion}
               onChange={(v) => setSetting('reduceMotion', v)}
+            />
+            <View style={styles.sep} />
+            <ToggleRow
+              label={t('Help improve Pavurio')}
+              hint={t('Anonymous usage stats, like which screens are used. Never your pet’s name, photos or notes.')}
+              value={stats}
+              onChange={(v) => {
+                setStats(v);
+                void setAnalyticsEnabled(db, v);
+              }}
             />
           </View>
 

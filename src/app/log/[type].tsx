@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { CARE, CareType, careAllowedFor, clampAmount, isCareType, unitLabel } from '../../domain/care';
 import { dailyGoal, givenToday, portionOf } from '../../domain/progress';
+import { portionStepFor } from '../../domain/carePlan';
+import { track } from '../../native/analytics';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
 import { CareEvent, ValidationError, getEvent, logCare, updateEvent } from '../../data/repo';
@@ -160,7 +162,8 @@ export default function LogCard() {
   const nudge = (dir: 1 | -1) => {
     if (!spec || !type) return;
     tickFeedback();
-    setAmount((a) => clampAmount(type, a + dir * spec.step));
+    // the same steps as the plan's bowl: grams in 1s for a kitten, 5s, then 10s
+    setAmount((a) => clampAmount(type, Math.round((a + dir * portionStepFor(type, a)) / portionStepFor(type, a)) * portionStepFor(type, a)));
     pop.value = withSequence(withTiming(dir > 0 ? 1.06 : 0.95, { duration: 80 }), withSpring(1, springs.pop));
   };
 
@@ -221,6 +224,7 @@ export default function LogCard() {
       // 3) … only then refresh UI. Badges wait for the pet's reaction (markLogged), which starts once Home is back.
       logFeedback();
       markLogged();
+      if (!editing) track('care_logged', { type, via: 'card', as_planned: spec ? amount === portions[type] : true });
       bump();
       signalLogged({ eventId: saved.id, type });
       leave(() => {
@@ -250,9 +254,11 @@ export default function LogCard() {
   const after = before + (spec ? amount : 1);
   const level = Math.max(0, Math.min(1, after / goal));
   const objSize = Math.min(W * 0.9, height * 0.46, 400);
-  const steps = spec && type ? [...new Set([...spec.presets, portionOf(type, portions)])].sort((a, b) => a - b) : [];
-  const prevPreset = spec ? [...steps].reverse().find((p) => p < amount) : undefined;
-  const nextPreset = spec ? steps.find((p) => p > amount) : undefined;
+  // the grey values each side are one step down / up from the amount (tap to jump there), like the plan
+  const stepNow = spec && type ? portionStepFor(type, amount) : 1;
+  const prevPreset = spec && amount - stepNow >= spec.min ? Math.round((amount - stepNow) * 100) / 100 : undefined;
+  const nextPreset = spec && amount + stepNow <= spec.max ? Math.round((amount + stepNow) * 100) / 100 : undefined;
+  const planned = type && spec ? portions[type] : undefined;
   const u = (n: number) => (spec ? (spec.unit === 'min' ? ' min' : spec.unit === 'dose' ? ` ${unitLabel('dose', n)}` : spec.unit) : '');
   const fmt = (n: number) => String(Math.round(n * 100) / 100);
   const showDay = !!editing || !isToday(dayKey);
@@ -305,6 +311,11 @@ export default function LogCard() {
               {t('Litter box cleaned')}
             </T>
           )}
+          {planned != null && !editing ? (
+            <T weight="xbold" style={{ fontSize: 13, color: amount === planned ? colors.brand : colors.muted }} testID="as-planned">
+              {amount === planned ? `✓ ${t('As planned')}` : t('Planned: {value}', { value: `${fmt(planned)}${u(planned)}`.trim() })}
+            </T>
+          ) : null}
           <T style={styles.when}>{timeLabel === t('Now') ? formatClock(occurredAt) : `${timeLabel} · ${formatClock(occurredAt)}`}</T>
           <View style={[styles.goalChip, { backgroundColor: tpl.tint }]} testID="goal">
             <T weight="xbold" style={{ color: tpl.color, fontSize: 13 }}>

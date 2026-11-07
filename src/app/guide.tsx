@@ -23,6 +23,7 @@ import { formatHM, weekdayNamesShort } from '../i18n/dates';
 import { successFeedback, tapFeedback, completeFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { Missing } from '../ui/Missing';
+import { track } from '../native/analytics';
 
 const PURPLE = '#7C5CE6';
 const DOW = () => weekdayNamesShort();
@@ -46,6 +47,7 @@ export default function Guide() {
   }, [pet, g]);
 
   useEffect(() => {
+    if (pet && g?.known) track('guide_opened', { stage: g.stage });
     if (pet && g?.known) void markGuideSeen(db, pet).then(bump);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pet?.id, g?.stage, g?.known]);
@@ -62,13 +64,14 @@ export default function Guide() {
   };
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => setPage(Math.round(e.nativeEvent.contentOffset.x / W));
 
-  const existing = (r: Target) => schedules.find((s) => s.type === r.care && s.enabled);
+  const existing = (r: Target) => schedules.find((s) => s.type === r.care && s.enabled && (r.kind === 'interval' ? !!s.everyDays : !s.everyDays));
   const apply = async (r: Target) => {
     if (r.kind === 'visit') return router.push('/appointment');
     const c = recommendedChoice(r);
     if (!c) return;
     await applyChoices(db, pet, basis, [c]);
     setApplied((a) => ({ ...a, [r.care]: true }));
+    track('routine_applied', { care: r.care, all: false });
     successFeedback();
     if (c.remind) requestPermission(db).catch(() => null);
     bump();
@@ -80,6 +83,7 @@ export default function Guide() {
       .filter((c): c is NonNullable<typeof c> => !!c);
     await applyChoices(db, pet, basis, all);
     setApplied(Object.fromEntries(recs.map((r) => [r.care, true])));
+    track('routine_applied', { care: 'all', all: true });
     completeFeedback();
     requestPermission(db).catch(() => null);
     bump();
@@ -270,6 +274,20 @@ export default function Guide() {
                       {t('Replaces the times of your current routine.')}
                     </T>
                   ) : null}
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
+                    <Bouncy onPress={() => router.push('/plan')} style={{ padding: 10 }} accessibilityRole="button" testID={`guide-adjust-${r.care}`}>
+                      <T weight="black" style={{ color: meta.color, fontSize: 14 }}>
+                        {t('Adjust in {name}’s plan', { name: pet.name })}
+                      </T>
+                    </Bouncy>
+                    {r.care === 'medication' ? (
+                      <Bouncy onPress={() => router.push('/appointment')} style={{ padding: 10 }} accessibilityRole="button" testID="guide-vet">
+                        <T weight="black" style={{ color: meta.color, fontSize: 14 }}>
+                          {t('Add a vet visit')}
+                        </T>
+                      </Bouncy>
+                    ) : null}
+                  </View>
                 </ScrollView>
               </View>
             );

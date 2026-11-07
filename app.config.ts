@@ -32,6 +32,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       '@react-native-firebase/app',
       '@react-native-firebase/auth',
       '@react-native-firebase/crashlytics',
+      // anonymous usage analytics only: no advertising ID on iOS (Android: firebase.json + blocked AD_ID)
+      ['@react-native-firebase/analytics', { ios: { withoutAdIdSupport: true } }],
       '@react-native-firebase/app-check',
       '@react-native-google-signin/google-signin',
       // Firebase Apple SDK 13+ ships through Swift Package Manager, which needs dynamic frameworks.

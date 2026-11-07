@@ -11,6 +11,7 @@ import { noteOffer } from '../features/ProMoment';
 import { PetRig } from '../animation/PetRig';
 import { TIPS } from '../content/tips';
 import { PREVIEW_PLANS, Plan, loadPlans, purchase, restore, storeState, yearlySaving } from '../native/purchases';
+import { track } from '../native/analytics';
 import { scheduleTrialReminder } from '../native/notifications';
 import { useApp } from '../state/AppState';
 import { CircleButton, Icon, T } from '../ui/primitives';
@@ -126,6 +127,8 @@ export default function Paywall() {
   // every opening counts as an offer, so a "moment" never follows right after this
   useEffect(() => {
     void noteOffer(db);
+    track('paywall_view', { reason, from: params.from ?? '' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db]);
 
   const coatName = params.coat && pet ? PALETTES[pet.species].find((p) => p.id === params.coat)?.name ?? '' : '';
@@ -148,8 +151,10 @@ export default function Paywall() {
     }
     setBusy('buy');
     setMsg(null);
+    track('purchase_start', { plan: selected.period, reason });
     try {
       const ok = await purchase(selected);
+      track(ok ? 'purchase_success' : 'purchase_cancel', { plan: selected.period, reason, trial: selected.trialDays > 0 });
       if (ok) {
         await setPro(true);
         if (selected.trialDays > 0) await scheduleTrialReminder(selected.trialDays).catch(() => null);
@@ -170,6 +175,7 @@ export default function Paywall() {
     setMsg(null);
     try {
       const ok = await restore();
+      track('purchase_restore', { ok });
       await setPro(ok);
       if (ok) {
         successFeedback();

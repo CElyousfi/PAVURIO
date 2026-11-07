@@ -3,7 +3,7 @@ import type { Db } from '../data/db';
 import type { Pet } from '../data/repo';
 import { listAllSchedules, listMeasurements, upcomingAppointments } from '../data/careRepo';
 import { listRecords, SOURCES } from '../data/recordsRepo';
-import { describeDays, formatTime24to12 } from '../domain/schedule';
+import { describeRepeat, formatTime24to12 } from '../domain/schedule';
 import { dayKeyOf } from '../domain/time';
 import { formatDateLong } from '../ui/forms';
 import { formatWeight } from './weight';
@@ -59,7 +59,7 @@ export async function buildCareSummary(db: Db, pet: Pet, unit: 'kg' | 'lb'): Pro
   if (mine.length) {
     L.push('');
     L.push(t('DAILY ROUTINE'));
-    for (const s of mine) L.push(`• ${t('{title}: {days} at {times}', { title: s.title, days: describeDays(s.days), times: s.times.map(formatTime24to12).join(', ') })}`);
+    for (const s of mine) L.push(`• ${t('{title}: {days} at {times}', { title: s.title, days: describeRepeat(s), times: s.times.map(formatTime24to12).join(', ') })}`);
   }
   if (appts.length) {
     L.push('');

@@ -33,4 +33,5 @@ export const cloud: CloudApi = {
   resetPasswordWithCode: async () => ({ kind: 'error', message: 'unavailable' }),
   setMarketing: async () => {},
   crash: { setUser: () => {}, record: () => {}, log: () => {}, setEnabled: () => {} },
+  analytics: { event: () => {}, screen: () => {}, setEnabled: () => {}, setUser: () => {} },
 };

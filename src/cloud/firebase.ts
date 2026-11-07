@@ -20,6 +20,7 @@ type CrashMod = typeof import('@react-native-firebase/crashlytics');
 type FnMod = typeof import('@react-native-firebase/functions');
 type AcMod = typeof import('@react-native-firebase/app-check');
 type StMod = typeof import('@react-native-firebase/storage');
+type AnMod = typeof import('@react-native-firebase/analytics');
 
 const ENABLED = Platform.OS !== 'web' && (Constants.expoConfig?.extra as { firebase?: boolean } | undefined)?.firebase === true;
 const WEB_CLIENT_ID = (Constants.expoConfig?.extra as { googleWebClientId?: string } | undefined)?.googleWebClientId;
@@ -30,6 +31,7 @@ let F: FsMod | null = null;
 let C: CrashMod | null = null;
 let FN: FnMod | null = null;
 let ST: StMod | null = null;
+let AN: AnMod | null = null;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const auth = () => (A ??= require('@react-native-firebase/auth') as AuthMod);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -40,6 +42,17 @@ const crashMod = () => (C ??= require('@react-native-firebase/crashlytics') as C
 const fnMod = () => (FN ??= require('@react-native-firebase/functions') as FnMod);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const stMod = () => (ST ??= require('@react-native-firebase/storage') as StMod);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const anMod = () => (AN ??= require('@react-native-firebase/analytics') as AnMod);
+/** analytics must never break the app: every call is fire-and-forget */
+function an(fn: (m: AnMod) => Promise<unknown> | void) {
+  if (!ENABLED) return;
+  try {
+    void Promise.resolve(fn(anMod())).catch(() => null);
+  } catch {
+    // module missing in an old build: ignore
+  }
+}
 const fileRef = (uid: string, path: string) => stMod().ref(stMod().getStorage(), `users/${uid}/files/${path}`);
 /** native file paths for the storage module (it wants a plain path, not a file:// URL) */
 const plainPath = (uri: string) => decodeURI(uri.replace(/^file:\/\//, ''));
@@ -432,6 +445,20 @@ export const cloud: CloudApi = {
     }
   },
 
+  analytics: {
+    event(name, params) {
+      an((m) => (m.logEvent as (a: unknown, n: string, p?: object) => Promise<void>)(m.getAnalytics(), name, params));
+    },
+    screen(name) {
+      an((m) => m.logScreenView(m.getAnalytics(), { screen_name: name, screen_class: name }));
+    },
+    setEnabled(on) {
+      an((m) => m.setAnalyticsCollectionEnabled(m.getAnalytics(), on));
+    },
+    setUser(uid) {
+      an((m) => m.setUserId(m.getAnalytics(), uid));
+    },
+  },
   crash: {
     setUser(uid) {
       if (!ENABLED) return;

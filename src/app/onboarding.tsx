@@ -15,6 +15,7 @@ import { Choice, defaultProfile, estimateWeightKg, planBasis, recommendedChoice,
 import { approxBirthDate } from '../domain/lifeStage';
 import { About, AboutPet, CarePage, PlanReview, targetHeadline } from '../features/AutoPlan';
 import { markGuideSeen } from '../features/RoutineGuide';
+import { track } from '../native/analytics';
 import { useApp } from '../state/AppState';
 import { CircleButton, Pill, T } from '../ui/primitives';
 import { LookPicker } from '../features/PetEditors';
@@ -83,6 +84,7 @@ export default function Onboarding() {
   const dir = useRef<1 | -1>(1);
   const go = (s: Step) => {
     setError(null);
+    track('onboarding_step', { step: s, adding });
     dir.current = ORDER.indexOf(s) >= ORDER.indexOf(step) ? 1 : -1;
     setStep(s);
   };
@@ -123,11 +125,13 @@ export default function Onboarding() {
     if (!basis) return;
     setChoices(targets.map(recommendedChoice).filter((c): c is Choice => !!c));
     setCareIdx(0);
+    track('plan_built', { species, stage: basis.stage, size: about.profile.size, food: about.profile.food, weighed: about.kgTouched });
     go('care');
   };
   const nextCare = () => {
     if (careIdx < choices.length - 1) {
       dir.current = 1;
+      track('onboarding_care_page', { care: choices[careIdx + 1].care, index: careIdx + 1 });
       setCareIdx(careIdx + 1);
     } else go('plan');
   };
@@ -151,6 +155,18 @@ export default function Onboarding() {
         await addMeasurement(db, { petId: pet.id, kind: 'weight', value: Math.round((unit === 'lb' ? about.kg / 0.45359237 : about.kg) * 10) / 10, unit, at: Date.now() });
       }
       await applyChoices(db, pet, basis, choices);
+      track('onboarding_complete', {
+        species,
+        stage: basis.stage,
+        cares: choices.filter((c) => c.on).length,
+        reminders: choices.filter((c) => c.on && c.remind).length,
+        // how many cares the owner moved away from the recommendation (0 = took the plan as is)
+        adjusted: choices.filter((c) => {
+          const tg = targets.find((x) => x.care === c.care);
+          const rec = tg ? recommendedChoice(tg) : null;
+          return !rec || !c.on || rec.count !== c.count || rec.portion !== c.portion;
+        }).length,
+      });
       // the plan was just built for this age: no "new for this age" card on day one
       await markGuideSeen(db, { ...pet, birthDate: approxBirthDate(basis.months) });
       setPlan(p);

@@ -129,8 +129,9 @@ export type Range = { rec: number; min: number; max: number };
 
 export type Target = {
   care: CareType;
-  kind: 'daily' | 'weekly' | 'visit';
-  /** times a day (daily) or days a week (weekly) */
+  /** daily: times a day; weekly: days a week; interval: every N weeks (parasite prevention); visit: advice only */
+  kind: 'daily' | 'weekly' | 'interval' | 'visit';
+  /** times a day (daily), days a week (weekly) or weeks between two (interval) */
   count: Range;
   /**
    * The total per day (meal grams, water ml, adult walk minutes): the portion is this split by the count,
@@ -250,6 +251,12 @@ export function targetsFor(b: PlanBasis): Target[] {
         const rec = g.portion ?? 10;
         return { ...base, each: { rec, min: Math.max(5, rec - 5), max: rec + 10 } };
       }
+      case 'medication': {
+        // flea, tick and worm prevention on a steady rhythm: every 2 weeks for the youngest (deworming),
+        // then monthly; some products last up to 3 months. The product and dose are the vet's call.
+        const rec = stage === 'baby' ? 2 : 4;
+        return { ...base, kind: 'interval', count: { rec, min: 2, max: stage === 'baby' || stage === 'young' ? 4 : 12 }, times: ['19:00'], days: [], remind: true };
+      }
       case 'grooming': {
         const rec = g.kind === 'daily' ? 5 : 10;
         return { ...base, each: { rec, min: 5, max: rec + 10 } };
@@ -270,7 +277,7 @@ export function portionFor(t: Target, count: number): Range | null {
 }
 
 /** What the owner chose for one care: starts as the recommendation, every value can be moved. */
-export type Choice = { care: CareType; kind: 'daily' | 'weekly'; on: boolean; count: number; portion: number | null; times: string[]; days: number[]; remind: boolean };
+export type Choice = { care: CareType; kind: 'daily' | 'weekly' | 'interval'; on: boolean; count: number; portion: number | null; times: string[]; days: number[]; remind: boolean };
 
 export function recommendedChoice(t: Target): Choice | null {
   if (t.kind === 'visit') return null;
@@ -279,6 +286,7 @@ export function recommendedChoice(t: Target): Choice | null {
 
 /** A new count: times re-spread, and for split portions the daily total re-divided. */
 export function withCount(t: Target, c: Choice, count: number): Choice {
+  if (c.kind === 'interval') return { ...c, count: Math.max(1, Math.min(12, count)) };
   const n = Math.max(1, Math.min(t.kind === 'weekly' ? 7 : 8, count));
   const before = portionFor(t, c.count);
   const after = portionFor(t, n);
@@ -294,3 +302,11 @@ export function scalePortion(care: CareType, current: number, oldRec: number, ne
 }
 
 export const inRange = (r: Range, v: number) => v >= r.min && v <= r.max;
+
+/** How much one step of the drag / arrows changes an amount: grams in 1s for small bowls, 5s, then 10s. */
+export function portionStepFor(care: CareType, v: number): number {
+  if (care === 'meal') return v < 40 ? 1 : v < 150 ? 5 : 10;
+  if (care === 'water') return 25;
+  if (care === 'medication') return 0.5;
+  return 5;
+}

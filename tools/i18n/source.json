@@ -9614,5 +9614,110 @@
   "id": "1900",
   "en": "{name} doesn’t need this",
   "fr": "Pas besoin pour {name}"
+ },
+ {
+  "id": "1901",
+  "en": "Adjust in {name}’s plan",
+  "fr": "Ajuster dans le programme de {name}"
+ },
+ {
+  "id": "1902",
+  "en": "Add a vet visit",
+  "fr": "Ajouter une visite véto"
+ },
+ {
+  "id": "1903",
+  "en": "As planned",
+  "fr": "Comme prévu"
+ },
+ {
+  "id": "1904",
+  "en": "Planned: {value}",
+  "fr": "Prévu : {value}"
+ },
+ {
+  "id": "1905",
+  "en": "Every week",
+  "fr": "Toutes les semaines",
+  "plural": "one"
+ },
+ {
+  "id": "1906",
+  "en": "Every {n} weeks",
+  "fr": "Toutes les {n} semaines",
+  "plural": "other"
+ },
+ {
+  "id": "1907",
+  "en": "Help improve Pavurio",
+  "fr": "Aider à améliorer Pavurio"
+ },
+ {
+  "id": "1908",
+  "en": "Anonymous usage stats, like which screens are used. Never your pet’s name, photos or notes.",
+  "fr": "Statistiques d’utilisation anonymes, comme les écrans consultés. Jamais le nom, les photos ou les notes de votre animal."
+ },
+ {
+  "id": "1909",
+  "en": "Parasite prevention",
+  "fr": "Antiparasitaire"
+ },
+ {
+  "id": "1910",
+  "en": "Choose how often it repeats.",
+  "fr": "Choisissez la fréquence de répétition."
+ },
+ {
+  "id": "1911",
+  "en": "Every {n} days",
+  "fr": "Tous les {n} jours",
+  "plural": "other"
+ },
+ {
+  "id": "1912",
+  "en": "Parasite prevention every week",
+  "fr": "Antiparasitaire toutes les semaines",
+  "plural": "one"
+ },
+ {
+  "id": "1913",
+  "en": "Parasite prevention every {n} weeks",
+  "fr": "Antiparasitaire toutes les {n} semaines",
+  "plural": "other"
+ },
+ {
+  "id": "1914",
+  "en": "Use the product, dose and rhythm your vet recommends. Pavurio keeps the rhythm and reminds you.",
+  "fr": "Utilisez le produit, la dose et le rythme conseillés par votre vétérinaire. Pavurio garde le rythme et vous le rappelle."
+ },
+ {
+  "id": "1915",
+  "en": "PLAN UPDATED",
+  "fr": "PROGRAMME MIS À JOUR"
+ },
+ {
+  "id": "1916",
+  "en": "{name}’s plan grew with them",
+  "fr": "Le programme de {name} a suivi sa croissance"
+ },
+ {
+  "id": "1917",
+  "en": "Time to weigh {name}",
+  "fr": "Il est temps de peser {name}"
+ },
+ {
+  "id": "1918",
+  "en": "{name} grows fast. A weigh-in keeps the portions right.",
+  "fr": "{name} grandit vite. Une pesée garde des portions justes."
+ },
+ {
+  "id": "1919",
+  "en": "One weigh-in makes {name}’s portions exact.",
+  "fr": "Une pesée, et les portions de {name} seront exactes."
+ },
+ {
+  "id": "1920",
+  "en": "Later",
+  "fr": "Plus tard"
  }
 ]

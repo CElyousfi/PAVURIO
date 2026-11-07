@@ -24,6 +24,7 @@ import { colors } from '../ui/theme';
 import { completeFeedback, errorFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { Missing } from '../ui/Missing';
+import { track } from '../native/analytics';
 
 const LB = 0.45359237;
 
@@ -33,9 +34,13 @@ function currentChoices(targets: Target[], schedules: Schedule[], portions: Port
   for (const tg of targets) {
     const rec = recommendedChoice(tg);
     if (!rec) continue;
-    const s = schedules.find((x) => x.type === tg.care && x.enabled);
+    const s = schedules.find((x) => x.type === tg.care && x.enabled && (tg.kind === 'interval' ? !!x.everyDays : !x.everyDays));
     if (!s) {
       out.push(auto ? { ...rec, on: false } : rec);
+      continue;
+    }
+    if (tg.kind === 'interval') {
+      out.push({ ...rec, count: s.everyDays ? Math.max(1, Math.round(s.everyDays / 7)) : rec.count, times: s.times.slice(0, 1), remind: s.remind });
       continue;
     }
     const weekly = s.days.length > 0 && s.days.length < 7 && tg.kind === 'weekly';
@@ -109,6 +114,7 @@ export default function PlanScreen() {
         await addMeasurement(db, { petId: pet.id, kind: 'weight', value: Math.round((unit === 'lb' ? about.kg / LB : about.kg) * 10) / 10, unit, at: Date.now() });
       }
       await applyChoices(db, pet, basis, choices);
+      track('plan_saved', { cares: choices.filter((c) => c.on).length, stage: basis.stage });
       if (choices.some((c) => c.on && c.remind)) requestPermission(db).catch(() => null);
       completeFeedback();
       bump();

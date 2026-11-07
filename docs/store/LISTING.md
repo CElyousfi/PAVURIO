@@ -250,6 +250,8 @@ L'abonnement se renouvelle automatiquement sauf résiliation. Gérez-le ou rési
 | Files and docs → **Files and docs** (attachment backup) | Yes | Required | App functionality |
 | App info and performance → **Crash logs** | Yes | Optional (can be turned off in the app) | Analytics: fixing crashes |
 | App info and performance → **Diagnostics** | Yes | Optional | Analytics: fixing crashes |
+| App activity → **App interactions** (screens opened, setup steps, care logged; no free text) | Yes | Optional (Settings → Help improve Pavurio) | Analytics |
+| Device or other IDs → **Device or other IDs** (Firebase Analytics app instance ID; no advertising ID) | Yes | Optional (Settings → Help improve Pavurio) | Analytics |
 
 Everything else is not collected. There is no location and no contacts.
 

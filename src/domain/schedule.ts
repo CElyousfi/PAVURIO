@@ -4,7 +4,7 @@
  * 24 h, so DST days are correct. A mark (done / skipped / snoozed) is stored only when the owner acts;
  * an occurrence is never completed automatically.
  */
-import { t } from '../i18n/core';
+import { t, tn } from '../i18n/core';
 import { formatHM, weekdayInitials, weekdayNamesShort } from '../i18n/dates';
 import { addDays, dayKeyOf, parseDayKey } from './time';
 
@@ -25,6 +25,8 @@ export type Schedule = {
   enabled: boolean;
   /** when the routine was created: times that had already passed then are not shown as missed */
   createdAt?: number;
+  /** repeats every N days counted from the start date (e.g. 28 = every 4 weeks); null = by weekdays */
+  everyDays?: number | null;
 };
 
 export type MarkStatus = 'done' | 'skipped' | 'snoozed';
@@ -73,6 +75,10 @@ export function appliesOn(s: Schedule, dayKey: string): boolean {
   if (!s.enabled) return false;
   if (dayKey < s.startDate) return false;
   if (s.endDate && dayKey > s.endDate) return false;
+  if (s.everyDays && s.everyDays > 1) {
+    const diff = Math.round((parseDayKey(dayKey).getTime() - parseDayKey(s.startDate).getTime()) / 86_400_000);
+    return diff % s.everyDays === 0;
+  }
   if (s.days.length === 0) return true;
   return s.days.includes(parseDayKey(dayKey).getDay());
 }
@@ -196,6 +202,15 @@ export function describeDays(days: number[]): string {
   if (set.join() === '1,2,3,4,5') return t('Weekdays');
   if (set.join() === '0,6') return t('Weekends');
   return set.map((d) => names[d]).join(', ');
+}
+
+/** How a routine repeats, in words: "Every day", "Mon, Thu" or "Every 4 weeks". */
+export function describeRepeat(s: Pick<Schedule, 'days' | 'everyDays'>): string {
+  if (s.everyDays && s.everyDays > 1) {
+    if (s.everyDays % 7 === 0) return tn(s.everyDays / 7, 'Every week', 'Every {n} weeks');
+    return tn(s.everyDays, 'Every day', 'Every {n} days');
+  }
+  return describeDays(s.days);
 }
 
 /** 'HH:MM' → "8:00 AM" (English) or "8h00" (French). */

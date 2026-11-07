@@ -13,13 +13,31 @@ import { ageInMonths } from '../domain/lifeStage';
 import type { Schedule } from '../domain/schedule';
 import { createSchedule, deleteSchedule, listMeasurements, listSchedules, updateSchedule } from './careRepo';
 import type { Db } from './db';
+import { t } from '../i18n/core';
 import { getPlan, getPortions, getSetting, listPets, setPlan, setSetting, type Pet } from './repo';
 
 const PROFILE = (id: string) => `profile:${id}`;
 const SNAP = (id: string) => `autoPlan:${id}`;
+const NEWS = (id: string) => `planNews:${id}`;
+const NEWS_SEEN = (id: string) => `planNewsSeen:${id}`;
+
+/** The last automatic change to the plan, shown once on Home. */
+export type PlanNews = { at: number; months: number; choices: Choice[] };
+
+export async function getPlanNews(db: Db, petId: string): Promise<PlanNews | null> {
+  const n = parse<PlanNews>(await getSetting(db, NEWS(petId)));
+  if (!n) return null;
+  const seen = Number((await getSetting(db, NEWS_SEEN(petId))) ?? 0);
+  return n.at > seen ? n : null;
+}
+
+export async function dismissPlanNews(db: Db, petId: string, now = Date.now()): Promise<void> {
+  const n = parse<PlanNews>(await getSetting(db, NEWS(petId)));
+  await setSetting(db, NEWS_SEEN(petId), String(Math.max(now, n?.at ?? 0)));
+}
 const LB = 0.45359237;
 
-type Applied = { kind: 'daily' | 'weekly'; scheduleId: string };
+type Applied = { kind: 'daily' | 'weekly' | 'interval'; scheduleId: string };
 type Snapshot = { basis: { months: number; kg: number | null; profile: PetProfile }; cares: Partial<Record<CareType, Applied>> };
 
 function parse<T>(s: string | null): T | null {
@@ -59,8 +77,12 @@ export async function basisFor(db: Db, pet: Pet, now = new Date()): Promise<Plan
   return planBasis(pet.species, months, await getProfile(db, pet), await weighedKg(db, pet, months, now.getTime()));
 }
 
-function scheduleFor(list: Schedule[], care: CareType, id?: string): Schedule | undefined {
-  return (id ? list.find((s) => s.id === id) : undefined) ?? list.find((s) => s.type === care);
+/** The routine a choice writes to: the one it made before, else the owner's own of the same kind
+ * (a prescribed daily medicine is never taken over by the prevention rhythm, and the other way round). */
+export function scheduleFor(list: Schedule[], care: CareType, id?: string, kind?: Choice['kind']): Schedule | undefined {
+  const byId = id ? list.find((s) => s.id === id) : undefined;
+  if (byId) return byId;
+  return list.find((s) => s.type === care && (kind === 'interval' ? !!s.everyDays : !s.everyDays));
 }
 
 /** Writes the owner's choices: one routine per care (created, updated or removed), the plan and portions. */
@@ -70,7 +92,7 @@ export async function applyChoices(db: Db, pet: Pet, basis: PlanBasis, choices: 
   const plan = await getPlan(db, pet.id);
   const portions = await getPortions(db, pet.id);
   for (const c of choices) {
-    const ex = scheduleFor(list, c.care, snap.cares[c.care]?.scheduleId);
+    const ex = scheduleFor(list, c.care, snap.cares[c.care]?.scheduleId, c.kind);
     if (!c.on) {
       if (ex) await deleteSchedule(db, ex.id);
       plan[c.care] = 0;
@@ -78,20 +100,22 @@ export async function applyChoices(db: Db, pet: Pet, basis: PlanBasis, choices: 
       continue;
     }
     const weekly = c.kind === 'weekly';
+    const interval = c.kind === 'interval';
     const input = {
       petId: pet.id,
       type: c.care,
-      title: ex?.title || CARE[c.care].label,
-      times: weekly ? [c.times[0] ?? '19:00'] : c.times,
+      title: ex?.title || (interval && c.care === 'medication' ? t('Parasite prevention') : CARE[c.care].label),
+      times: weekly || interval ? [c.times[0] ?? '19:00'] : c.times,
       days: weekly ? c.days : [],
       remind: c.remind,
+      everyDays: interval ? c.count * 7 : null,
     };
     let id: string;
     if (ex) {
       await updateSchedule(db, ex.id, { ...input, startDate: ex.startDate, endDate: ex.endDate, enabled: true });
       id = ex.id;
     } else id = (await createSchedule(db, input)).id;
-    plan[c.care] = weekly ? 0 : c.count;
+    plan[c.care] = c.kind === 'daily' ? c.count : 0;
     if (c.portion != null && c.portion > 0) portions[c.care] = c.portion;
     snap.cares[c.care] = { kind: c.kind, scheduleId: id };
   }
@@ -121,21 +145,25 @@ export async function followGrowth(db: Db, pet: Pet, now = new Date()): Promise<
     const nt = newTargets.find((t) => t.care === care);
     const s = list.find((x) => x.id === applied.scheduleId);
     if (!ot || !nt || nt.kind === 'visit' || !s) continue;
-    const curCount = applied.kind === 'weekly' ? s.days.length || 7 : s.times.length;
+    const curCount = applied.kind === 'interval' ? Math.max(1, Math.round((s.everyDays ?? 7) / 7)) : applied.kind === 'weekly' ? s.days.length || 7 : s.times.length;
     if (!changed(ot, nt, curCount)) continue;
     const follow = curCount === ot.count.rec && applied.kind === ot.kind;
     const kind = follow ? nt.kind : applied.kind;
     const count = follow ? nt.count.rec : curCount;
     const regen = follow && (count !== curCount || kind !== applied.kind);
-    const times = regen ? (kind === 'weekly' ? [nt.times[0] ?? s.times[0] ?? '19:00'] : timesFor(care, count, nt.times)) : s.times;
+    const times = regen ? (kind === 'weekly' || kind === 'interval' ? [nt.times[0] ?? s.times[0] ?? '19:00'] : timesFor(care, count, nt.times)) : s.times;
     const days = kind === 'weekly' ? (regen ? daysFor(count, nt.days) : s.days) : [];
     const cur = portions[care];
     const oldRec = portionFor(ot, curCount)?.rec;
     const newRec = portionFor(nt, count)?.rec ?? null;
     const portion = cur != null && oldRec && newRec ? scalePortion(care, cur, oldRec, newRec) : newRec;
-    choices.push({ care, kind, on: true, count, portion, times, days, remind: s.remind });
+    choices.push({ care, kind: kind as Choice['kind'], on: true, count, portion, times, days, remind: s.remind });
   }
-  if (choices.length) await applyChoices(db, pet, basis, choices);
+  if (choices.length) {
+    await applyChoices(db, pet, basis, choices);
+    // tell the owner on Home what changed (the card stays until they've seen it)
+    await setSetting(db, NEWS(pet.id), JSON.stringify({ at: now.getTime(), months: basis.months, choices } satisfies PlanNews));
+  }
   return choices.map((c) => c.care);
 }
 

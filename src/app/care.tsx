@@ -8,7 +8,7 @@ import { listEventsBetween } from '../data/repo';
 import { milestoneDays } from '../data/memoriesRepo';
 import { MEM_COLORS } from '../features/MemoriesKit';
 import { CARE } from '../domain/care';
-import { describeDays, formatTime24to12 } from '../domain/schedule';
+import { describeRepeat, formatTime24to12 } from '../domain/schedule';
 import { addDays, dayKeyOf, dayRange, formatClock, parseDayKey } from '../domain/time';
 import { KindIcon, OccurrenceRow, kindMeta } from '../features/routines';
 import { DueNowCard } from '../features/DueNow';
@@ -250,7 +250,7 @@ export default function CareTab() {
                       {s.title}
                     </T>
                     <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
-                      {describeDays(s.days)} · {s.times.map(formatTime24to12).join(', ')}
+                      {describeRepeat(s)} · {s.times.map(formatTime24to12).join(', ')}
                     </T>
                   </View>
                   {!s.enabled ? (

@@ -1,6 +1,6 @@
 # Politique de confidentialité
 
-*Dernière mise à jour : 5 novembre 2026*
+*Dernière mise à jour : 7 novembre 2026*
 
 Pavurio est une application de suivi des soins pour animaux. Cette politique explique ce que l'app conserve, où, et comment le supprimer. En bref : **les données de vos animaux restent sur votre téléphone, une copie de sauvegarde est conservée dans votre compte Pavurio pour pouvoir la restaurer, et nous ne vendons aucune donnée ni n'affichons de publicité.**
 
@@ -27,6 +27,12 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 - Il est lié à l'identifiant aléatoire, jamais aux données de vos animaux.
 - Vous pouvez le désactiver dans **Réglages → Compte → Envoyer les rapports de plantage**.
 
+**Statistiques d'utilisation (Firebase Analytics).**
+
+- Pour savoir quels écrans et quelles étapes sont utilisés (par exemple, combien de personnes terminent la configuration), l'app envoie des événements d'utilisation anonymes : nom de l'écran, type de soin noté, tranche d'âge et taille choisies pour le programme.
+- Jamais le nom de votre animal, ses photos, vos notes ni aucun texte libre, et aucun identifiant publicitaire.
+- Vous pouvez le désactiver dans **Réglages → Aider à améliorer Pavurio**.
+
 **Achats.**
 
 - Pavurio Pro s'achète via l'App Store ou Google Play ; nous ne voyons jamais vos moyens de paiement.
@@ -51,7 +57,7 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 
 | Service | Finalité | Données |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics) | compte, codes e-mail, sauvegarde, rapports de plantage | identifiant, e-mail de connexion, choix newsletter, copie de sauvegarde (photos et pièces jointes comprises), rapports de plantage |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics, Analytics) | compte, codes e-mail, sauvegarde, rapports de plantage, statistiques d'utilisation | identifiant, e-mail de connexion, choix newsletter, copie de sauvegarde (photos et pièces jointes comprises), rapports de plantage, événements d'utilisation anonymes |
 | Resend | envoi des codes et, si vous l'acceptez, de la newsletter | adresse e-mail, contenu du message |
 | RevenueCat | vérification de Pavurio Pro | identifiant, reçus d'achat |
 | Apple / Google | connexion, paiements, distribution | selon leurs propres politiques |
@@ -62,6 +68,7 @@ Ces prestataires peuvent traiter des données hors de votre pays (par exemple au
 
 - Votre compte et votre sauvegarde sont conservés tant que le compte existe.
 - Crashlytics conserve les rapports jusqu'à 90 jours.
+- Firebase Analytics conserve les statistiques d'utilisation jusqu'à 14 mois.
 - La suppression du compte efface immédiatement le compte et la sauvegarde.
 
 ## Supprimer vos données

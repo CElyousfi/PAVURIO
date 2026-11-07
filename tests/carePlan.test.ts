@@ -4,7 +4,7 @@ import { dailyFoodGrams, estimateWeightKg, planBasis, portionFor, recommendedCho
 import { migrate } from '../src/data/migrations';
 import { createPet, getPlan, getPortions } from '../src/data/repo';
 import { listSchedules, updateSchedule } from '../src/data/careRepo';
-import { applyChoices, basisFor, followGrowth, setProfile } from '../src/data/autoPlan';
+import { applyChoices, basisFor, dismissPlanNews, followGrowth, getPlanNews, setProfile } from '../src/data/autoPlan';
 import { openNodeDb } from './helpers/nodeDb';
 
 const find = (ts: ReturnType<typeof targetsFor>, care: string) => ts.find((t) => t.care === care)!;
@@ -68,7 +68,11 @@ describe('care plan', () => {
     expect(find(ts, 'litter').remind).toBe(true);
     expect(find(ts, 'water').remind).toBe(false);
     expect(find(ts, 'play').remind).toBe(false);
-    expect(recommendedChoice(find(ts, 'medication'))).toBeNull();
+    // flea, tick and worm prevention keeps a monthly rhythm, with a reminder
+    const med = recommendedChoice(find(ts, 'medication'))!;
+    expect(med.kind).toBe('interval');
+    expect(med.count).toBe(4);
+    expect(med.remind).toBe(true);
   });
 
   it('keeps the owner’s adjustment when the count changes', () => {
@@ -105,7 +109,8 @@ describe('automatic plan follows the pet', () => {
   it('sets everything up in one go', async () => {
     const { db, pet } = await setup();
     const s = await listSchedules(db, pet.id);
-    expect(s.map((x) => x.type).sort()).toEqual(['grooming', 'meal', 'play', 'walk', 'water']);
+    expect(s.map((x) => x.type).sort()).toEqual(['grooming', 'meal', 'medication', 'play', 'walk', 'water']);
+    expect(s.find((x) => x.type === 'medication')!.everyDays).toBe(28);
     expect(s.find((x) => x.type === 'meal')!.times).toHaveLength(3);
     expect(s.find((x) => x.type === 'water')!.remind).toBe(false);
     expect((await getPlan(db, pet.id)).meal).toBe(3);
@@ -125,6 +130,32 @@ describe('automatic plan follows the pet', () => {
     expect(groom.days.length).toBeGreaterThan(0);
     // nothing more to do the same day
     expect(await followGrowth(db, pet, new Date(2026, 11, 8))).toEqual([]);
+    // Home tells the owner, once
+    const news = await getPlanNews(db, pet.id);
+    expect(news?.choices.find((c) => c.care === 'meal')?.count).toBe(2);
+    await dismissPlanNews(db, pet.id, Date.now() + 1000);
+    expect(await getPlanNews(db, pet.id)).toBeNull();
+  });
+
+  it('never takes over a prescribed daily medicine', async () => {
+    const db = openNodeDb();
+    await migrate(db);
+    const pet = await createPet(db, { species: 'cat', name: 'Mochi', birthDate: '2022-01-01' });
+    const { createSchedule } = await import('../src/data/careRepo');
+    await createSchedule(db, { petId: pet.id, type: 'medication', title: 'Thyroid pill', times: ['08:00', '20:00'] });
+    const basis = (await basisFor(db, pet, new Date(2026, 10, 7)))!;
+    await applyChoices(db, pet, basis, targetsFor(basis).map(recommendedChoice).filter((c): c is NonNullable<typeof c> => !!c));
+    const meds = (await listSchedules(db, pet.id)).filter((x) => x.type === 'medication');
+    expect(meds).toHaveLength(2);
+    expect(meds.find((x) => x.title === 'Thyroid pill')!.times).toEqual(['08:00', '20:00']);
+  });
+
+  it('repeats every few weeks from the start day', async () => {
+    const { appliesOn } = await import('../src/domain/schedule');
+    const s = { id: 'x', petId: 'p', type: 'medication', title: 'P', times: ['19:00'], days: [], startDate: '2026-11-07', endDate: null, remind: true, enabled: true, everyDays: 28 };
+    expect(appliesOn(s, '2026-11-07')).toBe(true);
+    expect(appliesOn(s, '2026-11-08')).toBe(false);
+    expect(appliesOn(s, '2026-12-05')).toBe(true);
   });
 
   it('keeps a count the owner changed', async () => {

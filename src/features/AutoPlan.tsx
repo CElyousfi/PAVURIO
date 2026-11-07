@@ -9,7 +9,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CARE, CareType, Species, formatAmount } from '../domain/care';
 import { AGE_PICKS, StageId } from '../domain/lifeStage';
-import { Choice, FoodKind, PetProfile, PlanBasis, Range, SIZES, Target, inRange, portionFor, withCount, daysFor } from '../domain/carePlan';
+import { portionStepFor, Choice, FoodKind, PetProfile, PlanBasis, Range, SIZES, Target, inRange, portionFor, withCount, daysFor } from '../domain/carePlan';
 import { CareIcon } from '../ui/CareIcon';
 import { Vessel } from '../ui/Vessel';
 import { RollingNumber } from '../ui/Rolling';
@@ -170,10 +170,17 @@ function Chip({ label, sub, on, onPress, testID, wide }: { label: string; sub?: 
 
 // ------------------------------------------------------------------ plan
 
+/** "3× a day", "2 days a week", "Every 4 weeks" */
+export function countLabel(kind: Choice['kind'] | Target['kind'], n: number): string {
+  if (kind === 'interval') return tn(n, 'Every week', 'Every {n} weeks');
+  if (kind === 'weekly') return tn(n, '{n} day a week', '{n} days a week');
+  return t('{n}× a day', { n });
+}
+
 /** "2× a day · 135 g each" */
 export function choiceSummary(c: Choice): string {
   if (!c.on) return t('Not in the plan');
-  const how = c.kind === 'weekly' ? tn(c.count, '{n} day a week', '{n} days a week') : t('{n}× a day', { n: c.count });
+  const how = countLabel(c.kind, c.count);
   return c.portion != null ? `${how} · ${t('{amount} each', { amount: formatAmount(c.care, c.portion) })}` : how;
 }
 
@@ -199,7 +206,7 @@ export function PlanReview({ unit, name, basis, targets, choices, onChange }: { 
                 </T>
                 {c.on ? (
                   <T weight="xbold" style={{ fontSize: 12, color: colors.muted }} numberOfLines={1}>
-                    {c.kind === 'weekly' ? `${c.days.map((d) => dow[d]).join(' · ')} · ${hm(c.times[0] ?? '19:00')}` : c.times.map(hm).join(' · ')}
+                    {c.kind === 'weekly' ? `${c.days.map((d) => dow[d]).join(' · ')} · ${hm(c.times[0] ?? '19:00')}` : c.kind === 'interval' ? hm(c.times[0] ?? '19:00') : c.times.map(hm).join(' · ')}
                   </T>
                 ) : null}
               </View>
@@ -228,11 +235,7 @@ export function PlanReview({ unit, name, basis, targets, choices, onChange }: { 
   );
 }
 
-function portionStep(care: CareType, v: number): number {
-  if (care === 'meal') return v < 40 ? 1 : v < 150 ? 5 : 10;
-  if (care === 'water') return 25;
-  return 5;
-}
+const portionStep = portionStepFor;
 
 function TargetSheet({ name, unit, basis, target, choice, onClose, onSave }: { name: string; unit: 'kg' | 'lb'; basis: PlanBasis; target: Target; choice: Choice; onClose: () => void; onSave: (c: Choice) => void }) {
   const [c, setC] = useState<Choice>(choice);
@@ -380,6 +383,7 @@ export function targetHeadline(tg: Target): string {
     const each = portionFor(tg, tg.count.rec)?.rec ?? 0;
     return tn(tg.count.rec, '{n} walk a day of about {min} minutes', '{n} walks a day of about {min} minutes', { min: each });
   }
+  if (tg.kind === 'interval' && tg.care === 'medication') return tn(tg.count.rec, 'Parasite prevention every week', 'Parasite prevention every {n} weeks');
   return t(tg.guide.headline);
 }
 
@@ -391,8 +395,9 @@ export function CarePage({ name, unit, basis, target, choice, onChange, size }: 
   const c = choice;
   const meta = CARE[c.care];
   const weekly = c.kind === 'weekly';
+  const interval = c.kind === 'interval';
   const spec = meta.amount;
-  const pr = portionFor(target, c.count);
+  const pr = interval ? null : portionFor(target, c.count);
   const portion = c.portion;
   const hasAmount = !!(pr && portion != null && spec);
   const stepOf = (v: number) => portionStep(c.care, v);
@@ -455,15 +460,15 @@ export function CarePage({ name, unit, basis, target, choice, onChange, size }: 
             </Bouncy>
             <Pop trigger={c.count} amount={0.25} style={{ flex: 1, alignItems: 'center' }}>
               <T weight="black" style={{ fontSize: 19, color: meta.color }} testID="care-count">
-                {weekly ? tn(c.count, '{n} day a week', '{n} days a week') : t('{n}× a day', { n: c.count })}
+                {countLabel(c.kind, c.count)}
               </T>
             </Pop>
-            <Bouncy scaleTo={0.88} onPress={() => c.count < (weekly ? 7 : 8) && onChange(withCount(target, c, c.count + 1))} style={styles.countBtn} accessibilityRole="button" accessibilityLabel={t('More')} testID="care-count-plus" haptic={false}>
+            <Bouncy scaleTo={0.88} onPress={() => c.count < (interval ? 12 : weekly ? 7 : 8) && onChange(withCount(target, c, c.count + 1))} style={styles.countBtn} accessibilityRole="button" accessibilityLabel={t('More')} testID="care-count-plus" haptic={false}>
               <Icon name="plus" size={18} />
             </Bouncy>
           </View>
           <T weight="xbold" style={{ fontSize: 12, color: c.count === target.count.rec ? colors.brand : colors.muted, marginTop: 4 }}>
-            {c.count === target.count.rec ? `✓ ${t('Recommended')}` : t('Recommended: {value}', { value: weekly ? tn(target.count.rec, '{n} day a week', '{n} days a week') : t('{n}× a day', { n: target.count.rec }) })}
+            {c.count === target.count.rec ? `✓ ${t('Recommended')}` : t('Recommended: {value}', { value: countLabel(c.kind, target.count.rec) })}
             {target.count.min !== target.count.max ? ` · ${t('Usual: {min} to {max}', { min: target.count.min, max: target.count.max })}` : ''}
           </T>
           {!countOk ? <T style={styles.warn}>{t('Outside the usual range. That’s fine if your vet advised it.')}</T> : null}
@@ -493,7 +498,7 @@ export function CarePage({ name, unit, basis, target, choice, onChange, size }: 
           ) : null}
 
           <View style={styles.timesRow}>
-            {(weekly ? c.times.slice(0, 1) : c.times).map((tm, i) => (
+            {(weekly || interval ? c.times.slice(0, 1) : c.times).map((tm, i) => (
               <TimeField key={`${i}-${c.times.length}`} compact label={meta.label} value={tm} color={meta.color} onChange={(v) => onChange({ ...c, times: c.times.map((x, j) => (j === i ? v : x)) })} />
             ))}
             <Bouncy
@@ -515,6 +520,11 @@ export function CarePage({ name, unit, basis, target, choice, onChange, size }: 
           </View>
 
           {c.care === 'meal' && portion != null ? <FoodNote basis={basis} unit={unit} name={name} count={c.count} portion={portion} /> : null}
+          {interval ? (
+            <View style={[styles.note, { alignSelf: 'stretch', marginTop: 10 }]}>
+              <T style={{ fontSize: 13, color: colors.inkSoft, lineHeight: 19 }}>{t('Use the product, dose and rhythm your vet recommends. Pavurio keeps the rhythm and reminds you.')}</T>
+            </View>
+          ) : null}
 
           <Bouncy onPress={() => onChange({ ...c, on: false })} style={{ padding: 10, marginTop: 2 }} accessibilityRole="button" testID="care-off">
             <T weight="black" style={{ color: colors.faint, fontSize: 13, letterSpacing: 0.6 }}>
