@@ -22,6 +22,7 @@ import { useCloud } from '../state/Cloud';
 import { NextCareCard } from './NextCare';
 import { GuideCard } from './RoutineGuide';
 import { PlanNewsCard, WeighNudgeCard } from './PlanCards';
+import { HomeIntro } from './HomeIntro';
 import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
@@ -69,6 +70,9 @@ export function HomeFeed({ width }: { width: number }) {
 
   return (
     <View style={{ width, paddingHorizontal: 20, paddingBottom: 120 }}>
+      {/* first visit: the four places to know, and an optional short tour */}
+      <HomeIntro />
+
       {/* next scheduled care, Clucky's "Next wakeup" */}
       <Enter index={0}>
         <NextCareCard width={width} />

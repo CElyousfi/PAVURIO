@@ -31,6 +31,7 @@ import { setMark } from '../data/careRepo';
 import { confirmOccurrence } from '../features/careLink';
 import { dayKeyOf } from '../domain/time';
 import { track, trackScreen } from '../native/analytics';
+import { TipHost } from '../features/Tips';
 
 /** A tapped reminder opens the right place: the care's log card (linked to its occurrence) or the visit. */
 function ReminderRouter() {
@@ -96,21 +97,81 @@ function ReminderRouter() {
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+/** stable: SQLiteProvider re-opens the database whenever this function changes */
+const initDb = (db: unknown) => migrate(db as Db);
+
+/** set by Gate once the app is on screen; the start-up watchdog checks it */
+let started = false;
+const STALL_MS = 10_000;
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black });
-  if (!fontsLoaded && !fontError) return null;
+  // a retry re-mounts the database and the app state from scratch (nothing is deleted)
+  const [boot, setBoot] = useState(0);
+  const [stalled, setStalled] = useState(false);
+  useEffect(() => {
+    // watchdog: whatever happens below (fonts, database, first load), the logo never stays forever
+    const timer = setTimeout(() => {
+      if (started) return;
+      SplashScreen.hideAsync().catch(() => {});
+      setStalled(true);
+      cloud.crash.log('startup stalled');
+    }, STALL_MS);
+    return () => clearTimeout(timer);
+  }, [boot]);
+  const retry = () => {
+    setStalled(false);
+    setBoot((b) => b + 1);
+  };
   return (
     <SafeAreaProvider>
-      <SQLiteProvider databaseName="pavurio.db" onInit={(db) => migrate(db as unknown as Db)}>
-        <AppProvider>
-          <CloudProvider>
-            <EngagementProvider>
-              <Gate />
-            </EngagementProvider>
-          </CloudProvider>
-        </AppProvider>
-      </SQLiteProvider>
+      {fontsLoaded || fontError ? (
+        <StartupBoundary key={boot} onRetry={retry}>
+          <SQLiteProvider databaseName="pavurio.db" onInit={initDb}>
+            <AppProvider>
+              <CloudProvider>
+                <EngagementProvider>
+                  <Gate />
+                </EngagementProvider>
+              </CloudProvider>
+            </AppProvider>
+          </SQLiteProvider>
+        </StartupBoundary>
+      ) : null}
+      {stalled && !started ? <StartupProblem slow onRetry={retry} /> : null}
     </SafeAreaProvider>
+  );
+}
+
+/** Catches a failure to open or migrate the database: a friendly retry instead of an endless logo. */
+class StartupBoundary extends React.Component<{ children: React.ReactNode; onRetry: () => void }, { error: Error | null }> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  componentDidCatch(error: Error) {
+    console.error('[pavurio] startup failed', error);
+    cloud.crash.record(error, 'startup: database');
+  }
+  render() {
+    return this.state.error ? <StartupProblem onRetry={this.props.onRetry} /> : this.props.children;
+  }
+}
+
+/** Start-up went wrong or is very slow: say so kindly, keep the data, offer a retry. */
+function StartupProblem({ onRetry, slow = false }: { onRetry: () => void; slow?: boolean }) {
+  useEffect(() => {
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
+  return (
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32 }} testID="startup-problem">
+      <Sticker name="cat_walk" size={150} />
+      <T weight="black" style={{ fontSize: 22, textAlign: 'center', marginTop: 18 }}>
+        {slow ? t('This is taking longer than usual') : t('We couldn’t open your data')}
+      </T>
+      <T style={{ color: colors.muted, textAlign: 'center', marginTop: 8, lineHeight: 21 }}>{t('Your pets are safe on this phone. Let’s try again.')}</T>
+      <Pill label={t('TRY AGAIN')} onPress={onRetry} style={{ marginTop: 24, minWidth: 220 }} testID="startup-retry" />
+    </View>
   );
 }
 
@@ -124,9 +185,14 @@ function ScreenTracker() {
 }
 
 function Gate() {
-  const { ready, language } = useApp();
+  const { ready, language, loadError, retryLoad } = useApp();
   // once per cold start the native splash (the store icon) hands over to BrandSplash, which hides it
   const [brand, setBrand] = useState(true);
+  useEffect(() => {
+    if (ready) started = true;
+  }, [ready]);
+  // loading the saved data failed: retry, never "no pets" (that would look like the pets were lost)
+  if (!ready && loadError) return <StartupProblem onRetry={retryLoad} />;
   // the native splash stays up until `ready`; this only shows for a few frames on web
   if (!ready) return <View style={{ flex: 1, backgroundColor: colors.canvas }} />;
   return (
@@ -173,7 +239,9 @@ function Gate() {
           <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
           <Stack.Screen name="guide" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
           <Stack.Screen name="plan" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="explore" options={{ animation: 'slide_from_right' }} />
         </Stack>
+        <TipHost />
       </Animated.View>
       {brand ? <BrandSplash onDone={() => setBrand(false)} /> : null}
     </View>
@@ -182,7 +250,11 @@ function Gate() {
 
 /** Shown by expo-router if a screen crashes: friendly art, nothing technical, a way back. */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  useEffect(() => cloud.crash.record(error, 'screen crashed'), [error]);
+  useEffect(() => {
+    cloud.crash.record(error, 'screen crashed');
+    // a crash before the brand splash ran must not leave the logo on screen
+    SplashScreen.hideAsync().catch(() => {});
+  }, [error]);
   return (
     <View style={{ flex: 1, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
       <Sticker name="cat_walk" size={160} />

@@ -25,6 +25,7 @@ import { CircleButton, Pill, SoftPill, T } from '../ui/primitives';
 import { ConfettiRain, Pulse } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { completeFeedback, errorFeedback, tapFeedback, walkStartFeedback } from '../native/haptics';
+import { firstTimeTip } from '../features/Tips';
 import { confirmAsync } from '../ui/confirm';
 import { ART } from '../ui/art';
 import { t } from '../i18n';
@@ -199,6 +200,7 @@ export default function WalkScreen() {
     try {
       const r = await finishWalk(db, walk.id);
       await afterFinish(r);
+      void firstTimeTip(db, 'first_walk');
     } catch (e) {
       setError(e instanceof ValidationError ? e.message : t('Could not save the walk. It’s kept — try Finish again.'));
       errorFeedback();

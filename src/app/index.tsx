@@ -301,7 +301,7 @@ function HomeScreen() {
           <RowItem
             width={itemW}
             label={t('Add or edit')}
-            onPress={() => router.push('/settings')}
+            onPress={() => router.push('/plan')}
             accessibilityLabel={t("{name}'s daily plan", { name: pet.name })}
             icon={
               <View style={styles.addBubble}>
@@ -376,7 +376,7 @@ function HomeScreen() {
             </Pressable>
           </Animated.View>
         ) : null}
-        <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} testID="menu" />
+        <CircleButton icon="menu" label={t('Explore')} onPress={() => router.push('/explore')} size={54} testID="menu" />
       </View>
 
       <AddFab bottom={insets.bottom + 14} hidden={!!snack} />

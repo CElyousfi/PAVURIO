@@ -7,6 +7,7 @@ import { CARE, CareType, careAllowedFor, clampAmount, isCareType, unitLabel } fr
 import { dailyGoal, givenToday, portionOf } from '../../domain/progress';
 import { portionStepFor } from '../../domain/carePlan';
 import { track } from '../../native/analytics';
+import { firstTimeTip } from '../../features/Tips';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
 import { CareEvent, ValidationError, getEvent, logCare, updateEvent } from '../../data/repo';
@@ -224,7 +225,10 @@ export default function LogCard() {
       // 3) … only then refresh UI. Badges wait for the pet's reaction (markLogged), which starts once Home is back.
       logFeedback();
       markLogged();
-      if (!editing) track('care_logged', { type, via: 'card', as_planned: spec ? amount === portions[type] : true });
+      if (!editing) {
+        track('care_logged', { type, via: 'card', as_planned: spec ? amount === portions[type] : true });
+        void firstTimeTip(db, 'first_care');
+      }
       bump();
       signalLogged({ eventId: saved.id, type });
       leave(() => {

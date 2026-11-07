@@ -41,7 +41,8 @@ function sizeRange(kg: [number | null, number | null], unit: 'kg' | 'lb'): strin
 
 // ------------------------------------------------------------------ about
 
-export type About = { stage: StageId | null; months: number | null; profile: PetProfile; kg: number; kgTouched: boolean };
+/** `unsure`: the owner doesn't know the age; the plan then assumes an adult and says so */
+export type About = { stage: StageId | null; months: number | null; profile: PetProfile; kg: number; kgTouched: boolean; unsure?: boolean };
 
 export function AboutPet({
   species,
@@ -51,6 +52,7 @@ export function AboutPet({
   unit,
   onChange,
   ageKnown = false,
+  allowUnsure = false,
 }: {
   species: Species;
   name: string;
@@ -61,6 +63,8 @@ export function AboutPet({
   onChange: (a: About) => void;
   /** the exact birthday is known: the age row is hidden */
   ageKnown?: boolean;
+  /** offer "I'm not sure" for the age (setup) */
+  allowUnsure?: boolean;
 }) {
   const kg = about.kgTouched ? about.kg : (estimateKg ?? about.kg);
   const step = unit === 'lb' ? (kg / LB < 10 ? 0.2 : 1) * LB : kg < 5 ? 0.1 : 0.5;
@@ -80,12 +84,16 @@ export function AboutPet({
                 key={a.stage}
                 label={stageLabel(species, a.stage)}
                 on={about.stage === a.stage}
-                onPress={() => onChange({ ...about, stage: a.stage, months: a.months })}
+                onPress={() => onChange({ ...about, stage: a.stage, months: a.months, unsure: false })}
                 testID={`about-age-${a.stage}`}
                 wide
               />
             ))}
+            {allowUnsure ? (
+              <Chip label={t('I’m not sure')} on={!!about.unsure} onPress={() => onChange({ ...about, stage: null, months: null, unsure: true })} testID="about-age-unsure" wide />
+            ) : null}
           </View>
+          {about.unsure ? <T style={{ fontSize: 13, color: colors.muted, lineHeight: 18 }}>{t('No problem: we’ll start with an adult’s plan. Add the age anytime and the plan adjusts.')}</T> : null}
         </Group>
       ) : null}
       <Group title={grown || species === 'cat' ? t('Size') : t('Size when grown')}>

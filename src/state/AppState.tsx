@@ -13,6 +13,7 @@ import { listSchedules, marksBetween } from '../data/careRepo';
 import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
 import { configureNotifications, syncReminders } from '../native/notifications';
 import { followAll } from '../data/autoPlan';
+import { cloud } from '../cloud/firebase';
 import { initAnalytics, track } from '../native/analytics';
 import { listenToWidgetActions, syncWidgets } from '../native/widgets';
 import { registerBackgroundTasks } from '../native/backgroundTasks';
@@ -28,6 +29,9 @@ export type LoggedSignal = { eventId: string; type: CareType; nonce: number };
 type Ctx = {
   db: Db;
   ready: boolean;
+  /** loading the saved data failed before the app was ever ready: show a retry, never "no pets" */
+  loadError: string | null;
+  retryLoad: () => void;
   pet: repo.Pet | null;
   pets: repo.Pet[];
   plan: Plan;
@@ -65,6 +69,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const db = useSQLiteContext() as unknown as Db;
   const osReduce = useReducedMotion();
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [pet, setPet] = useState<repo.Pet | null>(null);
   const [pets, setPets] = useState<repo.Pet[]>([]);
   const [plan, setPlanState] = useState<Plan>({});
@@ -98,15 +103,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const l: Lang = isLang(storedLang) ? storedLang : deviceLanguage();
     setLang(l);
     setLanguageState(l);
+    setLoadError(null);
     setReady(true);
   }, [db]);
 
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     reload().catch((e) => {
       console.error('[pavurio] failed to load state', e);
-      setReady(true);
+      cloud.crash.record(e instanceof Error ? e : new Error(String(e)), 'startup: load state');
+      // A failed load is NOT "this person has no pets": before the first successful load we show a
+      // retry instead of sending them to setup (which could look like their pets were lost).
+      // After that, the last good state stays on screen.
+      setLoadError(String((e as Error)?.message ?? e));
     });
-  }, [reload, version]);
+  }, [reload, version, attempt]);
+  const retryLoad = useCallback(() => setAttempt((a) => a + 1), []);
 
   // reminders mirror the database: rebuild after every change (debounced) and on start
   useEffect(() => {
@@ -213,6 +225,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     () => ({
       db,
       ready,
+      loadError,
+      retryLoad,
       pet,
       pets,
       plan,
@@ -236,7 +250,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       lastLoggedAt,
       markLogged,
     }),
-    [db, ready, pet, pets, plan, portions, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt, markLogged],
+    [db, ready, loadError, retryLoad, pet, pets, plan, portions, schedules, settings, osReduce, version, bump, reload, setSetting, setWeightUnit, switchPet, pro, setPro, language, setLanguage, logged, signalLogged, clearLogged, lastLoggedAt, markLogged],
   );
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

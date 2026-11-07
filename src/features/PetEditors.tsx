@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Bouncy, Pop } from '../ui/motion';
 import { CARE, SPECIES_CARE, Species, formatAmount } from '../domain/care';
 import { ACCESSORIES, Appearance, PALETTES } from '../domain/appearance';
@@ -7,7 +7,7 @@ import { Plan, Portions, portionOf } from '../domain/progress';
 import { Icon, Label, T } from '../ui/primitives';
 import { CareIcon } from '../ui/CareIcon';
 import { colors } from '../ui/theme';
-import { tickFeedback } from '../native/haptics';
+import { selectFeedback, tickFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
 export function LookPicker({ species, appearance, onChange, pro = false }: { species: Species; appearance: Appearance; onChange: (a: Appearance) => void; pro?: boolean }) {
@@ -74,6 +74,135 @@ export function LookPicker({ species, appearance, onChange, pro = false }: { spe
           );
         })}
       </View>
+    </View>
+  );
+}
+
+/**
+ * Pet Studio controls: two tabs (Coat | Collar or Bandana) so neither list pushes the other off screen,
+ * one swipeable row of big swatches, and the chosen colour's full name. Pro coats can be tried on;
+ * a free coat is always one tap away.
+ */
+export function StudioPicker({
+  species,
+  appearance,
+  onChange,
+  pro = false,
+  onPick,
+}: {
+  species: Species;
+  appearance: Appearance;
+  onChange: (a: Appearance) => void;
+  pro?: boolean;
+  /** analytics hook: which control was used */
+  onPick?: (what: 'coat' | 'accessory', id: string) => void;
+}) {
+  const [tab, setTab] = useState<'coat' | 'accessory'>('coat');
+  const accLabel = species === 'dog' ? t('Bandana') : t('Collar');
+  const coat = PALETTES[species].find((p) => p.id === appearance.paletteId) ?? PALETTES[species][0];
+  const acc = ACCESSORIES.find((a) => a.id === appearance.accessoryId) ?? ACCESSORIES[0];
+  const firstFree = PALETTES[species].find((p) => !p.pro) ?? PALETTES[species][0];
+  return (
+    <View style={{ alignSelf: 'stretch', gap: 10 }}>
+      <View style={styles.seg} accessibilityRole="tablist">
+        {(['coat', 'accessory'] as const).map((k) => {
+          const on = tab === k;
+          return (
+            <Bouncy
+              key={k}
+              onPress={() => {
+                selectFeedback();
+                setTab(k);
+              }}
+              style={[styles.segBtn, on && styles.segOn]}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: on }}
+              testID={`studio-tab-${k}`}
+              haptic={false}
+            >
+              <T weight="black" style={{ fontSize: 15, color: on ? colors.ink : colors.muted }}>
+                {k === 'coat' ? t('Coat') : accLabel}
+              </T>
+            </Bouncy>
+          );
+        })}
+      </View>
+      <T weight="xbold" style={{ textAlign: 'center', color: colors.inkSoft, fontSize: 14 }} accessibilityLiveRegion="polite" testID="studio-chosen">
+        {tab === 'coat' ? `${t('Coat')}: ${coat.name}` : `${accLabel}: ${acc.name}`}
+      </T>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 20 }} keyboardShouldPersistTaps="handled">
+        {tab === 'coat'
+          ? PALETTES[species].map((p) => {
+              const on = p.id === appearance.paletteId;
+              return (
+                <Bouncy
+                  key={p.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={t('{name} coat', { name: p.name }) + (p.pro && !pro ? ' · Pro' : '')}
+                  onPress={() => {
+                    selectFeedback();
+                    onChange({ ...appearance, paletteId: p.id });
+                    onPick?.('coat', p.id);
+                  }}
+                  style={[styles.bigSwatchWrap, on && { borderColor: colors.ink }]}
+                  testID={`coat-${p.id}`}
+                  haptic={false}
+                >
+                  <View style={[styles.bigSwatch, { backgroundColor: p.coat }]}>
+                    <View style={[styles.swatchHalf, { backgroundColor: p.patch }]} />
+                  </View>
+                  {p.pro && !pro ? (
+                    <View style={styles.proTag}>
+                      <T weight="black" style={styles.proTagText}>
+                        PRO
+                      </T>
+                    </View>
+                  ) : null}
+                </Bouncy>
+              );
+            })
+          : ACCESSORIES.map((a) => {
+              const on = a.id === appearance.accessoryId;
+              return (
+                <Bouncy
+                  key={a.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={species === 'dog' ? t('{name} bandana', { name: a.name }) : t('{name} collar', { name: a.name })}
+                  onPress={() => {
+                    selectFeedback();
+                    onChange({ ...appearance, accessoryId: a.id });
+                    onPick?.('accessory', a.id);
+                  }}
+                  style={[styles.bigSwatchWrap, on && { borderColor: colors.ink }]}
+                  testID={`accessory-${a.id}`}
+                  haptic={false}
+                >
+                  <View style={[styles.bigSwatch, { backgroundColor: a.color }]} />
+                </Bouncy>
+              );
+            })}
+      </ScrollView>
+      {tab === 'coat' && coat.pro && !pro ? (
+        <View style={styles.studioTryOn}>
+          <T style={{ color: colors.inkSoft, fontSize: 13, lineHeight: 18 }}>{t('{coat} is a Pro coat: try it on, and keep it with Pro anytime.', { coat: coat.name })}</T>
+          <Bouncy
+            onPress={() => {
+              selectFeedback();
+              onChange({ ...appearance, paletteId: firstFree.id });
+              onPick?.('coat', firstFree.id);
+            }}
+            style={{ paddingTop: 6 }}
+            accessibilityRole="button"
+            testID="studio-free-coat"
+          >
+            <T weight="black" style={{ color: colors.brand, fontSize: 14 }}>
+              {t('Back to a free coat')}
+            </T>
+          </Bouncy>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -165,6 +294,11 @@ export function PlanEditor({
 
 const styles = StyleSheet.create({
   swatchRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
+  seg: { flexDirection: 'row', alignSelf: 'center', backgroundColor: colors.line, borderRadius: 22, padding: 4, gap: 4 },
+  segBtn: { minWidth: 120, height: 40, borderRadius: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
+  segOn: { backgroundColor: '#FFFFFF' },
+  bigSwatchWrap: { padding: 4, borderRadius: 34, borderWidth: 3, borderColor: 'transparent' },
+  bigSwatch: { width: 56, height: 56, borderRadius: 28, overflow: 'hidden' },
   swatchWrap: { alignItems: 'center', padding: 6, borderRadius: 18, borderWidth: 2.5, borderColor: 'transparent' },
   swatch: { width: 50, height: 50, borderRadius: 25, overflow: 'hidden' },
   swatchHalf: { position: 'absolute', left: 0, top: 0, width: 50, height: 22 },
@@ -172,6 +306,7 @@ const styles = StyleSheet.create({
   proTag: { position: 'absolute', top: 2, right: 0, backgroundColor: colors.ink, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1 },
   proTagText: { color: '#FFFFFF', fontSize: 9, letterSpacing: 0.6 },
   tryOn: { backgroundColor: '#FFF6E5', borderRadius: 18, padding: 12, gap: 2 },
+  studioTryOn: { backgroundColor: '#FFF6E5', borderRadius: 18, padding: 12, gap: 2, marginHorizontal: 20 },
   dotWrap: { padding: 4, borderRadius: 24, borderWidth: 2.5, borderColor: 'transparent' },
   dot: { width: 36, height: 36, borderRadius: 18 },
   planRow: { backgroundColor: colors.card, borderRadius: 22, padding: 12, paddingRight: 14, gap: 8 },

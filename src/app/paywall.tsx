@@ -139,7 +139,8 @@ export default function Paywall() {
       bump();
     }
     if (reason === 'onboarding' || params.from === 'onboarding') router.replace('/');
-    else router.back();
+    else if (router.canGoBack()) router.back();
+    else router.replace('/');
   };
 
   const buy = async () => {
@@ -197,7 +198,7 @@ export default function Paywall() {
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
         <View style={styles.top}>
           <Animated.View entering={FadeIn.delay(reason === 'onboarding' ? 1200 : 0)}>
-            <CircleButton icon="close" label={t('Close')} onPress={close} size={44} />
+            <CircleButton icon="close" label={t('Close')} onPress={close} size={44} testID="paywall-close" />
           </Animated.View>
         </View>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 30 }} showsVerticalScrollIndicator={false}>

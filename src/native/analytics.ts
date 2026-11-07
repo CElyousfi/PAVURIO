@@ -22,7 +22,20 @@ export type AnalyticsEvent =
   | 'plan_saved'
   | 'plan_auto_updated'
   | 'guide_opened'
-  | 'routine_applied';
+  | 'routine_applied'
+  // first-use funnel (fired from handlers only, never from renders)
+  | 'species_selected'
+  | 'name_completed'
+  | 'appearance_opened'
+  | 'coat_selected'
+  | 'accessory_selected'
+  | 'appearance_confirmed'
+  | 'plan_overview_reached'
+  | 'onboarding_completed'
+  | 'home_reached'
+  | 'first_care_logged'
+  | 'feature_discovered'
+  | 'intro_choice';
 
 type Params = Record<string, string | number | boolean>;
 

@@ -9719,5 +9719,335 @@
   "id": "1920",
   "en": "Later",
   "fr": "Plus tard"
+ },
+ {
+  "id": "1921",
+  "en": "Your first care is saved! You can see it in today’s history.",
+  "fr": "Votre premier soin est enregistré ! Retrouvez-le dans l’historique du jour."
+ },
+ {
+  "id": "1922",
+  "en": "Your adventure is saved. You’ll find it in your records.",
+  "fr": "Votre aventure est enregistrée. Vous la retrouverez dans votre historique."
+ },
+ {
+  "id": "1923",
+  "en": "Your pantry is ready. You can update the amount anytime.",
+  "fr": "Votre garde-manger est prêt. Mettez à jour la quantité quand vous voulez."
+ },
+ {
+  "id": "1924",
+  "en": "Your first memory is safe in the scrapbook.",
+  "fr": "Votre premier souvenir est bien rangé dans l’album."
+ },
+ {
+  "id": "1925",
+  "en": "{coat} is a Pro coat: try it on, and keep it with Pro anytime.",
+  "fr": "{coat} est un pelage Pro : essayez-le, et gardez-le avec Pro quand vous voulez."
+ },
+ {
+  "id": "1926",
+  "en": "Back to a free coat",
+  "fr": "Revenir à un pelage gratuit"
+ },
+ {
+  "id": "1927",
+  "en": "I’m not sure",
+  "fr": "Je ne sais pas"
+ },
+ {
+  "id": "1928",
+  "en": "No problem: we’ll start with an adult’s plan. Add the age anytime and the plan adjusts.",
+  "fr": "Pas de souci : on commence avec un programme adulte. Ajoutez l’âge quand vous voulez, le programme s’adaptera."
+ },
+ {
+  "id": "1929",
+  "en": "Their day, routines and appointments.",
+  "fr": "Sa journée, ses routines et ses rendez-vous."
+ },
+ {
+  "id": "1930",
+  "en": "Food and supplies, remembered for you.",
+  "fr": "Nourriture et fournitures : on s’en souvient pour vous."
+ },
+ {
+  "id": "1931",
+  "en": "Real moments you never want to forget.",
+  "fr": "De vrais moments à ne jamais oublier."
+ },
+ {
+  "id": "1932",
+  "en": "Explore",
+  "fr": "Explorer"
+ },
+ {
+  "id": "1933",
+  "en": "Health records, Adventures, milestones and more.",
+  "fr": "Dossiers de santé, Aventures, étapes et plus encore."
+ },
+ {
+  "id": "1934",
+  "en": "Here’s {name}’s happy little world.",
+  "fr": "Voici le petit monde heureux de {name}."
+ },
+ {
+  "id": "1935",
+  "en": "Show me around",
+  "fr": "Faites-moi visiter"
+ },
+ {
+  "id": "1936",
+  "en": "I’ll explore myself",
+  "fr": "J’explore par moi-même"
+ },
+ {
+  "id": "1937",
+  "en": "Everything your pet needs today is right here: the next care is just below, and the full day is in Care.",
+  "fr": "Tout ce dont votre animal a besoin aujourd’hui est ici : le prochain soin juste en dessous, et toute la journée dans Soins."
+ },
+ {
+  "id": "1938",
+  "en": "Add your pet’s food once. Pavurio helps you remember when to buy more.",
+  "fr": "Ajoutez la nourriture de votre animal une fois. Pavurio vous aide à penser à en racheter."
+ },
+ {
+  "id": "1939",
+  "en": "A photo today becomes a memory to treasure later.",
+  "fr": "Une photo aujourd’hui, un souvenir précieux demain."
+ },
+ {
+  "id": "1940",
+  "en": "Health records, visits, adventures, milestones, widgets and settings: it’s all in Explore, anytime.",
+  "fr": "Dossiers de santé, visites, aventures, étapes, widgets et réglages : tout est dans Explorer, à tout moment."
+ },
+ {
+  "id": "1941",
+  "en": "TIP {n} OF {total}",
+  "fr": "ASTUCE {n} SUR {total}"
+ },
+ {
+  "id": "1942",
+  "en": "Open {place}",
+  "fr": "Ouvrir {place}"
+ },
+ {
+  "id": "1943",
+  "en": "Next tip",
+  "fr": "Astuce suivante"
+ },
+ {
+  "id": "1944",
+  "en": "What’s your dog’s name?",
+  "fr": "Comment s’appelle votre chien ?"
+ },
+ {
+  "id": "1945",
+  "en": "What’s your cat’s name?",
+  "fr": "Comment s’appelle votre chat ?"
+ },
+ {
+  "id": "1946",
+  "en": "Make {name} yours",
+  "fr": "Personnalisez {name}"
+ },
+ {
+  "id": "1947",
+  "en": "USE THIS LOOK",
+  "fr": "CHOISIR CE LOOK"
+ },
+ {
+  "id": "1948",
+  "en": "Keep the default look",
+  "fr": "Garder le look par défaut"
+ },
+ {
+  "id": "1949",
+  "en": "A few taps, and we’ll build {name}’s whole routine for you. Not sure about something? Keep what’s already chosen.",
+  "fr": "Quelques touches, et nous créons toute la routine de {name}. Un doute ? Gardez ce qui est déjà choisi."
+ },
+ {
+  "id": "1950",
+  "en": "Choose an age, or “I’m not sure”.",
+  "fr": "Choisissez un âge, ou « Je ne sais pas »."
+ },
+ {
+  "id": "1951",
+  "en": "A starting plan for an adult. Tap any line to change it.",
+  "fr": "Un programme de départ pour un adulte. Touchez une ligne pour la modifier."
+ },
+ {
+  "id": "1952",
+  "en": "These are starting points from general vet guidance, not medical advice. Your vet knows {name} best.",
+  "fr": "Ce sont des points de départ tirés de conseils vétérinaires généraux, pas un avis médical. Votre vétérinaire connaît {name} mieux que personne."
+ },
+ {
+  "id": "1953",
+  "en": "START WITH THIS PLAN",
+  "fr": "COMMENCER AVEC CE PROGRAMME"
+ },
+ {
+  "id": "1954",
+  "en": "Customize",
+  "fr": "Personnaliser"
+ },
+ {
+  "id": "1955",
+  "en": "Welcome home, {name}!",
+  "fr": "Bienvenue à la maison, {name} !"
+ },
+ {
+  "id": "1956",
+  "en": "Let’s take care of {name} together.",
+  "fr": "Prenons soin de {name} ensemble."
+ },
+ {
+  "id": "1957",
+  "en": "LET’S GO",
+  "fr": "C’EST PARTI"
+ },
+ {
+  "id": "1958",
+  "en": "{name} just ate? Log the meal",
+  "fr": "{name} vient de manger ? Notez le repas"
+ },
+ {
+  "id": "1959",
+  "en": "Every little care makes a big difference.",
+  "fr": "Chaque petit soin fait une grande différence."
+ },
+ {
+  "id": "1960",
+  "en": "Routines, food, health and memories. Everything your pet needs, in one happy place.",
+  "fr": "Routines, nourriture, santé et souvenirs. Tout ce dont votre animal a besoin, en un seul endroit joyeux."
+ },
+ {
+  "id": "1961",
+  "en": "LET’S MEET YOUR PET",
+  "fr": "PRÉSENTEZ-NOUS VOTRE ANIMAL"
+ },
+ {
+  "id": "1962",
+  "en": "Health records",
+  "fr": "Dossiers de santé"
+ },
+ {
+  "id": "1963",
+  "en": "Vaccines, vet notes and documents in one file.",
+  "fr": "Vaccins, notes du vétérinaire et documents dans un seul dossier."
+ },
+ {
+  "id": "1964",
+  "en": "Vet, groomer or sitter: add a visit and get reminded the day before.",
+  "fr": "Vétérinaire, toiletteur ou pet-sitter : ajoutez une visite et recevez un rappel la veille."
+ },
+ {
+  "id": "1965",
+  "en": "Meals, walks, portions and times, recommended for their age.",
+  "fr": "Repas, balades, portions et horaires, recommandés pour son âge."
+ },
+ {
+  "id": "1966",
+  "en": "Weekly summary",
+  "fr": "Résumé de la semaine"
+ },
+ {
+  "id": "1967",
+  "en": "A short recap of the week you shared.",
+  "fr": "Un petit récap de la semaine passée ensemble."
+ },
+ {
+  "id": "1968",
+  "en": "Adventures & milestones",
+  "fr": "Aventures et étapes"
+ },
+ {
+  "id": "1969",
+  "en": "Walk adventures, with the places you explored together.",
+  "fr": "Les aventures de balade, avec les lieux explorés ensemble."
+ },
+ {
+  "id": "1970",
+  "en": "Little badges for your life together.",
+  "fr": "De petits badges pour votre vie ensemble."
+ },
+ {
+  "id": "1971",
+  "en": "Turn a photo into a card to keep or share.",
+  "fr": "Transformez une photo en carte à garder ou à partager."
+ },
+ {
+  "id": "1972",
+  "en": "Make it yours",
+  "fr": "À votre image"
+ },
+ {
+  "id": "1973",
+  "en": "Appearance Studio",
+  "fr": "Studio d’apparence"
+ },
+ {
+  "id": "1974",
+  "en": "Change {name}’s coat and collar anytime.",
+  "fr": "Changez le pelage et le collier de {name} quand vous voulez."
+ },
+ {
+  "id": "1975",
+  "en": "All pets",
+  "fr": "Tous les animaux"
+ },
+ {
+  "id": "1976",
+  "en": "Switch between your pets, or add another.",
+  "fr": "Passez d’un animal à l’autre, ou ajoutez-en un."
+ },
+ {
+  "id": "1977",
+  "en": "Add another pet.",
+  "fr": "Ajoutez un autre animal."
+ },
+ {
+  "id": "1978",
+  "en": "Widgets",
+  "fr": "Widgets"
+ },
+ {
+  "id": "1979",
+  "en": "See the next care right on your home screen.",
+  "fr": "Voyez le prochain soin directement sur votre écran d’accueil."
+ },
+ {
+  "id": "1980",
+  "en": "Reminders, sounds, language, account and Pro.",
+  "fr": "Rappels, sons, langue, compte et Pro."
+ },
+ {
+  "id": "1981",
+  "en": "Everything Pavurio does for {name}",
+  "fr": "Tout ce que Pavurio fait pour {name}"
+ },
+ {
+  "id": "1982",
+  "en": "Touch and hold an empty spot on your home screen, choose Widgets, then Pavurio. Pick the size you like.",
+  "fr": "Touchez longuement un espace vide de l’écran d’accueil, choisissez Widgets, puis Pavurio. Prenez la taille qui vous plaît."
+ },
+ {
+  "id": "1983",
+  "en": "The widget shows the next care and fills in as you log. A tap opens Pavurio.",
+  "fr": "Le widget montre le prochain soin et se colorie à mesure que vous notez. Un toucher ouvre Pavurio."
+ },
+ {
+  "id": "1984",
+  "en": "This is taking longer than usual",
+  "fr": "Cela prend plus de temps que d’habitude"
+ },
+ {
+  "id": "1985",
+  "en": "We couldn’t open your data",
+  "fr": "Nous n’avons pas pu ouvrir vos données"
+ },
+ {
+  "id": "1986",
+  "en": "Your pets are safe on this phone. Let’s try again.",
+  "fr": "Vos animaux sont à l’abri sur ce téléphone. On réessaie ?"
  }
 ]
