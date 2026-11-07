@@ -4,7 +4,7 @@ What the app is today, so release answers stay accurate:
 - Data lives on the phone (SQLite) and is backed up automatically to the user's account: Firebase Auth (a guest account by default; Apple, Google or email to keep it), Firestore for the database snapshot, and Cloud Storage for photos and documents.
 - Crash reports: Crashlytics. Anonymous usage analytics: Firebase Analytics, with no advertising ID. Both can be switched off in the app.
 - Purchases go through RevenueCat. The free app covers daily care; Pro adds extras.
-- Walks are a timer: no GPS and no location. The optional walk weather sends a city the user picks to Open-Meteo.
+- Walks are a timer: no GPS and no location. Live walk weather is **off** unless a commercial Open-Meteo key is set in `extra.weatherApiKey` (the free API excludes commercial apps).
 - There are no streaks, challenges or games in the product (they were removed). Badges ("Milestones") remain.
 
 ## 1. One-time setup

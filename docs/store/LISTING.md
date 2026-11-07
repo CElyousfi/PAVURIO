@@ -280,7 +280,7 @@ L'abonnement se renouvelle automatiquement sauf résiliation. Gérez-le ou rési
 
 Everything else is not collected. There is no device location (no GPS) and no contacts.
 
-**Decide before submitting:** the optional walk weather sends the city the owner picks (name/coordinates) to Open-Meteo. It is user-entered and not the device's location; if you treat it as location data, declare **Location → Approximate location**: collected and shared with Open-Meteo, optional, for App functionality.
+**Walk weather is switched off in this build** (Open-Meteo's free API isn't licensed for commercial apps; `extra.weatherApiKey` turns it back on with a commercial plan). With it off, no city or location leaves the phone. If it is turned on, declare **Location → Approximate location** (city level counts as approximate location for Google Play): collected and shared with the weather provider, optional, for App functionality — and update the privacy policy first.
 
 **Is data processed ephemerally?** No.
 

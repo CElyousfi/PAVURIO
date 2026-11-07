@@ -337,14 +337,19 @@ export default function Account() {
           ) : saved && !signinMode ? (
             <View style={[styles.card, { marginTop: 22 }]}>
               <T weight="xbold" style={{ fontSize: 17 }} testID="backup-status">
-                {!lastBackupAt ? t('Not backed up yet') : files.pending > 0 ? t('Data backed up {when}', { when: formatRelative(lastBackupAt) }) : t('Backed up {when}', { when: formatRelative(lastBackupAt) })}
+                {!lastBackupAt ? t('Not backed up yet') : files.pending > 0 || files.lost > 0 ? t('Data backed up {when}', { when: formatRelative(lastBackupAt) }) : t('Backed up {when}', { when: formatRelative(lastBackupAt) })}
               </T>
               <T style={{ color: colors.muted, fontSize: 13, marginTop: 2, lineHeight: 18 }}>{t('Pets, care log, routines, visits, weights, records, pantry, memories and their photos.')}</T>
               {files.pending > 0 ? (
                 <T weight="xbold" style={{ color: '#E26A00', fontSize: 13, marginTop: 6, lineHeight: 18 }}>
                   {tn(files.pending, '1 photo or document is still waiting to upload. Keep Pavurio open on Wi-Fi for a moment.', '{n} photos or documents are still waiting to upload. Keep Pavurio open on Wi-Fi for a moment.')}
                 </T>
-              ) : lastBackupAt && files.referenced > 0 ? (
+              ) : null}
+              {files.lost > 0 ? (
+                <T weight="xbold" style={{ color: colors.danger, fontSize: 13, marginTop: 6, lineHeight: 18 }} testID="backup-lost">
+                  {tn(files.lost, '1 photo or document is missing from this phone and from the backup, so it can’t be saved. Open the memory or record it belongs to and add it again or remove it.', '{n} photos or documents are missing from this phone and from the backup, so they can’t be saved. Open the memories or records they belong to and add them again or remove them.')}
+                </T>
+              ) : files.pending === 0 && lastBackupAt && files.referenced > 0 ? (
                 <T weight="xbold" style={{ color: '#3FA34D', fontSize: 13, marginTop: 6 }}>
                   {tn(files.referenced, '✓ 1 photo or document protected', '✓ {n} photos and documents protected')}
                 </T>

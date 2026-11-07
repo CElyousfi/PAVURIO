@@ -29,8 +29,6 @@ export type SetupWork = {
   choices: Choice[];
   /** the birthday is an estimate from an age range */
   birthApprox: boolean;
-  /** steps already done (so a retry never adds the weigh-in twice) */
-  done?: { weight?: boolean };
 };
 
 const PENDING = (id: string) => `setupPending:${id}`;
@@ -38,9 +36,9 @@ export const DRAFT_KEY = 'onboardingDraft';
 
 /** Creates the pet and records the rest of its setup as pending. Call finishSetup next. */
 export async function startPetSetup(db: Db, input: NewPetInput, work: SetupWork): Promise<Pet> {
-  const pet = await createPet(db, input);
-  await setSetting(db, PENDING(pet.id), JSON.stringify(work));
-  return pet;
+  // the pending record is written in the pet's own transaction: there is no moment where the pet
+  // exists without it
+  return createPet(db, input, Date.now(), { settings: (id) => ({ [PENDING(id)]: JSON.stringify(work) }) });
 }
 
 /** Applies a pending setup (idempotent). Throws if a step fails; the record stays for the next try. */
@@ -55,11 +53,8 @@ export async function finishSetup(db: Db, petId: string): Promise<void> {
   }
   if (work.birthApprox && pet.birthDate) await setSetting(db, `birthApprox:${pet.id}`, '1');
   await setProfile(db, pet.id, work.profile);
-  if (work.weight && !work.done?.weight) {
-    await addMeasurement(db, { petId: pet.id, kind: 'weight', value: work.weight.value, unit: work.weight.unit, at: work.weight.at });
-    work.done = { ...work.done, weight: true };
-    await setSetting(db, PENDING(petId), JSON.stringify(work));
-  }
+  // a stable id: if the app stops right after saving it, the retry finds it and adds nothing
+  if (work.weight) await addMeasurement(db, { id: `setup-weight-${pet.id}`, petId: pet.id, kind: 'weight', value: work.weight.value, unit: work.weight.unit, at: work.weight.at });
   // routines + plan + portions: updates the same schedules on a retry, never duplicates them
   await applyChoices(db, pet, planBasis(pet.species, work.months, work.profile, work.weighedKg), work.choices);
   // the plan was just built for this age: no "new for this age" card on day one
@@ -68,7 +63,8 @@ export async function finishSetup(db: Db, petId: string): Promise<void> {
   await setSetting(db, PENDING(petId), '');
 }
 
-/** On every start: finish any setup that was interrupted (app killed, error). Returns how many. */
+/** Finishes any setup that was interrupted (app killed, error). Runs on every data load (cheap when
+ * there is nothing pending), so a failed attempt is simply tried again. Returns how many finished. */
 export async function recoverSetups(db: Db): Promise<number> {
   const rows = await listSettingsLike(db, 'setupPending:%');
   let n = 0;

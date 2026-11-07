@@ -1333,4 +1333,6 @@ export const ES: Record<string, string> = {
   "Your pets are safe on this phone. Let’s try again.": "Tus mascotas están a salvo en este teléfono. Vamos a intentarlo de nuevo.",
   "A walk timer and a passport of your walks together. No GPS, no tracking.": "Un cronómetro de paseo y un pasaporte de vuestros paseos. Sin GPS ni rastreo.",
   "Everything your pet needs today starts here: tap the next care just above to log it, and find the full day in Care.": "Todo lo que tu mascota necesita hoy empieza aquí: toca el próximo cuidado justo arriba para anotarlo y consulta el día completo en Cuidados.",
+  "1 photo or document is missing from this phone and from the backup, so it can’t be saved. Open the memory or record it belongs to and add it again or remove it.": "Falta 1 foto o documento en este teléfono y en la copia de seguridad, así que no se puede respaldar. Abre el recuerdo o registro al que pertenece y vuelve a añadirlo o elimínalo.",
+  "{n} photos or documents are missing from this phone and from the backup, so they can’t be saved. Open the memories or records they belong to and add them again or remove them.": "Faltan {n} fotos o documentos en este teléfono y en la copia de seguridad, así que no se pueden respaldar. Abre los recuerdos o registros a los que pertenecen y vuelve a añadirlos o elimínalos.",
 };

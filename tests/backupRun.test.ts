@@ -100,3 +100,92 @@ describe('backup run', () => {
     expect(pets.map((p) => p.name)).toEqual(['Honey']);
   });
 });
+
+describe('backup durability', () => {
+  async function phoneWith(n: number) {
+    const db = openNodeDb(':memory:');
+    await migrate(db);
+    const pet = await createPet(db, { species: 'cat', name: 'Mochi' });
+    const files: Record<string, number> = {};
+    for (let i = 0; i < n; i++) {
+      const m = await addMedia(db, { uri: `pv-doc:memories/p${i}.jpg`, thumbUri: `pv-doc:memories/thumbs/p${i}.jpg`, width: 10, height: 10, mime: 'image/jpeg', capturedAt: null });
+      await addMoment(db, { petIds: [pet.id], mediaId: m.id, date: '2026-11-01' });
+      files[`memories/p${i}.jpg`] = 1000 + i;
+      files[`memories/thumbs/p${i}.jpg`] = 50;
+    }
+    await setSetting(db, 'cloud.dirty', '1');
+    return { db, local: phoneFiles(files) };
+  }
+  const upload = async (_c: string[], meta: { updatedAt: number }) => ({ updatedAt: meta.updatedAt });
+
+  it('300 photos, a long time offline, interrupted runs, then reconnection: stays pending until every file is up', async () => {
+    const { db, local } = await phoneWith(300); // 600 files with thumbnails
+    const store: Record<string, number> = {};
+    // a long offline period: every upload fails, many runs in a row
+    const offline = new Set(Object.keys(local.files));
+    for (let i = 0; i < 12; i++) {
+      const r = await runBackup(db, 'u1', { local, remote: cloudFor(local, store, offline), upload });
+      expect(r.status === 'uploaded' && !r.complete && r.files.pending > 0).toBe(true);
+      expect(await getSetting(db, 'cloud.dirty')).toBe('1');
+    }
+    // back online, but the app keeps being backgrounded: each run only gets a few files through
+    // (the per-run limit is 40); progress is recorded file by file, so nothing is redone
+    let runs = 0;
+    let r;
+    do {
+      r = await runBackup(db, 'u1', { local, remote: cloudFor(local, store), upload });
+      runs++;
+      if (r.status === 'uploaded' && !r.complete) expect(await getSetting(db, 'cloud.dirty')).toBe('1');
+    } while (r.status === 'uploaded' && !r.complete && runs < 40);
+    expect(r.status === 'uploaded' && r.complete).toBe(true);
+    expect(runs).toBe(Math.ceil(600 / 40));
+    expect(Object.keys(store)).toHaveLength(600);
+    expect(await getSetting(db, 'cloud.dirty')).toBe('0');
+  });
+
+  it('a flaky connection (every third upload fails) still converges, never reporting complete early', async () => {
+    const { db, local } = await phoneWith(50);
+    const store: Record<string, number> = {};
+    let calls = 0;
+    const flaky: RemoteFiles = {
+      ...cloudFor(local, store),
+      async put(p) {
+        if (++calls % 3 === 0) throw new Error('reset');
+        store[p] = local.files[p];
+        return { size: store[p] };
+      },
+    };
+    let r;
+    for (let i = 0; i < 20; i++) {
+      r = await runBackup(db, 'u1', { local, remote: flaky, upload });
+      const allUp = Object.keys(local.files).every((p) => p in store);
+      if (r.status === 'uploaded') expect(r.complete).toBe(allUp);
+      if (r.status === 'uploaded' && r.complete) break;
+    }
+    expect(r?.status === 'uploaded' && r.complete).toBe(true);
+  });
+
+  it('a photo missing from the phone AND from the cloud is never counted as backed up', async () => {
+    const { db, local } = await phoneWith(3);
+    const store: Record<string, number> = {};
+    // lost before it was ever uploaded (deleted from storage, failed copy…)
+    delete local.files['memories/p1.jpg'];
+    const r = await runBackup(db, 'u1', { local, remote: cloudFor(local, store), upload });
+    expect(r.status).toBe('uploaded');
+    if (r.status !== 'uploaded') return;
+    expect(r.files.lost).toBe(1);
+    expect(r.complete).toBe(false);
+    expect(await getSetting(db, 'cloud.dirty')).toBe('1');
+    // everything else did go up
+    expect(Object.keys(store)).toHaveLength(5);
+  });
+
+  it('a photo that is only in the cloud (new phone, not downloaded yet) counts as safe', async () => {
+    const { db, local } = await phoneWith(2);
+    const store: Record<string, number> = {};
+    await runBackup(db, 'u1', { local, remote: cloudFor(local, store), upload });
+    delete local.files['memories/p0.jpg'];
+    const r = await runBackup(db, 'u1', { local, remote: cloudFor(local, store), upload });
+    expect(r.status === 'uploaded' && r.complete && r.files.lost === 0).toBe(true);
+  });
+});

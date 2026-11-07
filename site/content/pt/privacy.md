@@ -46,7 +46,7 @@ O Pavurio é um aplicativo de acompanhamento dos cuidados com animais de estima�
 
 **Notificações.** Os lembretes são agendados no seu telefone; nenhum conteúdo de lembrete é enviado para nós.
 
-**Clima nos passeios (opcional).** O Pavurio nunca usa o GPS nem a localização do seu telefone. Se você escolher uma cidade para ver o clima nos passeios, o nome ou as coordenadas dela são enviados ao **Open-Meteo** para obter a previsão.
+**Clima nos passeios (opcional).** O Pavurio nunca usa o GPS nem a localização do seu telefone. O clima ao vivo nos passeios está desativado no momento: nada é enviado a um serviço de clima. Se voltar, apenas uma cidade que você escolher (nome ou coordenadas) será enviada ao provedor, e esta política será atualizada antes.
 
 ## O que o Pavurio não faz
 
@@ -61,7 +61,6 @@ O Pavurio é um aplicativo de acompanhamento dos cuidados com animais de estima�
 | Serviço | Finalidade | Dados |
 |---|---|---|
 | Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics, Analytics) | conta, códigos por e-mail, backup, relatórios de falhas, estatísticas de uso | ID de conta, e-mail de login, escolha quanto ao boletim, cópia de backup (incluindo fotos e anexos), relatórios de falhas, eventos de uso anônimos |
-| Open-Meteo | clima nos passeios (só se você escolher uma cidade) | a cidade escolhida (nome ou coordenadas) |
 | Resend | envio dos e-mails com códigos e, se você aceitar, do boletim | endereço de e-mail, conteúdo da mensagem |
 | RevenueCat | verificação do Pavurio Pro | ID de conta, recibos de compra |
 | Apple / Google | login, pagamentos, distribuição do aplicativo | conforme descrito nas respectivas políticas |

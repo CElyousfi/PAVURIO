@@ -33,12 +33,13 @@ export async function runBackup(db: Db, uid: string, deps: { local: LocalFiles; 
     } catch (e) {
       fileError = e;
       // the upload step itself broke: count what is still missing rather than assume it's fine
-      files = await backupState(db, uid, deps.local).catch(() => ({ referenced: 0, backedUp: 0, pending: 1, failed: 1 }));
+      files = await backupState(db, uid, deps.local).catch(() => ({ referenced: 0, backedUp: 0, pending: 1, failed: 1, lost: 0 }));
       if (files.pending === 0) files = { ...files, pending: 1, failed: 1 };
     }
     snap.files = await manifest(db, uid);
     const meta = await deps.upload(toChunks(snap), { updatedAt: snap.createdAt, pets: petCount(snap), schema: snap.schema });
-    const complete = files.pending === 0 && fileError == null;
+    // complete = every referenced photo/document is safely in the cloud (none waiting, none lost)
+    const complete = files.pending === 0 && files.lost === 0 && fileError == null;
     await setSetting(db, 'cloud.syncedAt', String(meta.updatedAt));
     // only a complete backup clears "unsaved changes"; otherwise it stays set so we try again
     await setSetting(db, 'cloud.dirty', complete ? '0' : '1');

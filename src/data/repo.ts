@@ -139,7 +139,11 @@ export function validatePetName(name: string): string {
   return trimmed;
 }
 
-export async function createPet(db: Db, input: NewPetInput, now = Date.now()): Promise<Pet> {
+/**
+ * `opts.settings`: settings written in the SAME transaction as the pet (e.g. its pending-setup record),
+ * so a crash can never leave the pet without them.
+ */
+export async function createPet(db: Db, input: NewPetInput, now = Date.now(), opts?: { settings?: (petId: string) => Record<string, string> }): Promise<Pet> {
   const name = validatePetName(input.name);
   const id = newId();
   const appearance = input.appearance ?? defaultAppearance(input.species);
@@ -153,6 +157,7 @@ export async function createPet(db: Db, input: NewPetInput, now = Date.now()): P
     );
     await writePlan(db, id, input.species, plan, input.portions ?? {});
     await setSetting(db, 'activePetId', id);
+    for (const [k, v] of Object.entries(opts?.settings?.(id) ?? {})) await setSetting(db, k, v);
   });
   return { id, species: input.species, name, appearance, createdAt: now, birthDate, adoptionDate };
 }

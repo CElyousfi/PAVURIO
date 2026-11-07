@@ -16,7 +16,7 @@ import { careAllowedFor } from '../domain/care';
 import { WeatherSnapshot, formatTemp, placeOnlySnapshot, weatherArt, walkGreeting, conditionLabel, Place } from '../domain/weather';
 import { ADVENTURE_BADGES, AdventureBadgeId, LONG_WALK_MS, Walk, adventureBadge, clockText, durationText, elapsedMs, timeOfDay, timeOfDayLabel, walkEnd } from '../domain/walks';
 import { discardWalk, finishWalk, getLiveWalk, getWalk, listWalks, pauseWalk, resumeWalk, setWalkWeather, startWalk, type FinishResult } from '../data/walkRepo';
-import { currentWeather, getPlace, savePlace } from '../native/weather';
+import { WEATHER_ENABLED, currentWeather, getPlace, savePlace } from '../native/weather';
 import { afterWalkFinished, mirrorWalk, reconcileLockScreen } from '../features/walkSession';
 import { endWalkLive } from '../native/walkLive';
 import { ValidationError } from '../data/repo';
@@ -102,6 +102,11 @@ export default function WalkScreen() {
   // ---- weather (cached 20 min by the provider module)
   const loadWeather = useCallback(
     async (force = false) => {
+      // no licensed weather in this build: the walk screen simply has no weather card
+      if (!WEATHER_ENABLED) {
+        setWeatherLoading(false);
+        return;
+      }
       setWeatherLoading(true);
       const p = await getPlace(db);
       setPlaceState(p);
@@ -168,13 +173,13 @@ export default function WalkScreen() {
     setError(null);
     try {
       walkStartFeedback();
-      const snap = weather ?? placeOnlySnapshot(place, Date.now());
+      const snap = weather ?? (WEATHER_ENABLED ? placeOnlySnapshot(place, Date.now()) : null);
       const w = await startWalk(db, pet.id, snap);
       setWalk(w);
       setNow(Date.now());
       bump(); // reminders re-plan (the "still walking?" nudge) and Home shows the walk
       // weather that was still loading is attached when it lands
-      if (!weather?.available && place) {
+      if (WEATHER_ENABLED && !weather?.available && place) {
         currentWeather(db).then((s) => s && setWalkWeather(db, w.id, s)).catch(() => null);
       }
     } catch (e) {
@@ -351,11 +356,13 @@ export default function WalkScreen() {
           <T weight="black" style={styles.bigTitle} accessibilityRole="header">
             {t('Ready for an adventure?')}
           </T>
-          <T style={styles.sub}>{walkGreeting(weather, pet.name)}</T>
+          <T style={styles.sub}>{WEATHER_ENABLED ? walkGreeting(weather, pet.name) : t('Ready when you are, {name}', { name: pet.name })}</T>
         </Animated.View>
-        <View style={{ paddingHorizontal: 20, marginTop: 14 }}>
-          <WeatherCard weather={weather} place={place} loading={weatherLoading} unit={unit} onChoosePlace={() => setPicking(true)} />
-        </View>
+        {WEATHER_ENABLED ? (
+          <View style={{ paddingHorizontal: 20, marginTop: 14 }}>
+            <WeatherCard weather={weather} place={place} loading={weatherLoading} unit={unit} onChoosePlace={() => setPicking(true)} />
+          </View>
+        ) : null}
         <View style={{ alignItems: 'center', marginTop: 4 }}>
           <PetRig species={pet.species} appearance={pet.appearance} size={petSize} progress={1} active reduceMotion={reduceMotion} accessibilityLabel={pet.name} />
         </View>

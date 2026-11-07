@@ -1,4 +1,8 @@
 /**
+ * Collection is OFF at the native level until the app has read the owner's choice
+ * (firebase.json → analytics_auto_collection_enabled: false); initAnalytics then turns it on or keeps it
+ * off, so someone who switched it off is never measured during start-up.
+ *
  * Anonymous product analytics: which steps of setup people finish, who sees the paywall and buys,
  * what gets logged — never the pet's name, photos, notes or any free text. Firebase Analytics with
  * the advertising ID and ad storage turned off (firebase.json → "react-native"). Owners can switch it

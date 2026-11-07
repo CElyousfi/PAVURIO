@@ -46,7 +46,7 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 
 **Notifications.** Reminders are scheduled on your phone; no reminder content is sent to us.
 
-**Walk weather (optional).** Pavurio never uses GPS or your phone's location. If you choose a city for the weather on walks, that city's name or coordinates are sent to **Open-Meteo** to get the forecast.
+**Walk weather (optional).** Pavurio never uses GPS or your phone's location. Live weather on walks is currently switched off, so nothing is sent to a weather service. If it is offered again, it will only send a city you choose (its name or coordinates) to the weather provider, and this policy will be updated first.
 
 ## What Pavurio does not do
 
@@ -61,7 +61,6 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 | Service | Purpose | Data |
 |---|---|---|
 | Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics, Analytics) | account, email codes, backup, crash reports, usage statistics | account ID, sign-in email, newsletter choice, backup copy (including photos and attachments), crash reports, anonymous usage events |
-| Open-Meteo | weather for walks (only if you choose a city) | the city you chose (name or coordinates) |
 | Resend | sending code emails and, if you opt in, the newsletter | email address, message content |
 | RevenueCat | checking Pavurio Pro | account ID, purchase receipts |
 | Apple / Google | sign-in, payments, app distribution | as described in their own policies |

@@ -22,8 +22,6 @@ import { isPro } from '../native/purchases';
 import { setMotionReduced } from '../ui/motion';
 import { Lang, deviceLanguage, isLang, setLang } from '../i18n';
 
-/** interrupted setups are finished once per app start */
-let setupsRecovered = false;
 
 export type WeightUnit = 'kg' | 'lb';
 export type Settings = { haptics: boolean; sounds: boolean; reduceMotion: boolean; weightUnit: WeightUnit };
@@ -88,10 +86,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const reload = useCallback(async () => {
     // a setup interrupted after the pet was created (app killed, error) is finished first, so the
     // pet never stays half configured (src/data/setup.ts)
-    if (!setupsRecovered) {
-      setupsRecovered = true;
-      await recoverSetups(db).catch(() => 0);
-    }
+    // (on every load: a failed attempt is retried, never skipped for the rest of the session)
+    await recoverSetups(db).catch(() => 0);
     const p = await repo.getActivePet(db);
     setPet(p);
     setPets(await repo.listPets(db));

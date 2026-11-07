@@ -33,7 +33,7 @@ type Cloud = {
   appleAvailable: boolean;
   lastBackupAt: number | null;
   /** photos & documents: how many are still waiting to upload, and how many couldn't be restored yet */
-  files: { referenced: number; pending: number; missing: number };
+  files: { referenced: number; pending: number; missing: number; lost: number };
   busy: boolean;
   crashReports: boolean;
   setCrashReports: (on: boolean) => Promise<void>;
@@ -68,7 +68,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
   const [appleAvailable, setAppleAvailable] = useState(false);
   const [lastBackupAt, setLastBackupAt] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
-  const [files, setFiles] = useState({ referenced: 0, pending: 0, missing: 0 });
+  const [files, setFiles] = useState({ referenced: 0, pending: 0, missing: 0, lost: 0 });
   const [crashReports, setCrashState] = useState(true);
   const quiet = useRef(true); // ignore the version change caused by our own restore / first load
   const paused = useRef(false);
@@ -96,13 +96,15 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       return false;
     }
     if (r.fileError) cloud.crash.record(r.fileError, 'backup:files');
-    setFiles((f) => ({ ...f, referenced: r.files.referenced, pending: r.files.pending }));
+    setFiles((f) => ({ ...f, referenced: r.files.referenced, pending: r.files.pending, lost: r.files.lost }));
     setLastBackupAt(r.updatedAt);
     if (retry.current.timer) clearTimeout(retry.current.timer);
     if (r.complete) retry.current = { timer: null, n: 0 };
-    else if (retry.current.n < 6) {
-      // 30 s, 1 min, 2 min… up to 16 min; "unsaved changes" stays set until every file is up
-      const delay = 30_000 * Math.pow(2, retry.current.n++);
+    else if (r.files.pending > 0 || r.fileError) {
+      // uploads still waiting: 30 s, 1, 2, 4, 8, 16 min, then every 30 min for as long as the app is
+      // open (and again whenever it comes back to the foreground). "Unsaved changes" stays set until
+      // every file is up. Files missing everywhere (`lost`) aren't retried: they need the owner.
+      const delay = Math.min(30 * 60_000, 30_000 * Math.pow(2, retry.current.n++));
       retry.current.timer = setTimeout(() => void backupNowRef.current?.(), delay);
     }
     return r.complete;
@@ -121,7 +123,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       try {
         const r = await restoreMissing(db, uid, localFiles, remoteFiles(uid));
         const st = await backupState(db, uid, localFiles);
-        setFiles({ referenced: st.referenced, pending: st.pending, missing: r.missing.length });
+        setFiles({ referenced: st.referenced, pending: st.pending, missing: r.missing.length, lost: st.lost });
         if (r.restored || r.rebuilt) bump();
       } catch (e) {
         cloud.crash.record(e, 'backup:files-restore');
@@ -182,7 +184,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
         const dirty = (await getSetting(db, 'cloud.dirty')) === '1';
         // photos that exist only on this phone count as unsaved: never replace them with an older backup
         const st = await backupState(db, uid, localFiles);
-        setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending }));
+        setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending, lost: st.lost }));
         if (meta && meta.updatedAt > synced && ((!dirty && st.pending === 0) || pets.length === 0)) await pull(uid);
         else await fetchFiles(uid);
         if (st.pending > 0 && !paused.current) void backupNow();
@@ -207,13 +209,16 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     };
   }, [version, enabled, user, db, backupNow]);
 
-  // leaving the app: flush a pending backup
+  // leaving the app: flush a pending backup; coming back (maybe back online after a long time
+  // offline): try again straight away, with a fresh retry schedule
   useEffect(() => {
     if (!enabled) return;
     const sub = AppState.addEventListener('change', (s) => {
-      if (s !== 'background') return;
+      if (s !== 'background' && s !== 'active') return;
       void getSetting(db, 'cloud.dirty').then((d) => {
-        if (d === '1') void backupNow();
+        if (d !== '1') return;
+        if (s === 'active') retry.current.n = 0;
+        void backupNow();
       });
     });
     return () => sub.remove();
@@ -327,7 +332,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     await setSetting(db, 'cloud.syncedAt', '0');
     await setSetting(db, 'cloud.dirty', '0');
     setLastBackupAt(null);
-    setFiles({ referenced: 0, pending: 0, missing: 0 });
+    setFiles({ referenced: 0, pending: 0, missing: 0, lost: 0 });
     bump();
   }, [db, bump]);
 

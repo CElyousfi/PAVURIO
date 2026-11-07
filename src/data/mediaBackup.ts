@@ -93,7 +93,12 @@ export type RemoteFiles = {
   remove(path: string): Promise<void>;
 };
 
-export type BackupState = { referenced: number; backedUp: number; pending: number; failed: number };
+/**
+ * `pending`: on this phone, not (yet) in the cloud — uploads are retried.
+ * `lost`: referenced by a memory/record but neither on this phone nor in the cloud: it can't be backed
+ * up, so a backup is never "complete" while any exist; the owner sees them in Account.
+ */
+export type BackupState = { referenced: number; backedUp: number; pending: number; failed: number; lost: number };
 
 type Uploaded = { path: string; size: number };
 async function uploadedRows(db: Db, uid: string): Promise<Map<string, number>> {
@@ -107,17 +112,19 @@ export async function backupState(db: Db, uid: string, local: LocalFiles): Promi
   const up = await uploadedRows(db, uid);
   let backedUp = 0;
   let pending = 0;
+  let lost = 0;
   for (const p of refs) {
     const size = local.size(p);
     if (size == null) {
-      // a file this phone doesn't have (yet): protected if the cloud has it
+      // a file this phone doesn't have (yet): protected if the cloud has it, otherwise missing everywhere
       if (up.has(p)) backedUp++;
+      else lost++;
       continue;
     }
     if (up.get(p) === size) backedUp++;
     else pending++;
   }
-  return { referenced: refs.length, backedUp, pending, failed: 0 };
+  return { referenced: refs.length, backedUp, pending, failed: 0, lost };
 }
 
 /**
@@ -139,10 +146,13 @@ export async function uploadPending(
   let failed = 0;
   let pending = 0;
   let backedUp = 0;
+  let lost = 0;
   for (const p of refs) {
     const size = local.size(p);
     if (size == null) {
+      // already safe in the cloud, or missing everywhere (never silently counted as fine)
       if (up.has(p)) backedUp++;
+      else lost++;
       continue;
     }
     if (up.get(p) === size) {
@@ -175,7 +185,7 @@ export async function uploadPending(
       // tried again next time
     }
   }
-  return { referenced: refs.length, backedUp, pending, failed };
+  return { referenced: refs.length, backedUp, pending, failed, lost };
 }
 
 /** The manifest that travels in the snapshot: what this account has in the cloud. */
