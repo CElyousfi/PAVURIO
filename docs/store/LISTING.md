@@ -161,7 +161,7 @@ Pavurio vous aide à suivre les soins que vous donnez. L'app ne donne pas d'avis
 | Purchases → **Purchase History** | Yes | Yes | No | App Functionality |
 | Diagnostics → **Crash Data** | Yes | Yes | No | App Functionality |
 
-Answer **not collected** for everything else, including Photos or Videos (photos stay on the device), Location, Contacts, Health & Fitness (pet data is not the user's health), Browsing History, Usage Data and Advertising Data.
+Photos and attachments are backed up to the user's account (Cloud Storage), so declare **Photos** and **Files and docs** as collected for App functionality, linked to the user, not used for tracking. Answer **not collected** for everything else, including Videos, Location, Contacts, Health & Fitness (pet data is not the user's health), Browsing History, Usage Data and Advertising Data.
 
 **Tracking:** No. You don't need the App Tracking Transparency prompt.
 
@@ -246,10 +246,12 @@ L'abonnement se renouvelle automatiquement sauf résiliation. Gérez-le ou rési
 | Personal info → **User IDs** | Yes | Required | Account management, App functionality |
 | App activity → **Other user-generated content** (pet care data backup) | Yes | Required | App functionality |
 | Financial info → **Purchase history** | Yes | Optional (only buyers) | App functionality |
+| Photos and videos → **Photos** (photo backup) | Yes | Required | App functionality |
+| Files and docs → **Files and docs** (attachment backup) | Yes | Required | App functionality |
 | App info and performance → **Crash logs** | Yes | Optional (can be turned off in the app) | Analytics: fixing crashes |
 | App info and performance → **Diagnostics** | Yes | Optional | Analytics: fixing crashes |
 
-Everything else is not collected. Photos stay on the device, and there is no location and no contacts.
+Everything else is not collected. There is no location and no contacts.
 
 **Is data processed ephemerally?** No.
 

@@ -1,6 +1,6 @@
 # Política de privacidad
 
-*Última actualización: 31 de octubre de 2026*
+*Última actualización: 5 de noviembre de 2026*
 
 Pavurio es una aplicación para llevar el seguimiento del cuidado de tus mascotas. Esta política explica qué almacena la app, dónde lo hace y cómo eliminarlo. En resumen: **los datos de tus mascotas se guardan en tu teléfono, se conserva una copia de seguridad en tu cuenta de Pavurio para que puedas restaurarlos, y nunca vendemos datos ni mostramos publicidad.**
 
@@ -11,7 +11,7 @@ Pavurio es una aplicación para llevar el seguimiento del cuidado de tus mascota
 - Se guarda **en tu teléfono**.
 - Se guarda una **copia de seguridad** en tu cuenta de Pavurio (Google Firebase Cloud Firestore) para que puedas recuperarla tras cambiar o restablecer tu teléfono. Está vinculada a tu cuenta y solo tú puedes leerla.
 
-**Las fotos y los archivos adjuntos** que añades a los registros y momentos se quedan **únicamente en tu teléfono**. No se suben a ningún servidor.
+**Las fotos y los archivos adjuntos** que añades a los registros y momentos se guardan en tu teléfono, y se conserva una **copia de seguridad** en tu cuenta de Pavurio (Google Firebase Cloud Storage) para que vuelvan con el resto de tus datos en un teléfono nuevo. Están vinculados a tu cuenta, solo tú puedes leerlos y no se comparten con nadie.
 
 **Tu cuenta (Firebase Authentication).**
 
@@ -51,7 +51,7 @@ Pavurio es una aplicación para llevar el seguimiento del cuidado de tus mascota
 
 | Servicio | Finalidad | Datos |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics) | cuenta, códigos por correo electrónico, copia de seguridad, informes de fallos | ID de cuenta, correo electrónico de inicio de sesión, elección sobre el boletín, copia de seguridad, informes de fallos |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics) | cuenta, códigos por correo electrónico, copia de seguridad, informes de fallos | ID de cuenta, correo electrónico de inicio de sesión, elección sobre el boletín, copia de seguridad (incluidas fotos y archivos adjuntos), informes de fallos |
 | Resend | envío de los correos con códigos y, si lo aceptas, del boletín | dirección de correo electrónico, contenido del mensaje |
 | RevenueCat | verificación de Pavurio Pro | ID de cuenta, recibos de compra |
 | Apple / Google | inicio de sesión, pagos, distribución de la app | según se describe en sus propias políticas |

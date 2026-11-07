@@ -1,6 +1,6 @@
 # Privacy Policy
 
-*Last updated: 31 October 2026*
+*Last updated: 5 November 2026*
 
 Pavurio is a pet-care tracker. This policy explains what the app stores, where, and how to delete it. In short: **your pet data lives on your phone, a backup copy is kept in your Pavurio account so you can restore it, and we never sell data or show ads.**
 
@@ -11,7 +11,7 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 - It is saved **on your phone**.
 - A **backup copy** is saved in your Pavurio account (Google Firebase Cloud Firestore) so you can get it back after changing or resetting your phone. It is linked to your account and readable only by you.
 
-**Photos and attachments** you add to records and moments stay **on your phone only**. They are not uploaded.
+**Photos and attachments** you add to records and moments are saved on your phone, and a **backup copy** is kept in your Pavurio account (Google Firebase Cloud Storage) so they come back with the rest of your data on a new phone. They are linked to your account, readable only by you, and are not shared with anyone.
 
 **Your account (Firebase Authentication).**
 
@@ -51,7 +51,7 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 
 | Service | Purpose | Data |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Cloud Functions, Crashlytics) | account, email codes, backup, crash reports | account ID, sign-in email, newsletter choice, backup copy, crash reports |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics) | account, email codes, backup, crash reports | account ID, sign-in email, newsletter choice, backup copy (including photos and attachments), crash reports |
 | Resend | sending code emails and, if you opt in, the newsletter | email address, message content |
 | RevenueCat | checking Pavurio Pro | account ID, purchase receipts |
 | Apple / Google | sign-in, payments, app distribution | as described in their own policies |
