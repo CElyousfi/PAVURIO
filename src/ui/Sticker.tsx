@@ -38,7 +38,7 @@ export function careSticker(type: CareType | string | null | undefined, species:
     case 'play':
       return dog ? 'dog_play' : 'cat_play';
     case 'medication':
-      return 'dog_meds';
+      return dog ? 'dog_meds' : 'cat_happy';
     case 'litter':
       return 'cat_happy';
     case 'grooming':

@@ -20,6 +20,7 @@ import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
 import { NextCareCard } from './NextCare';
+import { GuideCard } from './RoutineGuide';
 import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
@@ -172,6 +173,9 @@ export function HomeFeed({ width }: { width: number }) {
           ))}
         </View>
       </Enter>
+
+      {/* the routine guide: until the age is known, and again each time the pet reaches a new life stage */}
+      <GuideCard enter={4} />
 
       {/* one care tip a day, small */}
       {tipOfDay ? (

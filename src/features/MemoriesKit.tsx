@@ -187,8 +187,12 @@ export function AnniversaryCard() {
   const today = dayKeyOf(new Date());
   useEffect(() => {
     if (!pet) return;
-    const all = anniversaryPrompts(pet, today);
-    Promise.all(all.map((a) => getSetting(db, anniversaryDismissKey(pet.id, a)))).then((d) => setItems(all.filter((_, i) => !d[i])));
+    // a birthday estimated from an age range (routine guide) isn't a real date to celebrate
+    void getSetting(db, `birthApprox:${pet.id}`).then(async (approx) => {
+      const all = anniversaryPrompts(approx === '1' ? { ...pet, birthDate: null } : pet, today);
+      const d = await Promise.all(all.map((a) => getSetting(db, anniversaryDismissKey(pet.id, a))));
+      setItems(all.filter((_, i) => !d[i]));
+    });
   }, [db, pet, today, version]);
   if (!pet || !items.length) return null;
   const a = items[0];

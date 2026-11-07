@@ -70,6 +70,10 @@ function ReminderRouter() {
           router.push('/supplies');
           return;
         }
+        if (n.kind === 'nudge' && n.key.endsWith(':guide')) {
+          router.push('/guide');
+          return;
+        }
         if (n.kind === 'appointment') {
           router.push({ pathname: '/appointment', params: { id: n.key.replace(/^appt:/, '') } });
         } else if (n.kind === 'care' && n.type === 'walk' && species === 'dog') {
@@ -155,6 +159,7 @@ function Gate() {
           <Stack.Screen name="supply-edit" options={{ presentation: 'modal' }} />
           <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
           <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
+          <Stack.Screen name="guide" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
         </Stack>
       </Animated.View>
       {brand ? <BrandSplash onDone={() => setBrand(false)} /> : null}

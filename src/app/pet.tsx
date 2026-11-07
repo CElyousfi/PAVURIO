@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { PetAvatar } from '../animation/PetAvatar';
-import { Pet, ValidationError, archivePet, deletePet, getPet, listPets, petFileUris, updatePet } from '../data/repo';
+import { Pet, ValidationError, archivePet, deletePet, getPet, listPets, petFileUris, setSetting, updatePet } from '../data/repo';
 import { removeStoredFile } from '../native/files';
 import { dayKeyOf } from '../domain/time';
 import { detachPetMemories, fileStillReferenced } from '../data/memoriesRepo';
@@ -46,6 +46,8 @@ export default function PetEditor() {
     setError(null);
     try {
       await updatePet(db, p.id, { name, birthDate: birth, adoptionDate: adopt });
+      // a birthday typed here is the real one
+      if (birth !== p.birthDate) await setSetting(db, `birthApprox:${p.id}`, '0');
       successFeedback();
       bump();
       router.back();
