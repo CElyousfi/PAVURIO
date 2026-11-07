@@ -158,10 +158,11 @@ for name, (gif, pick, loop, pingpong, factor) in CLIPS.items():
     fps = 1000 / dur if pick is None else 1.6  # the two-frame idle breathes slowly
     # the GIFs have 6-9 drawn frames: motion-interpolated in-betweens bring every clip to >= 20 fps, so the
     # app never cross-fades (which looked mushy and doubled every layer it draws)
-    factor = math.ceil(TARGET_FPS / fps)
+    # (`steps`, not `factor`: `factor` is this clip's sitting-height correction, used for the anchor below)
+    steps = math.ceil(TARGET_FPS / fps)
     # every GIF is drawn as a cycle, so the last frame flows back into the first (walks repeat seamlessly)
-    fr = smooth_frames(fr, factor, loop=not pingpong)
-    fps = round(fps * factor, 2)
+    fr = smooth_frames(fr, steps, loop=not pingpong)
+    fps = round(fps * steps, 2)
     al = [f[:, :, 3] for f in fr]
     mains = [main_mask(a) for a in al]
     U = np.zeros_like(al[0], bool)

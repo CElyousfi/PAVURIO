@@ -20,6 +20,7 @@ type ScheduleRow = {
   remind: number;
   enabled: number;
   created_at: number;
+  every_days?: number | null;
 };
 
 const toSchedule = (r: ScheduleRow): Schedule => ({
@@ -34,6 +35,7 @@ const toSchedule = (r: ScheduleRow): Schedule => ({
   remind: !!r.remind,
   enabled: !!r.enabled,
   createdAt: r.created_at,
+  everyDays: r.every_days ?? null,
 });
 
 function safeJson<T>(s: string | null, fallback: T): T {
@@ -54,6 +56,8 @@ export type ScheduleInput = {
   endDate?: string | null;
   remind?: boolean;
   enabled?: boolean;
+  /** every N days from the start date; undefined keeps the current value on update, null clears it */
+  everyDays?: number | null;
 };
 
 function validateSchedule(input: ScheduleInput) {
@@ -67,7 +71,10 @@ function validateSchedule(input: ScheduleInput) {
   if (input.endDate && input.startDate && input.endDate < input.startDate) {
     throw new ValidationError(t('The end date is before the start date.'));
   }
-  return { title, times, days: days.length === 7 ? [] : days };
+  const every = input.everyDays == null ? null : Math.round(input.everyDays);
+  if (every != null && (every < 2 || every > 366)) throw new ValidationError(t('Choose how often it repeats.'));
+  // an interval routine repeats on its own rhythm, not on weekdays
+  return { title, times, days: every ? [] : days.length === 7 ? [] : days, everyDays: every };
 }
 
 export async function createSchedule(db: Db, input: ScheduleInput, now = Date.now()): Promise<Schedule> {
@@ -75,18 +82,18 @@ export async function createSchedule(db: Db, input: ScheduleInput, now = Date.no
   const id = newId();
   const start = input.startDate ?? dayKeyOf(new Date(now));
   await db.runAsync(
-    `INSERT INTO schedules (id, pet_id, type, title, times_json, days_json, start_date, end_date, remind, enabled, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [id, input.petId, input.type, v.title, JSON.stringify(v.times), JSON.stringify(v.days), start, input.endDate ?? null, input.remind === false ? 0 : 1, input.enabled === false ? 0 : 1, now, now],
+    `INSERT INTO schedules (id, pet_id, type, title, times_json, days_json, start_date, end_date, remind, enabled, created_at, updated_at, every_days)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [id, input.petId, input.type, v.title, JSON.stringify(v.times), JSON.stringify(v.days), start, input.endDate ?? null, input.remind === false ? 0 : 1, input.enabled === false ? 0 : 1, now, now, v.everyDays],
   );
-  return { id, petId: input.petId, type: input.type, title: v.title, times: v.times, days: v.days, startDate: start, endDate: input.endDate ?? null, remind: input.remind !== false, enabled: input.enabled !== false, createdAt: now };
+  return { id, petId: input.petId, type: input.type, title: v.title, times: v.times, days: v.days, startDate: start, endDate: input.endDate ?? null, remind: input.remind !== false, enabled: input.enabled !== false, createdAt: now, everyDays: v.everyDays };
 }
 
 export async function updateSchedule(db: Db, id: string, input: ScheduleInput, now = Date.now()): Promise<void> {
   const v = validateSchedule(input);
   await db.runAsync(
-    `UPDATE schedules SET type = ?, title = ?, times_json = ?, days_json = ?, start_date = COALESCE(?, start_date), end_date = ?, remind = ?, enabled = ?, updated_at = ? WHERE id = ?`,
-    [input.type, v.title, JSON.stringify(v.times), JSON.stringify(v.days), input.startDate ?? null, input.endDate ?? null, input.remind === false ? 0 : 1, input.enabled === false ? 0 : 1, now, id],
+    `UPDATE schedules SET type = ?, title = ?, times_json = ?, days_json = ?, start_date = COALESCE(?, start_date), end_date = ?, remind = ?, enabled = ?, updated_at = ?${input.everyDays !== undefined ? ', every_days = ?' : ''} WHERE id = ?`,
+    [input.type, v.title, JSON.stringify(v.times), JSON.stringify(v.days), input.startDate ?? null, input.endDate ?? null, input.remind === false ? 0 : 1, input.enabled === false ? 0 : 1, now, ...(input.everyDays !== undefined ? [v.everyDays] : []), id],
   );
 }
 

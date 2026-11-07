@@ -1,6 +1,6 @@
 # Privacy Policy
 
-*Last updated: 5 November 2026*
+*Last updated: 7 November 2026*
 
 Pavurio is a pet-care tracker. This policy explains what the app stores, where, and how to delete it. In short: **your pet data lives on your phone, a backup copy is kept in your Pavurio account so you can restore it, and we never sell data or show ads.**
 
@@ -27,6 +27,12 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 - It is linked to the random account ID, never to your pet data.
 - You can turn this off in **Settings → Account → Share crash reports**.
 
+**Usage statistics (Firebase Analytics).**
+
+- To see which screens and steps are used (for example, how many people finish setting up), the app sends anonymous usage events: the screen name, the kind of care logged, the age group and size you chose for the plan.
+- Never your pet's name, photos, notes or free text, and no advertising ID.
+- You can turn this off in **Settings → Help improve Pavurio**.
+
 **Purchases.**
 
 - Pavurio Pro is bought through the App Store or Google Play; we never see your payment details.
@@ -51,7 +57,7 @@ Pavurio is a pet-care tracker. This policy explains what the app stores, where, 
 
 | Service | Purpose | Data |
 |---|---|---|
-| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics) | account, email codes, backup, crash reports | account ID, sign-in email, newsletter choice, backup copy (including photos and attachments), crash reports |
+| Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Crashlytics, Analytics) | account, email codes, backup, crash reports, usage statistics | account ID, sign-in email, newsletter choice, backup copy (including photos and attachments), crash reports, anonymous usage events |
 | Resend | sending code emails and, if you opt in, the newsletter | email address, message content |
 | RevenueCat | checking Pavurio Pro | account ID, purchase receipts |
 | Apple / Google | sign-in, payments, app distribution | as described in their own policies |
@@ -62,6 +68,7 @@ These providers may process data outside your country (for example in the United
 
 - Your backup and account are kept while your account exists.
 - Crash reports are kept by Crashlytics for up to 90 days.
+- Usage statistics are kept by Firebase Analytics for up to 14 months.
 - Deleting your account removes your account and your backup immediately.
 
 ## Delete your data

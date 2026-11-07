@@ -8,11 +8,12 @@ import { listEventsBetween } from '../data/repo';
 import { milestoneDays } from '../data/memoriesRepo';
 import { MEM_COLORS } from '../features/MemoriesKit';
 import { CARE } from '../domain/care';
-import { describeDays, formatTime24to12 } from '../domain/schedule';
+import { describeRepeat, formatTime24to12 } from '../domain/schedule';
 import { addDays, dayKeyOf, dayRange, formatClock, parseDayKey } from '../domain/time';
 import { KindIcon, OccurrenceRow, kindMeta } from '../features/routines';
 import { DueNowCard } from '../features/DueNow';
 import { useApp, useOccurrences } from '../state/AppState';
+import { GuideCard } from '../features/RoutineGuide';
 import { Card, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../ui/forms';
 import { CircleButton, Icon, Label, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
@@ -220,6 +221,10 @@ export default function CareTab() {
         {/* routines */}
         <View>
           <SectionHead title={t('Routines')} action={t('New')} onAction={() => router.push('/schedule')} />
+          {/* what's generally recommended at this age, one tap to set it up */}
+          <View style={{ marginBottom: 10 }}>
+            <GuideCard always />
+          </View>
           {schedules.length === 0 ? (
             <Card enter={1} onPress={() => router.push('/schedule')} accessibilityLabel={t('Create a routine')}>
               <T weight="black" style={{ fontSize: 16 }}>
@@ -245,7 +250,7 @@ export default function CareTab() {
                       {s.title}
                     </T>
                     <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
-                      {describeDays(s.days)} · {s.times.map(formatTime24to12).join(', ')}
+                      {describeRepeat(s)} · {s.times.map(formatTime24to12).join(', ')}
                     </T>
                   </View>
                   {!s.enabled ? (

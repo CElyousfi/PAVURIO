@@ -5,6 +5,7 @@
  */
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { nextStageDate } from '../domain/lifeStage';
 import type { Db } from '../data/db';
 import { getSetting, getPlan, getPortions, listEventsBetween, listPets } from '../data/repo';
 import { getAnyLiveWalk } from '../data/walkRepo';
@@ -292,6 +293,23 @@ export function syncReminders(db: Db): Promise<number> {
         }
       } catch (e) {
         console.warn('[pavurio] supply reminders', e);
+      }
+      // a pet reaching a new life stage (6 months, 1 year, senior…): its routine advice changes that day
+      for (const pet of pets) {
+        if (!pet.birthDate) continue;
+        const next = nextStageDate(pet.species, pet.birthDate, new Date(now));
+        if (!next) continue;
+        const [y, m, d] = next.date.split('-').map(Number);
+        const at = new Date(y, m - 1, d, 10, 0).getTime();
+        if (at <= now) continue;
+        plans.push({
+          id: `pv:guide:${pet.id}`,
+          at,
+          title: t('{name} is growing up! 🎉', { name: pet.name }),
+          body: t('New stage, new routine: see what changes for meals, walks and care.'),
+          scheduleId: '',
+          key: `nudge:${pet.id}:guide`,
+        });
       }
       for (const a of await upcomingAppointments(db, null, now, 20)) {
         if (a.remindMinutes == null) continue;

@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { DAY, Forecast, monthlyCost, shoppingList } from '../domain/supplies';
 import { ShoppingItem, addShoppingItem, deleteShoppingItem, listShoppingItems, toggleShoppingItem } from '../data/suppliesRepo';
-import { BUFFERS, BuySheet, GROUPS, Group, KIND_META, PantryIcon, SCENES, STATUS_META, StockBar, daysLeftLabel, headline, qty, templatesFor, useBuffer, useSupplies, whoUses } from '../features/supplies';
+import { BUFFERS, BuySheet, GROUPS, Group, KIND_META, PantryIcon, pantryScene, STATUS_META, StockBar, daysLeftLabel, headline, qty, templatesFor, useBuffer, useSupplies, whoUses } from '../features/supplies';
 import { useApp } from '../state/AppState';
 import { TabTitle } from '../ui/forms';
 import { DarkTile } from '../ui/Tiles';
@@ -90,7 +90,7 @@ export default function Pantry() {
           {empty ? (
             <View style={{ gap: 14 }}>
               <View style={styles.intro}>
-                <Sticker name={SCENES.welcome} size={170} style={{ alignSelf: 'center' }} />
+                <Sticker name={pantryScene('welcome', pet.species)} size={170} style={{ alignSelf: 'center' }} />
                 <T weight="black" style={{ fontSize: 22, textAlign: 'center' }}>
                   {t('Never run out of {name}’s food', { name: pet.name })}
                 </T>
@@ -182,7 +182,7 @@ export default function Pantry() {
             <>
               {!toBuy.length && !openExtras.length ? (
                 <View style={[styles.intro, { paddingVertical: 14 }]}>
-                  <Sticker name={SCENES.list} size={130} style={{ alignSelf: 'center' }} />
+                  <Sticker name={pantryScene('list', pet.species)} size={130} style={{ alignSelf: 'center' }} />
                   <T weight="black" style={{ fontSize: 20, textAlign: 'center' }}>
                     {t('Nothing to buy right now')}
                   </T>

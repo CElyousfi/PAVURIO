@@ -12,6 +12,8 @@ import type { CareType } from '../domain/care';
 import { listSchedules, marksBetween } from '../data/careRepo';
 import { Occurrence, Schedule, occurrencesForDay } from '../domain/schedule';
 import { configureNotifications, syncReminders } from '../native/notifications';
+import { followAll } from '../data/autoPlan';
+import { initAnalytics, track } from '../native/analytics';
 import { listenToWidgetActions, syncWidgets } from '../native/widgets';
 import { registerBackgroundTasks } from '../native/backgroundTasks';
 import { isPro } from '../native/purchases';
@@ -90,6 +92,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSoundsEnabled(sounds);
     if (sounds) preloadSounds();
     setProState((await repo.getSetting(db, 'proCache')) === '1');
+    await initAnalytics(db);
     if (!(await repo.getSetting(db, 'firstOpenAt'))) await repo.setSetting(db, 'firstOpenAt', String(Date.now()));
     const storedLang = await repo.getSetting(db, 'lang');
     const l: Lang = isLang(storedLang) ? storedLang : deviceLanguage();
@@ -109,6 +112,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     configureNotifications();
     const t = setTimeout(() => {
+      // the automatic plan grows with the pet (age, new weigh-in, profile): a change reloads everything
+      void followAll(db)
+        .then((moved) => {
+          if (!moved) return;
+          track('plan_auto_updated');
+          setVersion((v) => v + 1);
+        })
+        .catch(() => null);
       void syncReminders(db);
       // home-screen widgets and the care Live Activity follow the same data
       void syncWidgets(db);
@@ -121,7 +132,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     void registerBackgroundTasks();
     const sub = RNAppState.addEventListener('change', (s) => {
-      if (s === 'active') void syncReminders(db);
+      if (s === 'active') {
+        void syncReminders(db);
+        void followAll(db)
+          .then((moved) => moved && setVersion((v) => v + 1))
+          .catch(() => null);
+      }
       // leaving the app: the widgets show the very latest state
       if (s === 'active' || s === 'background') void syncWidgets(db);
     });

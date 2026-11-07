@@ -1,46 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
-import { Sticker } from '../ui/Sticker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInLeft, FadeInRight, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { PetRig, PetClipName } from '../animation/PetRig';
 import { cloud } from '../cloud/firebase';
-import { PetAvatar } from '../animation/PetAvatar';
 import { CARE, CareType, Species } from '../domain/care';
 import { Appearance, defaultAppearance, isProCoat } from '../domain/appearance';
 import { Plan, Portions, computeProgress, portionOf } from '../domain/progress';
-import { Pet, ValidationError, createPet, defaultPlan, logCare } from '../data/repo';
-import { createSchedule } from '../data/careRepo';
+import { Pet, ValidationError, createPet, defaultPlan, logCare, setSetting } from '../data/repo';
+import { addMeasurement } from '../data/careRepo';
+import { applyChoices, setProfile } from '../data/autoPlan';
+import { Choice, defaultProfile, estimateWeightKg, planBasis, recommendedChoice, targetsFor } from '../domain/carePlan';
+import { approxBirthDate } from '../domain/lifeStage';
+import { About, AboutPet, CarePage, PlanReview, targetHeadline } from '../features/AutoPlan';
+import { markGuideSeen } from '../features/RoutineGuide';
+import { track } from '../native/analytics';
 import { useApp } from '../state/AppState';
 import { CircleButton, Pill, T } from '../ui/primitives';
-import { LookPicker, PlanEditor } from '../features/PetEditors';
-import { KindIcon } from '../features/routines';
+import { LookPicker } from '../features/PetEditors';
 import { ART } from '../ui/art';
 import { CareIcon } from '../ui/CareIcon';
 import { NotifPreview } from '../ui/NotifPreview';
 import { colors, font, shadow } from '../ui/theme';
-import { Sheet, TimeField, Toggle } from '../ui/forms';
+import { Sheet } from '../ui/forms';
 import { Bouncy, ConfettiRain, Float, Pulse } from '../ui/motion';
 import { errorFeedback, logFeedback, petFeedback, selectFeedback, successFeedback } from '../native/haptics';
-import { reminderCopy, requestPermission } from '../native/notifications';
-import { formatHM } from '../i18n/dates';
+import { requestPermission } from '../native/notifications';
 import { newId } from '../domain/ids';
 import { LANG_NAMES, Lang, t } from '../i18n';
 import { LanguagePicker, langShort } from '../ui/LanguagePicker';
 
-
-type Suggestion = { key: string; type: string; title: string; times: string[]; on: boolean };
-function suggestions(species: Species, plan: Plan): Suggestion[] {
-  const out: Suggestion[] = [];
-  const meals = plan.meal ?? 0;
-  if (meals > 0) out.push({ key: 'meal', type: 'meal', title: meals === 1 ? t('Dinner') : t('Meals'), times: meals === 1 ? ['18:00'] : meals === 2 ? ['08:00', '18:00'] : ['08:00', '13:00', '18:00'], on: true });
-  if (species === 'dog' && (plan.walk ?? 0) > 0) out.push({ key: 'walk', type: 'walk', title: t('Walk'), times: (plan.walk ?? 0) >= 2 ? ['07:30', '18:30'] : ['18:30'], on: true });
-  if (species === 'cat' && (plan.litter ?? 0) > 0) out.push({ key: 'litter', type: 'litter', title: t('Scoop the litter'), times: ['09:00'], on: true });
-  const meds = plan.medication ?? 0;
-  out.push({ key: 'medication', type: 'medication', title: t('Medicine'), times: meds >= 3 ? ['08:00', '14:00', '20:00'] : meds === 2 ? ['08:00', '20:00'] : ['20:00'], on: meds > 0 });
-  return out;
-}
 
 /** the welcome pet colours in band by band, like Waterllama's llama */
 const WELCOME_STACK = [
@@ -54,9 +44,10 @@ const WELCOME_STACK_CAT = [
   { color: CARE.meal.color, from: 0.3, to: 0.62 },
 ];
 
-type Step = 'welcome' | 'species' | 'name' | 'look' | 'plan' | 'first' | 'reminders';
-// birthday and adoption day are optional: they're set later in the pet's profile, not asked up front
-const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'plan', 'first', 'reminders'];
+type Step = 'welcome' | 'species' | 'name' | 'look' | 'about' | 'care' | 'plan' | 'first';
+// age, size and food build the whole plan; the exact birthday and adoption day can be added later in the profile
+// 'care' is one page per care (meals, water, walks…), with the same bowl-and-drag controls as logging
+const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'about', 'care', 'plan', 'first'];
 const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom', medication: 'meds' };
 
 export default function Onboarding() {
@@ -69,13 +60,14 @@ export default function Onboarding() {
   const [step, setStep] = useState<Step>(adding ? 'species' : 'welcome');
   const [unitsOpen, setUnitsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [routines, setRoutines] = useState<Suggestion[]>([]);
-  const [customize, setCustomize] = useState(false);
   const [species, setSpecies] = useState<Species>('dog');
   const [name, setName] = useState('');
   const [appearance, setAppearance] = useState<Appearance>(defaultAppearance('dog'));
   const [plan, setPlan] = useState<Plan>(defaultPlan('dog'));
   const [portions, setPortions] = useState<Portions>({});
+  const [about, setAbout] = useState<About>({ stage: null, months: null, profile: defaultProfile('dog'), kg: 0, kgTouched: false });
+  const [choices, setChoices] = useState<Choice[]>([]);
+  const [careIdx, setCareIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<Pet | null>(null);
@@ -92,6 +84,7 @@ export default function Onboarding() {
   const dir = useRef<1 | -1>(1);
   const go = (s: Step) => {
     setError(null);
+    track('onboarding_step', { step: s, adding });
     dir.current = ORDER.indexOf(s) >= ORDER.indexOf(step) ? 1 : -1;
     setStep(s);
   };
@@ -99,6 +92,10 @@ export default function Onboarding() {
   const back = () => {
     if (adding && step === 'species') return router.back();
     if (created) return; // the pet exists: no going back into setup
+    if (step === 'care' && careIdx > 0) {
+      dir.current = -1;
+      return setCareIdx(careIdx - 1);
+    }
     const i = ORDER.indexOf(step);
     if (i > 0) go(ORDER[i - 1]);
   };
@@ -108,6 +105,7 @@ export default function Onboarding() {
     setSpecies(s);
     setAppearance(defaultAppearance(s));
     setPlan(defaultPlan(s));
+    setAbout({ stage: null, months: null, profile: defaultProfile(s), kg: 0, kgTouched: false });
     go('name');
   };
 
@@ -120,14 +118,60 @@ export default function Onboarding() {
     go('look');
   };
 
+  const estimateKg = estimateWeightKg(species, about.profile.size, about.months ?? 36);
+  const basis = about.months != null ? planBasis(species, about.months, about.profile, about.kgTouched ? about.kg : null) : null;
+  const targets = basis ? targetsFor(basis) : [];
+  const toPlan = () => {
+    if (!basis) return;
+    setChoices(targets.map(recommendedChoice).filter((c): c is Choice => !!c));
+    setCareIdx(0);
+    track('plan_built', { species, stage: basis.stage, size: about.profile.size, food: about.profile.food, weighed: about.kgTouched });
+    go('care');
+  };
+  const nextCare = () => {
+    if (careIdx < choices.length - 1) {
+      dir.current = 1;
+      track('onboarding_care_page', { care: choices[careIdx + 1].care, index: careIdx + 1 });
+      setCareIdx(careIdx + 1);
+    } else go('plan');
+  };
+
   const createTheirPet = async () => {
-    if (saving) return;
+    if (saving || !basis) return;
     setSaving(true);
     setError(null);
     try {
-      const pet = await createPet(db, { species, name, appearance, plan, portions });
+      const p: Plan = {};
+      const por: Portions = {};
+      for (const c of choices) {
+        p[c.care] = c.on && c.kind === 'daily' ? c.count : 0;
+        if (c.on && c.portion != null) por[c.care] = c.portion;
+      }
+      const pet = await createPet(db, { species, name, appearance, plan: p, portions: por, birthDate: approxBirthDate(basis.months) });
+      await setSetting(db, `birthApprox:${pet.id}`, '1');
+      await setProfile(db, pet.id, about.profile);
+      if (about.kgTouched) {
+        const unit = settings.weightUnit;
+        await addMeasurement(db, { petId: pet.id, kind: 'weight', value: Math.round((unit === 'lb' ? about.kg / 0.45359237 : about.kg) * 10) / 10, unit, at: Date.now() });
+      }
+      await applyChoices(db, pet, basis, choices);
+      track('onboarding_complete', {
+        species,
+        stage: basis.stage,
+        cares: choices.filter((c) => c.on).length,
+        reminders: choices.filter((c) => c.on && c.remind).length,
+        // how many cares the owner moved away from the recommendation (0 = took the plan as is)
+        adjusted: choices.filter((c) => {
+          const tg = targets.find((x) => x.care === c.care);
+          const rec = tg ? recommendedChoice(tg) : null;
+          return !rec || !c.on || rec.count !== c.count || rec.portion !== c.portion;
+        }).length,
+      });
+      // the plan was just built for this age: no "new for this age" card on day one
+      await markGuideSeen(db, { ...pet, birthDate: approxBirthDate(basis.months) });
+      setPlan(p);
+      setPortions(por);
       setCreated(pet);
-      setRoutines(suggestions(species, plan));
       await reload();
       successFeedback();
       go('first');
@@ -154,14 +198,12 @@ export default function Onboarding() {
     }
   };
 
-  const finish = async (withReminders: boolean) => {
+  const finish = async () => {
     if (!created || saving) return;
     setSaving(true);
     try {
-      if (withReminders) {
-        for (const r of routines.filter((x) => x.on)) await createSchedule(db, { petId: created.id, type: r.type, title: r.title, times: r.times, remind: true });
-        await requestPermission(db).catch(() => null);
-      }
+      // the plan's reminders are already set up: just ask for the permission they need
+      if (choices.some((c) => c.on && c.remind)) await requestPermission(db).catch(() => null);
       await reload();
       if (adding) router.dismissTo('/');
       // a Pro coat chosen while setting up: the paywall leads with keeping it (it goes back to a drawn
@@ -175,17 +217,21 @@ export default function Onboarding() {
 
   const petSize = Math.min(W * 0.72, 330);
   const displayName = name.trim() || (species === 'dog' ? t('your dog') : t('your cat'));
-  const setupSteps: Step[] = ['species', 'name', 'look', 'plan'];
+  const setupSteps: Step[] = ['species', 'name', 'look', 'about', 'care', 'plan'];
+  const dotIndex = step === 'care' ? 4 + careIdx : step === 'plan' ? 4 + choices.length : setupSteps.indexOf(step);
+  const dotTotal = 5 + Math.max(1, choices.length);
+  const careChoice = step === 'care' ? choices[careIdx] : undefined;
+  const careTarget = careChoice ? targets.find((x) => x.care === careChoice.care) : undefined;
   const showBack = step !== 'welcome' && !created;
-  const showSkip = step === 'first' || step === 'reminders';
+  const showSkip = step === 'first';
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={[styles.topRow, { width: W }]}>
         {showBack ? <CircleButton icon="back" label={t('Back')} onPress={back} size={46} /> : <View style={{ width: 46 }} />}
-        {setupSteps.includes(step) ? <Dots index={setupSteps.indexOf(step)} total={setupSteps.length} /> : null}
+        {setupSteps.includes(step) ? <Dots index={dotIndex} total={dotTotal} /> : null}
         {showSkip ? (
-          <Pressable accessibilityRole="button" onPress={() => (step === 'first' ? go('reminders') : finish(false))} hitSlop={10} style={{ width: 60, alignItems: 'flex-end' }} testID="skip">
+          <Pressable accessibilityRole="button" onPress={() => finish()} hitSlop={10} style={{ width: 60, alignItems: 'flex-end' }} testID="skip">
             <T weight="black" style={{ color: colors.faint, fontSize: 14, letterSpacing: 1 }}>
               {t('SKIP')}
             </T>
@@ -268,31 +314,57 @@ export default function Onboarding() {
           </View>
           <LookPicker species={species} appearance={appearance} onChange={setAppearance} pro={pro} />
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label={t('LOOKS RIGHT')} onPress={() => go('plan')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
+            <Pill label={t('LOOKS RIGHT')} onPress={() => go('about')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
           </View>
         </Animated.View>
       )}
 
-      {step === 'plan' && (
+      {step === 'about' && (
+        <Animated.View key="about" entering={slide()} style={[styles.page, { width: W }]}>
+          <T weight="black" style={styles.h2}>
+            {t('About {name}', { name: displayName })}
+          </T>
+          <T style={styles.sub}>{t('A few taps, and we’ll build {name}’s whole routine for you.', { name: displayName })}</T>
+          <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
+            <AboutPet species={species} name={displayName} about={about} estimateKg={estimateKg} unit={settings.weightUnit} onChange={setAbout} />
+          </ScrollView>
+          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
+            <Pill label={t('BUILD THE PLAN')} onPress={toPlan} disabled={about.months == null} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="about-next" />
+          </View>
+        </Animated.View>
+      )}
+
+      {step === 'care' && basis && careChoice && careTarget && (
+        <Animated.View key={`care-${careIdx}`} entering={slide()} style={[styles.page, { width: W }]}>
+          <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 22, paddingBottom: 12, alignItems: 'center' }}>
+            <T weight="black" style={{ color: CARE[careChoice.care].color, fontSize: 13, letterSpacing: 1.6, marginTop: 4 }}>
+              {CARE[careChoice.care].label.toUpperCase()}
+            </T>
+            <T weight="black" style={[styles.h2, { marginTop: 2 }]}>
+              {targetHeadline(careTarget)}
+            </T>
+            <T style={[styles.sub, { marginBottom: 4 }]}>{t(careTarget.guide.why)}</T>
+            <CarePage name={displayName} unit={settings.weightUnit} basis={basis} target={careTarget} choice={careChoice} onChange={(c) => setChoices(choices.map((x) => (x.care === c.care ? c : x)))} size={Math.min(W * 0.56, 230)} />
+          </ScrollView>
+          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
+            <Pill label={t('NEXT')} color={CARE[careChoice.care].color} onPress={nextCare} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="care-next" />
+          </View>
+        </Animated.View>
+      )}
+
+      {step === 'plan' && basis && (
         <Animated.View key="plan" entering={slide()} style={[styles.page, { width: W }]}>
           <T weight="black" style={styles.h2}>
-            {t("{name}'s daily plan", { name: displayName })}
+            {t('{name}’s plan is ready', { name: displayName })}
           </T>
-          <T style={styles.sub}>{t('You decide what a good day looks like. Each thing you log colors in a bit more of {name}.', { name: displayName })}</T>
+          <T style={styles.sub}>{t('Made for {name}’s age, size and food. Tap any line to change it.', { name: displayName })}</T>
           <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
-            <PlanEditor
-              species={species}
-              plan={plan}
-              portions={portions}
-              onChange={(p, por) => {
-                setPlan(p);
-                setPortions(por);
-              }}
-            />
+            <PlanReview unit={settings.weightUnit} name={displayName} basis={basis} targets={targets} choices={choices} onChange={setChoices} />
+            <T style={styles.planNote}>{t('🔔 Reminders only where they help. Everything else is on the list, ready to tick.')}</T>
           </ScrollView>
           {error ? <T style={styles.error}>{error}</T> : null}
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill label={t('NEXT')} onPress={createTheirPet} loading={saving} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="plan-next" />
+            <Pill label={t('LOOKS GOOD')} onPress={createTheirPet} loading={saving} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="plan-next" />
           </View>
         </Animated.View>
       )}
@@ -324,7 +396,7 @@ export default function Onboarding() {
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18, alignItems: 'center' }]}>
             {firstLogged ? (
               <Animated.View entering={FadeInUp.springify().damping(14)} style={{ alignSelf: 'stretch' }}>
-                <Pill label={t('NEXT')} onPress={() => go('reminders')} style={{ marginHorizontal: 24 }} testID="first-next" />
+                <Pill label={t('NEXT')} onPress={() => finish()} loading={saving} style={{ marginHorizontal: 24 }} testID="first-next" />
               </Animated.View>
             ) : (
               <>
@@ -342,60 +414,6 @@ export default function Onboarding() {
             )}
           </View>
           <ConfettiRain fireKey={confetti} />
-        </Animated.View>
-      )}
-
-      {step === 'reminders' && created && (
-        <Animated.View key="reminders" entering={slide()} style={[styles.page, { width: W }]}>
-          <T weight="black" style={styles.h2}>
-            {t('Smart Reminders')}
-          </T>
-          <T style={styles.sub}>{t('Gentle nudges at the times you choose — never ticked off for you.')}</T>
-          <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 18, paddingBottom: 12, gap: 12 }}>
-            <ReminderPreview pet={created} />
-            <Pressable accessibilityRole="button" onPress={() => setCustomize(!customize)} style={{ alignSelf: 'center', padding: 6 }}>
-              <T weight="black" style={{ color: colors.brand }}>
-                {customize ? t('Hide times') : t('Choose the times')}
-              </T>
-            </Pressable>
-            {customize
-              ? routines.map((r, i) => (
-                  <Animated.View key={r.key} entering={FadeInDown.delay(i * 60)} style={styles.routine}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                      <KindIcon type={r.type} size={42} />
-                      <View style={{ flex: 1 }}>
-                        <Toggle label={r.title} value={r.on} onChange={(v) => setRoutines(routines.map((x, j) => (j === i ? { ...x, on: v } : x)))} />
-                      </View>
-                    </View>
-                    {r.on ? (
-                      <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
-                        {r.times.map((tm, ti) => (
-                          <View key={ti} style={{ flex: 1 }}>
-                            <TimeField label="" value={tm} onChange={(v) => setRoutines(routines.map((x, j) => (j === i ? { ...x, times: x.times.map((y, k) => (k === ti ? v : y)) } : x)))} />
-                          </View>
-                        ))}
-                      </View>
-                    ) : null}
-                  </Animated.View>
-                ))
-              : (
-                <T style={{ color: colors.muted, textAlign: 'center', fontSize: 14 }}>
-                  {routines
-                    .filter((r) => r.on)
-                    .map((r) => `${r.title} ${r.times.map((x) => formatHM(Number(x.slice(0, 2)), Number(x.slice(3)))).join(' · ')}`)
-                    .join('\n')}
-                </T>
-              )}
-          </ScrollView>
-          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
-            <Pill
-              label={routines.some((r) => r.on) ? t('Remind me') : t('Continue')}
-              onPress={() => finish(routines.some((r) => r.on))}
-              loading={saving}
-              style={{ alignSelf: 'stretch', marginHorizontal: 24 }}
-              testID="finish"
-            />
-          </View>
         </Animated.View>
       )}
 
@@ -422,26 +440,6 @@ export default function Onboarding() {
         </View>
       </Sheet>
     </KeyboardAvoidingView>
-  );
-}
-
-/** A friendly mock of the notification they'll get, on a card with their pet. */
-function ReminderPreview({ pet }: { pet: Pet }) {
-  const copy = reminderCopy('meal', t('Meals'), pet.name);
-  return (
-    <View style={styles.previewCard}>
-      <NotifPreview title={copy.title} body={copy.body} when={formatHM(8, 0)} delay={350} />
-      {!ART.ui.remindersHero ? <View style={styles.previewGround} /> : null}
-      {ART.ui.remindersHero ? (
-        <Float style={{ alignSelf: 'center', marginTop: 4, zIndex: -1 }} amount={6} period={2200}>
-          <Sticker name={ART.ui.remindersHero} size={240} />
-        </Float>
-      ) : (
-        <Float style={{ alignSelf: 'center', marginTop: 10 }} amount={10} period={1600}>
-          <PetAvatar species={pet.species} appearance={pet.appearance} size={150} />
-        </Float>
-      )}
-    </View>
   );
 }
 
@@ -653,6 +651,7 @@ function Dots({ index, total }: { index: number; total: number }) {
 }
 
 const styles = StyleSheet.create({
+  planNote: { color: colors.muted, fontSize: 13, textAlign: 'center', marginTop: 14, lineHeight: 18 },
   root: { flex: 1, backgroundColor: colors.canvas, alignItems: 'center' },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, height: 54 },
   page: { flex: 1, alignItems: 'center' },

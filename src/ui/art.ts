@@ -24,7 +24,7 @@ export const ART = {
     walk: require('../../assets/art/care2/walk.webp') as Img,
     play: require('../../assets/art/care2/play.webp') as Img,
     grooming: require('../../assets/art/pantry/icon_tools.webp') as Img,
-    litter: require('../../assets/art/pantry/icon_litter.webp') as Img,
+    litter: require('../../assets/art/care2/litter.webp') as Img,
     medication: require('../../assets/art/pantry/icon_supplements.webp') as Img,
   },
   /** Pavurio Adventures (ChatGPT final set, tools/art/adventures2.py) */

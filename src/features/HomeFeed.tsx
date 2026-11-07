@@ -20,6 +20,8 @@ import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
 import { NextCareCard } from './NextCare';
+import { GuideCard } from './RoutineGuide';
+import { PlanNewsCard, WeighNudgeCard } from './PlanCards';
 import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
@@ -71,6 +73,10 @@ export function HomeFeed({ width }: { width: number }) {
       <Enter index={0}>
         <NextCareCard width={width} />
       </Enter>
+
+      {/* the automatic plan: what changed as the pet grew, and a weigh-in when portions need it */}
+      <PlanNewsCard enter={0} />
+      <WeighNudgeCard enter={1} />
 
       {/* the shelf: what's running low and when to buy */}
       <Enter index={0}>
@@ -172,6 +178,9 @@ export function HomeFeed({ width }: { width: number }) {
           ))}
         </View>
       </Enter>
+
+      {/* the routine guide: until the age is known, and again each time the pet reaches a new life stage */}
+      <GuideCard enter={4} />
 
       {/* one care tip a day, small */}
       {tipOfDay ? (

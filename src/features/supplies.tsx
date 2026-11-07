@@ -89,12 +89,12 @@ const ICONS = {
   comfort: require('../../assets/art/pantry/icon_comfort.webp'),
   tools: require('../../assets/art/pantry/icon_tools.webp'),
 };
-/** The pantry's moments, played by Honey & Tabby. */
-export const SCENES: Record<'welcome' | 'list' | 'restock', StickerName> = {
-  welcome: 'dog_eat',
-  list: 'cat_eat',
-  restock: 'duo_party',
-};
+/** The pantry's moments, played by the owner's own kind of pet (Honey for dogs, Tabby for cats). */
+export function pantryScene(kind: 'welcome' | 'list' | 'restock', species: 'dog' | 'cat'): StickerName {
+  if (kind === 'restock') return 'duo_party';
+  if (kind === 'list') return species === 'cat' ? 'cat_happy' : 'dog_cheer';
+  return species === 'cat' ? 'cat_eat' : 'dog_eat';
+}
 
 export type Group = 'food' | 'treats' | 'health' | 'care';
 export const KIND_META: Record<SupplyKind, { label: () => string; icon: number; color: string; tint: string; group: Group }> = {
@@ -237,7 +237,7 @@ const WHEN = [0, 1, 2] as const;
  * for a mistaken tap.
  */
 export function BuySheet({ forecast: f, purchases, visible, onClose }: { forecast: Forecast | null; purchases: Purchase[]; visible: boolean; onClose: () => void }) {
-  const { db, bump } = useApp();
+  const { db, bump, pet } = useApp();
   const last = f ? lastPurchase(purchases, f.supply.id) : null;
   const [packs, setPacks] = useState(1);
   const [when, setWhen] = useState<(typeof WHEN)[number]>(0);
@@ -288,7 +288,7 @@ export function BuySheet({ forecast: f, purchases, visible, onClose }: { forecas
               </View>
             </View>
             <Animated.View entering={motionReduced() ? undefined : ZoomIn.springify().damping(12)}>
-              <Sticker name={SCENES.restock} size={150} />
+              <Sticker name={pantryScene('restock', pet?.species ?? 'dog')} size={150} />
             </Animated.View>
           </View>
           <T weight="black" style={{ fontSize: 22 }}>

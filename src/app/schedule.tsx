@@ -16,7 +16,7 @@ import { Chip, DateField, Field, ModalScreen, TimeField, Toggle } from '../ui/fo
 import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback, selectFeedback, successFeedback } from '../native/haptics';
-import { t } from '../i18n';
+import { t, tn } from '../i18n';
 import { capitalize, weekdayNames } from '../i18n/dates';
 
 const DEFAULT_TIMES: Record<string, string[]> = {
@@ -49,6 +49,7 @@ export default function ScheduleEditor() {
   const [titleTouched, setTitleTouched] = useState(!!params.id);
   const [times, setTimes] = useState<string[]>(DEFAULT_TIMES[params.type ?? 'meal'] ?? ['08:00']);
   const [days, setDays] = useState<number[]>([]);
+  const [everyDays, setEveryDays] = useState<number | null>(null);
   const [startDate, setStartDate] = useState(dayKeyOf(new Date()));
   const [endDate, setEndDate] = useState<string | null>(null);
   const [remind, setRemind] = useState(true);
@@ -70,6 +71,7 @@ export default function ScheduleEditor() {
       setTitle(s.title);
       setTimes(s.times);
       setDays(s.days);
+      setEveryDays(s.everyDays ?? null);
       setStartDate(s.startDate);
       setEndDate(s.endDate);
       setRemind(s.remind);
@@ -99,7 +101,7 @@ export default function ScheduleEditor() {
     setError(null);
     setSaving(true);
     try {
-      const input = { petId: pet.id, type, title, times, days, startDate, endDate, remind, enabled };
+      const input = { petId: pet.id, type, title, times, days, startDate, endDate, remind, enabled, everyDays };
       if (params.id) await updateSchedule(db, params.id, input);
       else await createSchedule(db, input);
       if (remind && perm === 'undetermined') setPerm(await requestPermission(db));
@@ -206,29 +208,55 @@ export default function ScheduleEditor() {
 
       <View style={{ gap: 8 }}>
         <Label>{t('Days')}</Label>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {weekdayInitials().map((d, i) => {
-            const on = activeDays.includes(i);
-            return (
-              <Bouncy
-                key={i}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: on }}
-                accessibilityLabel={capitalize(weekdayNames()[i])}
-                onPress={() => toggleDay(i)}
-                style={[styles.day, { backgroundColor: on ? color : colors.line }]}
-              >
-                <T weight="black" style={{ color: on ? '#FFFFFF' : colors.inkSoft, fontSize: 15 }}>
-                  {d}
-                </T>
-              </Bouncy>
-            );
-          })}
-        </View>
+        {everyDays ? null : (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            {weekdayInitials().map((d, i) => {
+              const on = activeDays.includes(i);
+              return (
+                <Bouncy
+                  key={i}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: on }}
+                  accessibilityLabel={capitalize(weekdayNames()[i])}
+                  onPress={() => toggleDay(i)}
+                  style={[styles.day, { backgroundColor: on ? color : colors.line }]}
+                >
+                  <T weight="black" style={{ color: on ? '#FFFFFF' : colors.inkSoft, fontSize: 15 }}>
+                    {d}
+                  </T>
+                </Bouncy>
+              );
+            })}
+          </View>
+        )}
         <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-          <Chip label={t('Every day')} on={days.length === 0} onPress={() => setDays([])} />
-          <Chip label={t('Weekdays')} on={days.join() === '1,2,3,4,5'} onPress={() => setDays([1, 2, 3, 4, 5])} />
-          <Chip label={t('Weekends')} on={days.join() === '0,6'} onPress={() => setDays([0, 6])} />
+          <Chip
+            label={t('Every day')}
+            on={!everyDays && days.length === 0}
+            onPress={() => {
+              setEveryDays(null);
+              setDays([]);
+            }}
+          />
+          <Chip
+            label={t('Weekdays')}
+            on={!everyDays && days.join() === '1,2,3,4,5'}
+            onPress={() => {
+              setEveryDays(null);
+              setDays([1, 2, 3, 4, 5]);
+            }}
+          />
+          <Chip
+            label={t('Weekends')}
+            on={!everyDays && days.join() === '0,6'}
+            onPress={() => {
+              setEveryDays(null);
+              setDays([0, 6]);
+            }}
+          />
+          {[14, 28, 84].map((n) => (
+            <Chip key={n} label={tn(n / 7, 'Every week', 'Every {n} weeks')} on={everyDays === n} onPress={() => setEveryDays(n)} />
+          ))}
         </View>
       </View>
 
@@ -248,9 +276,7 @@ export default function ScheduleEditor() {
             {t("Notifications are off for Pavurio. Turn them on in your phone's Settings to get reminders.")}
           </T>
         ) : null}
-        {remind && perm === 'unsupported' ? (
-          <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18 }}>{t('Reminders arrive on the iPhone and Android app.')}</T>
-        ) : null}
+        {remind && perm === 'unsupported' ? <T style={{ color: colors.muted, fontSize: 13, lineHeight: 18 }}>{t('Reminders arrive on the iPhone and Android app.')}</T> : null}
         {params.id ? <Toggle label={t('Active')} body={t('Pause a routine without deleting it.')} value={enabled} onChange={setEnabled} /> : null}
       </View>
     </ModalScreen>

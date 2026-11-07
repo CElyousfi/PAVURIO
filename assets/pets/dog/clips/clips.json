@@ -9,12 +9,12 @@
   "native": {
    "cx": 431.98809184714196,
    "bottom": 784.0,
-   "height": 47.15384615384615
+   "height": 613.0
   },
   "anchor": {
    "cx": 431.98809184714196,
    "bottom": 784.0,
-   "height": 47.15384615384615
+   "height": 613.0
   },
   "loop": true,
   "pingpong": true,
@@ -41,12 +41,12 @@
   "native": {
    "cx": 372.8927193234533,
    "bottom": 702.0,
-   "height": 118.75
+   "height": 719.6969696969696
   },
   "anchor": {
    "cx": 372.8927193234533,
    "bottom": 702.0,
-   "height": 118.75
+   "height": 719.6969696969696
   },
   "loop": true,
   "pingpong": false,
@@ -73,12 +73,12 @@
   "native": {
    "cx": 431.98809184714196,
    "bottom": 784.0,
-   "height": 204.33333333333334
+   "height": 613.0
   },
   "anchor": {
    "cx": 431.98809184714196,
    "bottom": 784.0,
-   "height": 204.33333333333334
+   "height": 613.0
   },
   "loop": false,
   "pingpong": false,
@@ -105,12 +105,12 @@
   "native": {
    "cx": 516.3338821627165,
    "bottom": 972.0,
-   "height": 226.75
+   "height": 907.0
   },
   "anchor": {
    "cx": 516.3338821627165,
    "bottom": 972.0,
-   "height": 226.75
+   "height": 907.0
   },
   "loop": false,
   "pingpong": false,
@@ -137,12 +137,12 @@
   "native": {
    "cx": 516.3338821627165,
    "bottom": 972.0,
-   "height": 226.75
+   "height": 907.0
   },
   "anchor": {
    "cx": 516.3338821627165,
    "bottom": 972.0,
-   "height": 226.75
+   "height": 907.0
   },
   "loop": false,
   "pingpong": false,
@@ -169,12 +169,12 @@
   "native": {
    "cx": 396.9645784426052,
    "bottom": 806.0,
-   "height": 231.66666666666666
+   "height": 695.0
   },
   "anchor": {
    "cx": 396.9645784426052,
    "bottom": 806.0,
-   "height": 231.66666666666666
+   "height": 695.0
   },
   "loop": false,
   "pingpong": false,
@@ -201,12 +201,12 @@
   "native": {
    "cx": 414.71632755627303,
    "bottom": 798.0,
-   "height": 231.0
+   "height": 693.0
   },
   "anchor": {
    "cx": 414.71632755627303,
    "bottom": 798.0,
-   "height": 231.0
+   "height": 693.0
   },
   "loop": false,
   "pingpong": false,
@@ -233,12 +233,12 @@
   "native": {
    "cx": 472.4053788741682,
    "bottom": 762.0,
-   "height": 343.5
+   "height": 687.0
   },
   "anchor": {
    "cx": 472.4053788741682,
    "bottom": 762.0,
-   "height": 343.5
+   "height": 687.0
   },
   "loop": false,
   "pingpong": false,
@@ -265,12 +265,12 @@
   "native": {
    "cx": 396.5172030171103,
    "bottom": 800.0,
-   "height": 232.33333333333334
+   "height": 697.0
   },
   "anchor": {
    "cx": 396.5172030171103,
    "bottom": 800.0,
-   "height": 232.33333333333334
+   "height": 697.0
   },
   "loop": false,
   "pingpong": false,
@@ -297,12 +297,12 @@
   "native": {
    "cx": 392.2626658889892,
    "bottom": 800.0,
-   "height": 168.75
+   "height": 675.0
   },
   "anchor": {
    "cx": 392.2626658889892,
    "bottom": 800.0,
-   "height": 168.75
+   "height": 675.0
   },
   "loop": false,
   "pingpong": false,
@@ -322,6 +322,6 @@
  "_anchor": {
   "cx": 431.98809184714196,
   "bottom": 784.0,
-  "height": 47.15384615384615
+  "height": 613.0
  }
 }

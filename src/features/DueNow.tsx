@@ -21,6 +21,7 @@ import { Bouncy, motionReduced, Pulse } from '../ui/motion';
 import { T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { errorFeedback } from '../native/haptics';
+import { track } from '../native/analytics';
 import { t } from '../i18n';
 
 export function DueNowCard({ o }: { o: Occurrence }) {
@@ -43,6 +44,7 @@ export function DueNowCard({ o }: { o: Occurrence }) {
         await confirmOccurrence(db, schedules, saved, { scheduleId: o.scheduleId, key: o.key }).catch(() => {});
         markLogged();
         signalLogged({ eventId: saved.id, type: o.type });
+        track('care_logged', { type: o.type, via: 'slide', as_planned: true });
       } else {
         await setMark(db, o.scheduleId, o.key, 'done');
       }

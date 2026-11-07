@@ -43,6 +43,13 @@ export interface CloudApi {
   sendResetCode(email: string, lang: string): Promise<{ kind: 'sent' } | Extract<AuthResult, { kind: 'error' }>>;
   resetPasswordWithCode(email: string, code: string, password: string): Promise<{ kind: 'ok' } | Extract<AuthResult, { kind: 'error' }>>;
   setMarketing(optIn: boolean, source: string): Promise<void>;
+  /** anonymous usage analytics (Firebase Analytics, no advertising ID) */
+  analytics: {
+    event(name: string, params?: Record<string, string | number | boolean>): void;
+    screen(name: string): void;
+    setEnabled(on: boolean): void;
+    setUser(uid: string | null): void;
+  };
   crash: {
     setUser(uid: string | null): void;
     record(e: unknown, context?: string): void;

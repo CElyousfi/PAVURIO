@@ -73,7 +73,7 @@ export default function DayDetail() {
           <View style={styles.list}>
             {!loading && events.length === 0 ? (
               <View style={styles.empty}>
-                <Sticker name={ART.ui.emptyDay} size={150} style={{ marginBottom: 6 }} />
+                <Sticker name={pet?.species === 'cat' ? 'cat_eat' : ART.ui.emptyDay} size={150} style={{ marginBottom: 6 }} />
                 <T weight="xbold" style={{ fontSize: 17, color: colors.inkSoft }}>
                   {today ? t('Nothing logged yet today') : t('Nothing logged on this day')}
                 </T>

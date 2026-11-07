@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { Stack, router, type ErrorBoundaryProps } from 'expo-router';
+import { Stack, router, usePathname, type ErrorBoundaryProps } from 'expo-router';
 import { Pill, T } from '../ui/primitives';
 import { t } from '../i18n';
 import * as SplashScreen from 'expo-splash-screen';
@@ -30,6 +30,7 @@ import { getPortions, logCare } from '../data/repo';
 import { setMark } from '../data/careRepo';
 import { confirmOccurrence } from '../features/careLink';
 import { dayKeyOf } from '../domain/time';
+import { track, trackScreen } from '../native/analytics';
 
 /** A tapped reminder opens the right place: the care's log card (linked to its occurrence) or the visit. */
 function ReminderRouter() {
@@ -54,6 +55,7 @@ function ReminderRouter() {
               const portion = CARE[n.type].amount ? portionOf(n.type, await getPortions(db, n.petId)) : undefined;
               const saved = await logCare(db, { petId: n.petId, type: n.type, occurredAt: Date.now(), amount: portion, mutationId: `notif:${n.key}` });
               await confirmOccurrence(db, schedules, saved, { scheduleId: n.scheduleId, key: n.key });
+              track('care_logged', { type: n.type, via: 'notification', as_planned: true });
               bump();
               router.navigate('/');
               signalLogged({ eventId: saved.id, type: n.type });
@@ -68,6 +70,10 @@ function ReminderRouter() {
         }
         if (n.kind === 'supply') {
           router.push('/supplies');
+          return;
+        }
+        if (n.kind === 'nudge' && n.key.endsWith(':guide')) {
+          router.push('/guide');
           return;
         }
         if (n.kind === 'appointment') {
@@ -108,6 +114,15 @@ export default function RootLayout() {
   );
 }
 
+/** one screen view per route (ids are in params, not in the path, so names stay generic) */
+function ScreenTracker() {
+  const path = usePathname();
+  useEffect(() => {
+    trackScreen(path);
+  }, [path]);
+  return null;
+}
+
 function Gate() {
   const { ready, language } = useApp();
   // once per cold start the native splash (the store icon) hands over to BrandSplash, which hides it
@@ -118,6 +133,7 @@ function Gate() {
     <View style={{ flex: 1 }}>
       <Animated.View key={language} entering={FadeIn.duration(260)} style={{ flex: 1 }}>
         <ReminderRouter />
+        <ScreenTracker />
         <WalkLiveBridge />
         <CelebrationHost />
         <StatusBar style="dark" />
@@ -155,6 +171,8 @@ function Gate() {
           <Stack.Screen name="supply-edit" options={{ presentation: 'modal' }} />
           <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
           <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
+          <Stack.Screen name="guide" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
+          <Stack.Screen name="plan" options={{ presentation: 'modal' }} />
         </Stack>
       </Animated.View>
       {brand ? <BrandSplash onDone={() => setBrand(false)} /> : null}

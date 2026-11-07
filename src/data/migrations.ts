@@ -300,6 +300,10 @@ export const MIGRATIONS: string[] = [
     PRIMARY KEY (uid, path)
   );
   `,
+  // v9 — routines that repeat every few weeks (flea, tick and worm prevention…): every N days from the start date
+  `
+  ALTER TABLE schedules ADD COLUMN every_days INTEGER;
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;
