@@ -9335,5 +9335,274 @@
   "en": "{n} years old",
   "fr": "{n} ans",
   "plural": "other"
+ },
+ {
+  "id": "1846",
+  "en": "{n} day a week",
+  "fr": "{n} jour par semaine",
+  "plural": "one"
+ },
+ {
+  "id": "1847",
+  "en": "{n} days a week",
+  "fr": "{n} jours par semaine",
+  "plural": "other"
+ },
+ {
+  "id": "1848",
+  "en": "{n} walk a day of about {min} minutes",
+  "fr": "{n} balade par jour d’environ {min} minutes",
+  "plural": "one"
+ },
+ {
+  "id": "1849",
+  "en": "{n} walks a day of about {min} minutes",
+  "fr": "{n} balades par jour d’environ {min} minutes",
+  "plural": "other"
+ },
+ {
+  "id": "1850",
+  "en": "under {w}",
+  "fr": "moins de {w}"
+ },
+ {
+  "id": "1851",
+  "en": "over {w}",
+  "fr": "plus de {w}"
+ },
+ {
+  "id": "1852",
+  "en": "Age",
+  "fr": "Âge"
+ },
+ {
+  "id": "1853",
+  "en": "Size",
+  "fr": "Taille"
+ },
+ {
+  "id": "1854",
+  "en": "Size when grown",
+  "fr": "Taille adulte"
+ },
+ {
+  "id": "1855",
+  "en": "Weight now",
+  "fr": "Poids actuel"
+ },
+ {
+  "id": "1856",
+  "en": "Your weigh-in",
+  "fr": "Votre pesée"
+ },
+ {
+  "id": "1857",
+  "en": "Estimated — adjust if you know it",
+  "fr": "Estimé — modifiez-le si vous le connaissez"
+ },
+ {
+  "id": "1858",
+  "en": "What does {name} eat?",
+  "fr": "Que mange {name} ?"
+ },
+ {
+  "id": "1859",
+  "en": "Both",
+  "fr": "Les deux"
+ },
+ {
+  "id": "1860",
+  "en": "Not in the plan",
+  "fr": "Hors programme"
+ },
+ {
+  "id": "1861",
+  "en": "{amount} each",
+  "fr": "{amount} à chaque fois"
+ },
+ {
+  "id": "1862",
+  "en": "In {name}’s plan",
+  "fr": "Dans le programme de {name}"
+ },
+ {
+  "id": "1863",
+  "en": "Days a week",
+  "fr": "Jours par semaine"
+ },
+ {
+  "id": "1864",
+  "en": "Times a day",
+  "fr": "Fois par jour"
+ },
+ {
+  "id": "1865",
+  "en": "A gentle notification at these times.",
+  "fr": "Une notification en douceur à ces heures."
+ },
+ {
+  "id": "1866",
+  "en": "{amount} a day for {name} at {weight}.",
+  "fr": "{amount} par jour pour {name}, qui pèse {weight}."
+ },
+ {
+  "id": "1867",
+  "en": "About {dry} g of dry food and {wet} g of wet food.",
+  "fr": "Environ {dry} g de croquettes et {wet} g de pâtée."
+ },
+ {
+  "id": "1868",
+  "en": "Food labels vary: check yours, and adjust if {name} gets too round or too thin.",
+  "fr": "Les étiquettes varient : vérifiez la vôtre, et ajustez si {name} s’arrondit ou maigrit trop."
+ },
+ {
+  "id": "1869",
+  "en": "Recommended",
+  "fr": "Conseillé"
+ },
+ {
+  "id": "1870",
+  "en": "Recommended: {value}",
+  "fr": "Conseillé : {value}"
+ },
+ {
+  "id": "1871",
+  "en": "Usual: {min} to {max}",
+  "fr": "Habituel : {min} à {max}"
+ },
+ {
+  "id": "1872",
+  "en": "Outside the usual range. That’s fine if your vet advised it.",
+  "fr": "Hors de la fourchette habituelle. Pas de souci si votre vétérinaire l’a conseillé."
+ },
+ {
+  "id": "1873",
+  "en": "Dry and wet food",
+  "fr": "Croquettes et pâtée"
+ },
+ {
+  "id": "1874",
+  "en": "{name}’s plan",
+  "fr": "Le programme de {name}"
+ },
+ {
+  "id": "1875",
+  "en": "BUILD THE PLAN",
+  "fr": "CRÉER LE PROGRAMME"
+ },
+ {
+  "id": "1876",
+  "en": "Meals, walks and care change as {name} grows. These few details are all we need.",
+  "fr": "Repas, balades et soins évoluent quand {name} grandit. Ces quelques infos nous suffisent."
+ },
+ {
+  "id": "1877",
+  "en": "weight estimated",
+  "fr": "poids estimé"
+ },
+ {
+  "id": "1878",
+  "en": "EDIT",
+  "fr": "MODIFIER"
+ },
+ {
+  "id": "1879",
+  "en": "It grows with {name}: portions and routines update by themselves as {name} gets older or heavier. The changes you make here are kept.",
+  "fr": "Il grandit avec {name} : portions et routines s’ajustent toutes seules quand {name} vieillit ou prend du poids. Vos modifications ici sont conservées."
+ },
+ {
+  "id": "1880",
+  "en": "Why these numbers? Read the guide",
+  "fr": "Pourquoi ces chiffres ? Lire le guide"
+ },
+ {
+  "id": "1881",
+  "en": "About {name}",
+  "fr": "À propos de {name}"
+ },
+ {
+  "id": "1882",
+  "en": "A few taps, and we’ll build {name}’s whole routine for you.",
+  "fr": "Quelques touches, et nous créons toute la routine de {name} pour vous."
+ },
+ {
+  "id": "1883",
+  "en": "{name}’s plan is ready",
+  "fr": "Le programme de {name} est prêt"
+ },
+ {
+  "id": "1884",
+  "en": "Made for {name}’s age, size and food. Tap any line to change it.",
+  "fr": "Adapté à l’âge, à la taille et à l’alimentation de {name}. Touchez une ligne pour la modifier."
+ },
+ {
+  "id": "1885",
+  "en": "🔔 Reminders only where they help. Everything else is on the list, ready to tick.",
+  "fr": "🔔 Des rappels seulement là où ils aident. Tout le reste est dans la liste, prêt à cocher."
+ },
+ {
+  "id": "1886",
+  "en": "LOOKS GOOD",
+  "fr": "C’EST PARFAIT"
+ },
+ {
+  "id": "1887",
+  "en": "Set up every routine at once. Reminders only where they help, and the plan grows with {name}.",
+  "fr": "Créez toutes les routines d’un coup. Des rappels seulement là où ils aident, et le programme grandit avec {name}."
+ },
+ {
+  "id": "1888",
+  "en": "Adjust the numbers first",
+  "fr": "Ajuster d’abord les chiffres"
+ },
+ {
+  "id": "1889",
+  "en": "Usual: {min} to {max} each",
+  "fr": "Habituel : {min} à {max} à chaque fois"
+ },
+ {
+  "id": "1890",
+  "en": "Meals, walks, portions and times",
+  "fr": "Repas, balades, portions et horaires"
+ },
+ {
+  "id": "1891",
+  "en": "Recommended for {name}’s age and size. Adjust anything.",
+  "fr": "Conseillé pour l’âge et la taille de {name}. Tout est modifiable."
+ },
+ {
+  "id": "1892",
+  "en": "Toy",
+  "fr": "Mini"
+ },
+ {
+  "id": "1893",
+  "en": "Small",
+  "fr": "Petit"
+ },
+ {
+  "id": "1894",
+  "en": "Medium",
+  "fr": "Moyen"
+ },
+ {
+  "id": "1895",
+  "en": "Large",
+  "fr": "Grand"
+ },
+ {
+  "id": "1896",
+  "en": "Giant",
+  "fr": "Géant"
+ },
+ {
+  "id": "1897",
+  "en": "Petite",
+  "fr": "Petit"
+ },
+ {
+  "id": "1898",
+  "en": "Average",
+  "fr": "Moyen"
  }
 ]

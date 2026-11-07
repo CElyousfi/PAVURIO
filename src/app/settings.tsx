@@ -4,8 +4,7 @@ import { Sticker } from '../ui/Sticker';
 import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plan, Portions } from '../domain/progress';
-import { countAllEvents, exportAll, exportCareCsv, getSetting as getSettingRaw, resetAll, setPlan, setSetting as setSettingRaw } from '../data/repo';
+import { countAllEvents, exportAll, exportCareCsv, getSetting as getSettingRaw, resetAll, setSetting as setSettingRaw } from '../data/repo';
 import * as StoreReview from 'expo-store-review';
 import { LEGAL } from '../config/links';
 import { ART } from '../ui/art';
@@ -18,15 +17,14 @@ import { PantryIcon } from '../features/supplies';
 import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
-import { PlanEditor } from '../features/PetEditors';
-import { Icon, Label, Pill, SoftPill, T } from '../ui/primitives';
+import { Icon, Label, SoftPill, T } from '../ui/primitives';
 import { colors, softShadow } from '../ui/theme';
-import { successFeedback, toggleFeedback } from '../native/haptics';
+import { toggleFeedback } from '../native/haptics';
 import { LANG_FLAGS, LANG_NAMES, t, tn } from '../i18n';
 import { LanguagePicker } from '../ui/LanguagePicker';
 
 export default function Settings() {
-  const { pet, pets, plan, portions, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
+  const { pet, pets, db, bump, reload, settings, setSetting, setWeightUnit, pro, language, setLanguage } = useApp();
   const cloudState = useCloud();
   const [perm, setPerm] = useState<PermissionState>('undetermined');
   const [exact, setExact] = useState(true);
@@ -55,27 +53,12 @@ export default function Settings() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 520);
-  const [draft, setDraft] = useState<Plan>(plan);
-  const [draftPortions, setDraftPortions] = useState<Portions>(portions);
   const [total, setTotal] = useState(0);
-  const [savedPlan, setSavedPlan] = useState(false);
-
-  useEffect(() => setDraft(plan), [plan]);
-  useEffect(() => setDraftPortions(portions), [portions]);
   useEffect(() => {
     if (pet) countAllEvents(db, pet.id).then(setTotal);
   }, [db, pet]);
 
   if (!pet) return null;
-  const planDirty = JSON.stringify(draft) !== JSON.stringify(plan) || JSON.stringify(draftPortions) !== JSON.stringify(portions);
-
-  const savePlan = async () => {
-    await setPlan(db, pet, draft, draftPortions);
-    successFeedback();
-    setSavedPlan(true);
-    bump();
-    setTimeout(() => setSavedPlan(false), 1800);
-  };
 
   const stamp = () => new Date().toISOString().slice(0, 10);
   const doExport = async () => shareText(await exportAll(db), `pavurio-export-${stamp()}.json`, 'application/json');
@@ -167,18 +150,15 @@ export default function Settings() {
           ) : null}
 
           <Label style={styles.section}>{t("{name}'s daily plan", { name: pet.name })}</Label>
-          <PlanEditor
-            species={pet.species}
-            plan={draft}
-            portions={draftPortions}
-            onChange={(p, por) => {
-              setDraft(p);
-              setDraftPortions(por);
-            }}
-          />
-          <View style={{ marginTop: 12 }}>
-            <Pill label={savedPlan ? t('SAVED ✓') : t('SAVE PLAN')} onPress={savePlan} disabled={!planDirty && !savedPlan} />
-          </View>
+          <Bouncy scaleTo={0.975} accessibilityRole="button" onPress={() => router.push('/plan')} style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="plan-row">
+            <View style={{ flex: 1 }}>
+              <T weight="xbold" style={{ fontSize: 17 }}>
+                {t('Meals, walks, portions and times')}
+              </T>
+              <T style={{ color: colors.muted, fontSize: 13 }}>{t('Recommended for {name}’s age and size. Adjust anything.', { name: pet.name })}</T>
+            </View>
+            <Icon name="chevR" size={18} color={colors.faint} />
+          </Bouncy>
 
           <Label style={styles.section}>{t('Experience')}</Label>
           <View style={[styles.card]}>

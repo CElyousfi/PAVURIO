@@ -58,16 +58,18 @@ export async function markGuideSeen(db: Db, pet: Pet) {
 export function GuideCard({ always = false, enter }: { always?: boolean; enter?: number }) {
   const { pet } = useApp();
   const g = useGuideState();
-  const open = useCallback(() => router.push('/guide'), []);
+  const planned = !!g && g.known && g.seen;
+  // once the guide for this age is read, the Care tab card opens the plan itself (numbers to adjust)
+  const open = useCallback(() => router.push(planned ? '/plan' : '/guide'), [planned]);
   if (!pet || !g) return null;
   if (!always && g.known && g.seen) return null;
   const grown = g.known && !g.seen;
-  const kicker = !g.known ? t('ROUTINE GUIDE') : grown ? t('NEW FOR THIS AGE') : t('ROUTINE GUIDE');
+  const kicker = grown ? t('NEW FOR THIS AGE') : t('ROUTINE GUIDE');
   const title = !g.known
     ? t('How old is {name}?', { name: pet.name })
     : grown
       ? t('Routines for {name} at {age}', { name: pet.name, age: ageLabel(g.months) })
-      : t('{name}’s routine guide', { name: pet.name });
+      : t('{name}’s plan', { name: pet.name });
   const sub = !g.known ? t('Get meals, walks and care routines made for their age.') : stageLabel(pet.species, g.stage);
   const card = (
     <Bouncy scaleTo={0.97} onPress={open} style={styles.card} accessibilityRole="button" accessibilityLabel={`${title}. ${sub}`} testID="guide-card">

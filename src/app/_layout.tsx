@@ -160,6 +160,7 @@ function Gate() {
           <Stack.Screen name="done" options={{ presentation: 'fullScreenModal', animation: 'fade', animationDuration: 220, gestureEnabled: false }} />
           <Stack.Screen name="tip" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
           <Stack.Screen name="guide" options={{ presentation: 'fullScreenModal', animation: 'fade_from_bottom', animationDuration: 260 }} />
+          <Stack.Screen name="plan" options={{ presentation: 'modal' }} />
         </Stack>
       </Animated.View>
       {brand ? <BrandSplash onDone={() => setBrand(false)} /> : null}

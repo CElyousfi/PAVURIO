@@ -7,12 +7,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { CARE } from '../domain/care';
-import { AGE_PICKS, approxBirthDate } from '../domain/lifeStage';
-import { guideFor, type Rec } from '../content/routineGuide';
-import { createSchedule, updateSchedule } from '../data/careRepo';
-import { setPlan, setSetting, updatePet } from '../data/repo';
+import { CARE, formatAmount } from '../domain/care';
+import { Target, portionFor, recommendedChoice, targetsFor } from '../domain/carePlan';
+import { applyChoices } from '../data/autoPlan';
+import { choiceSummary, targetHeadline, usePlanBasis } from '../features/AutoPlan';
 import { requestPermission } from '../native/notifications';
 import { useApp } from '../state/AppState';
 import { ageLabel, guideStateOf, markGuideSeen, stageLabel } from '../features/RoutineGuide';
@@ -22,8 +20,8 @@ import { Bouncy, Float, motionReduced } from '../ui/motion';
 import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { formatHM, weekdayNamesShort } from '../i18n/dates';
-import { selectFeedback, successFeedback, tapFeedback, completeFeedback } from '../native/haptics';
-import { t, tn } from '../i18n';
+import { successFeedback, tapFeedback, completeFeedback } from '../native/haptics';
+import { t } from '../i18n';
 import { Missing } from '../ui/Missing';
 
 const PURPLE = '#7C5CE6';
@@ -31,7 +29,7 @@ const DOW = () => weekdayNamesShort();
 const hm = (tm: string) => formatHM(Number(tm.slice(0, 2)), Number(tm.slice(3, 5)));
 
 export default function Guide() {
-  const { pet, db, bump, schedules, plan, portions } = useApp();
+  const { pet, db, bump, schedules, portions } = useApp();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const W = Math.min(width, 560);
@@ -39,7 +37,13 @@ export default function Guide() {
   const [page, setPage] = useState(0);
   const [applied, setApplied] = useState<Record<string, boolean>>({});
   const g = pet ? guideStateOf(pet, null) : null;
-  const recs = pet && g?.known ? guideFor(pet.species, g.stage) : [];
+  const basis = usePlanBasis();
+  const recs: Target[] = basis ? targetsFor(basis) : [];
+
+  // no age yet: the plan screen asks for it (with size and food) and builds everything
+  useEffect(() => {
+    if (pet && g && !g.known) router.replace('/plan');
+  }, [pet, g]);
 
   useEffect(() => {
     if (pet && g?.known) void markGuideSeen(db, pet).then(bump);
@@ -47,7 +51,8 @@ export default function Guide() {
   }, [pet?.id, g?.stage, g?.known]);
 
   if (!pet || !g) return <Missing />;
-  const pages = g.known ? recs.length + 2 : 1;
+  if (!g.known || !basis) return <View style={[styles.root, { backgroundColor: '#EEE8FE' }]} />;
+  const pages = recs.length + 2;
   const last = pages - 1;
 
   const go = (i: number) => {
@@ -57,79 +62,30 @@ export default function Guide() {
   };
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => setPage(Math.round(e.nativeEvent.contentOffset.x / W));
 
-  const pickAge = async (months: number) => {
-    selectFeedback();
-    await updatePet(db, pet.id, { birthDate: approxBirthDate(months) });
-    await setSetting(db, `birthApprox:${pet.id}`, '1');
+  const existing = (r: Target) => schedules.find((s) => s.type === r.care && s.enabled);
+  const apply = async (r: Target) => {
+    if (r.kind === 'visit') return router.push('/appointment');
+    const c = recommendedChoice(r);
+    if (!c) return;
+    await applyChoices(db, pet, basis, [c]);
+    setApplied((a) => ({ ...a, [r.care]: true }));
+    successFeedback();
+    if (c.remind) requestPermission(db).catch(() => null);
     bump();
   };
-
-  const existing = (r: Rec) => schedules.find((s) => s.type === r.care && s.enabled);
-  const apply = async (r: Rec, quiet = false) => {
-    if (r.kind === 'visit') return router.push('/appointment');
-    const title = CARE[r.care].label;
-    const input = {
-      petId: pet.id,
-      type: r.care,
-      title,
-      times: r.times,
-      days: r.days ?? [],
-      remind: true,
-    };
-    const ex = existing(r);
-    if (ex)
-      await updateSchedule(db, ex.id, {
-        ...input,
-        title: ex.title || title,
-        startDate: ex.startDate,
-        endDate: ex.endDate,
-      });
-    else await createSchedule(db, input);
-    if (r.kind === 'daily') await setPlan(db, pet, { ...plan, [r.care]: r.times.length }, r.portion ? { ...portions, [r.care]: r.portion } : portions);
-    setApplied((a) => ({ ...a, [r.care]: true }));
-    if (!quiet) {
-      successFeedback();
-      requestPermission(db).catch(() => null);
-      bump();
-    }
-  };
   const applyAll = async () => {
-    // one routine at a time: the plan is written per care, each step builds on the last
-    let p = { ...plan };
-    let por = { ...portions };
-    for (const r of recs) {
-      if (r.kind === 'visit' || applied[r.care]) continue;
-      const title = CARE[r.care].label;
-      const input = {
-        petId: pet.id,
-        type: r.care,
-        title,
-        times: r.times,
-        days: r.days ?? [],
-        remind: true,
-      };
-      const ex = existing(r);
-      if (ex)
-        await updateSchedule(db, ex.id, {
-          ...input,
-          title: ex.title || title,
-          startDate: ex.startDate,
-          endDate: ex.endDate,
-        });
-      else await createSchedule(db, input);
-      if (r.kind === 'daily') {
-        p = { ...p, [r.care]: r.times.length };
-        if (r.portion) por = { ...por, [r.care]: r.portion };
-      }
-    }
-    await setPlan(db, pet, p, por);
+    const all = recs
+      .filter((r) => !applied[r.care])
+      .map(recommendedChoice)
+      .filter((c): c is NonNullable<typeof c> => !!c);
+    await applyChoices(db, pet, basis, all);
     setApplied(Object.fromEntries(recs.map((r) => [r.care, true])));
     completeFeedback();
     requestPermission(db).catch(() => null);
     bump();
   };
 
-  const tint = page === 0 || page === last || !g.known ? '#EEE8FE' : CARE[recs[page - 1].care].tint;
+  const tint = page === 0 || page === last ? '#EEE8FE' : CARE[recs[page - 1].care].tint;
   return (
     <View
       style={[
@@ -148,282 +104,263 @@ export default function Guide() {
               {t('LEAVE')}
             </T>
           </Bouncy>
-          {g.known ? (
-            <Bouncy onPress={() => router.push({ pathname: '/pet', params: { id: pet.id } })} style={styles.leave} accessibilityRole="button" scaleTo={0.92}>
-              <T weight="black" style={{ fontSize: 13, letterSpacing: 1.2, color: '#00000077' }}>
-                {ageLabel(g.months).toUpperCase()}
-              </T>
-            </Bouncy>
-          ) : null}
+          <Bouncy onPress={() => router.push('/plan')} style={styles.leave} accessibilityRole="button" scaleTo={0.92}>
+            <T weight="black" style={{ fontSize: 13, letterSpacing: 1.2, color: '#00000077' }}>
+              {ageLabel(g.months).toUpperCase()}
+            </T>
+          </Bouncy>
         </View>
-        {g.known ? (
-          <View style={styles.bars}>
-            {Array.from({ length: pages }, (_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.bar,
-                  {
-                    backgroundColor: i <= page ? colors.ink : '#FFFFFF99',
-                    flex: i === page ? 1.6 : 1,
-                  },
-                ]}
-              />
-            ))}
-          </View>
-        ) : null}
+        <View style={styles.bars}>
+          {Array.from({ length: pages }, (_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.bar,
+                {
+                  backgroundColor: i <= page ? colors.ink : '#FFFFFF99',
+                  flex: i === page ? 1.6 : 1,
+                },
+              ]}
+            />
+          ))}
+        </View>
 
-        {!g.known ? (
-          <ScrollView
-            contentContainerStyle={{
-              paddingHorizontal: 24,
-              paddingTop: 26,
-              paddingBottom: 20,
-            }}
-          >
-            <Animated.View entering={FadeIn}>
+        <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={onScroll} onScroll={onScroll} scrollEventThrottle={32} style={{ flex: 1 }}>
+          {/* intro */}
+          <View style={{ width: W }}>
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={{
+                paddingHorizontal: 26,
+                paddingTop: 22,
+                paddingBottom: 20,
+              }}
+            >
               <T weight="black" style={{ color: PURPLE, fontSize: 13, letterSpacing: 1.6 }}>
-                {t('ROUTINE GUIDE')}
+                {stageLabel(pet.species, g.stage).toUpperCase()}
               </T>
               <T weight="black" style={styles.title}>
-                {t('How old is {name}?', { name: pet.name })}
+                {t('{name}’s routine guide', { name: pet.name })}
               </T>
               <T style={styles.body}>
-                {t('Meals, walks and care change a lot as pets grow. Pick an age and we’ll show what’s generally recommended — it updates as {name} grows.', { name: pet.name })}
+                {t('What vets generally recommend at {name}’s age, care by care. Set any of it up as a routine in one tap — you can change it anytime in Care.', { name: pet.name })}
               </T>
-            </Animated.View>
-            <View style={{ gap: 10, marginTop: 22 }}>
-              {AGE_PICKS[pet.species].map((a, i) => (
-                <Animated.View key={a.stage} entering={motionReduced() ? undefined : FadeInDown.delay(80 + i * 60)}>
-                  <Bouncy onPress={() => pickAge(a.months)} style={styles.ageRow} accessibilityRole="radio" testID={`guide-age-${a.stage}`}>
-                    <T weight="black" style={{ fontSize: 16, flex: 1 }}>
-                      {stageLabel(pet.species, a.stage)}
-                    </T>
-                    <Icon name="chevR" size={18} color={colors.faint} />
+              <View style={{ gap: 8, marginTop: 20 }}>
+                {recs.map((r) => (
+                  <Bouncy key={r.care} onPress={() => go(recs.indexOf(r) + 1)} style={styles.summaryRow} accessibilityRole="button">
+                    <View style={[styles.swatch, { backgroundColor: CARE[r.care].color }]} />
+                    <View style={{ flex: 1 }}>
+                      <T weight="xbold" style={{ color: colors.muted, fontSize: 12 }}>
+                        {CARE[r.care].label}
+                      </T>
+                      <T weight="black" style={{ fontSize: 15 }} numberOfLines={2}>
+                        {targetHeadline(r)}
+                      </T>
+                    </View>
+                    {applied[r.care] ? <Icon name="check" size={18} color={colors.brand} /> : <Icon name="chevR" size={18} color={colors.faint} />}
                   </Bouncy>
-                </Animated.View>
-              ))}
-            </View>
-            <Bouncy onPress={() => router.push({ pathname: '/pet', params: { id: pet.id } })} style={{ alignSelf: 'center', padding: 14, marginTop: 8 }} accessibilityRole="button">
-              <T weight="black" style={{ color: PURPLE, fontSize: 15 }}>
-                {t('I know the exact birthday')}
-              </T>
-            </Bouncy>
-          </ScrollView>
-        ) : (
-          <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={onScroll} onScroll={onScroll} scrollEventThrottle={32} style={{ flex: 1 }}>
-            {/* intro */}
-            <View style={{ width: W }}>
-              <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{
-                  paddingHorizontal: 26,
-                  paddingTop: 22,
-                  paddingBottom: 20,
-                }}
-              >
-                <T weight="black" style={{ color: PURPLE, fontSize: 13, letterSpacing: 1.6 }}>
-                  {stageLabel(pet.species, g.stage).toUpperCase()}
-                </T>
-                <T weight="black" style={styles.title}>
-                  {t('{name}’s routine guide', { name: pet.name })}
-                </T>
-                <T style={styles.body}>
-                  {t('What vets generally recommend at {name}’s age, care by care. Set any of it up as a routine in one tap — you can change it anytime in Care.', { name: pet.name })}
-                </T>
-                <View style={{ gap: 8, marginTop: 20 }}>
-                  {recs.map((r) => (
-                    <Bouncy key={r.care} onPress={() => go(recs.indexOf(r) + 1)} style={styles.summaryRow} accessibilityRole="button">
-                      <View style={[styles.swatch, { backgroundColor: CARE[r.care].color }]} />
-                      <View style={{ flex: 1 }}>
-                        <T weight="xbold" style={{ color: colors.muted, fontSize: 12 }}>
-                          {CARE[r.care].label}
-                        </T>
-                        <T weight="black" style={{ fontSize: 15 }} numberOfLines={2}>
-                          {t(r.headline)}
-                        </T>
-                      </View>
-                      {applied[r.care] ? <Icon name="check" size={18} color={colors.brand} /> : <Icon name="chevR" size={18} color={colors.faint} />}
-                    </Bouncy>
-                  ))}
-                </View>
-                <T style={styles.note}>{t('General guidance for healthy pets. Breed, size and health matter: your vet knows {name} best.', { name: pet.name })}</T>
-              </ScrollView>
-            </View>
+                ))}
+              </View>
+              <T style={styles.note}>{t('General guidance for healthy pets. Breed, size and health matter: your vet knows {name} best.', { name: pet.name })}</T>
+            </ScrollView>
+          </View>
 
-            {recs.map((r) => {
-              const meta = CARE[r.care];
-              const ex = existing(r);
-              const done = applied[r.care];
-              return (
-                <View key={r.care} style={{ width: W }}>
-                  <ScrollView
-                    style={{ flex: 1 }}
-                    contentContainerStyle={{
-                      paddingHorizontal: 24,
-                      paddingTop: 18,
-                      paddingBottom: 20,
+          {recs.map((r) => {
+            const meta = CARE[r.care];
+            const ex = existing(r);
+            // already set up exactly as recommended: nothing to do
+            const rc = recommendedChoice(r);
+            const same = !!ex && !!rc && ex.times.join() === rc.times.join() && ex.days.join() === rc.days.join() && (rc.portion == null || portions[r.care] === rc.portion);
+            const done = applied[r.care] || same;
+            return (
+              <View key={r.care} style={{ width: W }}>
+                <ScrollView
+                  style={{ flex: 1 }}
+                  contentContainerStyle={{
+                    paddingHorizontal: 24,
+                    paddingTop: 18,
+                    paddingBottom: 20,
+                  }}
+                >
+                  <T
+                    weight="black"
+                    style={{
+                      color: meta.color,
+                      fontSize: 13,
+                      letterSpacing: 1.6,
                     }}
                   >
-                    <T
-                      weight="black"
-                      style={{
-                        color: meta.color,
-                        fontSize: 13,
-                        letterSpacing: 1.6,
-                      }}
-                    >
-                      {meta.label.toUpperCase()}
-                    </T>
-                    <T weight="black" style={styles.title}>
-                      {t(r.headline)}
-                    </T>
-                    <T style={styles.body}>{t(r.why)}</T>
-                    <Float style={{ alignItems: 'center', marginVertical: 10 }} amount={5}>
-                      {r.care === 'litter' && ART.care.litter ? <Image source={ART.care.litter} style={{ width: 150, height: 150 }} resizeMode="contain" /> : <Sticker name={careSticker(r.care, pet.species)} size={140} />}
-                    </Float>
-                    {r.kind !== 'visit' ? (
-                      <View style={styles.timeRow}>
-                        {r.kind === 'weekly' && r.days ? (
-                          <View style={styles.chip}>
-                            <T weight="black" style={{ fontSize: 13 }}>
-                              {r.days.map((d) => DOW()[d]).join(' · ')}
-                            </T>
-                          </View>
-                        ) : null}
-                        {r.times.map((tm) => (
-                          <View key={tm} style={styles.chip}>
-                            <T weight="black" style={{ fontSize: 13 }}>
-                              {hm(tm)}
-                            </T>
-                          </View>
-                        ))}
-                        {r.portion ? (
-                          <View style={styles.chip}>
-                            <T weight="black" style={{ fontSize: 13 }}>
-                              {tn(r.portion, '{n} min', '{n} min')}
-                            </T>
-                          </View>
-                        ) : null}
-                      </View>
-                    ) : null}
-                    <View style={{ gap: 10, marginTop: 12 }}>
-                      {r.points.map((p) => (
-                        <View key={p.title} style={styles.point}>
-                          <T weight="black" style={{ fontSize: 15 }}>
-                            {t(p.title)}
+                    {meta.label.toUpperCase()}
+                  </T>
+                  <T weight="black" style={styles.title}>
+                    {targetHeadline(r)}
+                  </T>
+                  <T style={styles.body}>{t(r.guide.why)}</T>
+                  <Float style={{ alignItems: 'center', marginVertical: 10 }} amount={5}>
+                    {r.care === 'litter' && ART.care.litter ? (
+                      <Image source={ART.care.litter} style={{ width: 150, height: 150 }} resizeMode="contain" />
+                    ) : (
+                      <Sticker name={careSticker(r.care, pet.species)} size={140} />
+                    )}
+                  </Float>
+                  {r.kind !== 'visit' ? <PlanBox r={r} /> : null}
+                  {r.kind !== 'visit' ? (
+                    <View style={styles.timeRow}>
+                      {r.kind === 'weekly' && r.days ? (
+                        <View style={styles.chip}>
+                          <T weight="black" style={{ fontSize: 13 }}>
+                            {r.days.map((d) => DOW()[d]).join(' · ')}
                           </T>
-                          <T
-                            style={{
-                              color: colors.inkSoft,
-                              fontSize: 14,
-                              lineHeight: 20,
-                              marginTop: 3,
-                            }}
-                          >
-                            {t(p.body)}
+                        </View>
+                      ) : null}
+                      {r.times.map((tm) => (
+                        <View key={tm} style={styles.chip}>
+                          <T weight="black" style={{ fontSize: 13 }}>
+                            {hm(tm)}
                           </T>
                         </View>
                       ))}
                     </View>
-                    <Bouncy
-                      onPress={() => (done ? undefined : apply(r))}
-                      style={[styles.setup, { backgroundColor: done ? colors.card : meta.color }]}
-                      accessibilityRole="button"
-                      testID={`guide-apply-${r.care}`}
+                  ) : null}
+                  <View style={{ gap: 10, marginTop: 12 }}>
+                    {r.guide.points.map((p) => (
+                      <View key={p.title} style={styles.point}>
+                        <T weight="black" style={{ fontSize: 15 }}>
+                          {t(p.title)}
+                        </T>
+                        <T
+                          style={{
+                            color: colors.inkSoft,
+                            fontSize: 14,
+                            lineHeight: 20,
+                            marginTop: 3,
+                          }}
+                        >
+                          {t(p.body)}
+                        </T>
+                      </View>
+                    ))}
+                  </View>
+                  <Bouncy
+                    onPress={() => (done ? undefined : apply(r))}
+                    style={[styles.setup, { backgroundColor: done ? colors.card : meta.color }]}
+                    accessibilityRole="button"
+                    testID={`guide-apply-${r.care}`}
+                  >
+                    <T
+                      weight="black"
+                      style={{
+                        color: done ? colors.ink : '#FFFFFF',
+                        fontSize: 15,
+                        letterSpacing: 0.8,
+                      }}
                     >
-                      <T
-                        weight="black"
-                        style={{
-                          color: done ? colors.ink : '#FFFFFF',
-                          fontSize: 15,
-                          letterSpacing: 0.8,
-                        }}
-                      >
-                        {done ? t('ROUTINE SET ✓') : r.kind === 'visit' ? t('ADD A VET VISIT') : ex ? t('UPDATE MY ROUTINE') : t('SET UP THIS ROUTINE')}
-                      </T>
-                    </Bouncy>
-                    {ex && !done && r.kind !== 'visit' ? (
-                      <T
-                        style={{
-                          color: colors.muted,
-                          fontSize: 12,
-                          textAlign: 'center',
-                          marginTop: 6,
-                        }}
-                      >
-                        {t('Replaces the times of your current routine.')}
-                      </T>
-                    ) : null}
-                  </ScrollView>
-                </View>
-              );
-            })}
+                      {done ? t('ROUTINE SET ✓') : r.kind === 'visit' ? t('ADD A VET VISIT') : ex ? t('UPDATE MY ROUTINE') : t('SET UP THIS ROUTINE')}
+                    </T>
+                  </Bouncy>
+                  {ex && !done && r.kind !== 'visit' ? (
+                    <T
+                      style={{
+                        color: colors.muted,
+                        fontSize: 12,
+                        textAlign: 'center',
+                        marginTop: 6,
+                      }}
+                    >
+                      {t('Replaces the times of your current routine.')}
+                    </T>
+                  ) : null}
+                </ScrollView>
+              </View>
+            );
+          })}
 
-            {/* the end: everything in one tap */}
-            <View
-              style={{
-                width: W,
-                paddingHorizontal: 26,
-                paddingTop: 30,
-                alignItems: 'center',
-              }}
-            >
-              <Sticker name={moodSticker(pet.species, 'party')} size={170} />
-              <T weight="black" style={[styles.title, { textAlign: 'center' }]}>
-                {t('That’s {name}’s day', { name: pet.name })}
-              </T>
-              <T style={[styles.body, { textAlign: 'center' }]}>
-                {t('Set up every routine at once, with reminders at the suggested times. We’ll bring new advice when {name} reaches the next stage.', { name: pet.name })}
-              </T>
-            </View>
-          </ScrollView>
-        )}
-
-        {g.known ? (
+          {/* the end: everything in one tap */}
           <View
             style={{
-              paddingHorizontal: 22,
-              gap: 6,
+              width: W,
+              paddingHorizontal: 26,
+              paddingTop: 30,
               alignItems: 'center',
-              paddingTop: 8,
             }}
           >
-            {page === last ? (
-              <>
-                <Bouncy onPress={applyAll} style={[styles.cta, { backgroundColor: PURPLE }]} accessibilityRole="button" testID="guide-apply-all">
-                  <T weight="black" style={{ color: '#FFFFFF', fontSize: 17, letterSpacing: 1 }}>
-                    {recs.every((r) => r.kind === 'visit' || applied[r.care]) ? t('ALL SET ✓') : t('SET UP EVERYTHING')}
-                  </T>
-                </Bouncy>
-                <Bouncy onPress={() => router.back()} style={{ height: 40, justifyContent: 'center' }} accessibilityRole="button">
-                  <T
-                    weight="black"
-                    style={{
-                      color: colors.ink,
-                      fontSize: 14,
-                      letterSpacing: 1,
-                    }}
-                  >
-                    {t('DONE')}
-                  </T>
-                </Bouncy>
-              </>
-            ) : (
-              <Bouncy onPress={() => go(page + 1)} style={[styles.cta, { backgroundColor: colors.ink }]} accessibilityRole="button" testID="guide-next">
-                <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 1 }}>
-                  {t('NEXT')}
+            <Sticker name={moodSticker(pet.species, 'party')} size={170} />
+            <T weight="black" style={[styles.title, { textAlign: 'center' }]}>
+              {t('That’s {name}’s day', { name: pet.name })}
+            </T>
+            <T style={[styles.body, { textAlign: 'center' }]}>
+              {t('Set up every routine at once. Reminders only where they help, and the plan grows with {name}.', { name: pet.name })}
+            </T>
+            <Bouncy onPress={() => router.push('/plan')} style={{ padding: 12, marginTop: 6 }} accessibilityRole="button" testID="guide-adjust">
+              <T weight="black" style={{ color: PURPLE, fontSize: 15 }}>
+                {t('Adjust the numbers first')}
+              </T>
+            </Bouncy>
+          </View>
+        </ScrollView>
+
+        <View
+          style={{
+            paddingHorizontal: 22,
+            gap: 6,
+            alignItems: 'center',
+            paddingTop: 8,
+          }}
+        >
+          {page === last ? (
+            <>
+              <Bouncy onPress={applyAll} style={[styles.cta, { backgroundColor: PURPLE }]} accessibilityRole="button" testID="guide-apply-all">
+                <T weight="black" style={{ color: '#FFFFFF', fontSize: 17, letterSpacing: 1 }}>
+                  {recs.every((r) => r.kind === 'visit' || applied[r.care]) ? t('ALL SET ✓') : t('SET UP EVERYTHING')}
                 </T>
               </Bouncy>
-            )}
-          </View>
-        ) : null}
+              <Bouncy onPress={() => router.back()} style={{ height: 40, justifyContent: 'center' }} accessibilityRole="button">
+                <T
+                  weight="black"
+                  style={{
+                    color: colors.ink,
+                    fontSize: 14,
+                    letterSpacing: 1,
+                  }}
+                >
+                  {t('DONE')}
+                </T>
+              </Bouncy>
+            </>
+          ) : (
+            <Bouncy onPress={() => go(page + 1)} style={[styles.cta, { backgroundColor: colors.ink }]} accessibilityRole="button" testID="guide-next">
+              <T weight="black" style={{ color: '#FFFFFF', fontSize: 18, letterSpacing: 1 }}>
+                {t('NEXT')}
+              </T>
+            </Bouncy>
+          )}
+        </View>
       </View>
     </View>
   );
 }
 
+/** The recommendation in numbers: how often and how much, with the usual range. */
+function PlanBox({ r }: { r: Target }) {
+  const c = recommendedChoice(r);
+  const pr = portionFor(r, r.count.rec);
+  if (!c) return null;
+  return (
+    <View style={styles.planBox}>
+      <T weight="black" style={{ fontSize: 18, color: CARE[r.care].color, textAlign: 'center' }}>
+        {choiceSummary(c)}
+      </T>
+      {pr && pr.min !== pr.max ? (
+        <T weight="xbold" style={{ fontSize: 12, color: colors.muted, textAlign: 'center' }}>
+          {t('Usual: {min} to {max} each', { min: formatAmount(r.care, pr.min), max: formatAmount(r.care, pr.max) })}
+        </T>
+      ) : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  planBox: { backgroundColor: '#FFFFFF', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 14, gap: 2, marginBottom: 10 },
   root: { flex: 1 },
   top: {
     flexDirection: 'row',
