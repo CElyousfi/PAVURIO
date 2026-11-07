@@ -13,7 +13,7 @@ import { addMeasurement } from '../data/careRepo';
 import { applyChoices, setProfile } from '../data/autoPlan';
 import { Choice, defaultProfile, estimateWeightKg, planBasis, recommendedChoice, targetsFor } from '../domain/carePlan';
 import { approxBirthDate } from '../domain/lifeStage';
-import { About, AboutPet, PlanReview } from '../features/AutoPlan';
+import { About, AboutPet, CarePage, PlanReview, targetHeadline } from '../features/AutoPlan';
 import { markGuideSeen } from '../features/RoutineGuide';
 import { useApp } from '../state/AppState';
 import { CircleButton, Pill, T } from '../ui/primitives';
@@ -43,9 +43,10 @@ const WELCOME_STACK_CAT = [
   { color: CARE.meal.color, from: 0.3, to: 0.62 },
 ];
 
-type Step = 'welcome' | 'species' | 'name' | 'look' | 'about' | 'plan' | 'first';
+type Step = 'welcome' | 'species' | 'name' | 'look' | 'about' | 'care' | 'plan' | 'first';
 // age, size and food build the whole plan; the exact birthday and adoption day can be added later in the profile
-const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'about', 'plan', 'first'];
+// 'care' is one page per care (meals, water, walks…), with the same bowl-and-drag controls as logging
+const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'about', 'care', 'plan', 'first'];
 const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: 'drink', walk: 'walk', play: 'play', grooming: 'groom', medication: 'meds' };
 
 export default function Onboarding() {
@@ -65,6 +66,7 @@ export default function Onboarding() {
   const [portions, setPortions] = useState<Portions>({});
   const [about, setAbout] = useState<About>({ stage: null, months: null, profile: defaultProfile('dog'), kg: 0, kgTouched: false });
   const [choices, setChoices] = useState<Choice[]>([]);
+  const [careIdx, setCareIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<Pet | null>(null);
@@ -88,6 +90,10 @@ export default function Onboarding() {
   const back = () => {
     if (adding && step === 'species') return router.back();
     if (created) return; // the pet exists: no going back into setup
+    if (step === 'care' && careIdx > 0) {
+      dir.current = -1;
+      return setCareIdx(careIdx - 1);
+    }
     const i = ORDER.indexOf(step);
     if (i > 0) go(ORDER[i - 1]);
   };
@@ -116,7 +122,14 @@ export default function Onboarding() {
   const toPlan = () => {
     if (!basis) return;
     setChoices(targets.map(recommendedChoice).filter((c): c is Choice => !!c));
-    go('plan');
+    setCareIdx(0);
+    go('care');
+  };
+  const nextCare = () => {
+    if (careIdx < choices.length - 1) {
+      dir.current = 1;
+      setCareIdx(careIdx + 1);
+    } else go('plan');
   };
 
   const createTheirPet = async () => {
@@ -188,7 +201,11 @@ export default function Onboarding() {
 
   const petSize = Math.min(W * 0.72, 330);
   const displayName = name.trim() || (species === 'dog' ? t('your dog') : t('your cat'));
-  const setupSteps: Step[] = ['species', 'name', 'look', 'about', 'plan'];
+  const setupSteps: Step[] = ['species', 'name', 'look', 'about', 'care', 'plan'];
+  const dotIndex = step === 'care' ? 4 + careIdx : step === 'plan' ? 4 + choices.length : setupSteps.indexOf(step);
+  const dotTotal = 5 + Math.max(1, choices.length);
+  const careChoice = step === 'care' ? choices[careIdx] : undefined;
+  const careTarget = careChoice ? targets.find((x) => x.care === careChoice.care) : undefined;
   const showBack = step !== 'welcome' && !created;
   const showSkip = step === 'first';
 
@@ -196,7 +213,7 @@ export default function Onboarding() {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={[styles.topRow, { width: W }]}>
         {showBack ? <CircleButton icon="back" label={t('Back')} onPress={back} size={46} /> : <View style={{ width: 46 }} />}
-        {setupSteps.includes(step) ? <Dots index={setupSteps.indexOf(step)} total={setupSteps.length} /> : null}
+        {setupSteps.includes(step) ? <Dots index={dotIndex} total={dotTotal} /> : null}
         {showSkip ? (
           <Pressable accessibilityRole="button" onPress={() => finish()} hitSlop={10} style={{ width: 60, alignItems: 'flex-end' }} testID="skip">
             <T weight="black" style={{ color: colors.faint, fontSize: 14, letterSpacing: 1 }}>
@@ -297,6 +314,24 @@ export default function Onboarding() {
           </ScrollView>
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
             <Pill label={t('BUILD THE PLAN')} onPress={toPlan} disabled={about.months == null} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="about-next" />
+          </View>
+        </Animated.View>
+      )}
+
+      {step === 'care' && basis && careChoice && careTarget && (
+        <Animated.View key={`care-${careIdx}`} entering={slide()} style={[styles.page, { width: W }]}>
+          <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingHorizontal: 22, paddingBottom: 12, alignItems: 'center' }}>
+            <T weight="black" style={{ color: CARE[careChoice.care].color, fontSize: 13, letterSpacing: 1.6, marginTop: 4 }}>
+              {CARE[careChoice.care].label.toUpperCase()}
+            </T>
+            <T weight="black" style={[styles.h2, { marginTop: 2 }]}>
+              {targetHeadline(careTarget)}
+            </T>
+            <T style={[styles.sub, { marginBottom: 4 }]}>{t(careTarget.guide.why)}</T>
+            <CarePage name={displayName} unit={settings.weightUnit} basis={basis} target={careTarget} choice={careChoice} onChange={(c) => setChoices(choices.map((x) => (x.care === c.care ? c : x)))} size={Math.min(W * 0.56, 230)} />
+          </ScrollView>
+          <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
+            <Pill label={t('NEXT')} color={CARE[careChoice.care].color} onPress={nextCare} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="care-next" />
           </View>
         </Animated.View>
       )}

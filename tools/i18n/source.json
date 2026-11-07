@@ -9604,5 +9604,15 @@
   "id": "1898",
   "en": "Average",
   "fr": "Moyen"
+ },
+ {
+  "id": "1899",
+  "en": "ADD TO THE PLAN",
+  "fr": "AJOUTER AU PROGRAMME"
+ },
+ {
+  "id": "1900",
+  "en": "{name} doesn’t need this",
+  "fr": "Pas besoin pour {name}"
  }
 ]

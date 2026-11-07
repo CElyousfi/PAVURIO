@@ -860,4 +860,7 @@ export const FR: Record<string, string> = {
   "Giant": "Géant",
   "Petite": "Petit",
   "Average": "Moyen",
+  "ADD TO THE PLAN": "AJOUTER AU PROGRAMME",
+  "Reminder on": "Rappel activé",
+  "{name} doesn’t need this": "Pas besoin pour {name}",
 };

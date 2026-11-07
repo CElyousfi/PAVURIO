@@ -5,13 +5,15 @@
  * Used by onboarding and the Plan screen.
  */
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CARE, CareType, Species, formatAmount } from '../domain/care';
 import { AGE_PICKS, StageId } from '../domain/lifeStage';
 import { Choice, FoodKind, PetProfile, PlanBasis, Range, SIZES, Target, inRange, portionFor, withCount, daysFor } from '../domain/carePlan';
 import { CareIcon } from '../ui/CareIcon';
-import { Sheet, TimeField, Toggle } from '../ui/forms';
+import { Vessel } from '../ui/Vessel';
+import { RollingNumber } from '../ui/Rolling';
+import { Sheet, TimeField } from '../ui/forms';
 import { Bouncy, Pop, motionReduced } from '../ui/motion';
 import { Icon, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
@@ -232,80 +234,14 @@ function portionStep(care: CareType, v: number): number {
   return 5;
 }
 
-function TargetSheet({ name, unit: wUnit, basis, target, choice, onClose, onSave }: { name: string; unit: 'kg' | 'lb'; basis: PlanBasis; target: Target; choice: Choice; onClose: () => void; onSave: (c: Choice) => void }) {
+function TargetSheet({ name, unit, basis, target, choice, onClose, onSave }: { name: string; unit: 'kg' | 'lb'; basis: PlanBasis; target: Target; choice: Choice; onClose: () => void; onSave: (c: Choice) => void }) {
   const [c, setC] = useState<Choice>(choice);
-  const weekly = c.kind === 'weekly';
-  const pr = portionFor(target, c.count);
-  const unit = CARE[c.care].amount?.unit;
-  const fmt = (v: number) => formatAmount(c.care, v);
-  const dow = weekdayNamesShort();
   return (
     <Sheet visible onClose={onClose} title={CARE[c.care].label}>
-      <View style={{ gap: 14, paddingBottom: 6 }}>
-        <Toggle label={t('In {name}’s plan', { name })} value={c.on} onChange={(v) => setC({ ...c, on: v })} />
-        {c.on ? (
-          <>
-            <RecStepper
-              label={weekly ? t('Days a week') : t('Times a day')}
-              value={c.count}
-              range={target.count}
-              format={(v) => (weekly ? tn(v, '{n} day a week', '{n} days a week') : t('{n}× a day', { n: v }))}
-              formatRange={String}
-              onStep={(d) => setC(withCount(target, c, c.count + d))}
-              min={1}
-              max={weekly ? 7 : 8}
-              testID="rec-count"
-            />
-            {pr && c.portion != null && unit ? (
-              <RecStepper
-                label={t('Each time')}
-                value={c.portion}
-                range={pr}
-                format={fmt}
-                onStep={(d) => {
-                  const s = portionStep(c.care, c.portion!);
-                  const spec = CARE[c.care].amount!;
-                  setC({ ...c, portion: Math.max(spec.min, Math.min(spec.max, Math.round((c.portion! + d * s) / s) * s)) });
-                }}
-                testID="rec-portion"
-              />
-            ) : null}
-            {c.care === 'meal' ? <FoodNote basis={basis} unit={wUnit} name={name} count={c.count} portion={c.portion ?? 0} /> : null}
-            {weekly ? (
-              <View style={styles.days}>
-                {dow.map((d, i) => {
-                  const on = c.days.includes(i);
-                  return (
-                    <Bouncy
-                      key={i}
-                      onPress={() => {
-                        const days = on ? c.days.filter((x) => x !== i) : [...c.days, i].sort();
-                        if (days.length) setC({ ...c, days, count: days.length });
-                      }}
-                      style={[styles.day, on && { backgroundColor: CARE[c.care].color }]}
-                      accessibilityRole="checkbox"
-                      accessibilityState={{ checked: on }}
-                    >
-                      <T weight="black" style={{ fontSize: 12, color: on ? '#FFFFFF' : colors.ink }}>
-                        {d}
-                      </T>
-                    </Bouncy>
-                  );
-                })}
-              </View>
-            ) : null}
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {(weekly ? c.times.slice(0, 1) : c.times).map((tm, i) => (
-                <View key={i} style={{ width: '48%' }}>
-                  <TimeField label="" value={tm} onChange={(v) => setC({ ...c, times: c.times.map((x, j) => (j === i ? v : x)) })} />
-                </View>
-              ))}
-            </View>
-            <Toggle label={t('Remind me')} body={t('A gentle notification at these times.')} value={c.remind} onChange={(v) => setC({ ...c, remind: v })} />
-          </>
-        ) : null}
+      <View style={{ gap: 8, paddingBottom: 6 }}>
+        <CarePage name={name} unit={unit} basis={basis} target={target} choice={c} onChange={setC} size={190} />
         <Bouncy
-          onPress={() => onSave(weekly && c.days.length === 0 ? { ...c, days: daysFor(c.count, target.days) } : c)}
+          onPress={() => onSave(c.kind === 'weekly' && c.days.length === 0 ? { ...c, days: daysFor(c.count, target.days) } : c)}
           style={[styles.save, { backgroundColor: CARE[c.care].color }]}
           accessibilityRole="button"
           testID="rec-save"
@@ -411,6 +347,15 @@ const styles = StyleSheet.create({
   note: { backgroundColor: '#FFF6E5', borderRadius: 16, padding: 12 },
   days: { flexDirection: 'row', gap: 6 },
   day: { flex: 1, height: 40, borderRadius: 14, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },
+  addBack: { height: 50, paddingHorizontal: 26, borderRadius: 25, alignItems: 'center', justifyContent: 'center', marginTop: 12 },
+  amountRow: { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', justifyContent: 'center' },
+  side: { flex: 1, alignItems: 'center', paddingVertical: 6 },
+  sideText: { fontSize: 18, color: colors.faint },
+  warn: { fontSize: 12, color: '#C27700', textAlign: 'center', marginTop: 2 },
+  countPill: { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', borderRadius: 28, padding: 6, marginTop: 12 },
+  countBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
+  timesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 12 },
+  bell: { height: 38, paddingHorizontal: 14, borderRadius: 19, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   save: { height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
 });
 
@@ -436,4 +381,148 @@ export function targetHeadline(tg: Target): string {
     return tn(tg.count.rec, '{n} walk a day of about {min} minutes', '{n} walks a day of about {min} minutes', { min: each });
   }
   return t(tg.guide.headline);
+}
+
+/**
+ * One care, full page, with the app's own controls: the bowl (or ball, brush…) fills with the amount and
+ * is dragged up / down to change it, exactly like logging; then how many times, when, and the reminder.
+ */
+export function CarePage({ name, unit, basis, target, choice, onChange, size }: { name: string; unit: 'kg' | 'lb'; basis: PlanBasis; target: Target; choice: Choice; onChange: (c: Choice) => void; size: number }) {
+  const c = choice;
+  const meta = CARE[c.care];
+  const weekly = c.kind === 'weekly';
+  const spec = meta.amount;
+  const pr = portionFor(target, c.count);
+  const portion = c.portion;
+  const hasAmount = !!(pr && portion != null && spec);
+  const stepOf = (v: number) => portionStep(c.care, v);
+  const nudge = (d: 1 | -1) => {
+    if (!hasAmount || !spec || portion == null) return;
+    const s = stepOf(portion);
+    onChange({ ...c, portion: Math.max(spec.min, Math.min(spec.max, Math.round((portion + d * s) / s) * s)) });
+  };
+  // the recommendation fills the picture to about 80%: more shows as fuller, less as emptier
+  const level = !c.on ? 0 : hasAmount && pr ? Math.max(0.12, Math.min(1, portion! / (pr.rec / 0.8))) : 0.85;
+  const fmtN = (v: number) => String(Math.round(v * 100) / 100);
+  const u = spec ? (spec.unit === 'min' ? ' min' : spec.unit) : '';
+  const dow = weekdayNamesShort();
+  const ok = !hasAmount || !pr ? true : inRange(pr, portion!);
+  const countOk = inRange(target.count, c.count);
+  return (
+    <View style={{ alignItems: 'center', alignSelf: 'stretch' }}>
+      <View style={{ opacity: c.on ? 1 : 0.35 }}>
+        <Vessel type={c.care} color={meta.color} level={level} size={size} onStep={hasAmount && c.on ? nudge : undefined} testIDPrefix="care-amount" />
+      </View>
+      {!c.on ? (
+        <Bouncy onPress={() => onChange({ ...c, on: true })} style={[styles.addBack, { backgroundColor: meta.color }]} accessibilityRole="button" testID="care-on">
+          <T weight="black" style={{ color: '#FFFFFF', fontSize: 15, letterSpacing: 0.8 }}>
+            {t('ADD TO THE PLAN')}
+          </T>
+        </Bouncy>
+      ) : (
+        <>
+          {hasAmount ? (
+            <>
+              <View style={styles.amountRow}>
+                <Pressable onPress={() => nudge(-1)} style={styles.side} accessibilityRole="button" accessibilityLabel={t('Less')}>
+                  <T weight="black" style={styles.sideText}>
+                    {portion! - stepOf(portion!) >= (spec?.min ?? 0) ? `${fmtN(portion! - stepOf(portion!))}${u}` : ''}
+                  </T>
+                </Pressable>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end' }} accessible accessibilityLabel={formatAmount(c.care, portion!)} accessibilityLiveRegion="polite" testID="care-amount">
+                  <RollingNumber value={fmtN(portion!)} size={46} lineHeight={54} />
+                  <T weight="black" style={{ fontSize: 30, lineHeight: 50, color: colors.ink }}>
+                    {u}
+                  </T>
+                </View>
+                <Pressable onPress={() => nudge(1)} style={styles.side} accessibilityRole="button" accessibilityLabel={t('More')}>
+                  <T weight="black" style={styles.sideText}>{`${fmtN(portion! + stepOf(portion!))}${u}`}</T>
+                </Pressable>
+              </View>
+              <T weight="xbold" style={{ fontSize: 13, color: portion === pr!.rec ? colors.brand : colors.muted, textAlign: 'center' }}>
+                {portion === pr!.rec ? `✓ ${t('Recommended')} · ` : `${t('Recommended: {value}', { value: formatAmount(c.care, pr!.rec) })} · `}
+                {t('Usual: {min} to {max} each', { min: formatAmount(c.care, pr!.min), max: formatAmount(c.care, pr!.max) })}
+              </T>
+              {!ok ? <T style={styles.warn}>{t('Outside the usual range. That’s fine if your vet advised it.')}</T> : null}
+            </>
+          ) : null}
+
+          <View style={[styles.countPill, { backgroundColor: meta.tint }]}>
+            <Bouncy scaleTo={0.88} onPress={() => c.count > 1 && onChange(withCount(target, c, c.count - 1))} style={styles.countBtn} accessibilityRole="button" accessibilityLabel={t('Less')} testID="care-count-minus" haptic={false}>
+              <T weight="black" style={styles.stepTxt}>
+                −
+              </T>
+            </Bouncy>
+            <Pop trigger={c.count} amount={0.25} style={{ flex: 1, alignItems: 'center' }}>
+              <T weight="black" style={{ fontSize: 19, color: meta.color }} testID="care-count">
+                {weekly ? tn(c.count, '{n} day a week', '{n} days a week') : t('{n}× a day', { n: c.count })}
+              </T>
+            </Pop>
+            <Bouncy scaleTo={0.88} onPress={() => c.count < (weekly ? 7 : 8) && onChange(withCount(target, c, c.count + 1))} style={styles.countBtn} accessibilityRole="button" accessibilityLabel={t('More')} testID="care-count-plus" haptic={false}>
+              <Icon name="plus" size={18} />
+            </Bouncy>
+          </View>
+          <T weight="xbold" style={{ fontSize: 12, color: c.count === target.count.rec ? colors.brand : colors.muted, marginTop: 4 }}>
+            {c.count === target.count.rec ? `✓ ${t('Recommended')}` : t('Recommended: {value}', { value: weekly ? tn(target.count.rec, '{n} day a week', '{n} days a week') : t('{n}× a day', { n: target.count.rec }) })}
+            {target.count.min !== target.count.max ? ` · ${t('Usual: {min} to {max}', { min: target.count.min, max: target.count.max })}` : ''}
+          </T>
+          {!countOk ? <T style={styles.warn}>{t('Outside the usual range. That’s fine if your vet advised it.')}</T> : null}
+
+          {weekly ? (
+            <View style={[styles.days, { alignSelf: 'stretch', marginTop: 10 }]}>
+              {dow.map((d, i) => {
+                const on = c.days.includes(i);
+                return (
+                  <Bouncy
+                    key={i}
+                    onPress={() => {
+                      const days = on ? c.days.filter((x) => x !== i) : [...c.days, i].sort();
+                      if (days.length) onChange({ ...c, days, count: days.length });
+                    }}
+                    style={[styles.day, on && { backgroundColor: meta.color }]}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: on }}
+                  >
+                    <T weight="black" style={{ fontSize: 12, color: on ? '#FFFFFF' : colors.ink }}>
+                      {d}
+                    </T>
+                  </Bouncy>
+                );
+              })}
+            </View>
+          ) : null}
+
+          <View style={styles.timesRow}>
+            {(weekly ? c.times.slice(0, 1) : c.times).map((tm, i) => (
+              <TimeField key={`${i}-${c.times.length}`} compact label={meta.label} value={tm} color={meta.color} onChange={(v) => onChange({ ...c, times: c.times.map((x, j) => (j === i ? v : x)) })} />
+            ))}
+            <Bouncy
+              onPress={() => {
+                selectFeedback();
+                onChange({ ...c, remind: !c.remind });
+              }}
+              style={[styles.bell, c.remind && { backgroundColor: meta.color, borderColor: meta.color }]}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: c.remind }}
+              accessibilityLabel={t('Remind me')}
+              testID="care-remind"
+              haptic={false}
+            >
+              <T weight="black" style={{ fontSize: 14, color: c.remind ? '#FFFFFF' : colors.muted }}>
+                {c.remind ? `🔔 ${t('Reminder on')}` : `🔕 ${t('No reminder')}`}
+              </T>
+            </Bouncy>
+          </View>
+
+          {c.care === 'meal' && portion != null ? <FoodNote basis={basis} unit={unit} name={name} count={c.count} portion={portion} /> : null}
+
+          <Bouncy onPress={() => onChange({ ...c, on: false })} style={{ padding: 10, marginTop: 2 }} accessibilityRole="button" testID="care-off">
+            <T weight="black" style={{ color: colors.faint, fontSize: 13, letterSpacing: 0.6 }}>
+              {t('{name} doesn’t need this', { name })}
+            </T>
+          </Bouncy>
+        </>
+      )}
+    </View>
+  );
 }

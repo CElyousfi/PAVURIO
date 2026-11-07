@@ -1242,4 +1242,7 @@ export const ES: Record<string, string> = {
   "Giant": "Gigante",
   "Petite": "Pequeño",
   "Average": "Mediano",
+  "ADD TO THE PLAN": "AÑADIR AL PLAN",
+  "Reminder on": "Recordatorio activado",
+  "{name} doesn’t need this": "{name} no lo necesita",
 };

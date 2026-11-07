@@ -311,7 +311,7 @@ export function DateField({
 
 // ------------------------------------------------------------- time picker (5-minute steps)
 
-export function TimeField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+export function TimeField({ label, value, onChange, compact, color }: { label: string; value: string; onChange: (v: string) => void; /** a small chip instead of a full-width field */ compact?: boolean; color?: string }) {
   const [open, setOpen] = useState(false);
   const [h, m] = value.split(':').map(Number);
   const set = (hh: number, mm: number) => onChange(`${String((hh + 24) % 24).padStart(2, '0')}:${String((mm + 60) % 60).padStart(2, '0')}`);
@@ -319,13 +319,21 @@ export function TimeField({ label, value, onChange }: { label: string; value: st
   const h24 = uses24h();
   return (
     <View style={{ gap: 6 }}>
-      {label ? <Label>{label}</Label> : null}
-      <Pressable accessibilityRole="button" accessibilityLabel={`${label} ${pretty}`} onPress={() => setOpen(true)} style={[styles.input, { flexDirection: 'row', alignItems: 'center' }]}>
-        <T weight="black" style={{ flex: 1, fontSize: 18 }}>
-          {pretty}
-        </T>
-        <Icon name="chevR" size={18} color={colors.muted} />
-      </Pressable>
+      {label && !compact ? <Label>{label}</Label> : null}
+      {compact ? (
+        <Pressable accessibilityRole="button" accessibilityLabel={`${label} ${pretty}`} onPress={() => setOpen(true)} style={[styles.timeChip, color ? { borderColor: color } : null]}>
+          <T weight="black" style={{ fontSize: 15, color: color ?? colors.ink }}>
+            {pretty}
+          </T>
+        </Pressable>
+      ) : (
+        <Pressable accessibilityRole="button" accessibilityLabel={`${label} ${pretty}`} onPress={() => setOpen(true)} style={[styles.input, { flexDirection: 'row', alignItems: 'center' }]}>
+          <T weight="black" style={{ flex: 1, fontSize: 18 }}>
+            {pretty}
+          </T>
+          <Icon name="chevR" size={18} color={colors.muted} />
+        </Pressable>
+      )}
       <Sheet visible={open} onClose={() => setOpen(false)} title={label || t('Time')}>
         <T weight="black" style={{ textAlign: 'center', fontSize: 15, color: colors.muted }}>
           {t('Drag the wheels')}
@@ -435,6 +443,7 @@ export function Toggle({ label, body, value, onChange }: { label: string; body?:
 }
 
 const styles = StyleSheet.create({
+  timeChip: { height: 38, paddingHorizontal: 14, borderRadius: 19, borderWidth: 2, borderColor: colors.line, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
   track: { width: 50, height: 30, borderRadius: 15, backgroundColor: colors.faint, padding: 3 },
   knob: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#FFFFFF' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 8, gap: 10 },
