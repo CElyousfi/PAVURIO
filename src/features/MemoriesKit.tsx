@@ -159,7 +159,7 @@ export function TodayMomentCard({ width, compact }: { width: number; compact?: b
 
       <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
         <Bouncy accessibilityRole="button" accessibilityLabel={t('Take Photo')} onPress={() => capture('camera')} disabled={busy} style={[styles.btn, { backgroundColor: colors.ink }]} testID="moment-camera">
-          <T weight="black" style={{ color: '#FFF', fontSize: 14.5 }} numberOfLines={1}>
+          <T weight="black" style={{ color: '#FFF', fontSize: 14.5 }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
             {t('Take Photo')}
           </T>
         </Bouncy>

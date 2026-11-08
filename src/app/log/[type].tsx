@@ -359,7 +359,7 @@ export default function LogCard() {
             />
           ))}
         </View>
-        <TextInput
+        <TextInput maxFontSizeMultiplier={1.4}
           value={note}
           onChangeText={setNote}
           placeholder={t('Add a note (optional)')}

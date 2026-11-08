@@ -74,7 +74,7 @@ export function Field({ label, style, ref, ...rest }: TextInputProps & { label: 
   return (
     <View style={[{ gap: 6 }, style]}>
       <Label>{label}</Label>
-      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
+      <TextInput maxFontSizeMultiplier={1.4} ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
     </View>
   );
 }
@@ -396,7 +396,7 @@ export function ModalScreen({
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.canvas, paddingTop: insets.top + 8 }}>
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
         <ScreenHeader title={title} onClose={onClose} />
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: (footer || error ? 0 : insets.bottom) + 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {children}
         </ScrollView>
         {footer || error ? (

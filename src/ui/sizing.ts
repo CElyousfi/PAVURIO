@@ -45,3 +45,15 @@ export function fitHeroPet(kind: 'pet' | 'notif', budget: number, box: { w: numb
   const size = Math.floor(Math.min(budget, byWidth, byHeight));
   return size >= MIN ? size : 0;
 }
+
+/**
+ * Home's pet: as large as the screen allows, but small enough that the counter above it, the care
+ * row and the "next care" card below it still end above the floating + button on a short phone
+ * (iPhone SE, small Androids). Measured on Home: everything except the pet takes 331 pt; the +
+ * button and its margin take 82 pt above the bottom inset; 14 pt gap; plus room for larger text.
+ */
+export const HOME_FIXED = 331 + 82 + 14 + 10;
+export function homePetSize(width: number, height: number, insetTop = 0, insetBottom = 0): number {
+  const fits = (height - insetTop - insetBottom - HOME_FIXED) / 1.05;
+  return Math.round(Math.max(96, Math.min(width * 0.8, height * 0.42, 380, fits)));
+}

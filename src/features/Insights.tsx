@@ -184,9 +184,12 @@ export function CareHeatmap({ plan, byDay, today }: { plan: Plan; byDay: DayLogs
           <View style={{ flexDirection: 'row', gap: 3, height: 16 }}>
             {months.map((m, i) => (
               <View key={i} style={{ flex: 1 }}>
-                <T weight="black" style={{ fontSize: 10, color: colors.muted, width: 40 }} numberOfLines={1}>
-                  {m}
-                </T>
+                {/* the label may run past its narrow week column into the next ones (they are empty) */}
+                <View style={{ position: 'absolute', left: 0, top: 0, width: 44 }}>
+                  <T weight="black" style={{ fontSize: 10, color: colors.muted }} numberOfLines={1}>
+                    {m}
+                  </T>
+                </View>
               </View>
             ))}
           </View>

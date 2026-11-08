@@ -131,7 +131,7 @@ export default function Adventure() {
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.root}>
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 30, paddingHorizontal: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 30, paddingHorizontal: 20, gap: 14, width: '100%', maxWidth: 560, alignSelf: 'center' }} keyboardShouldPersistTaps="handled">
         <View style={styles.topRow}>
           <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} />
         </View>
@@ -180,7 +180,7 @@ export default function Adventure() {
           <T weight="black" style={{ fontSize: 16 }}>
             {t('Note')}
           </T>
-          <TextInput
+          <TextInput maxFontSizeMultiplier={1.4}
             value={note}
             onChangeText={setNote}
             placeholder={t('A new friend at the park, a puddle jump…')}

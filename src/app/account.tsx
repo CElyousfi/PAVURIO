@@ -452,7 +452,7 @@ function CodeInput({ value, onChange, small }: { value: string; onChange: (v: st
           </View>
         ))}
       </View>
-      <TextInput
+      <TextInput maxFontSizeMultiplier={1.4}
         ref={ref}
         value={value}
         onChangeText={(v) => onChange(v.replace(/\D/g, '').slice(0, 6))}

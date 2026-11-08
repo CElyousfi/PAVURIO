@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WELCOME_NOTIF_H, fitHeroPet, previewSize } from '../src/ui/sizing';
+import { WELCOME_NOTIF_H, fitHeroPet, homePetSize, previewSize } from '../src/ui/sizing';
 
 // available = window height − status/navigation bars − the screen's fixed parts (title, button…)
 describe('pet preview sizing', () => {
@@ -60,5 +60,32 @@ describe('welcome pets fit the space their slide has left', () => {
   });
   it('on an ordinary phone the pet keeps the size the screen budget gave it', () => {
     expect(fitHeroPet('pet', 160, { w: 360, h: 330 })).toBe(160);
+  });
+});
+
+describe("Home's pet leaves room for the + button on every phone", () => {
+  // real screens with their real system bars (top: status bar / notch / Dynamic Island; bottom:
+  // home indicator, Android gesture bar or 3-button navigation bar)
+  const devices: [string, number, number, number, number][] = [
+    ['iPhone SE (2nd/3rd gen)', 375, 667, 20, 0],
+    ['iPhone 13 mini', 375, 812, 50, 34],
+    ['iPhone 15', 393, 852, 59, 34],
+    ['iPhone 15 Pro Max', 430, 932, 59, 34],
+    ['small Android, 3-button nav', 360, 640, 24, 48],
+    ['Samsung Galaxy A, 3-button nav', 360, 800, 30, 48],
+    ['Pixel 8, gesture nav', 412, 915, 40, 24],
+    ['Android tablet landscape', 1280, 800, 24, 48],
+  ];
+  it.each(devices)('%s', (_name, w, h, top, bottom) => {
+    const size = homePetSize(w, h, top, bottom);
+    const peekBottom = top + 331 + size * 1.05; // where the next-care card ends
+    const fabTop = h - bottom - 82; // where the + button starts
+    expect(peekBottom + 14).toBeLessThanOrEqual(fabTop);
+    expect(size).toBeGreaterThanOrEqual(96);
+  });
+  it('tall phones keep (almost) the big pet they had', () => {
+    const before = Math.min(393 * 0.8, 852 * 0.42); // 314 on an iPhone 15
+    expect(homePetSize(393, 852, 59, 34)).toBeGreaterThanOrEqual(Math.floor(before * 0.95));
+    expect(homePetSize(430, 932, 59, 34)).toBeGreaterThanOrEqual(330);
   });
 });

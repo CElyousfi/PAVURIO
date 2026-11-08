@@ -408,7 +408,7 @@ export default function CardEditor() {
 
               <View style={{ gap: 6 }}>
                 <Label>{t('Title (optional)')}</Label>
-                <TextInput
+                <TextInput maxFontSizeMultiplier={1.4}
                   value={title}
                   onChangeText={(v) => {
                     setTitle(v);
@@ -423,7 +423,7 @@ export default function CardEditor() {
               </View>
               <View style={{ gap: 6 }}>
                 <Label>{t('Name & date (optional)')}</Label>
-                <TextInput value={footer} onChangeText={setFooter} maxLength={36} placeholder={t('Nothing')} placeholderTextColor={colors.faint} style={styles.input} accessibilityLabel={t('Name & date (optional)')} />
+                <TextInput maxFontSizeMultiplier={1.4} value={footer} onChangeText={setFooter} maxLength={36} placeholder={t('Nothing')} placeholderTextColor={colors.faint} style={styles.input} accessibilityLabel={t('Name & date (optional)')} />
               </View>
 
               <View style={{ gap: 8 }}>

@@ -61,7 +61,7 @@ export function HomeIntro() {
                 <T weight="black" style={{ fontSize: 15, marginTop: 4 }}>
                   {p.title}
                 </T>
-                <T style={{ color: colors.muted, fontSize: 12, lineHeight: 16, textAlign: 'center' }} numberOfLines={3}>
+                <T style={{ color: colors.muted, fontSize: 12, lineHeight: 16, textAlign: 'center' }} numberOfLines={4}>
                   {p.body}
                 </T>
               </Bouncy>

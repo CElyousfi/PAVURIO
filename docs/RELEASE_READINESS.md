@@ -46,6 +46,36 @@ Totals: `tsc` (app and tests), ESLint 0 problems, `npm test` 218 tests × 3 time
 
 **Known limitation:** if opening the database ever hangs (never settles), TRY AGAIN keeps waiting for that same attempt rather than opening a second connection that could migrate in parallel; closing and reopening the app recovers. The new texts (9) are translated into 29 languages.
 
+### Screen sizes: phones, iPhones and tablets (8 Nov)
+
+The web build of every screen was swept automatically at 14 sizes:
+- iPhones: SE (1st gen) 320×568, SE 375×667, 13 mini 375×812, 15 393×852, Pro Max 430×932.
+- Android phones: 360×640, Galaxy A 360×800, Pixel 412×915.
+- Foldable: 673×841.
+- Tablets: iPad mini 744×1133, iPad 820×1180, iPad Pro 1024×1366; landscape 1280×800 and 1180×820.
+
+Each run goes through setup and 29 more screens, and a detector flags text cut off with "…", anything off-screen, and pages wider than the screen.
+
+The final run found nothing off-screen and no failed screen. The only remaining flags are labels that shrink to fit on phones (the web preview can't shrink text), and each needs less shrinking than its limit allows. Fixed in this pass:
+- **Welcome slides:** the pet is sized from the measured space left on each slide.
+- **Home:** on short phones the pet now leaves room for the "next care" card above the + button. This is tested on 8 real device profiles with their real notch and navigation-bar sizes.
+- **Care calendar** month labels.
+- **Labels that were cut** on Home, Memory Cards, Pantry, Care, Summary and Memories.
+- **Confetti** spilling sideways.
+- **Screen titles** shrink to fit.
+- **System text size** (iOS Dynamic Type, Android font size) still enlarges text, but is capped at 1.4× (1.25× on buttons), so tiles and buttons can't clip.
+- **Bottom safe area** on Care, Memories, Pets, Records and modal screens.
+- **Tablets and landscape:** every screen keeps a centred column at most 560 pt wide.
+
+iPhone only: `ios.supportsTablet` is false, so iPads run the app in iPhone compatibility mode.
+
+**Still needs real devices:**
+- iPhone notch and Dynamic Island, and the home indicator (the web has no safe areas);
+- Android gesture vs 3-button navigation;
+- the largest system text sizes;
+- Samsung Keyboard and Gboard;
+- foldables opening and closing while the app is running.
+
 ### Dependency update for the Play build (8 Nov)
 
 The 14 packages that EAS's expo-doctor reported as behind SDK 58 were updated to the expected versions. These include `expo` 58.0.23, `expo-router` 58.0.30, `expo-sqlite` 58.0.15, `expo-notifications` 58.1.8, `expo-updates` 58.0.21, `expo-widgets` 58.0.27 and `react-native-safe-area-context` 5.11.1. There are no other dependency changes, and `npm ci` from the lockfile succeeds.

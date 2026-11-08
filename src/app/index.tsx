@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { homePetSize } from '../ui/sizing';
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, ZoomIn, ZoomOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -172,7 +173,8 @@ function HomeScreen() {
 
   if (!pet) return null;
   const row = SPECIES_CARE[pet.species];
-  const petSize = Math.min(W * 0.8, height * 0.42, 380);
+  // never pushes the next-care card under the + button on short phones
+  const petSize = homePetSize(W, height, insets.top, insets.bottom);
   const isEmptyDay = !loading && events.length === 0;
   const big = progress.planned > 0 ? `${progress.done}/${progress.planned}` : String(events.length);
   const complete = progress.planned > 0 && progress.ratio >= 1;
@@ -334,12 +336,12 @@ function HomeScreen() {
             </T>
           </View>
           <View style={{ flex: 1 }}>
-            <T weight="black" style={[styles.peekTitle, { color: occ.length ? '#D6336C' : colors.brand }]} numberOfLines={1}>
+            <T weight="black" style={[styles.peekTitle, { color: occ.length ? '#D6336C' : colors.brand }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
               {next ? next.title : occ.length ? t('All done for today') : t("Today's care")}
               {next && isCareType(next.type) && CARE[next.type].amount && portions[next.type] ? ` · ${formatAmount(next.type, portions[next.type]!)}` : ''}
             </T>
             {next ? (
-              <T weight="xbold" style={styles.peekMeta} numberOfLines={1}>
+              <T weight="xbold" style={styles.peekMeta} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
                 {t('Next up')} · {formatTime24to12(next.time)}
               </T>
             ) : null}
@@ -511,7 +513,7 @@ function RowItem({
         ) : null}
         {color ? <Splash fireKey={splashKey} color={color} /> : null}
       </View>
-      <T weight="black" style={styles.itemLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+      <T weight="black" style={styles.itemLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
         {label.toUpperCase()}
       </T>
     </APressable>

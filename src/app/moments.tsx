@@ -16,7 +16,7 @@ import { monthNames } from '../i18n/dates';
 import { useApp } from '../state/AppState';
 import { AnniversaryCard, MEM_COLORS, MomentThumb, TodayMomentCard } from '../features/MemoriesKit';
 import { EmptyState, TabTitle, formatDateLong } from '../ui/forms';
-import { CircleButton, T } from '../ui/primitives';
+import { CircleButton, T, Column } from '../ui/primitives';
 import { Bouncy } from '../ui/motion';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
@@ -86,12 +86,13 @@ export default function MemoriesTab() {
 
       <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
         <Bouncy accessibilityRole="button" accessibilityLabel={t('Memory Cards')} onPress={() => router.push('/cards')} style={[styles.entry, { backgroundColor: MEM_COLORS.pink }]} testID="open-cards">
-          <Sticker name={moodSticker(pet.species, 'love')} size={54} />
+          {/* on narrow phones the title gets the whole tile, so "Memory" never breaks mid-word */}
+          {W >= 400 ? <Sticker name={moodSticker(pet.species, 'love')} size={54} /> : null}
           <View style={{ flex: 1 }}>
-            <T weight="black" style={{ fontSize: 15.5 }}>
+            <T weight="black" style={{ fontSize: 15.5 }} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
               {t('Memory Cards')}
             </T>
-            <T weight="xbold" style={{ fontSize: 12, color: colors.muted }} numberOfLines={2}>
+            <T weight="xbold" style={{ fontSize: 12, color: colors.muted }} numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.8}>
               {t('Frame your photos')}
             </T>
           </View>
@@ -109,7 +110,7 @@ export default function MemoriesTab() {
             testID={`story-${r}`}
           >
             <Sticker name={r === 'week' ? 'duo_hug' : moodSticker(pet.species, 'party')} size={40} />
-            <T weight="black" style={{ fontSize: 12.5, marginTop: 2 }} numberOfLines={1}>
+            <T weight="black" style={{ fontSize: 12.5, marginTop: 2 }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
               {r === 'week' ? t('This week') : t('This month')}
             </T>
           </Bouncy>
@@ -154,6 +155,7 @@ export default function MemoriesTab() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
+      <Column>
       <TabTitle title={t('Memories')} subtitle={t('Photos & milestones with {name}', { name: pet.name })} right={<CircleButton icon="plus" label={t('Add a moment')} onPress={() => router.push('/memory')} size={50} />} />
       {tab === 'moments' ? (
         <FlatList
@@ -161,7 +163,7 @@ export default function MemoriesTab() {
           keyExtractor={(r) => r.key}
           ListHeaderComponent={header}
           ListEmptyComponent={empty ?? undefined}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 40 }}
           showsVerticalScrollIndicator={false}
           initialNumToRender={12}
           windowSize={9}
@@ -199,11 +201,12 @@ export default function MemoriesTab() {
           }
         />
       ) : (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
           {header}
           {tab === 'milestones' ? <MilestonesView milestones={milestones} open={open} /> : <OnThisDayView items={otd} open={open} />}
         </ScrollView>
       )}
+      </Column>
     </View>
   );
 }

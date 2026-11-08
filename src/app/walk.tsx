@@ -21,7 +21,7 @@ import { afterWalkFinished, mirrorWalk, reconcileLockScreen } from '../features/
 import { endWalkLive } from '../native/walkLive';
 import { ValidationError } from '../data/repo';
 import { PlacePicker, Stamp, TIME_ART, WEATHER_ART, WeatherCard } from '../features/adventures';
-import { CircleButton, Pill, SoftPill, T } from '../ui/primitives';
+import { CircleButton, Pill, SoftPill, T, Column } from '../ui/primitives';
 import { ConfettiRain, Pulse } from '../ui/motion';
 import { colors } from '../ui/theme';
 import { completeFeedback, errorFeedback, tapFeedback, walkStartFeedback } from '../native/haptics';
@@ -347,6 +347,7 @@ export default function WalkScreen() {
   // ------------------------------------------------------------ 1. ready for an adventure
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      <Column>
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24 }} showsVerticalScrollIndicator={false}>
         <View style={styles.topRow}>
           <CircleButton icon="back" label={t('Back')} onPress={close} />
@@ -380,6 +381,7 @@ export default function WalkScreen() {
         </Animated.View>
       </ScrollView>
       <PlacePicker visible={picking} onClose={() => setPicking(false)} onPick={pickPlace} />
+      </Column>
     </View>
   );
 }

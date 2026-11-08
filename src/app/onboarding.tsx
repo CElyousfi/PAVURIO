@@ -333,7 +333,7 @@ export default function Onboarding() {
               <T weight="black" style={styles.fieldLabel}>
                 {t('Pet name')}
               </T>
-              <TextInput
+              <TextInput maxFontSizeMultiplier={1.4}
                 ref={nameRef}
                 value={name}
                 onChangeText={(v) => {

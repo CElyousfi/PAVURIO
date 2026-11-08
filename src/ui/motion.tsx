@@ -279,7 +279,7 @@ export function ConfettiRain({ fireKey, colorsList = ['#14B8C4', '#FFC83D', '#FF
   }, [fireKey, count, width, height, colorsList, clock]);
   if (!pieces.length) return null;
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
       {pieces.map((p) => (
         <ConfettiPiece key={p.id} p={p} height={height} clock={clock} />
       ))}

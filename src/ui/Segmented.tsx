@@ -58,7 +58,7 @@ export function Segmented<K extends string>({
             style={[styles.btn, { height }]}
             testID={o.testID}
           >
-            <T weight="black" style={{ fontSize: 15, color: on ? accent ?? colors.ink : colors.muted }} numberOfLines={1}>
+            <T weight="black" style={{ fontSize: 15, color: on ? accent ?? colors.ink : colors.muted }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
               {o.label}
             </T>
           </Pressable>
