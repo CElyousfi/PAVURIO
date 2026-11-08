@@ -12,9 +12,10 @@
  * single all-or-nothing transaction around the whole setup isn't available; this is the safe equivalent.)
  */
 import { addMeasurement } from './careRepo';
+import { setupLock } from './lock';
 import { applyChoices, setProfile } from './autoPlan';
 import type { Db } from './db';
-import { NewPetInput, Pet, createPet, getPet, getSetting, listSettingsLike, setSetting } from './repo';
+import { NewPetInput, Pet, ValidationError, createPet, getPet, getSetting, listSettingsLike, setSetting } from './repo';
 import { Choice, PetProfile, planBasis } from '../domain/carePlan';
 import { ageInMonths, stageOf } from '../domain/lifeStage';
 
@@ -41,8 +42,14 @@ export async function startPetSetup(db: Db, input: NewPetInput, work: SetupWork)
   return createPet(db, input, Date.now(), { settings: (id) => ({ [PENDING(id)]: JSON.stringify(work) }) });
 }
 
-/** Applies a pending setup (idempotent). Throws if a step fails; the record stays for the next try. */
-export async function finishSetup(db: Db, petId: string): Promise<void> {
+/** Applies a pending setup (idempotent). Throws if a step fails; the record stays for the next try.
+ * One at a time (setupLock): onboarding and the reload that recovers setups can both ask for the
+ * same pet; the second one then finds the setup done and does nothing. */
+export function finishSetup(db: Db, petId: string): Promise<void> {
+  return setupLock(() => finishSetupLocked(db, petId));
+}
+
+async function finishSetupLocked(db: Db, petId: string): Promise<void> {
   const raw = await getSetting(db, PENDING(petId));
   if (!raw) return;
   const work = JSON.parse(raw) as SetupWork;
@@ -54,7 +61,15 @@ export async function finishSetup(db: Db, petId: string): Promise<void> {
   if (work.birthApprox && pet.birthDate) await setSetting(db, `birthApprox:${pet.id}`, '1');
   await setProfile(db, pet.id, work.profile);
   // a stable id: if the app stops right after saving it, the retry finds it and adds nothing
-  if (work.weight) await addMeasurement(db, { id: `setup-weight-${pet.id}`, petId: pet.id, kind: 'weight', value: work.weight.value, unit: work.weight.unit, at: work.weight.at });
+  // The weigh-in is optional: a value the rules reject (e.g. saved by an older version) must never
+  // keep the rest of the setup from finishing. Nothing else is skipped; the owner can weigh later.
+  if (work.weight) {
+    try {
+      await addMeasurement(db, { id: `setup-weight-${pet.id}`, petId: pet.id, kind: 'weight', value: work.weight.value, unit: work.weight.unit, at: work.weight.at });
+    } catch (e) {
+      if (!(e instanceof ValidationError)) throw e;
+    }
+  }
   // routines + plan + portions: updates the same schedules on a retry, never duplicates them
   await applyChoices(db, pet, planBasis(pet.species, work.months, work.profile, work.weighedKg), work.choices);
   // the plan was just built for this age: no "new for this age" card on day one

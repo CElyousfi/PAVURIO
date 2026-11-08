@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
@@ -268,7 +268,7 @@ export default function LogCard() {
   const showDay = !!editing || !isToday(dayKey);
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.root}>
+    <KeyboardAvoidingView behavior="padding" style={styles.root}>
       <View style={[styles.col, { width: W, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 22 }]}>
         <View style={styles.topRow}>
           {showDay ? (

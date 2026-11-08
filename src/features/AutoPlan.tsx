@@ -23,6 +23,7 @@ import { t, tn } from '../i18n';
 import { stageLabel } from './RoutineGuide';
 import { useApp } from '../state/AppState';
 import { basisFor } from '../data/autoPlan';
+import { stepWeightKg } from '../domain/weight';
 
 const LB = 0.45359237;
 const hm = (tm: string) => formatHM(Number(tm.slice(0, 2)), Number(tm.slice(3, 5)));
@@ -67,11 +68,9 @@ export function AboutPet({
   allowUnsure?: boolean;
 }) {
   const kg = about.kgTouched ? about.kg : (estimateKg ?? about.kg);
-  const step = unit === 'lb' ? (kg / LB < 10 ? 0.2 : 1) * LB : kg < 5 ? 0.1 : 0.5;
   const setKg = (d: 1 | -1) => {
     tickFeedback();
-    const next = Math.max(0.3, Math.min(120, Math.round((kg + d * step) * 100) / 100));
-    onChange({ ...about, kg: next, kgTouched: true });
+    onChange({ ...about, kg: stepWeightKg(kg, unit, d), kgTouched: true });
   };
   const grown = about.months != null && about.months >= 12;
   return (

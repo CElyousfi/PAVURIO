@@ -16,9 +16,10 @@ import { AppState, Platform } from 'react-native';
 import { cloud } from '../cloud/firebase';
 import type { AuthResult, CloudUser } from '../cloud/types';
 import { fromChunks, restoreSnapshot } from '../data/snapshot';
-import { runBackup } from '../data/backupRun';
+import { markDirty, runBackup } from '../data/backupRun';
+import { BackupRunner, type BackupOutcome } from '../data/backupRunner';
 import { getSetting, resetAll, setSetting } from '../data/repo';
-import { adoptManifest, backupState, relinkFiles, restoreMissing } from '../data/mediaBackup';
+import { type LostItem, adoptManifest, backupState, findLost, lostItems, lostPaths, relinkFiles, restoreMissing } from '../data/mediaBackup';
 import { documentsRoot, localFiles, remoteFiles } from '../native/backupFiles';
 import { removeAllMemoryFiles } from '../native/media';
 import { identify } from '../native/purchases';
@@ -34,6 +35,10 @@ type Cloud = {
   lastBackupAt: number | null;
   /** photos & documents: how many are still waiting to upload, and how many couldn't be restored yet */
   files: { referenced: number; pending: number; missing: number; lost: number };
+  /** what the lost files (on neither this phone nor the cloud) belong to, newest first */
+  lostList: LostItem[];
+  /** the owner asked to look again for lost files (cloud, thumbnails). Never deletes anything. */
+  lookForLost: () => Promise<{ found: number; still: number }>;
   busy: boolean;
   crashReports: boolean;
   setCrashReports: (on: boolean) => Promise<void>;
@@ -69,6 +74,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
   const [lastBackupAt, setLastBackupAt] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [files, setFiles] = useState({ referenced: 0, pending: 0, missing: 0, lost: 0 });
+  const [lostList, setLostList] = useState<LostItem[]>([]);
   const [crashReports, setCrashState] = useState(true);
   const quiet = useRef(true); // ignore the version change caused by our own restore / first load
   const paused = useRef(false);
@@ -80,42 +86,59 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
   }, [user?.uid]);
 
   // ---------------------------------------------------------------- backup / restore
-  // files that didn't make it (no network, too many at once) are retried with a growing delay
-  const retry = useRef<{ timer: ReturnType<typeof setTimeout> | null; n: number }>({ timer: null, n: 0 });
-  const backupNow = useCallback(async (): Promise<boolean> => {
+  /** keeps the list of lost files (what they belong to) in step with the count */
+  const refreshLost = useCallback(
+    async (uid: string, count: number) => {
+      if (count === 0) return setLostList([]);
+      try {
+        setLostList(await lostItems(db, await lostPaths(db, uid, localFiles)));
+      } catch (e) {
+        cloud.crash.record(e, 'backup:lost-list');
+      }
+    },
+    [db],
+  );
+
+  /** one backup run; scheduling (one at a time, retries) is BackupRunner's job */
+  const runOnce = useCallback(async (): Promise<BackupOutcome> => {
     const uid = uidRef.current;
-    if (!enabled || !uid || paused.current) return false;
+    if (!enabled || !uid || paused.current) return 'skipped';
     const r = await runBackup(db, uid, {
       local: localFiles,
       remote: remoteFiles(uid),
       upload: (chunks, meta) => cloud.upload(uid, chunks, { ...meta, platform: Platform.OS }),
     });
-    if (r.status === 'empty') return true; // nothing worth saving yet (mid-onboarding): nothing to lose either
+    if (r.status === 'empty') return 'empty'; // nothing worth saving yet (mid-onboarding): nothing to lose either
     if (r.status === 'failed') {
       cloud.crash.record(r.error, 'backup:upload');
-      return false;
+      return 'failed';
     }
     if (r.fileError) cloud.crash.record(r.fileError, 'backup:files');
     setFiles((f) => ({ ...f, referenced: r.files.referenced, pending: r.files.pending, lost: r.files.lost }));
     setLastBackupAt(r.updatedAt);
-    if (retry.current.timer) clearTimeout(retry.current.timer);
-    if (r.complete) retry.current = { timer: null, n: 0 };
-    else if (r.files.pending > 0 || r.fileError) {
-      // uploads still waiting: 30 s, 1, 2, 4, 8, 16 min, then every 30 min for as long as the app is
-      // open (and again whenever it comes back to the foreground). "Unsaved changes" stays set until
-      // every file is up. Files missing everywhere (`lost`) aren't retried: they need the owner.
-      const delay = Math.min(30 * 60_000, 30_000 * Math.pow(2, retry.current.n++));
-      retry.current.timer = setTimeout(() => void backupNowRef.current?.(), delay);
-    }
-    return r.complete;
-  }, [db, enabled]);
-  const backupNowRef = useRef<(() => Promise<boolean>) | null>(null);
+    void refreshLost(uid, r.files.lost);
+    // lost files don't count as waiting: backing up again can't bring them back (they need the owner)
+    return r.saved ? 'saved' : 'waiting';
+  }, [db, enabled, refreshLost]);
+  const runOnceRef = useRef(runOnce);
+  runOnceRef.current = runOnce;
+  // created in an effect (not during render) so a remount gets a fresh, live runner
+  const runner = useRef<BackupRunner | null>(null);
   useEffect(() => {
-    backupNowRef.current = backupNow;
+    const r = new BackupRunner(() => runOnceRef.current());
+    runner.current = r;
     return () => {
-      if (retry.current.timer) clearTimeout(retry.current.timer);
+      r.dispose();
+      if (runner.current === r) runner.current = null;
     };
-  }, [backupNow]);
+  }, []);
+  /** true when everything on this phone is in the cloud (safe to sign out) */
+  const backupNow = useCallback(async (): Promise<boolean> => {
+    const r = runner.current;
+    if (!r) return false;
+    const o = await r.request();
+    return o === 'saved' || o === 'empty';
+  }, []);
 
   /** Downloads photos/documents this phone is missing (after a restore, or a failed earlier try). */
   const fetchFiles = useCallback(
@@ -124,12 +147,13 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
         const r = await restoreMissing(db, uid, localFiles, remoteFiles(uid));
         const st = await backupState(db, uid, localFiles);
         setFiles({ referenced: st.referenced, pending: st.pending, missing: r.missing.length, lost: st.lost });
+        void refreshLost(uid, st.lost);
         if (r.restored || r.rebuilt) bump();
       } catch (e) {
         cloud.crash.record(e, 'backup:files-restore');
       }
     },
-    [db, bump],
+    [db, bump, refreshLost],
   );
 
   const pull = useCallback(
@@ -185,6 +209,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
         // photos that exist only on this phone count as unsaved: never replace them with an older backup
         const st = await backupState(db, uid, localFiles);
         setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending, lost: st.lost }));
+        void refreshLost(uid, st.lost);
         if (meta && meta.updatedAt > synced && ((!dirty && st.pending === 0) || pets.length === 0)) await pull(uid);
         else await fetchFiles(uid);
         if (st.pending > 0 && !paused.current) void backupNow();
@@ -192,7 +217,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
         cloud.crash.record(e, 'backup:launch-check');
       }
     })();
-  }, [enabled, user?.uid, ready, db, pull, pets.length, fetchFiles, backupNow]);
+  }, [enabled, user?.uid, ready, db, pull, pets.length, fetchFiles, backupNow, refreshLost]);
 
   // every data change: mark dirty, back up shortly after
   useEffect(() => {
@@ -201,7 +226,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       quiet.current = false;
       return;
     }
-    void setSetting(db, 'cloud.dirty', '1');
+    void markDirty(db);
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => void backupNow(), BACKUP_DELAY);
     return () => {
@@ -217,7 +242,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       if (s !== 'background' && s !== 'active') return;
       void getSetting(db, 'cloud.dirty').then((d) => {
         if (d !== '1') return;
-        if (s === 'active') retry.current.n = 0;
+        if (s === 'active') runner.current?.resetBackoff();
         void backupNow();
       });
     });
@@ -333,6 +358,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     await setSetting(db, 'cloud.dirty', '0');
     setLastBackupAt(null);
     setFiles({ referenced: 0, pending: 0, missing: 0, lost: 0 });
+    setLostList([]);
     bump();
   }, [db, bump]);
 
@@ -379,6 +405,22 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
     [run, auth, wipeLocal],
   );
 
+  const lookForLost = useCallback(
+    () =>
+      run(async () => {
+        const uid = uidRef.current;
+        if (!enabled || !uid) return { found: 0, still: 0 };
+        const r = await findLost(db, uid, localFiles, remoteFiles(uid));
+        if (r.found) bump(); // the photos show again
+        await backupNow();
+        const st = await backupState(db, uid, localFiles);
+        setFiles((f) => ({ ...f, referenced: st.referenced, pending: st.pending, lost: st.lost }));
+        await refreshLost(uid, st.lost);
+        return { found: r.found, still: st.lost };
+      }),
+    [run, enabled, db, bump, backupNow, refreshLost],
+  );
+
   const setCrashReports = useCallback(
     async (on: boolean) => {
       await setSetting(db, 'cloud.crash', on ? '1' : '0');
@@ -395,6 +437,8 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       appleAvailable,
       lastBackupAt,
       files,
+      lostList,
+      lookForLost,
       busy,
       crashReports,
       setCrashReports,
@@ -411,7 +455,7 @@ export function CloudProvider({ children }: { children: React.ReactNode }) {
       resetPasswordWithCode: (email, code, password) => cloud.resetPasswordWithCode(email, code, password),
       setMarketing: (optIn, source) => cloud.setMarketing(optIn, source),
     }),
-    [enabled, user, appleAvailable, lastBackupAt, files, busy, crashReports, setCrashReports, run, backupNow, save, signIn, cloudPets, signOut, deleteAccount, sendCode, verifyCode, cancelEmail],
+    [enabled, user, appleAvailable, lastBackupAt, files, lostList, lookForLost, busy, crashReports, setCrashReports, run, backupNow, save, signIn, cloudPets, signOut, deleteAccount, sendCode, verifyCode, cancelEmail],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

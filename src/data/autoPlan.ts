@@ -7,6 +7,7 @@
  * - portions keep the owner's own adjustment (10% more than recommended stays 10% more);
  * - routines they deleted stay deleted.
  */
+import { planLock } from './lock';
 import { CARE, CareType } from '../domain/care';
 import { Choice, PetProfile, PlanBasis, Target, daysFor, defaultProfile, planBasis, portionFor, scalePortion, targetsFor, timesFor } from '../domain/carePlan';
 import { ageInMonths } from '../domain/lifeStage';
@@ -85,8 +86,13 @@ export function scheduleFor(list: Schedule[], care: CareType, id?: string, kind?
   return list.find((s) => s.type === care && (kind === 'interval' ? !!s.everyDays : !s.everyDays));
 }
 
-/** Writes the owner's choices: one routine per care (created, updated or removed), the plan and portions. */
-export async function applyChoices(db: Db, pet: Pet, basis: PlanBasis, choices: Choice[]): Promise<void> {
+/** Writes the owner's choices: one routine per care (created, updated or removed), the plan and portions.
+ * One writer at a time (planLock): two at once could create the same routine twice. */
+export function applyChoices(db: Db, pet: Pet, basis: PlanBasis, choices: Choice[]): Promise<void> {
+  return planLock(() => writeChoices(db, pet, basis, choices));
+}
+
+async function writeChoices(db: Db, pet: Pet, basis: PlanBasis, choices: Choice[]): Promise<void> {
   const list = await listSchedules(db, pet.id);
   const snap = parse<Snapshot>(await getSetting(db, SNAP(pet.id))) ?? { basis: { months: 0, kg: null, profile: basis.profile }, cares: {} };
   const plan = await getPlan(db, pet.id);
@@ -129,8 +135,15 @@ export async function hasAutoPlan(db: Db, petId: string): Promise<boolean> {
   return !!s && Object.keys(s.cares).length > 0;
 }
 
-/** Moves the routines along with the pet (see the file comment). Returns the cares that changed. */
-export async function followGrowth(db: Db, pet: Pet, now = new Date()): Promise<CareType[]> {
+/** Moves the routines along with the pet (see the file comment). Returns the cares that changed.
+ * Reads and writes under planLock, so it never works from a plan another writer is changing. */
+export function followGrowth(db: Db, pet: Pet, now = new Date()): Promise<CareType[]> {
+  return planLock(() => followGrowthLocked(db, pet, now));
+}
+
+async function followGrowthLocked(db: Db, pet: Pet, now: Date): Promise<CareType[]> {
+  // a pet whose setup hasn't finished yet is left to the setup (src/data/setup.ts)
+  if (await getSetting(db, `setupPending:${pet.id}`)) return [];
   const snap = parse<Snapshot>(await getSetting(db, SNAP(pet.id)));
   if (!snap || Object.keys(snap.cares).length === 0) return [];
   const basis = await basisFor(db, pet, now);
@@ -160,7 +173,7 @@ export async function followGrowth(db: Db, pet: Pet, now = new Date()): Promise<
     choices.push({ care, kind: kind as Choice['kind'], on: true, count, portion, times, days, remind: s.remind });
   }
   if (choices.length) {
-    await applyChoices(db, pet, basis, choices);
+    await writeChoices(db, pet, basis, choices);
     // tell the owner on Home what changed (the card stays until they've seen it)
     await setSetting(db, NEWS(pet.id), JSON.stringify({ at: now.getTime(), months: basis.months, choices } satisfies PlanNews));
   }

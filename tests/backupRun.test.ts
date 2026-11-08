@@ -175,7 +175,9 @@ describe('backup durability', () => {
     if (r.status !== 'uploaded') return;
     expect(r.files.lost).toBe(1);
     expect(r.complete).toBe(false);
-    expect(await getSetting(db, 'cloud.dirty')).toBe('1');
+    // backing up again can't bring it back, so it doesn't pin "unsaved changes" (see lostFiles.test.ts)
+    expect(r.saved).toBe(true);
+    expect(await getSetting(db, 'cloud.dirty')).toBe('0');
     // everything else did go up
     expect(Object.keys(store)).toHaveLength(5);
   });

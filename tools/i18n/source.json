@@ -10071,5 +10071,54 @@
   "en": "{n} photos or documents are missing from this phone and from the backup, so they can’t be saved. Open the memories or records they belong to and add them again or remove them.",
   "fr": "{n} photos ou documents sont absents de ce téléphone et de la sauvegarde, ils ne peuvent donc pas être sauvegardés. Ouvrez les souvenirs ou fiches où ils se trouvent, puis ajoutez-les à nouveau ou supprimez-les.",
   "plural": "other"
+ },
+ {
+  "id": "1991",
+  "en": "Enter a weight between 0 and {max}.",
+  "fr": "Entrez un poids entre 0 et {max}."
+ },
+ {
+  "id": "1992",
+  "en": "Memory",
+  "fr": "Souvenir"
+ },
+ {
+  "id": "1993",
+  "en": "Adventure on {date}",
+  "fr": "Aventure du {date}"
+ },
+ {
+  "id": "1994",
+  "en": "Look again",
+  "fr": "Chercher à nouveau"
+ },
+ {
+  "id": "1995",
+  "en": "+1 more",
+  "fr": "+1 autre",
+  "plural": "one"
+ },
+ {
+  "id": "1996",
+  "en": "+{n} more",
+  "fr": "+{n} autres",
+  "plural": "other"
+ },
+ {
+  "id": "1997",
+  "en": "1 found and backed up again.",
+  "fr": "1 retrouvé et sauvegardé à nouveau.",
+  "plural": "one"
+ },
+ {
+  "id": "1998",
+  "en": "{n} found and backed up again.",
+  "fr": "{n} retrouvés et sauvegardés à nouveau.",
+  "plural": "other"
+ },
+ {
+  "id": "1999",
+  "en": "Not found in your backup either.",
+  "fr": "Introuvable aussi dans votre sauvegarde."
  }
 ]

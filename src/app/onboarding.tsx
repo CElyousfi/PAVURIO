@@ -29,6 +29,8 @@ import { errorFeedback, selectFeedback, successFeedback } from '../native/haptic
 import { requestPermission } from '../native/notifications';
 import { LANG_NAMES, Lang, t } from '../i18n';
 import { LanguagePicker, langShort } from '../ui/LanguagePicker';
+import { savedValue } from '../domain/weight';
+import { dropWhileBusy } from '../data/lock';
 
 
 /** the welcome pet colours in band by band, like Waterllama's llama */
@@ -180,8 +182,11 @@ export default function Onboarding() {
     go('about');
   };
 
-  const createTheirPet = async () => {
-    if (saving || !basis) return;
+  // one save at a time, even for two taps in the same frame (state only changes on the next render)
+  const oneSave = useRef(dropWhileBusy()).current;
+  const createTheirPet = () => oneSave(saveTheirPet);
+  const saveTheirPet = async () => {
+    if (!basis) return;
     setSaving(true);
     setError(null);
     try {
@@ -201,7 +206,7 @@ export default function Onboarding() {
           {
             profile: about.profile,
             months: basis.months,
-            weight: about.kgTouched ? { value: Math.round((unit === 'lb' ? about.kg / 0.45359237 : about.kg) * 10) / 10, unit, at: Date.now() } : null,
+            weight: about.kgTouched ? { value: savedValue(about.kg, unit), unit, at: Date.now() } : null,
             weighedKg: about.kgTouched ? about.kg : null,
             choices,
             birthApprox: about.months != null,
@@ -237,8 +242,9 @@ export default function Onboarding() {
   };
 
   /** Into the app. Always reaches Home: a slow permission prompt or a failed reload can't hold it. */
-  const finish = async (then?: 'log-meal') => {
-    if (!created || saving) return;
+  const finish = (then?: 'log-meal') => oneSave(() => enterHome(then));
+  const enterHome = async (then?: 'log-meal') => {
+    if (!created) return;
     setSaving(true);
     try {
       // the plan's reminders are already set up: just ask for the permission they need (never wait long)

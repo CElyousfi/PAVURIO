@@ -16,6 +16,7 @@ import { useApp } from '../state/AppState';
 import type { AuthResult } from '../cloud/types';
 import { ART } from '../ui/art';
 import { Field } from '../ui/forms';
+import { LostFiles } from '../features/LostFiles';
 import { CircleButton, Label, Pill, SoftPill, T } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { successFeedback } from '../native/haptics';
@@ -262,7 +263,7 @@ export default function Account() {
               : t('Your care history is backed up while you use Pavurio. Save your account to get it back on a new phone.');
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top + 8 }]}>
+    <KeyboardAvoidingView behavior="padding" style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: insets.bottom + 30 }} keyboardShouldPersistTaps="handled">
         <View style={{ width: W, paddingHorizontal: 20 }}>
           <View style={styles.topRow}>
@@ -346,9 +347,7 @@ export default function Account() {
                 </T>
               ) : null}
               {files.lost > 0 ? (
-                <T weight="xbold" style={{ color: colors.danger, fontSize: 13, marginTop: 6, lineHeight: 18 }} testID="backup-lost">
-                  {tn(files.lost, '1 photo or document is missing from this phone and from the backup, so it can’t be saved. Open the memory or record it belongs to and add it again or remove it.', '{n} photos or documents are missing from this phone and from the backup, so they can’t be saved. Open the memories or records they belong to and add them again or remove them.')}
-                </T>
+                <LostFiles />
               ) : files.pending === 0 && lastBackupAt && files.referenced > 0 ? (
                 <T weight="xbold" style={{ color: '#3FA34D', fontSize: 13, marginTop: 6 }}>
                   {tn(files.referenced, '✓ 1 photo or document protected', '✓ {n} photos and documents protected')}

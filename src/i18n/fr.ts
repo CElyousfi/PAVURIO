@@ -953,4 +953,13 @@ export const FR: Record<string, string> = {
   "Everything your pet needs today starts here: tap the next care just above to log it, and find the full day in Care.": "Tout ce dont votre animal a besoin aujourd'hui commence ici : touchez le prochain soin juste au-dessus pour le noter, et retrouvez toute la journée dans Soins.",
   "1 photo or document is missing from this phone and from the backup, so it can’t be saved. Open the memory or record it belongs to and add it again or remove it.": "1 photo ou document est absent de ce téléphone et de la sauvegarde, il ne peut donc pas être sauvegardé. Ouvrez le souvenir ou la fiche où il se trouve, puis ajoutez-le à nouveau ou supprimez-le.",
   "{n} photos or documents are missing from this phone and from the backup, so they can’t be saved. Open the memories or records they belong to and add them again or remove them.": "{n} photos ou documents sont absents de ce téléphone et de la sauvegarde, ils ne peuvent donc pas être sauvegardés. Ouvrez les souvenirs ou fiches où ils se trouvent, puis ajoutez-les à nouveau ou supprimez-les.",
+  "Enter a weight between 0 and {max}.": "Entrez un poids entre 0 et {max}.",
+  "Memory": "Souvenir",
+  "Adventure on {date}": "Aventure du {date}",
+  "Look again": "Chercher à nouveau",
+  "+1 more": "+1 autre",
+  "+{n} more": "+{n} autres",
+  "1 found and backed up again.": "1 retrouvé et sauvegardé à nouveau.",
+  "{n} found and backed up again.": "{n} retrouvés et sauvegardés à nouveau.",
+  "Not found in your backup either.": "Introuvable aussi dans votre sauvegarde.",
 };

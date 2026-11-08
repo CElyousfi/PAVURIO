@@ -1335,4 +1335,13 @@ export const ES: Record<string, string> = {
   "Everything your pet needs today starts here: tap the next care just above to log it, and find the full day in Care.": "Todo lo que tu mascota necesita hoy empieza aquí: toca el próximo cuidado justo arriba para anotarlo y consulta el día completo en Cuidados.",
   "1 photo or document is missing from this phone and from the backup, so it can’t be saved. Open the memory or record it belongs to and add it again or remove it.": "Falta 1 foto o documento en este teléfono y en la copia de seguridad, así que no se puede respaldar. Abre el recuerdo o registro al que pertenece y vuelve a añadirlo o elimínalo.",
   "{n} photos or documents are missing from this phone and from the backup, so they can’t be saved. Open the memories or records they belong to and add them again or remove them.": "Faltan {n} fotos o documentos en este teléfono y en la copia de seguridad, así que no se pueden respaldar. Abre los recuerdos o registros a los que pertenecen y vuelve a añadirlos o elimínalos.",
+  "Enter a weight between 0 and {max}.": "Introduce un peso entre 0 y {max}.",
+  "Memory": "Recuerdo",
+  "Adventure on {date}": "Aventura del {date}",
+  "Look again": "Buscar de nuevo",
+  "+1 more": "+1 más",
+  "+{n} more": "+{n} más",
+  "1 found and backed up again.": "1 encontrado y respaldado de nuevo.",
+  "{n} found and backed up again.": "{n} encontrados y respaldados de nuevo.",
+  "Not found in your backup either.": "Tampoco está en tu copia de seguridad.",
 };

@@ -1,6 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState as RNAppState } from 'react-native';
-import { useSQLiteContext } from 'expo-sqlite';
 import { useReducedMotion } from 'react-native-reanimated';
 import type { Db } from '../data/db';
 import * as repo from '../data/repo';
@@ -21,6 +20,7 @@ import { registerBackgroundTasks } from '../native/backgroundTasks';
 import { isPro } from '../native/purchases';
 import { setMotionReduced } from '../ui/motion';
 import { Lang, deviceLanguage, isLang, setLang } from '../i18n';
+import { useDb } from './DbProvider';
 
 
 export type WeightUnit = 'kg' | 'lb';
@@ -68,7 +68,7 @@ type Ctx = {
 const AppCtx = createContext<Ctx | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const db = useSQLiteContext() as unknown as Db;
+  const db = useDb();
   const osReduce = useReducedMotion();
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);

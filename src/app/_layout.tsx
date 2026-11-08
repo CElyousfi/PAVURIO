@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Stack, router, usePathname, type ErrorBoundaryProps } from 'expo-router';
@@ -6,14 +6,11 @@ import { Pill, T } from '../ui/primitives';
 import { t } from '../i18n';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { SQLiteProvider } from 'expo-sqlite';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from '@expo-google-fonts/nunito';
 import { Nunito_700Bold } from '@expo-google-fonts/nunito/700Bold';
 import { Nunito_800ExtraBold } from '@expo-google-fonts/nunito/800ExtraBold';
 import { Nunito_900Black } from '@expo-google-fonts/nunito/900Black';
-import { migrate } from '../data/migrations';
-import type { Db } from '../data/db';
 import { AppProvider, useApp } from '../state/AppState';
 import { CloudProvider } from '../state/Cloud';
 import { cloud } from '../cloud/firebase';
@@ -32,6 +29,8 @@ import { confirmOccurrence } from '../features/careLink';
 import { dayKeyOf } from '../domain/time';
 import { track, trackScreen } from '../native/analytics';
 import { TipHost } from '../features/Tips';
+import { DbProvider } from '../state/DbProvider';
+import { STALL_MS, showSlowNotice, startupInitial, startupReducer } from '../features/startup';
 
 /** A tapped reminder opens the right place: the care's log card (linked to its occurrence) or the visit. */
 function ReminderRouter() {
@@ -97,48 +96,46 @@ function ReminderRouter() {
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-/** stable: SQLiteProvider re-opens the database whenever this function changes */
-const initDb = (db: unknown) => migrate(db as Db);
-
-/** set by Gate once the app is on screen; the start-up watchdog checks it */
-let started = false;
-const STALL_MS = 10_000;
-
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black });
   // a retry re-mounts the database and the app state from scratch (nothing is deleted)
   const [boot, setBoot] = useState(0);
-  const [stalled, setStalled] = useState(false);
+  // React state: when the app becomes ready, the slow-start notice disappears by itself
+  const [startup, dispatch] = useReducer(startupReducer, startupInitial);
+  const startedRef = useRef(false);
+  startedRef.current = startup.started;
   useEffect(() => {
     // watchdog: whatever happens below (fonts, database, first load), the logo never stays forever
     const timer = setTimeout(() => {
-      if (started) return;
+      if (startedRef.current) return;
       SplashScreen.hideAsync().catch(() => {});
-      setStalled(true);
+      dispatch({ type: 'stall' });
       cloud.crash.log('startup stalled');
     }, STALL_MS);
     return () => clearTimeout(timer);
   }, [boot]);
+  // a retry re-mounts the app state; the database attempt already under way is shared, never doubled
   const retry = () => {
-    setStalled(false);
+    dispatch({ type: 'retry' });
     setBoot((b) => b + 1);
   };
+  const onStarted = React.useCallback(() => dispatch({ type: 'started' }), []);
   return (
     <SafeAreaProvider>
       {fontsLoaded || fontError ? (
         <StartupBoundary key={boot} onRetry={retry}>
-          <SQLiteProvider databaseName="pavurio.db" onInit={initDb}>
+          <DbProvider>
             <AppProvider>
               <CloudProvider>
                 <EngagementProvider>
-                  <Gate />
+                  <Gate onStarted={onStarted} />
                 </EngagementProvider>
               </CloudProvider>
             </AppProvider>
-          </SQLiteProvider>
+          </DbProvider>
         </StartupBoundary>
       ) : null}
-      {stalled && !started ? <StartupProblem slow onRetry={retry} /> : null}
+      {showSlowNotice(startup) ? <StartupProblem slow onRetry={retry} /> : null}
     </SafeAreaProvider>
   );
 }
@@ -184,13 +181,13 @@ function ScreenTracker() {
   return null;
 }
 
-function Gate() {
+function Gate({ onStarted }: { onStarted: () => void }) {
   const { ready, language, loadError, retryLoad } = useApp();
   // once per cold start the native splash (the store icon) hands over to BrandSplash, which hides it
   const [brand, setBrand] = useState(true);
   useEffect(() => {
-    if (ready) started = true;
-  }, [ready]);
+    if (ready) onStarted();
+  }, [ready, onStarted]);
   // loading the saved data failed: retry, never "no pets" (that would look like the pets were lost)
   if (!ready && loadError) return <StartupProblem onRetry={retryLoad} />;
   // the native splash stays up until `ready`; this only shows for a few frames on web
