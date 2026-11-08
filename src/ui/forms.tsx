@@ -27,7 +27,7 @@ export function ScreenHeader({ title, onClose, onBack, right }: { title: string;
   return (
     <View style={styles.header}>
       {onBack ? <CircleButton icon="back" label={t('Back')} onPress={onBack} size={46} /> : <View style={{ width: 46 }} />}
-      <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1}>
+      <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
         {title}
       </T>
       {onClose ? <CircleButton icon="close" label={t('Close')} onPress={onClose} size={46} /> : right ?? <View style={{ width: 46 }} />}

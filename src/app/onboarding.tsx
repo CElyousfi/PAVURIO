@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Keyboard, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInLeft, FadeInRight, ZoomIn } from 'react-native-reanimated';
@@ -13,6 +13,7 @@ import { Choice, defaultProfile, estimateWeightKg, planBasis, recommendedChoice,
 import { approxBirthDate } from '../domain/lifeStage';
 import { About, AboutPet, CarePage, PlanReview, targetHeadline } from '../features/AutoPlan';
 import { useScreenBudget } from '../ui/layout';
+import { fitHeroPet } from '../ui/sizing';
 import { DRAFT_KEY, finishSetup, startPetSetup } from '../data/setup';
 import { PetPreview } from '../ui/PetPreview';
 import { StudioPicker } from '../features/PetEditors';
@@ -558,7 +559,18 @@ function WelcomePager({ width, petSize, bottomInset, reduceMotion, language, onL
     return () => clearInterval(timer);
   }, [width, reduceMotion, frames.length]);
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => setPage(Math.round(e.nativeEvent.contentOffset.x / width));
-  const size = petSize;
+  // the pet fits the space the slide really has left (measured), on every phone and tablet
+  const [heroBox, setHeroBox] = useState<{ w: number; h: number } | null>(null);
+  const onHeroLayout = (e: LayoutChangeEvent) => {
+    const { width: w, height: h } = e.nativeEvent.layout;
+    setHeroBox((b) => (b && Math.abs(b.w - w) < 1 && Math.abs(b.h - h) < 1 ? b : { w, h }));
+  };
+  const size = heroBox ? fitHeroPet('pet', petSize, heroBox) : 0;
+  const catSize = heroBox ? fitHeroPet('notif', petSize, heroBox) : 0;
+  const { height: screenH } = useWindowDimensions();
+  const compact = screenH < 700;
+  // each slide is exactly as tall as the pager, so the pet area gets the real space that is left
+  const [pagerH, setPagerH] = useState(0);
 
   return (
     <Animated.View entering={FadeIn} style={[styles.page, { width }]}>
@@ -572,20 +584,21 @@ function WelcomePager({ width, petSize, bottomInset, reduceMotion, language, onL
         onScroll={onScroll}
         scrollEventThrottle={64}
         style={{ flex: 1, width }}
+        onLayout={(e) => setPagerH(e.nativeEvent.layout.height)}
       >
         {frames.map((f, i) => (
-          <View key={i} style={{ width, alignItems: 'center' }}>
-            <View style={styles.center}>
-              <View style={styles.badge}>
-                {i === 0 && ART.ui.welcomeBadge != null ? <Image source={ART.ui.welcomeBadge} style={{ width: 52, height: 52 }} /> : <CareIcon type={f.care} size={44} />}
+          <View key={i} style={{ width, height: pagerH || undefined, alignItems: 'center' }}>
+            <View style={[styles.center, compact && { marginTop: 4 }]}>
+              <View style={[styles.badge, compact && styles.badgeCompact]}>
+                {i === 0 && ART.ui.welcomeBadge != null ? <Image source={ART.ui.welcomeBadge} style={{ width: compact ? 40 : 52, height: compact ? 40 : 52 }} /> : <CareIcon type={f.care} size={compact ? 34 : 44} />}
               </View>
-              <T weight="black" style={styles.h1}>
+              <T weight="black" style={[styles.h1, compact && styles.h1Compact]}>
                 {f.title}
               </T>
-              <T style={styles.sub}>{f.sub}</T>
+              <T style={[styles.sub, compact && styles.subCompact]}>{f.sub}</T>
             </View>
-            <View style={styles.hero}>
-              {i === 0 ? (
+            <View style={styles.hero} onLayout={i === 0 ? onHeroLayout : undefined}>
+              {!heroBox ? null : i === 0 ? (
                 <PetPreview species="dog" appearance={defaultAppearance('dog')} size={size} progress={fill} stack={WELCOME_STACK} reduceMotion={reduceMotion} interactive active={page === 0} />
               ) : i === 1 ? (
                 <View style={{ alignItems: 'center' }}>
@@ -594,9 +607,9 @@ function WelcomePager({ width, petSize, bottomInset, reduceMotion, language, onL
                     body={t('Tap Done when it’s done')}
                     delay={300}
                     play={page === 1}
-                    style={{ marginBottom: 10, width: size + 20 }}
+                    style={{ marginBottom: 10, width: Math.min(width - 48, 320) }}
                   />
-                  <PetRig species="cat" appearance={defaultAppearance('cat')} size={size * 0.85} progress={0.62} stack={WELCOME_STACK_CAT} reduceMotion={reduceMotion} active={page === 1} />
+                  {catSize > 0 ? <PetRig species="cat" appearance={defaultAppearance('cat')} size={catSize * 0.85} progress={0.62} stack={WELCOME_STACK_CAT} reduceMotion={reduceMotion} active={page === 1} /> : null}
                 </View>
               ) : (
                 <PetPreview species="dog" appearance={defaultAppearance('dog')} size={size} progress={1} clip={page === 2 ? clip : null} onClipEnd={() => setClip(page === 2 ? { name: 'celebrate', nonce: Date.now() } : null)} reduceMotion={reduceMotion} active={page === 2} />
@@ -616,7 +629,8 @@ function WelcomePager({ width, petSize, bottomInset, reduceMotion, language, onL
             {langShort(language)}
           </T>
         </Bouncy>
-        <Pill label={t('LET’S MEET YOUR PET')} onPress={onStart} style={{ flex: 1 }} testID="get-started" />
+        {/* narrow phones get the short label, so it never shrinks to unreadable or cuts off */}
+        <Pill label={width < 360 ? t('GET STARTED') : t('LET’S MEET YOUR PET')} onPress={onStart} style={{ flex: 1 }} testID="get-started" />
       </View>
       {cloud.enabled() ? (
         <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/account', params: { mode: 'signin' } })} style={{ alignSelf: 'center', paddingBottom: bottomInset + 10, marginTop: -8 }} testID="have-account">
@@ -651,9 +665,12 @@ const styles = StyleSheet.create({
   center: { alignItems: 'center', marginTop: 12, paddingHorizontal: 24 },
   badge: { width: 64, height: 64, borderRadius: 22, backgroundColor: '#FEF3DC', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   h1: { fontSize: 32, lineHeight: 38, textAlign: 'center' },
+  h1Compact: { fontSize: 26, lineHeight: 31 },
+  subCompact: { fontSize: 15, lineHeight: 20, marginTop: 6 },
+  badgeCompact: { width: 50, height: 50, borderRadius: 17, marginBottom: 8 },
   h2: { fontSize: 28, lineHeight: 34, textAlign: 'center', paddingHorizontal: 24, marginTop: 10 },
   sub: { fontSize: 16, color: colors.muted, textAlign: 'center', marginTop: 8, paddingHorizontal: 30, lineHeight: 22 },
-  hero: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 200 },
+  hero: { flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', minHeight: 0, overflow: 'hidden' },
   bottom: { alignSelf: 'stretch', paddingTop: 10 },
   welcomeBottom: { flexDirection: 'row', alignItems: 'center', gap: 12, alignSelf: 'stretch', paddingHorizontal: 24 },
   lang: { height: 60, paddingHorizontal: 14, borderRadius: 30, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },

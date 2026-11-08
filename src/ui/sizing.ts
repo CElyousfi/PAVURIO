@@ -25,3 +25,23 @@ export function previewSize(kind: PreviewKind, width: number, available: number,
   }
 }
 
+
+/** Height of the welcome notification card plus its gap (used to leave room above the cat). */
+export const WELCOME_NOTIF_H = 96;
+
+/**
+ * Fits a welcome-slide pet into the space its slide really has left (measured on screen), so a
+ * short or narrow phone never pushes the pet under the page dots, and a big screen doesn't stretch
+ * it past the budget. `budget` is the screen-wide hero size; returns 0 when there is no sensible
+ * room (the slide then shows its text only).
+ * - 'pet': the pet's preview box is size × 1.12 square.
+ * - 'notif': a notification card sits above the cat, which is drawn at 0.85 × size (stage 1.05 tall).
+ */
+export function fitHeroPet(kind: 'pet' | 'notif', budget: number, box: { w: number; h: number }): number {
+  const MIN = 64;
+  if (!(budget > 0) || !(box.w > 0) || !(box.h > 0)) return 0;
+  const byWidth = (box.w * 0.8) / 1.12;
+  const byHeight = kind === 'pet' ? box.h / 1.12 : (box.h - WELCOME_NOTIF_H) / (0.85 * 1.05);
+  const size = Math.floor(Math.min(budget, byWidth, byHeight));
+  return size >= MIN ? size : 0;
+}
