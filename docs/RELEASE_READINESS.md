@@ -46,6 +46,17 @@ Totals: `tsc` (app and tests), ESLint 0 problems, `npm test` 218 tests × 3 time
 
 **Known limitation:** if opening the database ever hangs (never settles), TRY AGAIN keeps waiting for that same attempt rather than opening a second connection that could migrate in parallel; closing and reopening the app recovers. The new texts (9) are translated into 29 languages.
 
+### Dependency update for the Play build (8 Nov)
+
+The 14 packages that EAS's expo-doctor reported as behind SDK 58 were updated to the expected versions. These include `expo` 58.0.23, `expo-router` 58.0.30, `expo-sqlite` 58.0.15, `expo-notifications` 58.1.8, `expo-updates` 58.0.21, `expo-widgets` 58.0.27 and `react-native-safe-area-context` 5.11.1. There are no other dependency changes, and `npm ci` from the lockfile succeeds.
+
+Re-verified after the update:
+- `tsc`, ESLint and 218 tests × 3 time zones pass.
+- The Android Hermes bundle builds, and `expo prebuild` succeeds (AD_ID still removed, Kotlin 2.3.21).
+- Web walkthrough: cat setup with Pet Studio, Home, logging, relaunch, Pantry, Care and Settings.
+
+Release notes for build 7 (en-US, fr-FR, es-ES, pt-BR, pt-PT) are in `docs/store/release-notes-7.md`.
+
 `npm run typecheck`, ESLint (0 problems) and `npm test` (218 tests × 3 time zones, as of 8 Nov) all pass.
 
 ## 2. Native tests: passed or failed
