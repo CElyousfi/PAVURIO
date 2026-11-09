@@ -31,7 +31,7 @@ import { requestPermission } from '../native/notifications';
 import { LANG_NAMES, Lang, t } from '../i18n';
 import { LanguagePicker, langShort } from '../ui/LanguagePicker';
 import { savedValue } from '../domain/weight';
-import { dropWhileBusy } from '../data/lock';
+import { dropWhileBusy, withinTime } from '../data/lock';
 
 
 /** the welcome pet colours in band by band, like Waterllama's llama */
@@ -51,6 +51,18 @@ type Step = 'welcome' | 'species' | 'name' | 'look' | 'about' | 'plan' | 'care' 
 // the first plan on ONE screen ('care' = optional page-by-page customising with the bowl controls) →
 // welcome home. No paywall on the way: the free app is the first experience.
 const ORDER: Step[] = ['welcome', 'species', 'name', 'look', 'about', 'plan', 'care', 'home'];
+
+/** longest the last setup buttons wait before moving on (the work continues in the background) */
+const SAVE_WAIT_MS = 12_000;
+const LOAD_WAIT_MS = 8_000;
+/** a step that made the owner wait: reported (no personal data) so it can be found and fixed */
+function slow(step: string) {
+  try {
+    cloud.crash.record(new Error(`onboarding slow: ${step}`), `onboarding: ${step} took too long`);
+  } catch {
+    // reporting must never break setup
+  }
+}
 
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
@@ -215,7 +227,9 @@ export default function Onboarding() {
         );
         setCreated(pet);
       }
-      await finishSetup(db, pet.id);
+      // Never stuck on the spinner: a setup step that hasn't answered in time is left to finish in the
+      // background (it's recorded as pending and finished again on every load), and the owner moves on.
+      if (!(await withinTime(finishSetup(db, pet.id), SAVE_WAIT_MS)).ok) slow('finishSetup');
       track('onboarding_complete', {
         species,
         stage: basis.stage,
@@ -228,9 +242,11 @@ export default function Onboarding() {
           return !rec || !c.on || rec.count !== c.count || rec.portion !== c.portion;
         }).length,
       });
-      await reload();
-      successFeedback();
+      if (!(await withinTime(reload(), LOAD_WAIT_MS)).ok) slow('reload after setup');
+      setSaving(false);
       go('home');
+      // after the screen has changed: sound and haptics never sit between the save and the next screen
+      setTimeout(successFeedback, 120);
       if (!reduceMotion) setTimeout(() => setClip({ name: 'celebrate', nonce: Date.now() }), 450);
       setTimeout(() => setConfetti(Date.now()), 350);
     } catch (e) {
@@ -250,7 +266,7 @@ export default function Onboarding() {
     try {
       // the plan's reminders are already set up: just ask for the permission they need (never wait long)
       if (choices.some((c) => c.on && c.remind)) await Promise.race([requestPermission(db).catch(() => null), new Promise((r) => setTimeout(r, 8000))]);
-      await reload().catch(() => null);
+      if (!(await withinTime(reload().catch(() => null), LOAD_WAIT_MS)).ok) slow('reload before Home');
     } finally {
       setSaving(false);
       track('onboarding_completed', { species: created.species, then: then ?? 'explore' });

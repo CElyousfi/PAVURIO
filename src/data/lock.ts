@@ -36,3 +36,25 @@ export function dropWhileBusy() {
     }
   };
 }
+
+/**
+ * Waits for `task` at most `ms`. A task that fails still fails (its error is passed on); one that is
+ * merely slow is left to finish in the background and the caller moves on (`ok: false`). Used where a
+ * screen must never stay stuck on a spinner: the work is recoverable (setup is finished again on every
+ * load), being stuck is not.
+ */
+export function withinTime<T>(task: Promise<T>, ms: number): Promise<{ ok: true; value: T } | { ok: false }> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => resolve({ ok: false }), ms);
+    task.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve({ ok: true, value });
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      },
+    );
+  });
+}
