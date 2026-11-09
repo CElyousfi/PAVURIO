@@ -6,6 +6,7 @@ import { Pill, T } from '../ui/primitives';
 import { t } from '../i18n';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { FullScreen } from '../native/fullScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from '@expo-google-fonts/nunito';
 import { Nunito_700Bold } from '@expo-google-fonts/nunito/700Bold';
@@ -200,6 +201,7 @@ function Gate({ onStarted }: { onStarted: () => void }) {
         <WalkLiveBridge />
         <CelebrationHost />
         <StatusBar style="dark" />
+        <FullScreen />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas }, animation: 'slide_from_right', animationDuration: 280, gestureEnabled: true, freezeOnBlur: true }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="care" />
