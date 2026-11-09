@@ -10,7 +10,7 @@ import { buildCareSummary } from '../features/summary';
 import { shareText } from '../native/files';
 import { useApp } from '../state/AppState';
 import { Card, Chip, EmptyState, TabTitle, formatDateLong } from '../ui/forms';
-import { CircleButton, Icon, T } from '../ui/primitives';
+import { CircleButton, Icon, T, Column } from '../ui/primitives';
 import { KindGlyph } from '../features/RecordGlyph';
 import { ART } from '../ui/art';
 import { Scene } from '../ui/Scene';
@@ -50,11 +50,12 @@ export default function RecordsTab() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
+      <Column>
       <TabTitle
         title={t('Records')}
         subtitle={t("{name}'s health file", { name: pet.name })}
         right={<CircleButton icon="plus" label={t('Add a record')} onPress={() => router.push('/record')} size={50} />} />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 16 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 40, gap: 16 }} showsVerticalScrollIndicator={false}>
         {due.length > 0 ? (
           <Card style={{ backgroundColor: '#FFF8EC' }}>
             <T weight="black" style={{ fontSize: 16, marginBottom: 6 }}>
@@ -140,6 +141,7 @@ export default function RecordsTab() {
           </View>
         </Card>
       </ScrollView>
+      </Column>
     </View>
   );
 }

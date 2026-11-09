@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, FadeInUp, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
@@ -7,6 +7,7 @@ import { CARE, CareType, careAllowedFor, clampAmount, isCareType, unitLabel } fr
 import { dailyGoal, givenToday, portionOf } from '../../domain/progress';
 import { portionStepFor } from '../../domain/carePlan';
 import { track } from '../../native/analytics';
+import { firstTimeTip } from '../../features/Tips';
 import { dayKeyOf, defaultOccurredAt, formatClock, formatDayTitle, isToday, parseDayKey } from '../../domain/time';
 import { newId } from '../../domain/ids';
 import { CareEvent, ValidationError, getEvent, logCare, updateEvent } from '../../data/repo';
@@ -224,7 +225,10 @@ export default function LogCard() {
       // 3) … only then refresh UI. Badges wait for the pet's reaction (markLogged), which starts once Home is back.
       logFeedback();
       markLogged();
-      if (!editing) track('care_logged', { type, via: 'card', as_planned: spec ? amount === portions[type] : true });
+      if (!editing) {
+        track('care_logged', { type, via: 'card', as_planned: spec ? amount === portions[type] : true });
+        void firstTimeTip(db, 'first_care');
+      }
       bump();
       signalLogged({ eventId: saved.id, type });
       leave(() => {
@@ -264,7 +268,7 @@ export default function LogCard() {
   const showDay = !!editing || !isToday(dayKey);
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.root}>
+    <KeyboardAvoidingView behavior="padding" style={styles.root}>
       <View style={[styles.col, { width: W, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 22 }]}>
         <View style={styles.topRow}>
           {showDay ? (
@@ -355,7 +359,7 @@ export default function LogCard() {
             />
           ))}
         </View>
-        <TextInput
+        <TextInput maxFontSizeMultiplier={1.4}
           value={note}
           onChangeText={setNote}
           placeholder={t('Add a note (optional)')}

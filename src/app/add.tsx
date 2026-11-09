@@ -266,7 +266,7 @@ export default function AddReminder() {
                     style={[styles.tile, { width: tileW, height: tileW * 0.92 }, sel && { borderColor: km.color }]}
                     testID={`kind-${k}`}
                   >
-                    <T weight="black" style={styles.tileLabel} numberOfLines={1}>
+                    <T weight="black" style={styles.tileLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
                       {km.label}
                     </T>
                     <View style={styles.tileArt}>

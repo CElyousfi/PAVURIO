@@ -19,9 +19,9 @@ import { weekdayInitials } from '../i18n/dates';
 import { useApp } from '../state/AppState';
 import { useEngagement } from '../state/Engagement';
 import { useCloud } from '../state/Cloud';
-import { NextCareCard } from './NextCare';
 import { GuideCard } from './RoutineGuide';
 import { PlanNewsCard, WeighNudgeCard } from './PlanCards';
+import { HomeIntro } from './HomeIntro';
 import { SuppliesCard } from './supplies';
 import { AnniversaryCard, TodayMomentCard } from './MemoriesKit';
 import { CareIcon } from '../ui/CareIcon';
@@ -69,10 +69,10 @@ export function HomeFeed({ width }: { width: number }) {
 
   return (
     <View style={{ width, paddingHorizontal: 20, paddingBottom: 120 }}>
-      {/* next scheduled care, Clucky's "Next wakeup" */}
-      <Enter index={0}>
-        <NextCareCard width={width} />
-      </Enter>
+      {/* first visit: the four places to know, and an optional short tour */}
+      <HomeIntro />
+
+      {/* the next care is shown once, under the pet (tap = its log card); no second copy here */}
 
       {/* the automatic plan: what changed as the pet grew, and a weigh-in when portions need it */}
       <PlanNewsCard enter={0} />
@@ -171,7 +171,7 @@ export function HomeFeed({ width }: { width: number }) {
           ].map((x) => (
             <Bouncy key={x.key} scaleTo={0.94} onPress={x.go} accessibilityRole="button" accessibilityLabel={x.label} style={styles.shortcut} testID={`home-${x.key}`}>
               {x.icon ? <Image source={x.icon} style={{ width: 40, height: 40 }} resizeMode="contain" /> : null}
-              <T weight="black" style={{ fontSize: 12.5, textAlign: 'center' }} numberOfLines={1}>
+              <T weight="black" style={{ fontSize: 12.5, lineHeight: 15, textAlign: 'center' }} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.85}>
                 {x.label}
               </T>
             </Bouncy>

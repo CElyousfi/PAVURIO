@@ -46,12 +46,15 @@ Pavurio est une application de suivi des soins pour animaux. Cette politique exp
 
 **Notifications.** Les rappels sont programmés sur votre téléphone ; aucun contenu ne nous est envoyé.
 
+**Météo des balades (facultatif).** Pavurio n'utilise jamais le GPS ni la position de votre téléphone. La météo en direct des balades est actuellement désactivée : rien n'est envoyé à un service météo. Si elle revient, seule une ville que vous choisissez (nom ou coordonnées) sera envoyée au fournisseur météo, et cette politique sera mise à jour avant.
+
 ## Ce que Pavurio ne fait pas
 
 - Pas de publicité ni de SDK publicitaire.
 - Aucune vente ni partage de données personnelles.
 - Aucun suivi entre applications ou sites.
-- Aucun SDK d'analyse. Pavurio ne donne pas d'avis médical.
+- Aucune analyse publicitaire ni entre applications : les seules statistiques d'utilisation sont celles, anonymes, décrites plus haut, et vous pouvez les désactiver.
+- Pavurio ne donne pas d'avis médical. Les recommandations de soins sont des repères généraux ; votre vétérinaire connaît mieux votre animal.
 
 ## Qui traite les données pour nous
 

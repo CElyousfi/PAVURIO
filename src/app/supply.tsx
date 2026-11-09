@@ -15,7 +15,7 @@ import { useApp } from '../state/AppState';
 import { ScreenHeader, Sheet } from '../ui/forms';
 import { RollingNumber } from '../ui/Rolling';
 import { Bouncy, motionReduced } from '../ui/motion';
-import { Icon, Pill, SoftPill, T } from '../ui/primitives';
+import { Icon, Pill, SoftPill, T, Column } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { successFeedback, tapFeedback, undoFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
@@ -50,6 +50,7 @@ export default function SupplyDetail() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      <Column>
       <View style={{ paddingHorizontal: 18 }}>
         <ScreenHeader title={s.name} onClose={() => router.back()} />
       </View>
@@ -189,6 +190,7 @@ export default function SupplyDetail() {
           ))}
         </View>
       </Sheet>
+      </Column>
     </View>
   );
 }

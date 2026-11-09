@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { homePetSize } from '../ui/sizing';
 import { Redirect, router, useIsFocused } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, ZoomIn, ZoomOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -12,7 +13,7 @@ import { dogClip } from '../animation/DogStage';
 import { useBursts } from '../animation/Burst';
 import { PetAvatar } from '../animation/PetAvatar';
 import { Sticker, careSticker, moodSticker } from '../ui/Sticker';
-import { CARE, CareType, SPECIES_CARE } from '../domain/care';
+import { CARE, CareType, SPECIES_CARE, formatAmount, isCareType } from '../domain/care';
 import { careFill, fillStack, progressSentence } from '../domain/progress';
 import { dayKeyOf, formatClock } from '../domain/time';
 import { getLiveWalk, removeCareEvent } from '../data/walkRepo';
@@ -172,7 +173,8 @@ function HomeScreen() {
 
   if (!pet) return null;
   const row = SPECIES_CARE[pet.species];
-  const petSize = Math.min(W * 0.8, height * 0.42, 380);
+  // never pushes the next-care card under the + button on short phones
+  const petSize = homePetSize(W, height, insets.top, insets.bottom);
   const isEmptyDay = !loading && events.length === 0;
   const big = progress.planned > 0 ? `${progress.done}/${progress.planned}` : String(events.length);
   const complete = progress.planned > 0 && progress.ratio >= 1;
@@ -301,7 +303,7 @@ function HomeScreen() {
           <RowItem
             width={itemW}
             label={t('Add or edit')}
-            onPress={() => router.push('/settings')}
+            onPress={() => router.push('/plan')}
             accessibilityLabel={t("{name}'s daily plan", { name: pet.name })}
             icon={
               <View style={styles.addBubble}>
@@ -316,8 +318,15 @@ function HomeScreen() {
         <Bouncy
           scaleTo={0.98}
           accessibilityRole="button"
-          accessibilityLabel={next ? t('Next up') : t("Open today's care timeline")}
-          onPress={() => (occ.length ? router.push('/care') : router.push({ pathname: '/day', params: { day: todayKey } }))}
+          accessibilityLabel={next ? t('Log {label}', { label: next.title }) : t("Open today's care timeline")}
+          onPress={() => {
+            // the next care opens its own log card straight away (and ticks that routine when saved)
+            if (next && isCareType(next.type)) {
+              if (next.type === 'walk' && pet.species === 'dog') return router.push('/walk');
+              return router.push({ pathname: '/log/[type]', params: { type: next.type, day: todayKey, scheduleId: next.scheduleId, occ: next.key } });
+            }
+            return occ.length ? router.push('/care') : router.push({ pathname: '/day', params: { day: todayKey } });
+          }}
           style={[styles.peek, { backgroundColor: occ.length ? '#FFE3E8' : '#E3F6F8' }]}
           testID="home-peek"
         >
@@ -327,11 +336,12 @@ function HomeScreen() {
             </T>
           </View>
           <View style={{ flex: 1 }}>
-            <T weight="black" style={[styles.peekTitle, { color: occ.length ? '#D6336C' : colors.brand }]} numberOfLines={1}>
+            <T weight="black" style={[styles.peekTitle, { color: occ.length ? '#D6336C' : colors.brand }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
               {next ? next.title : occ.length ? t('All done for today') : t("Today's care")}
+              {next && isCareType(next.type) && CARE[next.type].amount && portions[next.type] ? ` · ${formatAmount(next.type, portions[next.type]!)}` : ''}
             </T>
             {next ? (
-              <T weight="xbold" style={styles.peekMeta} numberOfLines={1}>
+              <T weight="xbold" style={styles.peekMeta} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
                 {t('Next up')} · {formatTime24to12(next.time)}
               </T>
             ) : null}
@@ -376,7 +386,7 @@ function HomeScreen() {
             </Pressable>
           </Animated.View>
         ) : null}
-        <CircleButton icon="menu" label={t('Settings')} onPress={() => router.push('/settings')} size={54} testID="menu" />
+        <CircleButton icon="menu" label={t('Explore')} onPress={() => router.push('/explore')} size={54} testID="menu" />
       </View>
 
       <AddFab bottom={insets.bottom + 14} hidden={!!snack} />
@@ -503,7 +513,7 @@ function RowItem({
         ) : null}
         {color ? <Splash fireKey={splashKey} color={color} /> : null}
       </View>
-      <T weight="black" style={styles.itemLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+      <T weight="black" style={styles.itemLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
         {label.toUpperCase()}
       </T>
     </APressable>

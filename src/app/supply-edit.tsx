@@ -11,6 +11,7 @@ import { SupplyKind, SupplyUnit, perDayFromLasting } from '../domain/supplies';
 import type { CareType } from '../domain/care';
 import { ValidationError } from '../data/repo';
 import { archiveSupply, createSupply, getDefaults, getSupply, setDefault, updateSupply } from '../data/suppliesRepo';
+import { firstTimeTip } from '../features/Tips';
 import { KIND_META, PantryIcon, qty, templatesFor, useSupplies } from '../features/supplies';
 import { useApp } from '../state/AppState';
 import { confirmAsync } from '../ui/confirm';
@@ -131,6 +132,7 @@ export default function SupplyEditor() {
       else {
         const created = await createSupply(db, input);
         if (link && makeDefault) await setDefault(db, pet.id, link, created.id);
+        void firstTimeTip(db, 'first_supply');
       }
       requestPermission(db).catch(() => null);
       successFeedback();

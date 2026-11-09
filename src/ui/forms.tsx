@@ -1,6 +1,6 @@
 /** Shared form & layout pieces for the care, records and moments screens. */
 import React, { useEffect, useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -9,6 +9,7 @@ import { colors, font, radius } from './theme';
 import { selectFeedback, toggleFeedback } from '../native/haptics';
 import { Bouncy, Enter, motionReduced } from './motion';
 import { springs, usePress } from './springs';
+import { useKeyboardHeight } from './layout';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { ArcTimePicker } from './ArcTime';
 import { t } from '../i18n';
@@ -26,7 +27,7 @@ export function ScreenHeader({ title, onClose, onBack, right }: { title: string;
   return (
     <View style={styles.header}>
       {onBack ? <CircleButton icon="back" label={t('Back')} onPress={onBack} size={46} /> : <View style={{ width: 46 }} />}
-      <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1}>
+      <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
         {title}
       </T>
       {onClose ? <CircleButton icon="close" label={t('Close')} onPress={onClose} size={46} /> : right ?? <View style={{ width: 46 }} />}
@@ -73,7 +74,7 @@ export function Field({ label, style, ref, ...rest }: TextInputProps & { label: 
   return (
     <View style={[{ gap: 6 }, style]}>
       <Label>{label}</Label>
-      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
+      <TextInput maxFontSizeMultiplier={1.4} ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
     </View>
   );
 }
@@ -126,6 +127,8 @@ export function EmptyState({ title, body, action, onAction, art }: { title: stri
 /** Bottom sheet built on Modal: dims the screen, slides up, closes on backdrop tap. */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+  // with the keyboard up, the navigation-bar inset would add an empty gap above it
+  const keyboard = useKeyboardHeight();
   // the Modal stays mounted while the sheet slides out, so closing is as smooth as opening
   const [mounted, setMounted] = useState(visible);
   const p = useSharedValue(0); // 0 = hidden, 1 = shown
@@ -152,8 +155,8 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdrop]}>
         <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Close')} accessibilityRole="button" />
       </Animated.View>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
-        <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }, panel]}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
+        <Animated.View style={[styles.sheet, { paddingBottom: (keyboard > 0 ? 0 : insets.bottom) + 16 }, panel]}>
           <View style={styles.sheetHandle} />
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
             <T weight="black" style={{ fontSize: 20, flex: 1 }}>
@@ -390,10 +393,10 @@ export function ModalScreen({
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: colors.canvas, paddingTop: insets.top + 8 }}>
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.canvas, paddingTop: insets.top + 8 }}>
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
         <ScreenHeader title={title} onClose={onClose} />
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: (footer || error ? 0 : insets.bottom) + 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {children}
         </ScrollView>
         {footer || error ? (

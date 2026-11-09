@@ -20,6 +20,7 @@
     "google_analytics_automatic_screen_reporting_enabled": false,
     "analytics_default_allow_ad_storage": false,
     "analytics_default_allow_ad_user_data": false,
-    "analytics_default_allow_ad_personalization_signals": false
+    "analytics_default_allow_ad_personalization_signals": false,
+    "analytics_auto_collection_enabled": false
   }
 }

@@ -1,0 +1,13 @@
+appId: com.pavurio.app
+name: Relaunch after setup goes straight to Home (no splash stuck, no setup again)
+---
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: "menu"
+    timeout: 15000
+- assertNotVisible:
+    id: "get-started"
+- assertNotVisible:
+    id: "startup-problem"

@@ -275,7 +275,7 @@ export default function Pantry() {
                 ))}
                 <View style={styles.listRow}>
                   <Icon name="plus" size={20} color={colors.faint} />
-                  <TextInput
+                  <TextInput maxFontSizeMultiplier={1.4}
                     value={draft}
                     onChangeText={setDraft}
                     onSubmitEditing={() => void addExtra()}

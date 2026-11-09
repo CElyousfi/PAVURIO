@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Linking, Platform, ScrollView, Share, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
-import { Sticker } from '../ui/Sticker';
 import { Bouncy } from '../ui/motion';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,8 +11,6 @@ import { formatHM } from '../i18n/dates';
 import { shareText } from '../native/files';
 import { PermissionState, exactAlarmsAllowed, getPermission, requestExactAlarms, requestPermission } from '../native/notifications';
 import { Chip, TabTitle } from '../ui/forms';
-import { DarkTile } from '../ui/Tiles';
-import { PantryIcon } from '../features/supplies';
 import { removeAllMemoryFiles } from '../native/media';
 import { useApp } from '../state/AppState';
 import { useCloud } from '../state/Cloud';
@@ -91,46 +88,16 @@ export default function Settings() {
             <TabTitle title={pet.name} subtitle={t('Care, records, memories & settings')} />
           </View>
 
-          {/* the hub: Clucky-style dark tiles, art spilling off the corner */}
-          <View style={styles.hub}>
-            <DarkTile
-              title={t('Care')}
-              subtitle={t('Routines & visits')}
-              art={<Image source={ART.duo.routines} style={{ width: 104, height: 104 }} resizeMode="contain" />}
-              onPress={() => router.push('/care')}
-              height={118}
-              testID="menu-care"
-            />
-            <DarkTile
-              title={t('Pantry')}
-              subtitle={t('Food, treats & meds — never run out')}
-              art={<View style={{ marginRight: 10, marginBottom: 4 }}><PantryIcon kind="food" size={84} /></View>}
-              onPress={() => router.push('/supplies')}
-              height={112}
-              testID="menu-supplies"
-            />
-            <View style={styles.hubRow}>
-              <DarkTile title={t('Records')} subtitle={t('Health file')} art={<Image source={ART.section.records} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/records')} style={styles.half} testID="menu-records" />
-              <DarkTile title={t('Summary')} subtitle={t('Your week')} art={<Image source={ART.duo.awards} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/summary')} style={styles.half} testID="menu-summary" />
+          {/* features live in Explore; Settings is only preferences, account, notifications and privacy */}
+          <Bouncy scaleTo={0.975} accessibilityRole="button" onPress={() => router.push('/explore')} style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} testID="settings-explore">
+            <View style={{ flex: 1 }}>
+              <T weight="xbold" style={{ fontSize: 17 }}>
+                {t('Explore')}
+              </T>
+              <T style={{ color: colors.muted, fontSize: 13 }}>{t('Everything Pavurio does for {name}', { name: pet.name })}</T>
             </View>
-            <View style={styles.hubRow}>
-              <DarkTile title={t('Memories')} art={<Image source={ART.icons.gift} style={styles.tileArtSm} resizeMode="contain" />} onPress={() => router.push('/moments')} style={styles.half} testID="menu-moments" />
-              <DarkTile
-                title={t('Pets')}
-                subtitle={pets.length > 1 ? String(pets.length) : pet.name}
-                art={<Sticker name={pet.species === 'cat' ? 'cat_bed' : 'dog_sleep'} size={86} />}
-                onPress={() => router.push('/pets')}
-                style={styles.half}
-                testID="menu-pets"
-              />
-            </View>
-            <View style={styles.hubRow}>
-              {pet.species === 'dog' ? (
-                <DarkTile title={t('Paw Passport')} subtitle={t('Adventures')} art={<Image source={ART.care.walk!} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/passport')} style={styles.half} testID="menu-passport" />
-              ) : null}
-              <DarkTile title={t('Achievements')} art={<Image source={ART.duo.awards} style={styles.tileArt} resizeMode="contain" />} onPress={() => router.push('/achievements')} style={styles.half} testID="menu-achievements" />
-            </View>
-          </View>
+            <Icon name="chevR" size={18} color={colors.faint} />
+          </Bouncy>
           <View style={styles.divider} />
 
           {cloudState.enabled ? (

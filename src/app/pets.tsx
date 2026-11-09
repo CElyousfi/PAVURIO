@@ -8,7 +8,7 @@ import { Pet, listArchivedPets, unarchivePet } from '../data/repo';
 import { FREE_PET_LIMIT } from '../native/purchases';
 import { useApp } from '../state/AppState';
 import { Card, TabTitle } from '../ui/forms';
-import { CircleButton, Icon, SoftPill, T } from '../ui/primitives';
+import { CircleButton, Icon, SoftPill, T, Column } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { selectFeedback } from '../native/haptics';
 import { t, tn } from '../i18n';
@@ -40,11 +40,12 @@ export default function PetsTab() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
+      <Column>
       <TabTitle
         title={t('Pets')}
         subtitle={pets.length === 1 ? t('Your family') : t('{n} in the family', { n: pets.length })}
         right={<CircleButton icon="plus" label={t('Add a pet')} onPress={addPet} size={50} />} />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 12 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 40, gap: 12 }} showsVerticalScrollIndicator={false}>
         {pets.map((p, pi) => {
           const active = p.id === pet?.id;
           const age = ageLabel(p.birthDate);
@@ -142,6 +143,7 @@ export default function PetsTab() {
           <Icon name="chevR" size={18} color={colors.faint} />
         </Card>
       </ScrollView>
+      </Column>
     </View>
   );
 }

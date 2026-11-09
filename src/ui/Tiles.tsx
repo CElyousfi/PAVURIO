@@ -57,7 +57,7 @@ export function DarkTile({
         {title}
       </T>
       {subtitle ? (
-        <T weight="xbold" style={[styles.sub, subtitleColor ? { color: subtitleColor } : null]} numberOfLines={1}>
+        <T weight="xbold" style={[styles.sub, subtitleColor ? { color: subtitleColor } : null]} numberOfLines={2}>
           {subtitle}
         </T>
       ) : null}

@@ -15,7 +15,7 @@ import { DueNowCard } from '../features/DueNow';
 import { useApp, useOccurrences } from '../state/AppState';
 import { GuideCard } from '../features/RoutineGuide';
 import { Card, MonthGrid, MonthNav, Sheet, TabTitle, formatDateLong } from '../ui/forms';
-import { CircleButton, Icon, Label, T } from '../ui/primitives';
+import { CircleButton, Icon, Label, T, Column } from '../ui/primitives';
 import { colors } from '../ui/theme';
 import { Bouncy, Enter } from '../ui/motion';
 import { ART } from '../ui/art';
@@ -116,12 +116,13 @@ export default function CareTab() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 6 }]}>
+      <Column>
       <TabTitle
         title={t('Care')}
         subtitle={t("{name}'s routines & visits", { name: pet.name })}
         right={<CircleButton icon="plus" label={t('Add to care')} onPress={() => setAddOpen(true)} size={50} />}
       />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 18 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 40, gap: 18 }} showsVerticalScrollIndicator={false}>
         {/* week strip */}
         <View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -197,7 +198,7 @@ export default function CareTab() {
                 <T weight="black" style={{ fontSize: 16 }} numberOfLines={1}>
                   {a.title}
                 </T>
-                <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
+                <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={2}>
                   {formatClock(a.at)}
                   {a.location ? ` · ${a.location}` : ''}
                   {a.doneAt ? ` · ${t('Done')}` : ''}
@@ -249,7 +250,7 @@ export default function CareTab() {
                     <T weight="black" style={{ fontSize: 16 }} numberOfLines={1}>
                       {s.title}
                     </T>
-                    <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
+                    <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={2}>
                       {describeRepeat(s)} · {s.times.map(formatTime24to12).join(', ')}
                     </T>
                   </View>
@@ -293,7 +294,7 @@ export default function CareTab() {
                     <T weight="black" style={{ fontSize: 16 }} numberOfLines={1}>
                       {a.title}
                     </T>
-                    <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
+                    <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={2}>
                       {DOW(new Date(a.at).getDay())} · {formatClock(a.at)}
                       {a.location ? ` · ${a.location}` : ''}
                     </T>
@@ -388,6 +389,7 @@ export default function CareTab() {
           </Bouncy>
         ))}
       </Sheet>
+      </Column>
     </View>
   );
 }
