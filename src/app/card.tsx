@@ -442,7 +442,7 @@ export default function CardEditor() {
           ) : null}
         </ScrollView>
 
-        <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 12, paddingHorizontal: Math.max(20, (width - 600) / 2 + 20) }]}>
           {error ? (
             <T weight="xbold" style={{ color: colors.danger, textAlign: 'center' }} accessibilityLiveRegion="polite">
               {error}

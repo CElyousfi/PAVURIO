@@ -49,36 +49,39 @@ export default function PetsTab() {
           const active = p.id === pet?.id;
           const age = ageLabel(p.birthDate);
           return (
-            <Card
-              key={p.id}
-              enter={pi}
-              onPress={async () => {
-                if (!active) {
-                  await switchPet(p.id);
-                  selectFeedback();
-                }
-                router.navigate('/');
-              }}
-              accessibilityLabel={active ? t('{name}, active. Open Home', { name: p.name }) : t('Switch to {name}', { name: p.name })}
-              style={[styles.pet, active && { borderColor: colors.brand }]}
-            >
-              <View style={styles.av}>
-                <PetAvatar species={p.species} appearance={p.appearance} size={64} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <T weight="black" style={{ fontSize: 19 }} numberOfLines={1}>
-                  {p.name}
-                </T>
-                <T style={{ color: colors.muted, fontSize: 14 }}>
-                  {p.species === 'dog' ? t('Dog') : t('Cat')}
-                  {age ? ` · ${age}` : ''}
-                </T>
-                {active ? (
-                  <T weight="black" style={{ color: colors.brand, fontSize: 12, letterSpacing: 1, marginTop: 2 }}>
-                    {t('ON HOME NOW')}
+            // the card holds two siblings (not a button inside a button) so screen readers reach the ⋯ menu
+            <Card key={p.id} enter={pi} style={[styles.pet, active && { borderColor: colors.brand }]}>
+              <Bouncy
+                scaleTo={0.975}
+                accessibilityRole="button"
+                onPress={async () => {
+                  if (!active) {
+                    await switchPet(p.id);
+                    selectFeedback();
+                  }
+                  router.navigate('/');
+                }}
+                accessibilityLabel={active ? t('{name}, active. Open Home', { name: p.name }) : t('Switch to {name}', { name: p.name })}
+                style={styles.petMain}
+              >
+                <View style={styles.av}>
+                  <PetAvatar species={p.species} appearance={p.appearance} size={64} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <T weight="black" style={{ fontSize: 19 }} numberOfLines={1}>
+                    {p.name}
                   </T>
-                ) : null}
-              </View>
+                  <T style={{ color: colors.muted, fontSize: 14 }}>
+                    {p.species === 'dog' ? t('Dog') : t('Cat')}
+                    {age ? ` · ${age}` : ''}
+                  </T>
+                  {active ? (
+                    <T weight="black" style={{ color: colors.brand, fontSize: 12, letterSpacing: 1, marginTop: 2 }}>
+                      {t('ON HOME NOW')}
+                    </T>
+                  ) : null}
+                </View>
+              </Bouncy>
               <Bouncy scaleTo={0.88} accessibilityRole="button" accessibilityLabel={t('Edit {title}', { title: p.name })} onPress={() => router.push({ pathname: '/pet', params: { id: p.id } })} style={styles.edit} hitSlop={6}>
                 <Icon name="more" size={20} color={colors.inkSoft} />
               </Bouncy>
@@ -147,8 +150,10 @@ export default function PetsTab() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   pet: { flexDirection: 'row', alignItems: 'center', gap: 14, borderWidth: 2, borderColor: 'transparent' },
+  petMain: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 14 },
   av: { width: 72, height: 72, borderRadius: 24, backgroundColor: '#FFF4E3', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   edit: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   add: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 60, borderRadius: 22, borderWidth: 2, borderStyle: 'dashed', borderColor: colors.line },

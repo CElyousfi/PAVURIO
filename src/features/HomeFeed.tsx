@@ -171,7 +171,7 @@ export function HomeFeed({ width }: { width: number }) {
           ].map((x) => (
             <Bouncy key={x.key} scaleTo={0.94} onPress={x.go} accessibilityRole="button" accessibilityLabel={x.label} style={styles.shortcut} testID={`home-${x.key}`}>
               {x.icon ? <Image source={x.icon} style={{ width: 40, height: 40 }} resizeMode="contain" /> : null}
-              <T weight="black" style={{ fontSize: 12.5, textAlign: 'center' }} numberOfLines={1}>
+              <T weight="black" style={{ fontSize: 12.5, textAlign: 'center' }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
                 {x.label}
               </T>
             </Bouncy>

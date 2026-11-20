@@ -172,12 +172,17 @@ function HomeScreen() {
 
   if (!pet) return null;
   const row = SPECIES_CARE[pet.species];
-  const petSize = Math.min(W * 0.8, height * 0.42, 380);
+  // short or squarish screens (SE, open foldables with a taskbar) shrink the pet so the row and Next up fit
+  // above the + button: ~470pt is everything else in the column (header, row, Next up, room for the +)
+  const petSize = Math.min(W * 0.8, height * 0.42, 380, Math.max(150, height - insets.top - insets.bottom - 470));
   const isEmptyDay = !loading && events.length === 0;
   const big = progress.planned > 0 ? `${progress.done}/${progress.planned}` : String(events.length);
   const complete = progress.planned > 0 && progress.ratio >= 1;
   const stack = fillStack(progress).map((b) => ({ color: CARE[b.type].color, from: b.from, to: b.to }));
-  const itemW = Math.floor((W - 16) / 5);
+  // tablets and open foldables: widen the column so the whole care row shows instead of a clipped scroller
+  const wide = width >= 600;
+  const itemW = wide ? Math.min(Math.floor((W - 16) / 5), Math.floor((width - 16) / (row.length + 2))) : Math.floor((W - 16) / 5);
+  const colW = wide ? Math.min(width, Math.max(W, (row.length + 2) * itemW + 16)) : W;
   const doneOcc = occ.filter((o) => o.status === 'done').length;
 
   return (
@@ -190,7 +195,7 @@ function HomeScreen() {
         scrollEventThrottle={16}
         onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 40)}
       >
-      <View style={[styles.col, { width: W, height: vh || height, paddingTop: insets.top + 70, paddingBottom: insets.bottom + 86 }]}>
+      <View style={[styles.col, { width: colW, minHeight: vh || height, paddingTop: insets.top + 70, paddingBottom: insets.bottom + 86 }]}>
 
         <View style={styles.header} accessibilityRole="header" accessibilityLabel={`${big} · ${progressSentence(progress)}`}>
           {complete ? (
@@ -268,7 +273,7 @@ function HomeScreen() {
             </Bouncy>
           </Animated.View>
         ) : null}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row} style={{ flexGrow: 0 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.row, { flexGrow: 1, justifyContent: 'center' }]} style={{ flexGrow: 0 }}>
           <RowItem
             width={itemW}
             label={pet.name}
@@ -318,7 +323,7 @@ function HomeScreen() {
           accessibilityRole="button"
           accessibilityLabel={next ? t('Next up') : t("Open today's care timeline")}
           onPress={() => (occ.length ? router.push('/care') : router.push({ pathname: '/day', params: { day: todayKey } }))}
-          style={[styles.peek, { backgroundColor: occ.length ? '#FFE3E8' : '#E3F6F8' }]}
+          style={[styles.peek, { width: W - 36, alignSelf: 'center', backgroundColor: occ.length ? '#FFE3E8' : '#E3F6F8' }]}
           testID="home-peek"
         >
           <View style={[styles.peekChip, { backgroundColor: occ.length ? '#FFC9D4' : '#C2ECEF' }]}>
@@ -525,8 +530,9 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 17, color: colors.muted },
   dropChip: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   stage: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  hint: { position: 'absolute', top: 6, backgroundColor: colors.ink, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 14 },
-  hintText: { color: '#FFFFFF', fontSize: 14 },
+  // capped and centred: a long pet name made it run edge to edge
+  hint: { position: 'absolute', top: 6, maxWidth: '86%', alignSelf: 'center', backgroundColor: colors.ink, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 14 },
+  hintText: { color: '#FFFFFF', fontSize: 14, textAlign: 'center' },
   celebrateWrap: { alignSelf: 'center', marginTop: -6, marginBottom: 6 },
   celebrate: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.ink, height: 62, borderRadius: 31, paddingLeft: 10, paddingRight: 26 },
   poster: { width: 44, height: 54, borderRadius: 8, backgroundColor: '#E8F7FA', borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-8deg' }], marginTop: -18, overflow: 'hidden' },

@@ -124,7 +124,7 @@ export function SlideToConfirm({
     >
       <Animated.View pointerEvents="none" style={[styles.fill, { backgroundColor: color }, fill]} />
       <Animated.View pointerEvents="none" style={[styles.labelWrap, text]}>
-        <T weight="black" style={[styles.label, { color }]} numberOfLines={1}>
+        <T weight="black" style={[styles.label, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
           {label}
         </T>
         <View style={{ flexDirection: 'row', marginLeft: 6, opacity: 0.6 }}>
@@ -136,7 +136,7 @@ export function SlideToConfirm({
       </Animated.View>
       {done && doneLabel ? (
         <View pointerEvents="none" style={styles.labelWrap}>
-          <T weight="black" style={[styles.label, { color: '#FFFFFF' }]} numberOfLines={1}>
+          <T weight="black" style={[styles.label, { color: '#FFFFFF' }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
             {doneLabel}
           </T>
         </View>
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   track: { height: H, borderRadius: H / 2, padding: PAD, justifyContent: 'center', overflow: 'hidden' },
   fill: { position: 'absolute', left: PAD, top: PAD, bottom: PAD, borderRadius: THUMB / 2 },
   labelWrap: { position: 'absolute', left: THUMB + 18, right: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  label: { fontSize: 17, letterSpacing: 0.3 },
+  // flexShrink keeps a long label inside labelWrap (where adjustsFontSizeToFit can shrink it) instead of under the thumb
+  label: { fontSize: 17, letterSpacing: 0.3, flexShrink: 1 },
   thumb: { width: THUMB, height: THUMB, borderRadius: THUMB / 2, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
 });

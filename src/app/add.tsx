@@ -147,13 +147,18 @@ export default function AddReminder() {
   };
 
   const tileW = (W - 20 * 2 - 12) / 2;
+  // short screens (SE, fold cover, split screen): smaller pills and a clock sized to the space left between them
+  const pillH = Math.min(PILL_H, Math.max(150, height * 0.3));
+  const toggleTop = insets.top + pillH - 40;
+  const clockTop = toggleTop + 48;
+  const clockH = Math.max(140, Math.min(320, height * 0.36, height - (pillH - 64) - clockTop - 90));
 
   return (
     <View style={[styles.root, { backgroundColor: BG }]}>
       <View style={[styles.col, { width: W }]}>
         {/* top pill: what it's for — pull it down */}
         <Animated.View style={[styles.topPill, topIn]} {...pull.panHandlers}>
-          <JellyPill width={PILL_W} height={PILL_H} color={colors.brand} poke={topPoke} accessibilityLabel={t('What it’s for: {label}. Tap to change', { label: meta.label })} onPress={() => openGrid(true)} testID="add-kind">
+          <JellyPill width={PILL_W} height={pillH} color={colors.brand} poke={topPoke} accessibilityLabel={t('What it’s for: {label}. Tap to change', { label: meta.label })} onPress={() => openGrid(true)} testID="add-kind">
             <View style={{ position: 'absolute', bottom: 22, alignItems: 'center', gap: 4 }}>
               <View style={styles.kindBubble}>
                 <KindIcon type={type} size={42} />
@@ -166,7 +171,7 @@ export default function AddReminder() {
         </Animated.View>
 
         {/* mode toggle with a little tail, like a speech bubble */}
-        <Animated.View entering={motionReduced() ? undefined : FadeInDown.delay(220).springify().damping(16)} style={[styles.toggleWrap, { top: insets.top + PILL_H - 40 }]}>
+        <Animated.View entering={motionReduced() ? undefined : FadeInDown.delay(220).springify().damping(16)} style={[styles.toggleWrap, { top: toggleTop }]}>
           <Segmented
             style={{ width: 290, backgroundColor: '#FFFFFF' }}
             height={40}
@@ -183,14 +188,14 @@ export default function AddReminder() {
         </Animated.View>
 
         {/* the clock */}
-        <Animated.View entering={motionReduced() ? undefined : FadeIn.delay(160).duration(260)} style={styles.clock}>
+        <Animated.View entering={motionReduced() ? undefined : FadeIn.delay(160).duration(260)} style={[styles.clock, { top: clockTop }]}>
           {mode === 'at' ? (
             <Animated.View key="at" entering={motionReduced() ? undefined : ZoomIn.springify().damping(16)}>
-              <ArcTimePicker value={time} onChange={setTime} h24={h24} height={Math.min(320, height * 0.36)} />
+              <ArcTimePicker value={time} onChange={setTime} h24={h24} height={clockH} />
             </Animated.View>
           ) : (
             <Animated.View key="in" entering={motionReduced() ? undefined : ZoomIn.springify().damping(16)}>
-              <ArcDurationPicker minutes={inMin} onChange={setInMin} hourUnit={t('hr')} minUnit={t('min')} height={Math.min(320, height * 0.36)} />
+              <ArcDurationPicker minutes={inMin} onChange={setInMin} hourUnit={t('hr')} minUnit={t('min')} height={clockH} />
             </Animated.View>
           )}
           <View style={{ alignItems: 'center', gap: 10, marginTop: 6 }}>
@@ -215,7 +220,7 @@ export default function AddReminder() {
         <View style={[styles.bottom, { bottom: -64 }]} pointerEvents="box-none">
           <View style={{ width: 58 }} />
           <Animated.View style={botIn}>
-            <JellyPill width={PILL_W} height={PILL_H} color={colors.brand} poke={poke} onPress={save} accessibilityLabel={t('Save reminder')} testID="add-save">
+            <JellyPill width={PILL_W} height={pillH} color={colors.brand} poke={poke} onPress={save} accessibilityLabel={t('Save reminder')} testID="add-save">
               <View style={{ position: 'absolute', top: 40 }}>
                 {saved ? (
                   <Animated.View entering={ZoomIn.springify().damping(10)}>
@@ -316,7 +321,7 @@ const styles = StyleSheet.create({
   toggle: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 24, padding: 4, gap: 2 },
   seg: { height: 40, paddingHorizontal: 14, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   tail: { width: 14, height: 14, backgroundColor: '#FFFFFF', transform: [{ rotate: '45deg' }], marginTop: -8 },
-  clock: { position: 'absolute', left: 0, right: 0, top: '30%' },
+  clock: { position: 'absolute', left: 0, right: 0 },
   chip: { height: 34, paddingHorizontal: 14, borderRadius: 17, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
   bottom: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingHorizontal: 24 },
   bubbleWrap: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 20 },

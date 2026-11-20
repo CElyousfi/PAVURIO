@@ -2041,5 +2041,8 @@
 "❚❚  Pause": "❚❚  Wstrzymaj",
 "🐾 Walk in progress · started {time}": "🐾 Spacer trwa · start o {time}",
 "🐾 Walk paused · tap to continue": "🐾 Spacer wstrzymany · stuknij, by kontynuować",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Przypomnienia tylko tam, gdzie pomagają. Reszta czeka na liście do odhaczenia."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Przypomnienia tylko tam, gdzie pomagają. Reszta czeka na liście do odhaczenia.",
+"The plan was all colored in": "Plan był cały pokolorowany",
+"Care logged": "Opieka zapisana",
+"Care logged · {pct}% of the plan": "Opieka zapisana · {pct}% planu"
 }

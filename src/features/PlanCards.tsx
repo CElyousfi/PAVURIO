@@ -106,20 +106,23 @@ export function WeighNudgeCard({ enter = 0 }: { enter?: number }) {
   };
   return (
     <Enter index={enter}>
-      <Bouncy onPress={() => router.push('/weight')} style={styles.weigh} accessibilityRole="button" testID="weigh-nudge">
-        <T style={{ fontSize: 30 }}>⚖️</T>
-        <View style={{ flex: 1 }}>
-          <T weight="black" style={{ fontSize: 16 }}>
-            {t('Time to weigh {name}', { name: pet.name })}
-          </T>
-          <T style={{ color: colors.muted, fontSize: 13, marginTop: 2 }}>
-            {months < 12 ? t('{name} grows fast. A weigh-in keeps the portions right.', { name: pet.name }) : t('One weigh-in makes {name}’s portions exact.', { name: pet.name })}
-          </T>
-        </View>
+      <View style={styles.weigh}>
+        <Bouncy onPress={() => router.push('/weight')} style={styles.weighMain} accessibilityRole="button" testID="weigh-nudge">
+          <T style={{ fontSize: 30 }}>⚖️</T>
+          <View style={{ flex: 1 }}>
+            <T weight="black" style={{ fontSize: 16 }}>
+              {t('Time to weigh {name}', { name: pet.name })}
+            </T>
+            <T style={{ color: colors.muted, fontSize: 13, marginTop: 2 }}>
+              {months < 12 ? t('{name} grows fast. A weigh-in keeps the portions right.', { name: pet.name }) : t('One weigh-in makes {name}’s portions exact.', { name: pet.name })}
+            </T>
+          </View>
+        </Bouncy>
+        {/* a sibling, not nested: screen readers can reach it and web gets valid buttons */}
         <Bouncy onPress={snooze} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Later')} testID="weigh-later">
           <Icon name="close" size={16} color={colors.muted} />
         </Bouncy>
-      </Bouncy>
+      </View>
     </Enter>
   );
 }
@@ -127,4 +130,5 @@ export function WeighNudgeCard({ enter = 0 }: { enter?: number }) {
 const styles = StyleSheet.create({
   news: { backgroundColor: '#EEE8FE', borderRadius: 28, padding: 16, marginTop: 12 },
   weigh: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 28, padding: 14, marginTop: 12 },
+  weighMain: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
 });

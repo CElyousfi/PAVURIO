@@ -208,7 +208,8 @@ function Stat({ icon, label, value }: { icon: string; label: string; value: stri
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   hero: { alignItems: 'center', borderRadius: 30, padding: 18 },
   card: { backgroundColor: colors.card, borderRadius: 26, paddingHorizontal: 16, paddingVertical: 8 },
   stat: { flexDirection: 'row', alignItems: 'center', minHeight: 44, borderBottomWidth: 1, borderBottomColor: '#FFFFFF' },

@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Tạm dừng",
 "🐾 Walk in progress · started {time}": "🐾 Đang đi dạo · bắt đầu lúc {time}",
 "🐾 Walk paused · tap to continue": "🐾 Đã tạm dừng đi dạo · chạm để tiếp tục",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Chỉ nhắc khi thật sự cần. Mọi thứ khác đều có trong danh sách, sẵn sàng để đánh dấu."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Chỉ nhắc khi thật sự cần. Mọi thứ khác đều có trong danh sách, sẵn sàng để đánh dấu.",
+"The plan was all colored in": "Kế hoạch đã được tô màu hết",
+"Care logged": "Đã ghi chăm sóc",
+"Care logged · {pct}% of the plan": "Đã ghi chăm sóc · {pct}% kế hoạch"
 }

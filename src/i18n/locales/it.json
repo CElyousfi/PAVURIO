@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Pausa",
 "🐾 Walk in progress · started {time}": "🐾 Passeggiata in corso · iniziata alle {time}",
 "🐾 Walk paused · tap to continue": "🐾 Passeggiata in pausa · tocca per continuare",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Promemoria solo dove servono. Tutto il resto è nella lista, pronto da spuntare."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Promemoria solo dove servono. Tutto il resto è nella lista, pronto da spuntare.",
+"The plan was all colored in": "Il piano era tutto colorato",
+"Care logged": "Cure registrate",
+"Care logged · {pct}% of the plan": "Cure registrate · {pct}% del piano"
 }

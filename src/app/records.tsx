@@ -111,7 +111,7 @@ export default function RecordsTab() {
                     <T weight="black" style={{ fontSize: 16 }} numberOfLines={1}>
                       {r.title}
                     </T>
-                    <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={1}>
+                    <T style={{ color: colors.muted, fontSize: 13 }} numberOfLines={2}>
                       {k.label} · {formatDateLong(r.date)}
                       {r.dueDate ? ` · ${t('next {date}', { date: formatDateLong(r.dueDate) })}` : ''}
                     </T>
@@ -145,7 +145,8 @@ export default function RecordsTab() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   dueRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
   kindDot: { width: 10, height: 10, borderRadius: 5 },
   rec: { flexDirection: 'row', alignItems: 'center', gap: 12 },

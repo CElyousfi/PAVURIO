@@ -139,7 +139,7 @@ export default function Summary() {
                     %
                   </T>
                 </View>
-                <T weight="black" style={{ fontSize: 12, color: '#FFFFFF', letterSpacing: 1.2, textAlign: 'center' }}>
+                <T weight="black" style={{ fontSize: 12, color: '#FFFFFF', letterSpacing: 1.2, textAlign: 'center', maxWidth: 136 }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                   {t("TODAY'S PLAN")}
                 </T>
               </View>

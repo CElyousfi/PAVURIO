@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  रोकें",
 "🐾 Walk in progress · started {time}": "🐾 वॉक चल रही है · {time} पर शुरू",
 "🐾 Walk paused · tap to continue": "🐾 वॉक रुकी हुई है · जारी रखने के लिए टैप करें",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 रिमाइंडर सिर्फ़ वहीं जहाँ काम आएँ। बाकी सब लिस्ट में है, टिक करने के लिए तैयार।"
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 रिमाइंडर सिर्फ़ वहीं जहाँ काम आएँ। बाकी सब लिस्ट में है, टिक करने के लिए तैयार।",
+"The plan was all colored in": "प्लान में पूरा रंग भर गया था",
+"Care logged": "दर्ज की गई देखभाल",
+"Care logged · {pct}% of the plan": "देखभाल दर्ज · प्लान का {pct}%"
 }

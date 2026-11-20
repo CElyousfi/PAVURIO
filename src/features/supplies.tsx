@@ -157,7 +157,12 @@ export function dayName(at: number, now: number) {
   return formatDayMonth(d);
 }
 
-export const daysLeftLabel = (f: Forecast) => (Number.isFinite(f.daysLeft) ? tn(Math.max(0, Math.floor(f.daysLeft)), '{n} day left', '{n} days left') : qty(f.left, f.supply.unit));
+// the translated keys are 'day left' / 'days left' (as on the supply page); '{n} days left' had no translations
+export const daysLeftLabel = (f: Forecast) => {
+  if (!Number.isFinite(f.daysLeft)) return qty(f.left, f.supply.unit);
+  const n = Math.max(0, Math.floor(f.daysLeft));
+  return `${n} ${tn(n, 'day left', 'days left')}`;
+};
 
 /** The one line that matters for a product. */
 export function headline(f: Forecast, now: number): string {

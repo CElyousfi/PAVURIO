@@ -159,10 +159,11 @@ export default function CareTab() {
                   }}
                   style={[styles.wday, sel && { backgroundColor: colors.ink }]}
                 >
-                  <T weight="xbold" style={{ fontSize: 11, color: sel ? '#FFFFFFB0' : colors.muted }}>
+                  {/* one line at any system font size: a wrapped "WE/D" pushes the date out of the chip */}
+                  <T weight="xbold" style={{ fontSize: 11, color: sel ? '#FFFFFFB0' : colors.muted }} numberOfLines={1} adjustsFontSizeToFit>
                     {DOW(parseDayKey(k).getDay()).toUpperCase()}
                   </T>
-                  <T weight="black" style={{ fontSize: 17, color: sel ? '#FFFFFF' : isT ? colors.brand : colors.ink }}>
+                  <T weight="black" style={{ fontSize: 17, color: sel ? '#FFFFFF' : isT ? colors.brand : colors.ink }} numberOfLines={1} adjustsFontSizeToFit>
                     {Number(k.slice(8))}
                   </T>
                 </Bouncy>
@@ -448,7 +449,8 @@ function BellGlyph({ color }: { color: string }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   monthBtn: { paddingHorizontal: 12, height: 30, borderRadius: 15, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   week: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   wday: { flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 16 },

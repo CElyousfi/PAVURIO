@@ -1926,5 +1926,8 @@
 "❚❚  Pause": "❚❚  השהיה",
 "🐾 Walk in progress · started {time}": "🐾 טיול מתבצע · התחיל {time}",
 "🐾 Walk paused · tap to continue": "🐾 הטיול מושהה · להקיש כדי להמשיך",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 תזכורות רק איפה שהן עוזרות. כל השאר ברשימה, מוכן לסימון."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 תזכורות רק איפה שהן עוזרות. כל השאר ברשימה, מוכן לסימון.",
+"The plan was all colored in": "התוכנית נצבעה כולה",
+"Care logged": "טיפול שתועד",
+"Care logged · {pct}% of the plan": "טיפול תועד · {pct}% מהתוכנית"
 }

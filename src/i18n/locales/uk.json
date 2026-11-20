@@ -2041,5 +2041,8 @@
 "❚❚  Pause": "❚❚  Пауза",
 "🐾 Walk in progress · started {time}": "🐾 Прогулянка триває · початок о {time}",
 "🐾 Walk paused · tap to continue": "🐾 Прогулянку призупинено · торкнись, щоб продовжити",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Нагадування лише там, де вони допомагають. Усе інше — у списку, можна відмічати."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Нагадування лише там, де вони допомагають. Усе інше — у списку, можна відмічати.",
+"The plan was all colored in": "План було повністю розфарбовано",
+"Care logged": "Догляд записано",
+"Care logged · {pct}% of the plan": "Догляд записано · {pct}% плану"
 }

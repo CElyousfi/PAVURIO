@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Duraklat",
 "🐾 Walk in progress · started {time}": "🐾 Yürüyüş sürüyor · {time} başladı",
 "🐾 Walk paused · tap to continue": "🐾 Yürüyüş duraklatıldı · devam etmek için dokun",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Hatırlatmalar sadece işe yaradığı yerde. Gerisi listede, işaretlenmeyi bekliyor."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Hatırlatmalar sadece işe yaradığı yerde. Gerisi listede, işaretlenmeyi bekliyor.",
+"The plan was all colored in": "Plan tamamen boyanmıştı",
+"Care logged": "Kaydedilen bakım",
+"Care logged · {pct}% of the plan": "Bakım kaydedildi · planın %{pct}’i"
 }

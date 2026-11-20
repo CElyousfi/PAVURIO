@@ -70,7 +70,7 @@ export function DueNowCard({ o }: { o: Occurrence }) {
           <KindIcon type={o.type} size={58} />
         </Pulse>
         <View style={{ flex: 1 }}>
-          <T weight="black" style={[styles.kicker, { color: overdue ? '#E58A00' : meta.color }]}>
+          <T weight="black" style={[styles.kicker, { color: overdue ? '#E58A00' : meta.color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
             {overdue ? t('OVERDUE') : t('DUE NOW')} · {formatTime24to12(o.time)}
           </T>
           <T weight="black" style={styles.title} numberOfLines={2}>

@@ -10,6 +10,9 @@ import { colors } from '../ui/theme';
 import { tickFeedback } from '../native/haptics';
 import { t } from '../i18n';
 
+/** a coat name's size in its 74pt cell: whole words only (Android would break "Chocolate" mid-word) */
+const swatchFont = (name: string) => Math.min(12, 56 / (Math.max(...name.split(/\s+/).map((w) => w.length)) * 0.58));
+
 export function LookPicker({ species, appearance, onChange, pro = false }: { species: Species; appearance: Appearance; onChange: (a: Appearance) => void; pro?: boolean }) {
   const chosen = PALETTES[species].find((p) => p.id === appearance.paletteId);
   return (
@@ -39,7 +42,7 @@ export function LookPicker({ species, appearance, onChange, pro = false }: { spe
                   </T>
                 </View>
               ) : null}
-              <T style={styles.swatchName} numberOfLines={1}>
+              <T style={[styles.swatchName, { fontSize: swatchFont(p.name) }]} numberOfLines={2}>
                 {p.name}
               </T>
             </Bouncy>
@@ -165,10 +168,11 @@ export function PlanEditor({
 
 const styles = StyleSheet.create({
   swatchRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  swatchWrap: { alignItems: 'center', padding: 6, borderRadius: 18, borderWidth: 2.5, borderColor: 'transparent' },
+  // fixed width: cells line up in columns whatever the coat name's length
+  swatchWrap: { width: 74, alignItems: 'center', padding: 6, borderRadius: 18, borderWidth: 2.5, borderColor: 'transparent' },
   swatch: { width: 50, height: 50, borderRadius: 25, overflow: 'hidden' },
   swatchHalf: { position: 'absolute', left: 0, top: 0, width: 50, height: 22 },
-  swatchName: { fontSize: 12, color: colors.muted, marginTop: 4, maxWidth: 62 },
+  swatchName: { fontSize: 12, lineHeight: 15, color: colors.muted, marginTop: 4, textAlign: 'center' },
   proTag: { position: 'absolute', top: 2, right: 0, backgroundColor: colors.ink, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1 },
   proTagText: { color: '#FFFFFF', fontSize: 9, letterSpacing: 0.6 },
   tryOn: { backgroundColor: '#FFF6E5', borderRadius: 18, padding: 12, gap: 2 },

@@ -1265,4 +1265,7 @@ export const ES: Record<string, string> = {
   "{name} grows fast. A weigh-in keeps the portions right.": "{name} crece rápido. Un pesaje mantiene las raciones a punto.",
   "One weigh-in makes {name}’s portions exact.": "Un pesaje y las raciones de {name} serán exactas.",
   "Later": "Más tarde",
+  "The plan was all colored in": "El plan quedó todo coloreado",
+  "Care logged": "Cuidados registrados",
+  "Care logged · {pct}% of the plan": "Cuidados registrados · {pct}% del plan",
 };

@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Παύση",
 "🐾 Walk in progress · started {time}": "🐾 Βόλτα σε εξέλιξη · ξεκίνησε στις {time}",
 "🐾 Walk paused · tap to continue": "🐾 Βόλτα σε παύση · πάτα για συνέχεια",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Υπενθυμίσεις μόνο όπου βοηθούν. Όλα τα άλλα είναι στη λίστα, έτοιμα για τσεκάρισμα."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Υπενθυμίσεις μόνο όπου βοηθούν. Όλα τα άλλα είναι στη λίστα, έτοιμα για τσεκάρισμα.",
+"The plan was all colored in": "Το πρόγραμμα χρωματίστηκε ολόκληρο",
+"Care logged": "Φροντίδα που καταγράφηκε",
+"Care logged · {pct}% of the plan": "Φροντίδα καταγράφηκε · {pct}% του προγράμματος"
 }

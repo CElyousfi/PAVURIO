@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  一時停止",
 "🐾 Walk in progress · started {time}": "🐾 お散歩中 · {time}に開始",
 "🐾 Walk paused · tap to continue": "🐾 お散歩を一時停止中 · タップして再開",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 リマインダーは役立つところだけ。ほかはリストにあって、チェックするだけです。"
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 リマインダーは役立つところだけ。ほかはリストにあって、チェックするだけです。",
+"The plan was all colored in": "プランはぜんぶぬれました",
+"Care logged": "記録したお世話",
+"Care logged · {pct}% of the plan": "お世話を記録 · プランの{pct}%"
 }

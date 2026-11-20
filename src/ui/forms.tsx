@@ -1,6 +1,7 @@
 /** Shared form & layout pieces for the care, records and moments screens. */
 import React, { useEffect, useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleProp, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleProp, StyleSheet, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -26,7 +27,7 @@ export function ScreenHeader({ title, onClose, onBack, right }: { title: string;
   return (
     <View style={styles.header}>
       {onBack ? <CircleButton icon="back" label={t('Back')} onPress={onBack} size={46} /> : <View style={{ width: 46 }} />}
-      <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1}>
+      <T weight="black" style={styles.headerTitle} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
         {title}
       </T>
       {onClose ? <CircleButton icon="close" label={t('Close')} onPress={onClose} size={46} /> : right ?? <View style={{ width: 46 }} />}
@@ -69,11 +70,11 @@ export function TabTitle({ title, subtitle, right, onBack }: { title: string; su
   );
 }
 
-export function Field({ label, style, ref, ...rest }: TextInputProps & { label: string; style?: StyleProp<ViewStyle>; ref?: React.Ref<React.ComponentRef<typeof TextInput>> }) {
+export function Field({ label, style, inputStyle, ref, ...rest }: TextInputProps & { label: string; style?: StyleProp<ViewStyle>; /** e.g. white on a gray card, where the default gray field disappears */ inputStyle?: StyleProp<TextStyle>; ref?: React.Ref<React.ComponentRef<typeof TextInput>> }) {
   return (
     <View style={[{ gap: 6 }, style]}>
       <Label>{label}</Label>
-      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }]} accessibilityLabel={label} />
+      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }, inputStyle]} accessibilityLabel={label} />
     </View>
   );
 }
@@ -152,7 +153,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdrop]}>
         <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Close')} accessibilityRole="button" />
       </Animated.View>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
         <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }, panel]}>
           <View style={styles.sheetHandle} />
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
@@ -390,7 +391,7 @@ export function ModalScreen({
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: colors.canvas, paddingTop: insets.top + 8 }}>
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.canvas, paddingTop: insets.top + 8 }}>
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
         <ScreenHeader title={title} onClose={onClose} />
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>

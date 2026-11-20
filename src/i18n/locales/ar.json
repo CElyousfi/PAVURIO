@@ -2163,5 +2163,8 @@
 "❚❚  Pause": "❚❚  إيقاف مؤقت",
 "🐾 Walk in progress · started {time}": "🐾 نزهة جارية · بدأت {time}",
 "🐾 Walk paused · tap to continue": "🐾 النزهة متوقفة مؤقتًا · اضغط للمتابعة",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 تذكيرات فقط حيث تفيد. وكل ما عدا ذلك في القائمة، جاهز للتأشير."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 تذكيرات فقط حيث تفيد. وكل ما عدا ذلك في القائمة، جاهز للتأشير.",
+"The plan was all colored in": "الخطة ملوّنة بالكامل",
+"Care logged": "رعاية مسجّلة",
+"Care logged · {pct}% of the plan": "رعاية مسجّلة · {pct}% من الخطة"
 }

@@ -252,10 +252,15 @@ function ConfettiPiece({ p, height, clock }: { p: Piece; height: number; clock: 
 }
 
 /** Confetti rain over the whole screen; re-fire by changing `fireKey`. One shared clock drives every piece. */
-export function ConfettiRain({ fireKey, colorsList = ['#14B8C4', '#FFC83D', '#FF6B9A', '#58C322', '#9B7BF7', '#1CB0F6'], count = 60 }: { fireKey: number | null; colorsList?: string[]; count?: number }) {
+const CONFETTI_COLORS = ['#14B8C4', '#FFC83D', '#FF6B9A', '#58C322', '#9B7BF7', '#1CB0F6'];
+
+export function ConfettiRain({ fireKey, colorsList = CONFETTI_COLORS, count = 60 }: { fireKey: number | null; colorsList?: string[]; count?: number }) {
   const { width, height } = useWindowDimensions();
   const [pieces, setPieces] = useState<Piece[]>([]);
   const clock = useSharedValue(0);
+  // callers pass inline arrays: read the palette from a ref so a new array each render doesn't re-fire (and loop)
+  const palette = useRef(colorsList);
+  palette.current = colorsList;
   useEffect(() => {
     if (!fireKey || motionReduced()) return;
     setPieces(
@@ -265,7 +270,7 @@ export function ConfettiRain({ fireKey, colorsList = ['#14B8C4', '#FFC83D', '#FF
         y0: -20 - Math.random() * height * 0.35,
         delay: Math.random() * 400,
         dur: 1700 + Math.random() * 1000,
-        color: colorsList[i % colorsList.length],
+        color: palette.current[i % palette.current.length],
         w: 7 + Math.random() * 6,
         h: 10 + Math.random() * 8,
         spin: (Math.random() - 0.5) * 900,
@@ -276,7 +281,7 @@ export function ConfettiRain({ fireKey, colorsList = ['#14B8C4', '#FFC83D', '#FF
     clock.value = withTiming(1, { duration: RAIN_MS, easing: Easing.linear });
     const timer = setTimeout(() => setPieces([]), RAIN_MS + 100);
     return () => clearTimeout(timer);
-  }, [fireKey, count, width, height, colorsList, clock]);
+  }, [fireKey, count, width, height, clock]);
   if (!pieces.length) return null;
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>

@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Tauko",
 "🐾 Walk in progress · started {time}": "🐾 Lenkki käynnissä · aloitettu {time}",
 "🐾 Walk paused · tap to continue": "🐾 Lenkki tauolla · napauta jatkaaksesi",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Muistutukset vain siellä, missä niistä on apua. Kaikki muu on listalla valmiina rastitettavaksi."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Muistutukset vain siellä, missä niistä on apua. Kaikki muu on listalla valmiina rastitettavaksi.",
+"The plan was all colored in": "Suunnitelma oli kokonaan väritetty",
+"Care logged": "Hoito kirjattu",
+"Care logged · {pct}% of the plan": "Hoito kirjattu · {pct} % suunnitelmasta"
 }

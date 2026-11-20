@@ -8,6 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { SQLiteProvider } from 'expo-sqlite';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useFonts } from '@expo-google-fonts/nunito';
 import { Nunito_700Bold } from '@expo-google-fonts/nunito/700Bold';
 import { Nunito_800ExtraBold } from '@expo-google-fonts/nunito/800ExtraBold';
@@ -101,15 +102,17 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
   return (
     <SafeAreaProvider>
-      <SQLiteProvider databaseName="pavurio.db" onInit={(db) => migrate(db as unknown as Db)}>
-        <AppProvider>
-          <CloudProvider>
-            <EngagementProvider>
-              <Gate />
-            </EngagementProvider>
-          </CloudProvider>
-        </AppProvider>
-      </SQLiteProvider>
+      <KeyboardProvider>
+        <SQLiteProvider databaseName="pavurio.db" onInit={(db) => migrate(db as unknown as Db)}>
+          <AppProvider>
+            <CloudProvider>
+              <EngagementProvider>
+                <Gate />
+              </EngagementProvider>
+            </CloudProvider>
+          </AppProvider>
+        </SQLiteProvider>
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 }

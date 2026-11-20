@@ -1978,5 +1978,8 @@
 "❚❚  Pause": "❚❚  Pauză",
 "🐾 Walk in progress · started {time}": "🐾 Plimbare în curs · începută la {time}",
 "🐾 Walk paused · tap to continue": "🐾 Plimbare pe pauză · atinge ca să continui",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Mementouri doar unde ajută. Restul e pe listă, gata de bifat."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Mementouri doar unde ajută. Restul e pe listă, gata de bifat.",
+"The plan was all colored in": "Planul a fost colorat complet",
+"Care logged": "Îngrijiri notate",
+"Care logged · {pct}% of the plan": "Îngrijiri notate · {pct}% din plan"
 }

@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  일시정지",
 "🐾 Walk in progress · started {time}": "🐾 산책 중 · {time} 시작",
 "🐾 Walk paused · tap to continue": "🐾 산책 일시정지됨 · 탭해서 계속",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 알림은 도움이 될 때만 보내요. 나머지는 목록에서 체크만 하면 돼요."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 알림은 도움이 될 때만 보내요. 나머지는 목록에서 체크만 하면 돼요.",
+"The plan was all colored in": "계획을 모두 색칠했어요",
+"Care logged": "기록한 케어",
+"Care logged · {pct}% of the plan": "케어 기록됨 · 계획의 {pct}%"
 }

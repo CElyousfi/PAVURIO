@@ -93,11 +93,12 @@ export function computeProgress(plan: Plan, events: CareEventLite[], portions: P
   return { done, planned, ratio, counts, bands, weights, level };
 }
 
-export function progressSentence(p: Progress): string {
-  if (p.planned === 0) return p.done > 0 ? t('Care logged today') : t('No daily plan yet');
+/** `today` false: a past day opened from the calendar, which mustn't say "today". */
+export function progressSentence(p: Progress, today = true): string {
+  if (p.planned === 0) return p.done > 0 ? (today ? t('Care logged today') : t('Care logged')) : t('No daily plan yet');
   const pct = Math.round(p.ratio * 100);
-  if (pct >= 100) return t("Today's plan is all colored in");
-  return t("Care logged · {pct}% of today's plan", { pct });
+  if (pct >= 100) return today ? t("Today's plan is all colored in") : t('The plan was all colored in');
+  return today ? t("Care logged · {pct}% of today's plan", { pct }) : t('Care logged · {pct}% of the plan', { pct });
 }
 
 /** One band of colour inside the pet, as fractions (0 = paws, 1 = top of the head) of its height. */

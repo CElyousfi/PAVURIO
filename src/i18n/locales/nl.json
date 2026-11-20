@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Pauzeren",
 "🐾 Walk in progress · started {time}": "🐾 Wandeling bezig · gestart om {time}",
 "🐾 Walk paused · tap to continue": "🐾 Wandeling gepauzeerd · tik om verder te gaan",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Herinneringen alleen waar ze helpen. De rest staat op de lijst, klaar om af te vinken."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Herinneringen alleen waar ze helpen. De rest staat op de lijst, klaar om af te vinken.",
+"The plan was all colored in": "Het plan was helemaal ingekleurd",
+"Care logged": "Zorg genoteerd",
+"Care logged · {pct}% of the plan": "Zorg genoteerd · {pct}% van het plan"
 }

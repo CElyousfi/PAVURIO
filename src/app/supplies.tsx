@@ -140,8 +140,9 @@ export default function Pantry() {
                     <Bouncy scaleTo={0.97} onPress={() => router.push({ pathname: '/supply', params: { id: f.supply.id } })} accessibilityRole="button" accessibilityLabel={`${f.supply.name}, ${daysLeftLabel(f)}, ${headline(f, now)}`} style={styles.row} testID={`supply-${f.supply.id}`}>
                       <PantryIcon kind={f.supply.kind} size={58} level={f.level} />
                       <View style={{ flex: 1, gap: 4 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <T weight="black" style={{ fontSize: 17, flex: 1 }} numberOfLines={1}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
+                          {/* two lines: product names are long ("Royal Canin Medium Adult 12 kg") and the badge takes room */}
+                          <T weight="black" style={{ fontSize: 17, lineHeight: 21, flex: 1 }} numberOfLines={2}>
                             {f.supply.name}
                           </T>
                           {f.status !== 'ok' ? (

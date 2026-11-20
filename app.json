@@ -95,6 +95,7 @@
         }
       ],
       "expo-document-picker",
+      "./plugins/withConfigChanges.js",
       [
         "./plugins/withWidgetTapOpens.js",
         {

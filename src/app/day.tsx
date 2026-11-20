@@ -62,7 +62,7 @@ export default function DayDetail() {
             <T weight="black" style={styles.big}>
               {progress.planned > 0 ? `${progress.done}/${progress.planned}` : events.length}
             </T>
-            <T style={styles.sub}>{progressSentence(progress)}</T>
+            <T style={styles.sub}>{progressSentence(progress, today)}</T>
             {events.length > progress.done ? (
               <T weight="xbold" style={styles.extra}>
                 {t('{n} logged in total', { n: events.length })}

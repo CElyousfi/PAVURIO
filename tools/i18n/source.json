@@ -9719,5 +9719,20 @@
   "id": "1920",
   "en": "Later",
   "fr": "Plus tard"
+ },
+ {
+  "id": "1921",
+  "en": "The plan was all colored in",
+  "fr": "Le programme était tout colorié"
+ },
+ {
+  "id": "1922",
+  "en": "Care logged · {pct}% of the plan",
+  "fr": "Soins notés · {pct} % du programme"
+ },
+ {
+  "id": "1923",
+  "en": "Care logged",
+  "fr": "Soins notés"
  }
 ]

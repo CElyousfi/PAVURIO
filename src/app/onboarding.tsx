@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInLeft, FadeInRight, FadeInUp, ZoomIn } from 'react-native-reanimated';
@@ -52,7 +53,7 @@ const CLIP_FOR: Partial<Record<CareType, PetClipName>> = { meal: 'eat', water: '
 
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const W = Math.min(width, 520);
   const { db, reload, bump, reduceMotion, language, setLanguage, setWeightUnit, settings, pets, pro } = useApp();
   const params = useLocalSearchParams<{ add?: string }>();
@@ -215,7 +216,8 @@ export default function Onboarding() {
     }
   };
 
-  const petSize = Math.min(W * 0.72, 330);
+  // short screens (small phones, fold cover screens, landscape tablets) get a smaller pet so the controls fit
+  const petSize = Math.min(W * 0.72, 330, height * 0.4);
   const displayName = name.trim() || (species === 'dog' ? t('your dog') : t('your cat'));
   const setupSteps: Step[] = ['species', 'name', 'look', 'about', 'care', 'plan'];
   const dotIndex = step === 'care' ? 4 + careIdx : step === 'plan' ? 4 + choices.length : setupSteps.indexOf(step);
@@ -226,7 +228,7 @@ export default function Onboarding() {
   const showSkip = step === 'first';
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top + 8 }]}>
+    <KeyboardAvoidingView behavior="padding" style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={[styles.topRow, { width: W }]}>
         {showBack ? <CircleButton icon="back" label={t('Back')} onPress={back} size={46} /> : <View style={{ width: 46 }} />}
         {setupSteps.includes(step) ? <Dots index={dotIndex} total={dotTotal} /> : null}
@@ -309,10 +311,13 @@ export default function Onboarding() {
           <T weight="black" style={styles.h2}>
             {t('Make {name} look like {name}', { name: displayName })}
           </T>
-          <View style={styles.hero}>
-            <PetRig species={species} appearance={appearance} size={petSize * 0.8} reduceMotion={reduceMotion} interactive />
-          </View>
-          <LookPicker species={species} appearance={appearance} onChange={setAppearance} pro={pro} />
+          {/* scrolls on short screens so the button below never falls off */}
+          <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ flexGrow: 1, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
+            <View style={[styles.hero, { minHeight: petSize * 0.8 }]}>
+              <PetRig species={species} appearance={appearance} size={petSize * 0.8} reduceMotion={reduceMotion} interactive />
+            </View>
+            <LookPicker species={species} appearance={appearance} onChange={setAppearance} pro={pro} />
+          </ScrollView>
           <View style={[styles.bottom, { paddingBottom: insets.bottom + 18 }]}>
             <Pill label={t('LOOKS RIGHT')} onPress={() => go('about')} style={{ alignSelf: 'stretch', marginHorizontal: 24 }} testID="look-next" />
           </View>

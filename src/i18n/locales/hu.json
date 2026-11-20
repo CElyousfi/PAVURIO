@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Szünet",
 "🐾 Walk in progress · started {time}": "🐾 Séta folyamatban · indulás: {time}",
 "🐾 Walk paused · tap to continue": "🐾 Séta szüneteltetve · koppints a folytatáshoz",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Emlékeztetők csak ott, ahol segítenek. Minden más a listán vár kipipálásra."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Emlékeztetők csak ott, ahol segítenek. Minden más a listán vár kipipálásra.",
+"The plan was all colored in": "A terv teljesen ki volt színezve",
+"Care logged": "Rögzített gondozás",
+"Care logged · {pct}% of the plan": "Rögzített gondozás · a terv {pct}%-a"
 }

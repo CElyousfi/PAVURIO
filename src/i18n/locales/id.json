@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Jeda",
 "🐾 Walk in progress · started {time}": "🐾 Sedang jalan-jalan · mulai {time}",
 "🐾 Walk paused · tap to continue": "🐾 Jalan-jalan dijeda · ketuk untuk lanjut",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Pengingat hanya saat berguna. Sisanya ada di daftar, tinggal dicentang."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Pengingat hanya saat berguna. Sisanya ada di daftar, tinggal dicentang.",
+"The plan was all colored in": "Rencananya sudah diwarnai semua",
+"Care logged": "Perawatan tercatat",
+"Care logged · {pct}% of the plan": "Perawatan tercatat · {pct}% dari rencana"
 }

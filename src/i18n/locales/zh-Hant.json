@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  暫停",
 "🐾 Walk in progress · started {time}": "🐾 散步中 · {time} 開始",
 "🐾 Walk paused · tap to continue": "🐾 散步已暫停 · 點一下繼續",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 只在有幫助時提醒。其他都在清單上，隨時打勾。"
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 只在有幫助時提醒。其他都在清單上，隨時打勾。",
+"The plan was all colored in": "計畫已全部塗滿",
+"Care logged": "已記錄照顧",
+"Care logged · {pct}% of the plan": "已記錄照顧 · 完成計畫的 {pct}%"
 }

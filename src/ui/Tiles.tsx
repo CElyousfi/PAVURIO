@@ -3,7 +3,7 @@
  * subtitle and its art spilling off the bottom-right corner. Selected tiles get a coloured outline and a
  * check. They squish when pressed like every other button.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Bouncy } from './motion';
 import { Icon, T } from './primitives';
@@ -38,9 +38,15 @@ export function DarkTile({
   testID?: string;
   children?: React.ReactNode;
 }) {
+  // narrow tiles (small phones, fold cover screens): shrink the title until its longest word fits on a line,
+  // otherwise Android breaks "Achievements" mid-word. ~0.66em is Nunito Black's average glyph width.
+  const [w, setW] = useState(0);
+  const longest = Math.max(...title.split(/\s+/).map((x) => x.length));
+  const titleSize = w ? Math.max(12, Math.min(17, (w - 34 - (selected ? 26 : 0)) / (longest * 0.66))) : 17;
   return (
     <Bouncy
       scaleTo={0.95}
+      onLayout={(e) => setW(e.nativeEvent.layout.width)}
       onPress={onPress}
       accessibilityRole={accessibilityRole}
       accessibilityState={selected === undefined ? undefined : { selected }}
@@ -53,7 +59,7 @@ export function DarkTile({
           {art}
         </View>
       ) : null}
-      <T weight="black" style={[styles.title, selected ? { marginRight: 26 } : null]} numberOfLines={2}>
+      <T weight="black" style={[styles.title, { fontSize: titleSize, lineHeight: Math.round(titleSize * 1.24) }, selected ? { marginRight: 26 } : null]} numberOfLines={2}>
         {title}
       </T>
       {subtitle ? (

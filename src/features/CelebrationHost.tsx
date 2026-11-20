@@ -55,9 +55,12 @@ export function CelebrationHost() {
       <View style={styles.screen}>
         <Animated.View entering={FadeIn.duration(260)} style={[styles.arch, { backgroundColor: `${color}22` }]} />
         <View style={styles.center}>
-          <PopIn delay={150}>
-            {badge ? <Medal def={badge} size={190} /> : null}
-          </PopIn>
+          {/* explicit spacing: on Android the column's gap didn't separate the medal from the kicker */}
+          <View style={{ marginBottom: 26 }}>
+            <PopIn delay={150}>
+              {badge ? <Medal def={badge} size={190} /> : null}
+            </PopIn>
+          </View>
           <Animated.View entering={ZoomIn.delay(260).springify().damping(14)} style={{ alignItems: 'center' }}>
             <T weight="black" style={[styles.kicker, { color }]}>
               {t('NEW BADGE')}
@@ -82,9 +85,9 @@ export function CelebrationHost() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'space-between', paddingTop: 80, paddingBottom: 50, paddingHorizontal: 28, overflow: 'hidden' },
   arch: { position: 'absolute', top: -220, width: 620, height: 620, borderRadius: 310 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   kicker: { fontSize: 13, letterSpacing: 2 },
   title: { fontSize: 34, lineHeight: 40, textAlign: 'center', marginTop: 8 },
   body: { fontSize: 17, color: colors.inkSoft, textAlign: 'center', marginTop: 8, lineHeight: 24, maxWidth: 320 },
-  btn: { height: 62, alignSelf: 'stretch', maxWidth: 360, width: '100%', borderRadius: 31, alignItems: 'center', justifyContent: 'center' },
+  btn: { height: 62, alignSelf: 'center', maxWidth: 360, width: '100%', borderRadius: 31, alignItems: 'center', justifyContent: 'center' },
 });

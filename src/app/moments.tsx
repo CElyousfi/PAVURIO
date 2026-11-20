@@ -84,8 +84,9 @@ export default function MemoriesTab() {
       <TodayMomentCard width={W - 40} compact />
       <AnniversaryCard />
 
-      <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
-        <Bouncy accessibilityRole="button" accessibilityLabel={t('Memory Cards')} onPress={() => router.push('/cards')} style={[styles.entry, { backgroundColor: MEM_COLORS.pink }]} testID="open-cards">
+      {/* narrow phones and fold cover screens: Memory Cards gets its own line so its title isn't broken mid-word */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 18 }}>
+        <Bouncy accessibilityRole="button" accessibilityLabel={t('Memory Cards')} onPress={() => router.push('/cards')} style={[styles.entry, { backgroundColor: MEM_COLORS.pink }, W < 380 && { flexBasis: '100%' }]} testID="open-cards">
           <Sticker name={moodSticker(pet.species, 'love')} size={54} />
           <View style={{ flex: 1 }}>
             <T weight="black" style={{ fontSize: 15.5 }}>
@@ -109,7 +110,7 @@ export default function MemoriesTab() {
             testID={`story-${r}`}
           >
             <Sticker name={r === 'week' ? 'duo_hug' : moodSticker(pet.species, 'party')} size={40} />
-            <T weight="black" style={{ fontSize: 12.5, marginTop: 2 }} numberOfLines={1}>
+            <T weight="black" style={{ fontSize: 12.5, marginTop: 2 }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
               {r === 'week' ? t('This week') : t('This month')}
             </T>
           </Bouncy>
@@ -339,7 +340,8 @@ function Upcoming({ emoji, title, day, days }: { emoji: string; title: string; d
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   entry: { flex: 1.6, flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 22 },
   story: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8, paddingHorizontal: 4, borderRadius: 22, backgroundColor: colors.brandSoft },
   seg: { flexDirection: 'row', backgroundColor: colors.card, borderRadius: 999, padding: 4, marginTop: 18 },

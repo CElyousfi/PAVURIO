@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  หยุดชั่วคราว",
 "🐾 Walk in progress · started {time}": "🐾 กำลังเดินเล่น · เริ่มเมื่อ {time}",
 "🐾 Walk paused · tap to continue": "🐾 หยุดเดินเล่นชั่วคราว · แตะเพื่อทำต่อ",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 แจ้งเตือนเฉพาะตอนที่ช่วยได้ ที่เหลืออยู่ในรายการ พร้อมให้ติ๊ก"
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 แจ้งเตือนเฉพาะตอนที่ช่วยได้ ที่เหลืออยู่ในรายการ พร้อมให้ติ๊ก",
+"The plan was all colored in": "แผนระบายสีครบแล้ว",
+"Care logged": "การดูแลที่บันทึก",
+"Care logged · {pct}% of the plan": "บันทึกการดูแลแล้ว · {pct}% ของแผน"
 }

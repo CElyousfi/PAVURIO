@@ -65,14 +65,15 @@ export default function Passport() {
         </View>
         {/* the cover */}
         <Animated.View entering={reduceMotion ? undefined : FadeInDown.duration(260)} style={styles.cover}>
-          <Image source={ART.adventures.passport_cover} style={{ width: 76, height: 76 }} accessibilityIgnoresInvertColors />
+          {/* small phones and fold cover screens: smaller art so the title keeps whole words on a line */}
+          <Image source={ART.adventures.passport_cover} style={{ width: W < 380 ? 52 : 76, height: W < 380 ? 52 : 76 }} accessibilityIgnoresInvertColors />
           <View style={{ flex: 1 }}>
-            <T weight="black" style={styles.coverTitle} accessibilityRole="header">
+            <T weight="black" style={[styles.coverTitle, W < 380 && { fontSize: 19, lineHeight: 23 }]} accessibilityRole="header">
               {t('{name}’s Paw Passport', { name: pet.name })}
             </T>
             <T style={{ color: '#2F6B3A', fontSize: 14 }}>{tn(stats.total, '{n} adventure together', '{n} adventures together')}</T>
           </View>
-          <PetAvatar species={pet.species} appearance={pet.appearance} size={72} />
+          <PetAvatar species={pet.species} appearance={pet.appearance} size={W < 380 ? 52 : 72} />
         </Animated.View>
 
         <Segmented

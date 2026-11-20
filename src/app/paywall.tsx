@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, BackHandler, Image, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown, ZoomIn, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -141,6 +141,15 @@ export default function Paywall() {
     if (reason === 'onboarding' || params.from === 'onboarding') router.replace('/');
     else router.back();
   };
+  // Android's back button takes the same way out as ✕: after setup there's no screen underneath (it would quit
+  // the app), and a Pro coat tried on during setup must be put back
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      void close();
+      return true;
+    });
+    return () => sub.remove();
+  });
 
   const buy = async () => {
     if (!selected || busy) return;

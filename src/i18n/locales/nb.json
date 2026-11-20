@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  Pause",
 "🐾 Walk in progress · started {time}": "🐾 Tur pågår · startet {time}",
 "🐾 Walk paused · tap to continue": "🐾 Tur satt på pause · trykk for å fortsette",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Påminnelser bare der de hjelper. Alt annet står på listen, klart til å hukes av."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Påminnelser bare der de hjelper. Alt annet står på listen, klart til å hukes av.",
+"The plan was all colored in": "Planen var helt fargelagt",
+"Care logged": "Stell logget",
+"Care logged · {pct}% of the plan": "Stell logget · {pct} % av planen"
 }

@@ -410,7 +410,8 @@ function NewBadges({ ids, reduceMotion }: { ids: AdventureBadgeId[]; reduceMotio
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   liveBg: { backgroundColor: '#F2FBF4' },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, alignSelf: 'stretch' },
   passportPill: { height: 46, paddingHorizontal: 18, shadowOpacity: 0, elevation: 0, borderWidth: 2, borderColor: colors.line },

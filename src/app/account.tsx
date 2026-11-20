@@ -8,7 +8,8 @@
  * saved email exists and belongs to its owner. Forgotten passwords are reset with a code too.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Switch, TextInput, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, Image, Platform, Pressable, ScrollView, StyleSheet, Switch, TextInput, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCloud } from '../state/Cloud';
@@ -262,7 +263,7 @@ export default function Account() {
               : t('Your care history is backed up while you use Pavurio. Save your account to get it back on a new phone.');
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top + 8 }]}>
+    <KeyboardAvoidingView behavior="padding" style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: insets.bottom + 30 }} keyboardShouldPersistTaps="handled">
         <View style={{ width: W, paddingHorizontal: 20 }}>
           <View style={styles.topRow}>
@@ -317,7 +318,7 @@ export default function Account() {
             </View>
           ) : step === 'forgot' || step === 'reset' ? (
             <View style={[styles.card, { marginTop: 22, gap: 12 }]}>
-              <Field label={t('Email')} value={email} onChangeText={setEmail} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" editable={step === 'forgot'} />
+              <Field label={t('Email')} value={email} onChangeText={setEmail} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" editable={step === 'forgot'} inputStyle={styles.onCard} />
               {step === 'reset' ? (
                 <>
                   <Label>{t('Code')}</Label>
@@ -366,7 +367,7 @@ export default function Account() {
                 <View style={styles.orLine} />
               </View>
               <View style={[styles.card, { gap: 12 }]}>
-                <Field label={t('Email')} value={email} onChangeText={setEmail} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" testID="email-input" />
+                <Field label={t('Email')} value={email} onChangeText={setEmail} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" testID="email-input" inputStyle={styles.onCard} />
                 <PasswordField value={password} onChange={setPassword} show={showPw} onToggle={() => setShowPw((s) => !s)} label={t('Password')} isNew={step === 'create'} />
                 {step === 'create' ? <T style={{ color: colors.muted, fontSize: 12, marginTop: -6 }}>{t('At least 6 characters. We’ll email you a code to confirm it’s you.')}</T> : null}
                 <Pill
@@ -477,6 +478,7 @@ function PasswordField({ value, onChange, show, onToggle, label, isNew }: { valu
         autoComplete={isNew ? 'new-password' : 'current-password'}
         textContentType={isNew ? 'newPassword' : 'password'}
         testID="password-input"
+        inputStyle={styles.onCard}
       />
       <Pressable accessibilityRole="button" accessibilityLabel={show ? t('Hide password') : t('Show password')} onPress={onToggle} style={styles.eye} hitSlop={8}>
         <T weight="xbold" style={{ color: colors.brand, fontSize: 13 }}>
@@ -518,6 +520,8 @@ const styles = StyleSheet.create({
   h1: { fontSize: 26, textAlign: 'center', marginTop: 12 },
   sub: { color: colors.muted, fontSize: 15, textAlign: 'center', marginTop: 8, lineHeight: 21, paddingHorizontal: 8 },
   card: { backgroundColor: colors.card, borderRadius: 22, padding: 16 },
+  // fields inside the gray card: white, or they vanish into it
+  onCard: { backgroundColor: '#FFFFFF' },
   section: { marginTop: 26, marginBottom: 10 },
   error: { color: colors.danger, textAlign: 'center', marginTop: 14, lineHeight: 20 },
   note: { color: colors.brand, textAlign: 'center', marginTop: 14, lineHeight: 20 },

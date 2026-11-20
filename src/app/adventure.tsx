@@ -3,7 +3,8 @@
  * a photo) and delete. Edits flow through walkRepo so the care log, Moments and badges stay in step.
  */
 import React, { useEffect, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '../state/AppState';
@@ -130,7 +131,7 @@ export default function Adventure() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.root}>
+    <KeyboardAvoidingView behavior="padding" style={styles.root}>
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 30, paddingHorizontal: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
         <View style={styles.topRow}>
           <CircleButton icon="close" label={t('Close')} onPress={() => router.back()} />
@@ -234,7 +235,8 @@ export default function Adventure() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
+  // tablets and open foldables: the same centred column as the other screens
+  root: { flex: 1, backgroundColor: colors.canvas, width: '100%', maxWidth: 560, alignSelf: 'center' },
   topRow: { flexDirection: 'row', justifyContent: 'flex-end' },
   facts: { flexDirection: 'row', gap: 10 },
   fact: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.card, borderRadius: 18, padding: 10 },

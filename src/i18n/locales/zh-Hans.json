@@ -1919,5 +1919,8 @@
 "❚❚  Pause": "❚❚  暂停",
 "🐾 Walk in progress · started {time}": "🐾 正在遛弯 · {time} 出发",
 "🐾 Walk paused · tap to continue": "🐾 遛弯已暂停 · 点击继续",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 只在有用时提醒。其他都在清单里，随时打勾。"
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 只在有用时提醒。其他都在清单里，随时打勾。",
+"The plan was all colored in": "计划已全部点亮",
+"Care logged": "已记录的照护",
+"Care logged · {pct}% of the plan": "已记录照护 · 完成计划的 {pct}%"
 }

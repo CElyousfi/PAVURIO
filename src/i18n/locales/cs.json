@@ -2041,5 +2041,8 @@
 "❚❚  Pause": "❚❚  Pozastavit",
 "🐾 Walk in progress · started {time}": "🐾 Probíhá procházka · začátek {time}",
 "🐾 Walk paused · tap to continue": "🐾 Procházka pozastavena · klepni a pokračuj",
-"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Připomínky jen tam, kde pomůžou. Všechno ostatní čeká na seznamu k odškrtnutí."
+"🔔 Reminders only where they help. Everything else is on the list, ready to tick.": "🔔 Připomínky jen tam, kde pomůžou. Všechno ostatní čeká na seznamu k odškrtnutí.",
+"The plan was all colored in": "Plán byl celý vybarvený",
+"Care logged": "Zapsaná péče",
+"Care logged · {pct}% of the plan": "Zapsaná péče · {pct} % plánu"
 }

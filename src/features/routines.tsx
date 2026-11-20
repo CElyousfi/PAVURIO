@@ -135,12 +135,17 @@ export function OccurrenceRow({
         <T weight="black" style={[styles.title, closed && o.status === 'skipped' && { textDecorationLine: 'line-through' }]} numberOfLines={1}>
           {o.title}
         </T>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <T style={styles.meta}>{when}</T>
-          <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[o.status] }]} />
-          <T weight="xbold" style={[styles.meta, { color: STATUS_COLOR[o.status] }]}>
-            {STATUS_LABEL[o.status]()}
+        {/* wraps as whole pieces on narrow phones instead of squeezing under the buttons */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 6 }}>
+          <T style={styles.meta} numberOfLines={1}>
+            {when}
           </T>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[o.status] }]} />
+            <T weight="xbold" style={[styles.meta, { color: STATUS_COLOR[o.status] }]} numberOfLines={1}>
+              {STATUS_LABEL[o.status]()}
+            </T>
+          </View>
         </View>
       </View>
       {closed ? (
