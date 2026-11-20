@@ -1,4 +1,8 @@
 /**
+ * Collection is OFF at the native level until the app has read the owner's choice
+ * (firebase.json → analytics_auto_collection_enabled: false); initAnalytics then turns it on or keeps it
+ * off, so someone who switched it off is never measured during start-up.
+ *
  * Anonymous product analytics: which steps of setup people finish, who sees the paywall and buys,
  * what gets logged — never the pet's name, photos, notes or any free text. Firebase Analytics with
  * the advertising ID and ad storage turned off (firebase.json → "react-native"). Owners can switch it
@@ -22,7 +26,20 @@ export type AnalyticsEvent =
   | 'plan_saved'
   | 'plan_auto_updated'
   | 'guide_opened'
-  | 'routine_applied';
+  | 'routine_applied'
+  // first-use funnel (fired from handlers only, never from renders)
+  | 'species_selected'
+  | 'name_completed'
+  | 'appearance_opened'
+  | 'coat_selected'
+  | 'accessory_selected'
+  | 'appearance_confirmed'
+  | 'plan_overview_reached'
+  | 'onboarding_completed'
+  | 'home_reached'
+  | 'first_care_logged'
+  | 'feature_discovered'
+  | 'intro_choice';
 
 type Params = Record<string, string | number | boolean>;
 

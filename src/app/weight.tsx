@@ -75,7 +75,7 @@ export default function WeightScreen() {
         <Card style={{ gap: 14 }}>
           <Label>{t('New weight')}</Label>
           <View style={styles.bigInputRow}>
-            <TextInput
+            <TextInput maxFontSizeMultiplier={1.4}
               value={value}
               onChangeText={(v) => setValue(v.replace(/[^0-9.,]/g, '').slice(0, 6))}
               placeholder="0.0"

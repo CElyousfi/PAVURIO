@@ -21,21 +21,18 @@ import { portionOf } from '../domain/progress';
 import { deviceLanguage, isLang, setLang } from '../i18n';
 import { SNOOZE_MS, syncReminders } from './notifications';
 import { syncWidgets } from './widgets';
+import { openAppDb } from './appDb';
 
 export const REFRESH_TASK = 'pavurio-refresh-reminders';
 export const ACTION_TASK = 'pavurio-notification-actions';
 const NATIVE = Platform.OS === 'ios' || Platform.OS === 'android';
 
-let dbPromise: Promise<Db> | null = null;
-function openDb(): Promise<Db> {
-  dbPromise ??= (async () => {
-    const db = (await SQLite.openDatabaseAsync('pavurio.db')) as unknown as Db;
-    await migrate(db);
-    const l = await getSetting(db, 'lang');
-    setLang(isLang(l) ? l : deviceLanguage());
-    return db;
-  })();
-  return dbPromise;
+/** the app's shared connection (one migration, one transaction queue), then the owner's language */
+async function openDb(): Promise<Db> {
+  const db = await openAppDb();
+  const l = await getSetting(db, 'lang');
+  setLang(isLang(l) ? l : deviceLanguage());
+  return db;
 }
 
 /** "Done" / "In 15 min" pressed on a care reminder. Same keys as in-app handling, so it never double-logs. */

@@ -25,8 +25,8 @@ import { completeFeedback, errorFeedback } from '../native/haptics';
 import { t } from '../i18n';
 import { Missing } from '../ui/Missing';
 import { track } from '../native/analytics';
+import { savedValue } from '../domain/weight';
 
-const LB = 0.45359237;
 
 /** The plan as it is now: existing routines where there are some, the recommendation elsewhere. */
 function currentChoices(targets: Target[], schedules: Schedule[], portions: Portions, auto: boolean): Choice[] {
@@ -111,7 +111,7 @@ export default function PlanScreen() {
       await setProfile(db, pet.id, about.profile);
       const had = await weighedKg(db, pet, about.months ?? 36);
       if (about.kgTouched && (had == null || Math.abs(had - about.kg) > 0.05)) {
-        await addMeasurement(db, { petId: pet.id, kind: 'weight', value: Math.round((unit === 'lb' ? about.kg / LB : about.kg) * 10) / 10, unit, at: Date.now() });
+        await addMeasurement(db, { petId: pet.id, kind: 'weight', value: savedValue(about.kg, unit), unit, at: Date.now() });
       }
       await applyChoices(db, pet, basis, choices);
       track('plan_saved', { cares: choices.filter((c) => c.on).length, stage: basis.stage });

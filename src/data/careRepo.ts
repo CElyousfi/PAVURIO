@@ -5,6 +5,7 @@ import { Mark, MarkStatus, Schedule, normalizeTimes } from '../domain/schedule';
 import { ValidationError } from './repo';
 import { dayKeyOf } from '../domain/time';
 import { t } from '../i18n/core';
+import { isValidWeight, maxInUnit } from '../domain/weight';
 
 // ---------------------------------------------------------------- schedules
 
@@ -234,13 +235,13 @@ type MeasRow = { id: string; pet_id: string; kind: string; value: number; unit: 
 
 export async function addMeasurement(
   db: Db,
-  i: { petId: string; kind: 'weight'; value: number; unit: 'kg' | 'lb'; at: number; note?: string | null },
+  i: { petId: string; kind: 'weight'; value: number; unit: 'kg' | 'lb'; at: number; note?: string | null; /** stable id: saving twice keeps one row */ id?: string },
   now = Date.now(),
 ): Promise<Measurement> {
-  if (!Number.isFinite(i.value) || i.value <= 0 || i.value > 200) throw new ValidationError(t('Enter a weight between 0 and 200.'));
+  if (!isValidWeight(i.value, i.unit)) throw new ValidationError(t('Enter a weight between 0 and {max}.', { max: `${maxInUnit(i.unit)} ${i.unit}` }));
   if (i.at > now + 5 * 60_000) throw new ValidationError(t("Weights can't be in the future."));
-  const id = newId();
-  await db.runAsync('INSERT INTO measurements (id, pet_id, kind, value, unit, at, note, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
+  const id = i.id ?? newId();
+  await db.runAsync(`INSERT ${i.id ? 'OR IGNORE ' : ''}INTO measurements (id, pet_id, kind, value, unit, at, note, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
     id,
     i.petId,
     i.kind,

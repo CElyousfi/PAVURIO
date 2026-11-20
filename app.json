@@ -58,6 +58,12 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-navigation-bar",
+        {
+          "hidden": true
+        }
+      ],
       "expo-sqlite",
       "expo-font",
       [

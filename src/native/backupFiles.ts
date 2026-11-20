@@ -21,13 +21,11 @@ function ensureParent(path: string) {
 }
 
 export const localFiles: LocalFiles = {
+  // null only when the file is really not there; any error reading it is thrown, so the backup
+  // counts it as waiting (never as "lost", which would let sign-out go ahead)
   size(path) {
-    try {
-      const f = fileAt(path);
-      return f.exists ? f.size ?? 0 : null;
-    } catch {
-      return null;
-    }
+    const f = fileAt(path);
+    return f.exists ? (f.size ?? 0) : null;
   },
   remove(path) {
     try {

@@ -156,7 +156,7 @@ export function PlacePicker({ visible, onClose, onPick }: { visible: boolean; on
   return (
     <Sheet visible={visible} onClose={onClose} title={t('Your town')}>
       <T style={[styles.muted, { marginBottom: 10 }]}>{t('Used only to look up the weather. Pavurio never tracks where you walk.')}</T>
-      <TextInput
+      <TextInput maxFontSizeMultiplier={1.4}
         value={q}
         onChangeText={setQ}
         placeholder={t('Search a town or city')}

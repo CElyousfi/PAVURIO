@@ -45,10 +45,10 @@ export default function CardsGallery() {
                   ))}
                   <Image source={TEMPLATE_ART[tpl.id].story} style={{ position: 'absolute', left: 0, top: 0, width: colW, height: L.h * s }} resizeMode="stretch" />
                 </View>
-                <T weight="black" style={{ fontSize: 15, marginTop: 8 }} numberOfLines={1}>
+                <T weight="black" style={{ fontSize: 15, marginTop: 8 }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
                   {t(tpl.name)}
                 </T>
-                <T weight="xbold" style={{ color: colors.muted, fontSize: 12.5 }} numberOfLines={1}>
+                <T weight="xbold" style={{ color: colors.muted, fontSize: 12.5 }} numberOfLines={2}>
                   {tn(tpl.slots, '1 photo', '{n} photos')} · {t(tpl.blurb, { name: pet.name })}
                 </T>
               </Bouncy>

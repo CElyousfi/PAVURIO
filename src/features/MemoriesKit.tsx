@@ -21,6 +21,7 @@ import { colors } from '../ui/theme';
 import { formatDateLong } from '../ui/forms';
 import { suggestedTemplates } from './memoryCards';
 import { t, tn } from '../i18n';
+import { firstTimeTip } from './Tips';
 
 export const MEM_COLORS = { warm: '#FFF4E3', warmInk: '#B86A00', pink: '#FFE8EF', pinkInk: '#D9487A', star: '#FFB020' };
 
@@ -53,6 +54,7 @@ export function useCaptureMoment() {
       if (!ids.length) throw new MediaError(t('This photo couldn’t be saved. Please try another one.'));
       bump();
       photoFeedback();
+      void firstTimeTip(db, 'first_photo');
       router.push({ pathname: '/moment', params: { id: ids[0], fresh: String(ids.length), failed: failed ? String(failed) : undefined } });
     },
     [pet, db, bump],

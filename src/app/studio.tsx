@@ -79,7 +79,7 @@ export default function Studio() {
               accessibilityLabel={t('{name} preview', { name: pet.name })}
             />
           </View>
-          <TextInput
+          <TextInput maxFontSizeMultiplier={1.4}
             value={name}
             onChangeText={setName}
             style={styles.name}

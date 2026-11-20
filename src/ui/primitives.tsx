@@ -9,8 +9,16 @@ import { t } from '../i18n';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
 
-export function T({ style, weight = 'bold', ...rest }: TextProps & { weight?: 'bold' | 'xbold' | 'black' }) {
-  return <Text {...rest} style={[{ fontFamily: font[weight], color: colors.ink }, style]} />;
+/**
+ * The system text size (iOS Dynamic Type, Android font size) still enlarges text, up to 1.4×: past
+ * that, fixed shapes (tiles, buttons, the care row) would clip. Pass maxFontSizeMultiplier to override.
+ */
+export const TEXT_SCALE_MAX = 1.4;
+/** buttons and chips have a fixed height: their labels grow a little less */
+export const CONTROL_TEXT_SCALE_MAX = 1.25;
+
+export function T({ style, weight = 'bold', maxFontSizeMultiplier = TEXT_SCALE_MAX, ...rest }: TextProps & { weight?: 'bold' | 'xbold' | 'black' }) {
+  return <Text {...rest} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[{ fontFamily: font[weight], color: colors.ink }, style]} />;
 }
 
 type PillProps = {
@@ -43,7 +51,7 @@ export function Pill({ label, onPress, color = colors.ink, textColor = '#FFFFFF'
       }}
       style={[styles.pill, { backgroundColor: color, opacity: disabled ? 0.45 : 1 }, style, press.style]}
     >
-      {loading ? <ActivityIndicator color={textColor} /> : <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.pillText, { color: textColor }, label.length > 16 && { fontSize: 17, letterSpacing: 0.6 }]}>{label}</Text>}
+      {loading ? <ActivityIndicator color={textColor} /> : <Text maxFontSizeMultiplier={CONTROL_TEXT_SCALE_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.pillText, { color: textColor }, label.length > 16 && { fontSize: 17, letterSpacing: 0.6 }]}>{label}</Text>}
     </APressable>
   );
 }
@@ -62,7 +70,7 @@ export function SoftPill({ label, onPress, color = colors.brand, tint = colors.b
       }}
       style={[styles.soft, small && styles.softSmall, { backgroundColor: tint }, style, press.style]}
     >
-      <Text style={[styles.softText, small && { fontSize: 14 }, { color }]}>{label}</Text>
+      <Text maxFontSizeMultiplier={CONTROL_TEXT_SCALE_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={[styles.softText, small && { fontSize: 14 }, { color }]}>{label}</Text>
     </APressable>
   );
 }
@@ -111,7 +119,7 @@ export function CircleButton({ icon, onPress, label, size = 52, children, style,
 }
 
 export function Label({ children, color = colors.muted, style }: { children: React.ReactNode; color?: string; style?: StyleProp<TextStyle> }) {
-  return <Text style={[styles.label, { color }, style]}>{children}</Text>;
+  return <Text maxFontSizeMultiplier={TEXT_SCALE_MAX} style={[styles.label, { color }, style]}>{children}</Text>;
 }
 
 export function Card({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
@@ -128,3 +136,9 @@ const styles = StyleSheet.create({
   label: { fontFamily: font.black, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase' },
   card: { backgroundColor: colors.white, borderRadius: radius.card, padding: 20 },
 });
+
+/** Widest a screen's content gets: on tablets and in landscape it stays a readable, centred column. */
+export const CONTENT_MAX_W = 560;
+export function Column({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+  return <View style={[{ flex: 1, width: '100%', maxWidth: CONTENT_MAX_W, alignSelf: 'center' }, style]}>{children}</View>;
+}

@@ -10,6 +10,7 @@ import { colors, font, radius } from './theme';
 import { selectFeedback, toggleFeedback } from '../native/haptics';
 import { Bouncy, Enter, motionReduced } from './motion';
 import { springs, usePress } from './springs';
+import { useKeyboardHeight } from './layout';
 import { addDays, dayKeyOf, parseDayKey } from '../domain/time';
 import { ArcTimePicker } from './ArcTime';
 import { t } from '../i18n';
@@ -74,7 +75,7 @@ export function Field({ label, style, inputStyle, ref, ...rest }: TextInputProps
   return (
     <View style={[{ gap: 6 }, style]}>
       <Label>{label}</Label>
-      <TextInput ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }, inputStyle]} accessibilityLabel={label} />
+      <TextInput maxFontSizeMultiplier={1.4} ref={ref} placeholderTextColor={colors.faint} {...rest} style={[styles.input, rest.multiline && { minHeight: 90, textAlignVertical: 'top' }, inputStyle]} accessibilityLabel={label} />
     </View>
   );
 }
@@ -127,6 +128,8 @@ export function EmptyState({ title, body, action, onAction, art }: { title: stri
 /** Bottom sheet built on Modal: dims the screen, slides up, closes on backdrop tap. */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+  // with the keyboard up, the navigation-bar inset would add an empty gap above it
+  const keyboard = useKeyboardHeight();
   // the Modal stays mounted while the sheet slides out, so closing is as smooth as opening
   const [mounted, setMounted] = useState(visible);
   const p = useSharedValue(0); // 0 = hidden, 1 = shown
@@ -154,7 +157,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
         <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Close')} accessibilityRole="button" />
       </Animated.View>
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: 'flex-end' }} pointerEvents="box-none">
-        <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }, panel]}>
+        <Animated.View style={[styles.sheet, { paddingBottom: (keyboard > 0 ? 0 : insets.bottom) + 16 }, panel]}>
           <View style={styles.sheetHandle} />
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
             <T weight="black" style={{ fontSize: 20, flex: 1 }}>
@@ -394,7 +397,7 @@ export function ModalScreen({
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.canvas, paddingTop: insets.top + 8 }}>
       <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', flex: 1 }}>
         <ScreenHeader title={title} onClose={onClose} />
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: (footer || error ? 0 : insets.bottom) + 30, gap: 18 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {children}
         </ScrollView>
         {footer || error ? (

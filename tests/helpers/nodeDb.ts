@@ -4,7 +4,6 @@ import type { BindValue, Db } from '../../src/data/db';
 /** Test adapter: same Db surface as expo-sqlite, backed by Node's built-in SQLite. */
 export function openNodeDb(path = ':memory:'): Db & { close(): void } {
   const raw = new DatabaseSync(path);
-  let depth = 0;
   return {
     async execAsync(sql: string) {
       raw.exec(sql);
@@ -19,18 +18,21 @@ export function openNodeDb(path = ':memory:'): Db & { close(): void } {
     async getFirstAsync<T>(sql: string, params: BindValue[]) {
       return ((raw.prepare(sql).get(...params) as T | undefined) ?? null) as T | null;
     },
+    // exactly like expo-sqlite 58: BEGIN … COMMIT on the one connection, no nesting support.
+    // A nested or overlapping call fails the way it does on a phone (SQLite: "cannot start a
+    // transaction within a transaction"), and its ROLLBACK cancels the outer one.
     async withTransactionAsync(task: () => Promise<void>) {
-      if (depth > 0) return task();
-      depth++;
-      raw.exec('BEGIN');
       try {
+        raw.exec('BEGIN');
         await task();
         raw.exec('COMMIT');
       } catch (e) {
-        raw.exec('ROLLBACK');
+        try {
+          raw.exec('ROLLBACK');
+        } catch {
+          // already rolled back
+        }
         throw e;
-      } finally {
-        depth--;
       }
     },
     close() {

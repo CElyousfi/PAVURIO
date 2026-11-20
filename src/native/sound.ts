@@ -1,41 +1,26 @@
 /**
  * Pavurio's sound effects (tools/sound/make_sounds.py → assets/sounds, list in docs/SOUNDS.md).
- * One small player per sound, created on first use and kept: replaying is a seek + play, so a sound
- * answers a tap with no delay. Sounds mix with the user's music and stay quiet when the phone is on
- * silent. Turned off with the "Sounds" setting.
+ * Sounds mix with the user's music and stay quiet when the phone is on silent. Turned off with the
+ * "Sounds" setting.
+ *
+ * On Android every expo-audio player call (creating one, play, seek, volume) BLOCKS the JavaScript
+ * thread until the UI thread has run it, and each player is a whole ExoPlayer holding a media decoder.
+ * Keeping one player per sound (22 of them by the end of setup) can exhaust the phone's decoders and
+ * freeze the app mid-tap: the save after "Start with this plan" froze there with its spinner turning.
+ * So: at most MAX_PLAYERS players (least recently used one is released), and a sound never plays inside
+ * the handler that changes the screen — it's queued for the next macrotask, after the UI work.
  */
 import { Platform } from 'react-native';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
-const SOURCES = {
-  tap: require('../../assets/sounds/tap.m4a'),
-  select: require('../../assets/sounds/select.m4a'),
-  tick: require('../../assets/sounds/tick.m4a'),
-  toggle_on: require('../../assets/sounds/toggle_on.m4a'),
-  toggle_off: require('../../assets/sounds/toggle_off.m4a'),
-  pop: require('../../assets/sounds/pop.m4a'),
-  slide_1: require('../../assets/sounds/slide_1.m4a'),
-  slide_2: require('../../assets/sounds/slide_2.m4a'),
-  slide_3: require('../../assets/sounds/slide_3.m4a'),
-  slide_done: require('../../assets/sounds/slide_done.m4a'),
-  log: require('../../assets/sounds/log.m4a'),
-  complete: require('../../assets/sounds/complete.m4a'),
-  badge: require('../../assets/sounds/badge.m4a'),
-  save: require('../../assets/sounds/save.m4a'),
-  undo: require('../../assets/sounds/undo.m4a'),
-  delete: require('../../assets/sounds/delete.m4a'),
-  error: require('../../assets/sounds/error.m4a'),
-  restock: require('../../assets/sounds/restock.m4a'),
-  photo: require('../../assets/sounds/photo.m4a'),
-  walk_start: require('../../assets/sounds/walk_start.m4a'),
-  pet: require('../../assets/sounds/pet.m4a'),
-  open: require('../../assets/sounds/open.m4a'),
-} as const;
+import { SOURCES } from './soundSources';
 export type SoundName = keyof typeof SOURCES;
 
 let enabled = true;
 let modeSet = false;
-const players: Partial<Record<SoundName, AudioPlayer>> = {};
+/** live players, least recently used first */
+const players = new Map<SoundName, AudioPlayer>();
+export const MAX_PLAYERS = 6;
 // the same sound twice within this window plays once (two handlers for one tap, a fast wheel)
 const last: Partial<Record<SoundName, number>> = {};
 const MIN_GAP: Partial<Record<SoundName, number>> = { tick: 45, tap: 60, select: 60 };
@@ -56,15 +41,37 @@ function mode() {
 
 function player(name: SoundName): AudioPlayer | null {
   try {
-    if (!players[name]) players[name] = createAudioPlayer(SOURCES[name]);
-    return players[name]!;
+    const have = players.get(name);
+    if (have) {
+      // most recently used goes to the end
+      players.delete(name);
+      players.set(name, have);
+      return have;
+    }
+    while (players.size >= MAX_PLAYERS) {
+      const [oldest, p] = players.entries().next().value as [SoundName, AudioPlayer];
+      players.delete(oldest);
+      try {
+        p.remove();
+      } catch {
+        // already gone
+      }
+    }
+    const p = createAudioPlayer(SOURCES[name]);
+    players.set(name, p);
+    return p;
   } catch {
     return null;
   }
 }
 
+/** for tests: how many players are alive */
+export function livePlayers(): SoundName[] {
+  return [...players.keys()];
+}
+
 /** Load the sounds used right away (taps, logging) so the first one isn't late. */
-export function preloadSounds(names: SoundName[] = ['tap', 'select', 'tick', 'log', 'slide_1', 'slide_done', 'pop']) {
+export function preloadSounds(names: SoundName[] = ['tap', 'select', 'tick', 'log']) {
   if (Platform.OS === 'web') return;
   mode();
   for (const n of names) player(n);
@@ -95,6 +102,12 @@ function play(name: SoundName, volume: number) {
   const now = Date.now();
   if (now - (last[name] ?? 0) < (MIN_GAP[name] ?? 30)) return;
   last[name] = now;
+  // after the handler's own work (state updates, navigation) has gone out: see the file comment
+  setTimeout(() => playNow(name, volume), 0);
+}
+
+function playNow(name: SoundName, volume: number) {
+  if (!enabled) return;
   mode();
   const p = player(name);
   if (!p) return;

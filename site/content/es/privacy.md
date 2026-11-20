@@ -46,12 +46,15 @@ Pavurio es una aplicación para llevar el seguimiento del cuidado de tus mascota
 
 **Notificaciones.** Los recordatorios se programan en tu teléfono; no se nos envía ningún contenido de los recordatorios.
 
+**Tiempo para los paseos (opcional).** Pavurio nunca usa el GPS ni la ubicación de tu teléfono. El tiempo en directo de los paseos está desactivado por ahora: no se envía nada a ningún servicio meteorológico. Si vuelve, solo se enviará al proveedor una ciudad que elijas (nombre o coordenadas), y antes actualizaremos esta política.
+
 ## Qué no hace Pavurio
 
 - Sin publicidad y sin SDK publicitarios.
 - Sin venta ni cesión de datos personales.
 - Sin rastreo a través de otras aplicaciones o sitios web.
-- Sin SDK de analítica. Pavurio no ofrece consejos médicos.
+- Sin analítica publicitaria ni entre aplicaciones: las únicas estadísticas de uso son las anónimas descritas arriba, y puedes desactivarlas.
+- Pavurio no ofrece consejos médicos. Las recomendaciones de cuidado son orientaciones generales; tu veterinario conoce mejor a tu mascota.
 
 ## Quién trata los datos por nosotros
 
