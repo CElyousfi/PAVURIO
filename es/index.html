@@ -1,0 +1,668 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pavurio: app cuidado mascotas, recordatorios y control de comida</title><meta name="description" content="App cuidado mascotas para perros y gatos: recordatorio de medicamentos y comidas, control de comida, paseos, cartilla veterinaria y widgets. Sin anuncios."><link rel="canonical" href="https://pavurio.com/es/"><link rel="alternate" hreflang="en" href="https://pavurio.com/"><link rel="alternate" hreflang="fr" href="https://pavurio.com/fr/"><link rel="alternate" hreflang="es" href="https://pavurio.com/es/"><link rel="alternate" hreflang="pt" href="https://pavurio.com/pt/"><link rel="alternate" hreflang="x-default" href="https://pavurio.com/">
+<meta name="robots" content="index,follow,max-image-preview:large"><meta name="theme-color" content="#14B8C4">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Pavurio"><meta property="og:title" content="Pavurio: app cuidado mascotas, recordatorios y control de comida"><meta property="og:description" content="App cuidado mascotas para perros y gatos: recordatorio de medicamentos y comidas, control de comida, paseos, cartilla veterinaria y widgets. Sin anuncios.">
+<meta property="og:url" content="https://pavurio.com/es/"><meta property="og:image" content="https://pavurio.com/img/og/index-es.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_ES"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Pavurio: app cuidado mascotas, recordatorios y control de comida"><meta name="twitter:description" content="App cuidado mascotas para perros y gatos: recordatorio de medicamentos y comidas, control de comida, paseos, cartilla veterinaria y widgets. Sin anuncios."><meta name="twitter:image" content="https://pavurio.com/img/og/index-es.jpg">
+<meta name="google-play-app" content="app-id=com.pavurio.app">
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
+<link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-900.woff2" crossorigin>
+<style>@font-face{font-family:Nunito;font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/nunito-700.woff2) format('woff2')}@font-face{font-family:Nunito;font-style:normal;font-weight:800;font-display:swap;src:url(/fonts/nunito-800.woff2) format('woff2')}@font-face{font-family:Nunito;font-style:normal;font-weight:900;font-display:swap;src:url(/fonts/nunito-900.woff2) format('woff2')}/* Pavurio website: one stylesheet for the landing, the feature pages and the legal pages.
+   Same language as the app: white canvas, flat gray cards, ink highlight cards, the pet as the progress bar,
+   jelly presses, rolling digits. */
+:root{
+  --ink:#163A4A;--ink2:#0F2A36;--soft:#3D4A63;--muted:#7C8494;--line:#EEF0F3;--card:#F5F6F8;
+  --brand:#14B8C4;--brandDark:#0E8F99;--brandSoft:#DDF6F7;--sun:#FFD233;--cream:#FFF6E6;
+  --meal:#FF9F43;--walk:#38B6E8;--meds:#8E6CEB;--pink:#F07AB0;--green:#3DB86B;--red:#FF5C5C;
+  --r:32px;--shadow:0 30px 70px rgba(14,40,60,.16);--ease:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;font-family:Nunito,ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;line-height:1.55;font-size:18px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:12px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;z-index:100}.skip:focus{left:8px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+h1,h2,h3{font-weight:900;letter-spacing:-.02em;line-height:1.04;margin:0 0 16px}
+h1{font-size:clamp(40px,6vw,78px)}
+h2{font-size:clamp(34px,4.6vw,60px)}
+h3{font-size:22px;letter-spacing:-.01em;line-height:1.2;margin-bottom:8px}
+p{margin:0 0 16px}
+.lead{font-size:clamp(18px,1.7vw,22px);font-weight:700;color:var(--soft);max-width:600px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-weight:900;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--brandDark);margin-bottom:14px}
+.kicker::before{content:"";width:10px;height:10px;border-radius:50%;background:currentColor}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 24px}
+.center{text-align:center}.center .lead{margin-left:auto;margin-right:auto}
+
+/* header */
+.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.86);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+.top.scrolled{border-color:var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:23px;text-decoration:none;letter-spacing:-.01em}
+.logo img{width:38px;height:38px;border-radius:11px}
+.nav{display:flex;align-items:center;gap:4px;margin-left:auto}
+.nav>a,.nav .dd>button{font-weight:800;font-size:16px;color:var(--soft);text-decoration:none;padding:9px 14px;border-radius:999px;transition:background .15s}
+.nav>a.pill{color:#fff;background:var(--ink);padding:11px 18px;margin-left:6px}.nav>a.pill:hover{background:var(--ink);color:#fff}
+.nav>a:not(.pill):hover,.nav .dd>button:hover,.nav .dd.open>button{background:var(--card);color:var(--ink)}
+.dd{position:relative}
+.dd>button::after{content:"";display:inline-block;width:7px;height:7px;border:solid currentColor;border-width:0 2.5px 2.5px 0;transform:translateY(-3px) rotate(45deg);margin-left:8px}
+.menu{position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,6px);background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:4px;width:520px;opacity:0;visibility:hidden;transition:.18s}
+.dd.open .menu{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.menu a{display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px;text-decoration:none;font-weight:800;font-size:15px}
+.menu a:hover{background:var(--card)}
+.menu img{width:44px;height:44px;object-fit:contain;flex:none}
+.lang{position:relative}
+.lang select{appearance:none;-webkit-appearance:none;font:inherit;font-weight:800;font-size:15px;color:var(--soft);background:var(--card);border:0;border-radius:999px;padding:9px 32px 9px 14px;cursor:pointer}
+.lang::after{content:"";position:absolute;right:14px;top:50%;width:6px;height:6px;border:solid var(--soft);border-width:0 2px 2px 0;transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:#fff;font-weight:900;font-size:15px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;padding:12px 20px;border-radius:999px;transition:transform .25s var(--ease),box-shadow .2s;box-shadow:0 8px 20px rgba(22,58,74,.18)}
+.pill:hover{transform:translateY(-2px)}
+.pill.soft{background:var(--brandSoft);color:var(--brandDark);box-shadow:none}
+.burger{display:none;width:44px;height:44px;border-radius:50%;background:var(--card);align-items:center;justify-content:center;margin-left:auto}
+.burger i,.burger i::before,.burger i::after{display:block;width:18px;height:2.5px;border-radius:2px;background:var(--ink);position:relative;content:""}
+.burger i::before{position:absolute;top:-6px}.burger i::after{position:absolute;top:6px}
+.progress{position:fixed;left:0;top:0;height:3px;width:100%;background:var(--brand);transform-origin:0 50%;transform:scaleX(0);z-index:60}
+
+/* press feel */
+.press{transition:transform .28s var(--ease)}
+.press:active{transform:scale(.94)}
+
+/* store badges */
+.stores{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.store{position:relative;display:inline-flex;align-items:center;gap:10px;background:#0B0B0F;color:#fff;border-radius:16px;padding:10px 20px 10px 15px;text-decoration:none;transition:transform .25s var(--ease)}
+.store:hover{transform:translateY(-2px)}
+.store svg{width:28px;height:28px;flex:none}
+.store span{display:flex;flex-direction:column;line-height:1.05}.store small{font-size:10px;font-weight:800;letter-spacing:.06em}.store b{font-size:20px;font-weight:900}
+.store.soon{background:rgba(11,11,15,.7);cursor:default}.store.soon:hover{transform:none}
+.store .free{position:absolute;top:-10px;right:-10px;background:var(--sun);color:var(--ink);font-size:11px;font-weight:900;letter-spacing:.06em;padding:4px 8px;border-radius:999px;transform:rotate(8deg)}
+
+/* panels */
+.panel{margin:0 12px;border-radius:44px;position:relative;overflow:hidden}
+section{position:relative}
+.sec{padding:110px 0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.split.flip>:first-child{order:2}
+
+/* hero */
+.hero{background:linear-gradient(180deg,#19BCD0 0%,#14B8C4 100%);color:#fff;padding:70px 0 90px;margin-top:4px}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.08) 2px,transparent 2px);background-size:58px 58px;transform:perspective(900px) rotateX(40deg) scale(1.7);transform-origin:center 85%;pointer-events:none}
+.hero .lead{color:#fff;opacity:.95}
+.hero .kicker{color:#fff}
+.eyebrow{display:inline-block;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.45);border-radius:999px;padding:6px 14px;font-weight:900;font-size:14px;margin-bottom:20px}
+.laurels{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 30px}
+.laurel{display:flex;align-items:center;gap:4px;font-weight:900;text-align:center;line-height:1.05}
+.laurel svg{width:20px;height:46px;flex:none}
+.laurel b{display:block;font-size:23px}.laurel small{display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;opacity:.92}
+.hero .store{box-shadow:0 12px 30px rgba(0,50,70,.25)}
+
+/* phone */
+.phone{position:relative;width:min(330px,78vw);aspect-ratio:390/844;border-radius:52px;background:#0E1116;padding:10px;box-shadow:0 40px 80px rgba(10,30,50,.28),inset 0 0 0 2px #2a2f38;flex:none;margin:0 auto}
+.phone::before{content:"";position:absolute;top:20px;left:50%;transform:translateX(-50%);width:30%;height:26px;border-radius:14px;background:#0E1116;z-index:3}
+.scr{width:100%;height:100%;border-radius:43px;overflow:hidden;background:#fff;position:relative}
+.scr>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:opacity .45s,transform .6s var(--ease)}
+.scr>img:not(.on){opacity:0;transform:scale(1.03)}
+.phone.sm{width:min(250px,60vw);border-radius:42px;padding:8px}.phone.sm .scr{border-radius:35px}.phone.sm::before{top:16px;height:20px}
+
+/* hero demo (the pet colours in) */
+.demo{position:relative;justify-self:center}
+.app{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:58px 18px 22px;color:var(--ink)}
+.app .cnt{font-size:54px;font-weight:900;color:var(--brand);line-height:1;letter-spacing:-.02em;margin-top:8px;display:flex;align-items:baseline}
+.app .cnt small{font-size:30px;color:#B9E9EC}
+.app .sub{font-size:13px;font-weight:800;color:var(--muted);margin-top:6px;min-height:20px;text-align:center}
+.pet{position:relative;width:78%;margin:auto 0 10px}
+.pet img{width:100%}
+.pet .gray{filter:grayscale(1) brightness(1.18) contrast(.75);opacity:.55}
+.pet .col{position:absolute;inset:0;clip-path:inset(100% 0 0 0);transition:clip-path .7s var(--ease)}
+.pet .mat{position:absolute;left:8%;right:8%;bottom:-4%;height:12%;border-radius:50%;background:linear-gradient(90deg,#FF9F43,#FFD233,#58C322,#38B6E8,#8E6CEB);opacity:.25;z-index:-1;filter:blur(1px)}
+.cares{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
+.care{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:6px 0 4px;border-radius:16px;position:relative}
+.care img{width:44px;height:44px;object-fit:contain;filter:grayscale(1);opacity:.6;transition:.3s}
+.care::after{content:"+";position:absolute;top:2px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;line-height:16px;font-weight:900}
+.care.on img{filter:none;opacity:1;transform:scale(1.08)}
+.care.on{color:var(--ink);background:var(--card)}
+.care.on::after{content:"✓";background:var(--green);font-size:10px}
+.again{margin-top:8px;font-weight:900;font-size:13px;color:var(--brandDark)}
+.hey{position:absolute;left:-60px;top:34%;background:var(--sun);color:var(--ink);font-weight:900;font-size:15px;padding:10px 14px;border-radius:18px;transform:rotate(-6deg);box-shadow:0 12px 24px rgba(0,0,0,.15);z-index:4;animation:bob 2.4s ease-in-out infinite;max-width:180px;line-height:1.2}
+.hey::after{content:"";position:absolute;right:-8px;bottom:14px;border:9px solid transparent;border-left-color:var(--sun)}
+.hey.gone{opacity:0;transition:opacity .4s;animation:none}
+.duo{position:absolute;width:38%;left:-30%;bottom:-8%;z-index:4;filter:drop-shadow(0 20px 30px rgba(0,50,70,.3));animation:bob 3.2s ease-in-out infinite}
+.heart{position:absolute;width:13%;right:-4%;top:8%;z-index:4;animation:beat 1.6s ease-in-out infinite}
+
+/* tour */
+.seg{display:inline-flex;background:var(--card);border-radius:999px;padding:5px;position:relative;margin:10px 0 40px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{position:relative;z-index:1;font-weight:900;font-size:16px;padding:12px 24px;border-radius:999px;color:var(--muted);transition:color .25s;white-space:nowrap}
+.seg button[aria-selected=true]{color:var(--ink)}
+.seg .thumb{position:absolute;top:5px;bottom:5px;left:0;border-radius:999px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.08);transition:transform .45s var(--ease),width .45s var(--ease)}
+.tour{display:grid;grid-template-columns:1fr auto 1fr;gap:40px;align-items:center}
+.tour .cap{font-size:22px;font-weight:800;color:var(--soft);min-height:3.2em;transition:opacity .25s}
+.tour .side img{width:min(230px,100%);margin:auto}
+.tour .side.l img{transform:rotate(-6deg)}.tour .side.r img{transform:rotate(6deg)}
+
+/* cards */
+.card{background:var(--card);border-radius:var(--r);padding:30px}
+.ink{background:var(--ink);color:#fff}
+.ink .lead,.ink p{color:rgba(255,255,255,.82)}
+.points{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px}
+.points li{display:flex;gap:12px;align-items:flex-start;font-weight:800;font-size:18px}
+.points li::before{content:"✓";flex:none;width:26px;height:26px;border-radius:50%;background:var(--brandSoft);color:var(--brandDark);font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ink .points li::before{background:rgba(255,255,255,.14);color:#fff}
+
+/* slide to confirm */
+.dose{max-width:440px;margin:auto;position:relative}
+.dose .head{display:flex;gap:14px;align-items:center;margin-bottom:20px}
+.dose .head img{width:66px;height:66px;object-fit:contain}
+.dose .t{font-weight:900;font-size:22px;line-height:1.15}.dose .s{font-weight:800;color:rgba(255,255,255,.65);font-size:15px}
+.slide{position:relative;height:72px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.slide .fill{position:absolute;inset:0;width:72px;background:var(--meds);border-radius:999px}
+.slide .lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:15px;color:rgba(255,255,255,.8);padding-left:60px;background:linear-gradient(90deg,rgba(255,255,255,.4),#fff,rgba(255,255,255,.4)) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2.6s linear infinite}
+.slide .knob{position:absolute;left:6px;top:6px;width:60px;height:60px;border-radius:50%;background:#fff;color:var(--meds);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;cursor:grab;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.slide.done .lbl{opacity:0}
+.given{display:none;align-items:center;justify-content:space-between;gap:12px;height:72px;padding:0 10px 0 22px;border-radius:999px;background:var(--green);font-weight:900}
+.given button{background:rgba(255,255,255,.22);padding:10px 16px;border-radius:999px;font-weight:900;font-size:14px}
+.dose.ok .slide{display:none}.dose.ok .given{display:flex}
+.follow{display:flex;gap:10px;align-items:center;margin-top:18px;font-size:14px;font-weight:800;color:rgba(255,255,255,.65)}
+.follow i{flex:none;width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.3);border-top-color:var(--sun)}
+
+/* pantry demo */
+.bag{max-width:460px;margin:auto;background:#fff;border-radius:var(--r);padding:28px;box-shadow:var(--shadow)}
+.bag .row{display:flex;gap:18px;align-items:center}
+.fillart{position:relative;width:110px;height:110px;flex:none}
+.fillart img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.fillart .g{filter:grayscale(1);opacity:.35}
+.fillart .c{transition:clip-path .8s var(--ease)}
+.bag .nm{font-weight:900;font-size:20px}
+.bag .left{font-weight:800;color:var(--muted);font-size:15px}
+.bar{height:14px;border-radius:999px;background:var(--card);overflow:hidden;margin:18px 0 12px}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--green);transition:width .8s var(--ease),background .4s}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 18px}
+.stat div{background:var(--card);border-radius:20px;padding:12px 14px}
+.stat small{display:block;font-size:12px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat b{font-size:24px;font-weight:900;display:block;line-height:1.2}
+.status{display:inline-block;font-size:13px;font-weight:900;padding:5px 11px;border-radius:999px;background:#E3F6E9;color:#1D8A4A;margin-top:6px}
+.status.soon{background:#FFF1DC;color:#B26A00}.status.out{background:#FFE4E4;color:#C33}
+.acts{display:flex;gap:10px}
+.acts button{flex:1;padding:15px;border-radius:999px;font-weight:900;font-size:15px;letter-spacing:.05em;text-transform:uppercase;background:var(--meal);color:#fff}
+.acts button.alt{background:var(--brandSoft);color:var(--brandDark)}
+.note{font-size:14px;font-weight:800;color:var(--muted);margin-top:14px;text-align:center}
+
+/* rolling digits */
+.roll{display:inline-flex;overflow:hidden;vertical-align:bottom;height:1.2em;line-height:1.2em}
+.roll .d{display:inline-flex;flex-direction:column;transition:transform .7s var(--ease)}
+.roll .d span{height:1.2em}
+.roll .s{display:inline-block}
+
+/* widgets */
+.wid{background:radial-gradient(120% 90% at 20% 0%,#2F5D8C 0%,#1C2F5A 45%,#141B33 100%);color:#fff}
+.wid .lead{color:rgba(255,255,255,.82)}
+.wid .kicker{color:#8EE6EE}
+.home-scr{display:grid;grid-template-columns:repeat(4,auto);gap:18px;justify-content:center;align-items:start}
+.w{background:rgba(255,255,255,.96);color:var(--ink);border-radius:30px;box-shadow:0 24px 50px rgba(0,0,0,.35);position:relative;overflow:hidden}
+.w.s{width:170px;height:170px;padding:16px;display:flex;flex-direction:column}
+.w.s img{position:absolute;right:-6px;bottom:-6px;width:52%}
+.w.s b{font-size:16px;font-weight:900;line-height:1.15;max-width:75%}
+.w.s em{font-style:normal;font-size:20px;font-weight:900;color:var(--meds);margin-top:4px}
+.w.m{width:358px;height:170px;padding:16px 18px;grid-column:span 2}
+.w.m h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}
+.w.m .r{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:14px;font-weight:900;margin-bottom:10px}
+.w.m .r .b{height:9px;border-radius:9px;background:var(--card);overflow:hidden}.w.m .r .b i{display:block;height:100%;border-radius:9px;background:var(--green)}
+.w.m .r em{font-style:normal;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.icn{width:76px;height:76px;border-radius:20px;background:rgba(255,255,255,.12)}
+.icn.app{background:url(/img/icon-192.png) center/cover}
+.la{grid-column:1/-1;justify-self:center;margin-top:16px;width:min(560px,100%);background:rgba(20,22,30,.82);backdrop-filter:blur(16px);border-radius:32px;padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.la img{width:56px;height:56px;object-fit:contain;flex:none}
+.la .tx{flex:1;min-width:0}
+.la .tx b{display:block;font-size:17px;font-weight:900}.la .tx small{font-size:14px;font-weight:800;opacity:.65}
+.la .clk{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;color:#C9B6FF}
+.la button{background:var(--meds);color:#fff;font-weight:900;padding:12px 18px;border-radius:999px;font-size:15px}
+.la.ok button{background:var(--green)}
+.wnote{font-size:14px;font-weight:800;opacity:.6;margin-top:28px}
+
+/* walk card */
+.live{width:min(360px,100%);margin:auto;background:rgba(20,22,30,.94);border-radius:32px;padding:22px;color:#fff;box-shadow:var(--shadow)}
+.live .hd{display:flex;align-items:center;gap:12px}.live .hd img{width:40px;height:40px;border-radius:11px}
+.live .t{font-weight:900;font-size:17px;line-height:1.1}.live .s{font-size:13px;opacity:.65;font-weight:800}
+.live .clock{font-size:64px;font-weight:900;letter-spacing:.01em;margin:12px 0 14px;font-variant-numeric:tabular-nums;line-height:1}
+.live.paused .clock{opacity:.45}
+.live .b{display:flex;gap:8px}.live .b button{flex:1;text-align:center;padding:14px;border-radius:999px;font-weight:900;font-size:15px;background:#2b2f3b}
+.live .b .f{background:var(--walk)}.live .b .n{display:none}
+.live.done .b .p,.live.done .b .f{display:none}.live.done .b .n{display:block}
+.live .saved{display:none;font-weight:900;color:#7FE0A0;margin:-4px 0 12px}.live.done .saved{display:block}
+.walkart{position:relative}.walkart>img{border-radius:var(--r)}
+.walkart .live{position:absolute;right:-10px;bottom:-40px;width:300px}
+
+/* chips */
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.chip{background:#fff;border-radius:999px;padding:9px 16px;font-weight:900;font-size:15px;box-shadow:0 2px 0 var(--line)}
+.card .chip{background:#fff}
+
+/* memory cards */
+.mcards{position:relative;height:520px}
+.mcard{position:absolute;width:56%;border-radius:22px;box-shadow:var(--shadow);transition:transform .6s var(--ease),z-index 0s .2s;cursor:pointer}
+.mcard.a{left:6%;top:4%;transform:rotate(-7deg)}.mcard.b{right:4%;top:14%;transform:rotate(6deg)}
+.mcard.front{z-index:2}.mcard:hover{transform:rotate(0) translateY(-6px)}
+
+/* calm */
+.calm{background:var(--cream)}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px;text-align:left}
+.trio .card{background:#fff}
+.trio .e{font-size:38px;line-height:1;margin-bottom:14px;display:block}
+.trio p{color:var(--soft);font-weight:700;margin:0}
+
+/* languages marquee */
+.marq{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);margin-top:34px}
+.marq .tr{display:flex;gap:12px;width:max-content;animation:marq 60s linear infinite;padding:6px 0}
+.marq.r .tr{animation-direction:reverse}
+.marq span{background:var(--card);border-radius:999px;padding:12px 20px;font-weight:900;font-size:18px;white-space:nowrap}
+.marq:hover .tr{animation-play-state:paused}
+
+/* privacy */
+.priv{display:grid;grid-template-columns:auto 1fr auto;gap:36px;align-items:center;padding:56px}
+.priv img{width:120px}
+.priv h2{font-size:clamp(30px,3.6vw,46px);margin-bottom:10px}
+.priv p{margin:0;font-weight:700;font-size:19px}
+.priv a{white-space:nowrap}
+
+/* pro */
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:880px;margin:40px auto 0;text-align:left}
+.plans .card{padding:34px}
+.plans h3{font-size:26px}
+.plans .points li{font-size:17px}
+.plans .pro{background:linear-gradient(160deg,#FFE7A3,#FFD233);}
+.plans .pro .points li::before{background:rgba(255,255,255,.6);color:var(--ink)}
+
+/* faq */
+.faq{max-width:860px;margin:40px auto 0;text-align:left}
+.faq details{background:var(--card);border-radius:26px;margin-bottom:12px;transition:background .2s}
+.faq details[open]{background:var(--brandSoft)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 64px 22px 26px;font-weight:900;font-size:19px;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:22px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .3s var(--ease)}
+.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq details p{padding:0 26px 22px;margin:0;color:var(--soft);font-weight:700}
+
+/* final cta */
+.cta{background:var(--cream);padding:90px 0}
+.cta .appicon{width:96px;height:96px;border-radius:26px;box-shadow:0 14px 30px rgba(0,0,0,.12);margin-bottom:22px}
+.qr{display:flex;align-items:center;gap:16px;background:#fff;border-radius:24px;padding:14px 22px 14px 14px;margin-top:26px;width:max-content;max-width:100%;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.qr img{width:104px;height:104px}.qr b{display:block;font-weight:900}.qr small{font-weight:800;color:var(--muted)}
+.cta .phone{transform:rotate(-3deg)}
+.cta .duo{left:auto;right:-4%;bottom:-6%;width:46%}
+body.mobile .qr{display:none}
+
+/* footer */
+footer{padding:70px 0 40px;color:var(--soft)}
+footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+footer h4{margin:0 0 14px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+footer ul{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+footer a{text-decoration:none;font-weight:800}footer a:hover{color:var(--brandDark)}
+footer .tag{font-weight:800;margin-top:12px;max-width:280px}
+footer .legal{border-top:1px solid var(--line);margin-top:44px;padding-top:24px;font-size:14px;font-weight:700;color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* feature pages */
+.fhero{background:var(--brandSoft);padding:64px 0 70px;margin-top:4px}
+.fhero h1{font-size:clamp(38px,5vw,64px)}
+.fhero .art{max-width:440px;margin:auto;filter:drop-shadow(0 30px 40px rgba(0,60,80,.15))}
+.crumbs{font-size:14px;font-weight:800;color:var(--muted);margin-bottom:18px}.crumbs a{text-decoration:none;color:var(--brandDark)}
+.block{padding:70px 0}
+.block+.block{border-top:1px solid var(--line)}
+.block h2{font-size:clamp(30px,3.6vw,46px)}
+.block .vis img.artimg{max-width:420px;margin:auto}
+.block .vis .wide{border-radius:var(--r);max-width:520px;margin:auto}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s;margin-top:34px;text-align:left}
+.steps .card{counter-increment:s}
+.steps .card::before{content:counter(s);display:flex;width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;font-weight:900;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.steps p{margin:0;color:var(--soft);font-weight:700}
+.rel{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px;text-align:left}
+.rel a{text-decoration:none;display:flex;align-items:center;gap:14px;background:var(--card);border-radius:26px;padding:18px;font-weight:900;font-size:18px;transition:transform .25s var(--ease)}
+.rel a:hover{transform:translateY(-3px)}
+.rel img{width:64px;height:64px;object-fit:contain;flex:none}
+
+/* legal pages */
+.doc{max-width:780px;margin:0 auto;padding:40px 24px 80px}
+.doc h1{font-size:44px}.doc h2{font-size:26px;margin:1.8em 0 .5em}
+.doc p,.doc li{color:var(--soft)}.doc strong{color:var(--ink)}.doc em{color:var(--muted);font-style:normal;font-size:15px}
+.doc a{color:var(--brandDark);font-weight:800}
+.doc table{border-collapse:collapse;width:100%;font-size:15px;margin:12px 0;display:block;overflow-x:auto}
+.doc th,.doc td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+.doc th{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+
+/* fx */
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,200%);visibility:hidden;background:var(--ink);color:#fff;font-weight:900;padding:14px 22px;border-radius:999px;z-index:90;transition:transform .45s var(--ease);box-shadow:var(--shadow);max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0);visibility:visible}
+.fx{position:fixed;inset:0;pointer-events:none;z-index:80}
+.fx i{position:absolute;width:10px;height:14px;border-radius:3px}
+.fx b{position:absolute;font-size:22px}
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}
+.pop{animation:pop .35s var(--ease)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-10px) rotate(var(--rot,0deg))}}
+.hey{--rot:-6deg}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+@keyframes shine{to{background-position:-200% 0}}
+@keyframes marq{to{transform:translateX(-50%)}}
+@keyframes pop{50%{transform:scale(1.18)}}
+@keyframes jump{30%{transform:translateY(-22px) scale(1.04)}60%{transform:translateY(0) scale(.98)}}
+.jump{animation:jump .5s var(--ease)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+
+/* responsive */
+@media (max-width:1060px){
+  .home-scr{grid-template-columns:repeat(2,auto)}
+  .w.m{grid-column:1/-1}
+}
+@media (max-width:920px){
+  body{font-size:17px}
+  .nav{display:none}
+  .burger{display:flex}
+  .top.open .nav{display:flex;position:absolute;top:68px;left:0;right:0;flex-direction:column;align-items:stretch;background:#fff;padding:14px 18px 22px;gap:6px;box-shadow:0 30px 40px rgba(0,0,0,.08);max-height:calc(100vh - 68px);overflow:auto}
+  .top.open .menu{position:static;opacity:1;visibility:visible;transform:none;width:auto;box-shadow:none;grid-template-columns:1fr;padding:0 0 6px}
+  .top.open .dd>button{display:none}
+  .top.open .lang select{width:100%}
+  .sec{padding:76px 0}
+  .split,.split.flip{grid-template-columns:1fr;gap:40px}
+  .split.flip>:first-child{order:0}
+  .tour{grid-template-columns:1fr}.tour .side{display:none}
+  .trio,.steps,.rel{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr}
+  .priv{grid-template-columns:1fr;text-align:center;padding:40px 26px;justify-items:center}
+  footer .cols{grid-template-columns:1fr 1fr}
+  .panel{margin:0 8px;border-radius:32px}
+  .hero{padding:44px 0 70px}
+  .hey{left:auto;right:-6px;top:-18px}.hey::after{display:none}
+  .hero .duo{display:none}.cta .duo{right:0;left:auto;width:34%}
+  .walkart .live{position:relative;right:auto;bottom:auto;margin:-60px auto 0;width:min(320px,92%)}
+  .mcards{height:440px}
+}
+@media (max-width:560px){
+  .w.s{width:150px;height:150px}.w.m{width:318px}
+  .w.m .r{grid-template-columns:80px 1fr auto}
+  .icn{display:none}
+  .home-scr{grid-template-columns:repeat(2,auto);gap:14px}
+  .la{gap:12px;padding:14px 16px}.la img{display:none}.la .tx b{font-size:15px}.la .clk{font-size:22px}
+  .mcards{height:340px}
+  .laurels{gap:12px}.laurel b{font-size:20px}
+  .seg button{padding:10px 16px;font-size:15px}
+}
+</style><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://pavurio.com/#org", "name": "Pavurio", "url": "https://pavurio.com/", "logo": "https://pavurio.com/img/icon-512.png", "email": "lesepavistespro@gmail.com"}, {"@type": "MobileApplication", "@id": "https://pavurio.com/#app", "name": "Pavurio", "alternateName": "Pavurio: Pet Care Tracker", "operatingSystem": "Android", "applicationCategory": "LifestyleApplication", "description": "App cuidado mascotas para perros y gatos: recordatorio de medicamentos y comidas, control de comida, paseos, cartilla veterinaria y widgets. Sin anuncios.", "url": "https://pavurio.com/es/", "image": "https://pavurio.com/img/icon-512.png", "screenshot": ["https://pavurio.com/img/s/home.webp", "https://pavurio.com/img/s/pantry.webp", "https://pavurio.com/img/s/care.webp", "https://pavurio.com/img/s/records.webp"], "installUrl": "https://play.google.com/store/apps/details?id=com.pavurio.app", "downloadUrl": "https://play.google.com/store/apps/details?id=com.pavurio.app", "inLanguage": ["en", "fr", "es", "pt"], "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "publisher": {"@id": "https://pavurio.com/#org"}}, {"@type": "WebSite", "@id": "https://pavurio.com/#site", "url": "https://pavurio.com/", "name": "Pavurio", "inLanguage": "es", "publisher": {"@id": "https://pavurio.com/#org"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Pavurio es gratis?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. El registro de cuidados, los recordatorios, la despensa, los paseos, la cartilla de salud y los widgets son gratis para una mascota. Pavurio Pro añade todas las mascotas de tu hogar, pelajes realistas, semanas y meses de historial, historias mensuales y más consejos de cuidado."}}, {"@type": "Question", "name": "¿Sirve para perros y gatos?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Cada mascota tiene su propio aspecto, plan diario, recordatorios, despensa e historial. Los gatos tienen control del arenero; los perros, el cronómetro de paseos."}}, {"@type": "Question", "name": "¿Cómo sabe Pavurio cuándo se acabará la comida?", "acceptedAnswer": {"@type": "Answer", "text": "Cuando registras una comida, Pavurio descuenta esa ración de la bolsa que estás usando. Con las comidas de las dos últimas semanas calcula cuánto come tu mascota al día y muestra los días que quedan y la fecha límite para pedir. Toca «¿Por qué esta estimación?» para ver exactamente cómo se ha calculado."}}, {"@type": "Question", "name": "¿Necesito una cuenta?", "acceptedAnswer": {"@type": "Answer", "text": "No. Pavurio funciona en tu teléfono desde el primer segundo. Tus datos se guardan de forma privada en tu cuenta para que puedas restaurarlos en un teléfono nuevo; puedes añadir inicio de sesión con Google, Apple o correo cuando quieras."}}, {"@type": "Question", "name": "¿Hay app para iPhone?", "acceptedAnswer": {"@type": "Answer", "text": "Pavurio ya está en Google Play. La app para iPhone, con widgets de pantalla de bloqueo y Live Activities, llegará muy pronto."}}, {"@type": "Question", "name": "¿Qué idiomas habla Pavurio?", "acceptedAnswer": {"@type": "Answer", "text": "30 idiomas, entre ellos English, Français, Español, Português, Deutsch, Italiano, Nederlands, Polski, Türkçe, العربية, 日本語, 한국어 y 中文."}}, {"@type": "Question", "name": "¿Es esto consejo veterinario?", "acceptedAnswer": {"@type": "Answer", "text": "No. Pavurio te ayuda a llevar el control de los cuidados que das y a recordar las citas. Para cualquier cosa sobre la salud de tu mascota, habla con tu veterinario."}}], "url": "https://pavurio.com/es/"}]}</script></head><body><a class="skip" href="#main">Ir al contenido</a><div class="progress" aria-hidden="true"></div>
+<header class="top"><div class="wrap"><a class="logo" href="/es/"><img src="/img/icon-192.png" alt="" width="38" height="38">Pavurio</a>
+<nav class="nav" aria-label="Main"><div class="dd"><button aria-expanded="false" aria-haspopup="true">Funciones</button><div class="menu"><a href="/es/features/pet-medication-reminder.html"><img class="" src="/img/a/medication.webp" alt="" width="192" height="192">Recordatorios de medicamentos</a><a href="/es/features/pet-food-tracker.html"><img class="" src="/img/a/food.webp" alt="" width="192" height="192">Control de comida</a><a href="/es/features/dog-walk-tracker.html"><img class="" src="/img/a/walk.webp" alt="" width="160" height="160">Cronómetro de paseos</a><a href="/es/features/pet-health-records.html"><img class="" src="/img/a/records.webp" alt="" width="160" height="160">Cartilla de salud</a><a href="/es/features/pet-care-widgets.html"><img class="" src="/img/a/widget_care.webp" alt="" width="360" height="360">Widgets</a><a href="/es/features/dog-care-app.html"><img class="" src="/img/a/dog_wave.webp" alt="" width="480" height="514">Para perros</a><a href="/es/features/cat-care-app.html"><img class="" src="/img/a/cat_wave.webp" alt="" width="480" height="487">Para gatos</a></div></div>
+<a href="/es/#faq">Preguntas frecuentes</a><label class="lang"><span class="sr">Idioma</span><select aria-label="Idioma"><option value="/">English</option><option value="/fr/">Français</option><option value="/es/" selected>Español</option><option value="/pt/">Português</option></select></label>
+<a class="pill" href="https://play.google.com/store/apps/details?id=com.pavurio.app&amp;hl=es&amp;referrer=utm_source%3Dpavurio.com%26utm_medium%3Dwebsite%26utm_campaign%3Des%26utm_content%3Dheader" rel="noopener" data-cta="header">Descargar</a></nav>
+<button class="burger" aria-label="Menú" aria-expanded="false"><i></i></button></div></header><main id="main"><section class="panel hero"><div class="wrap split">
+<div class="reveal"><span class="eyebrow">Para perros y gatos</span><h1>Cuida de tu mascota. Pavurio recuerda el resto.</h1><p class="lead">Comidas, medicamentos, paseos y la bolsa de comida, en una sola app tranquila. Tu mascota se va coloreando a medida que completas los cuidados del día.</p><div class="laurels"><div class="laurel"><svg viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg><span><b>Perros</b><small>y gatos</small></span><svg style="transform:scaleX(-1)" viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg></div><div class="laurel"><svg viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg><span><b>30</b><small>idiomas</small></span><svg style="transform:scaleX(-1)" viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg></div><div class="laurel"><svg viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg><span><b>0</b><small>anuncios, nunca</small></span><svg style="transform:scaleX(-1)" viewBox="0 0 22 48" aria-hidden="true"><g fill="currentColor" opacity=".9"><path d="M17 46C6 40 2 28 6 12" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="5" cy="14" rx="2.6" ry="5" transform="rotate(-20 5 14)"/><ellipse cx="4" cy="24" rx="2.6" ry="5" transform="rotate(-35 4 24)"/><ellipse cx="7" cy="33" rx="2.6" ry="5" transform="rotate(-50 7 33)"/><ellipse cx="12" cy="40" rx="2.6" ry="5" transform="rotate(-65 12 40)"/></g></svg></div></div><div class="stores"><a class="store" href="https://play.google.com/store/apps/details?id=com.pavurio.app&amp;hl=es&amp;referrer=utm_source%3Dpavurio.com%26utm_medium%3Dwebsite%26utm_campaign%3Des%26utm_content%3Dhero" rel="noopener" data-cta="hero"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="m16.9 15.5-3.5-3.5 3.5-3.5 4 2.3c1.1.6 1.1 1.8 0 2.4z"/><path fill="#EA4335" d="M16.9 15.5 13.4 12l-9.8 9.7c.4.2.9.2 1.4-.1z"/><path fill="#4285F4" d="M16.9 8.5 5 1.4c-.5-.3-1-.3-1.4-.1l9.8 9.7z"/></svg><span><small>DISPONIBLE EN</small><b>Google Play</b></span><span class="free">GRATIS</span></a><span class="store soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1.1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span><small>MUY PRONTO EN</small><b>App Store</b></span></span></div></div>
+<div class="demo reveal d1"><div class="hey" aria-hidden="true">Toca un cuidado y Honey se colorea 👉</div>
+<div class="phone"><div class="scr"><div class="app" id="demo" aria-live="polite"><div class="cnt"><b data-n>0</b><small>/5</small></div><div class="sub" data-sub></div>
+<div class="pet"><span class="mat"></span><img class="gray" src="/img/a/dog_wave.webp" alt="" width="480" height="514"><img class="col" src="/img/a/dog_wave.webp" alt="Honey" width="480" height="514"></div>
+<div class="cares"><button class="care press" aria-pressed="false"><img class="" src="/img/a/meal.webp" alt="" width="160" height="160"><span>Comida</span></button><button class="care press" aria-pressed="false"><img class="" src="/img/a/water.webp" alt="" width="160" height="160"><span>Agua</span></button><button class="care press" aria-pressed="false"><img class="" src="/img/a/walk.webp" alt="" width="160" height="160"><span>Paseo</span></button><button class="care press" aria-pressed="false"><img class="" src="/img/a/medication.webp" alt="" width="192" height="192"><span>Medicamento</span></button><button class="care press" aria-pressed="false"><img class="" src="/img/a/play.webp" alt="" width="160" height="160"><span>Juego</span></button></div><button class="again" hidden>↺ Empezar de nuevo</button></div></div></div>
+<img class="duo" src="/img/a/duo_hug.webp" alt="Honey el perro y Tabby el gato, las mascotas de Pavurio" width="560" height="564" role="button" tabindex="0"><img class="heart" src="/img/a/heart.webp" alt="" width="140" height="125"></div></div></section><section class="sec" id="tour"><div class="wrap center"><h2 class="reveal">Tu día, de un vistazo.</h2><p class="lead reveal d1">Inicio responde tres preguntas, en orden: ¿qué necesita hoy mi mascota?, ¿qué tengo que comprar? y ¿hay algún momento que merezca la pena guardar?</p>
+<div class="seg reveal d1" role="tablist"><span class="thumb" aria-hidden="true"></span><button role="tab" aria-selected="true">Inicio</button><button role="tab" aria-selected="false">Cuidados</button><button role="tab" aria-selected="false">Despensa</button><button role="tab" aria-selected="false">Resumen</button></div>
+<div class="tour reveal d2"><div class="side l"><img class="" src="/img/a/dog_love.webp" alt="" width="400" height="379" loading="lazy" decoding="async"></div><div><div class="phone"><div class="scr"><img class="on" src="/img/s/home.webp" alt="Inicio: El plan de hoy, con tu mascota coloreándose sobre la marcha." width="390" height="844" loading="lazy" decoding="async"><img class="" src="/img/s/care.webp" alt="Cuidados: Lo que toca ahora, listo con un solo deslizamiento." width="390" height="844" loading="lazy" decoding="async"><img class="" src="/img/s/pantry.webp" alt="Despensa: Cada bolsa, caja y blíster, con los días que quedan." width="390" height="844" loading="lazy" decoding="async"><img class="" src="/img/s/summary.webp" alt="Resumen: Un informe semanal amable de los cuidados que diste." width="390" height="844" loading="lazy" decoding="async"></div></div></div><div class="side r"><p class="cap">El plan de hoy, con tu mascota coloreándose sobre la marcha.</p><img class="" src="/img/a/cat_cheer.webp" alt="" width="360" height="361" loading="lazy" decoding="async"></div></div></div></section><section class="sec" id="reminders"><div class="wrap split">
+<div class="reveal"><span class="kicker">Recordatorios</span><h2>Nunca olvides una dosis.</h2><p class="lead">Configura la hora una vez. Pavurio te avisa, te deja marcarlo desde la notificación y vuelve a avisarte 30 minutos después si una comida o un medicamento sigue pendiente.</p><ul class="points"><li>Márcalo como hecho desde la notificación</li><li>Un único aviso extra para comidas y medicamentos</li><li>Visitas al veterinario recordadas el día antes</li></ul>
+<p style="margin-top:22px"><a class="pill soft" href="/es/features/pet-medication-reminder.html">Más información →</a></p></div>
+<div class="reveal d1"><div class="card ink dose" id="dose" style="padding:34px"><div class="head"><img class="" src="/img/a/medication.webp" alt="" width="192" height="192" loading="lazy" decoding="async"><div><div class="t">Apoquel · 1 comprimido</div><div class="s">A las 8:00 · Honey</div></div></div>
+<div class="slide"><span class="fill"></span><span class="lbl">Desliza para dar</span><span class="knob" role="button" tabindex="0" aria-label="Desliza para dar">›</span></div>
+<div class="given" role="status"><span></span><button>Deshacer</button></div>
+<div class="follow"><i aria-hidden="true"></i>Un único aviso extra para comidas y medicamentos</div></div></div></div></section><section class="panel" style="background:var(--card)"><div class="sec"><div class="wrap split flip">
+<div class="reveal d1"><span class="kicker">Despensa</span><h2>Que nunca falte la comida.</h2><p class="lead">Registra una comida y Pavurio sabe cuánto queda. Te avisa cuándo comprar, antes de que se vacíe la bolsa, y te prepara la lista de la compra.</p><ul class="points"><li>Una previsión basada en lo que tu mascota come de verdad</li><li>«¿Por qué esta estimación?» explicado con palabras sencillas</li><li>Una lista de la compra para una semana, dos o un mes</li><li>Comida compartida para hogares con varias mascotas</li></ul>
+<p style="margin-top:22px"><a class="pill soft" href="/es/features/pet-food-tracker.html">Más información →</a></p></div>
+<div class="reveal"><div class="bag" id="bag"><div class="row"><div class="fillart"><img class="g" src="/img/a/food.webp" alt="" width="192" height="192" loading="lazy" decoding="async"><img class="c" src="/img/a/food.webp" alt="" width="192" height="192" loading="lazy" decoding="async"></div>
+<div><div class="nm">Pienso · 12 kg</div><span class="status"></span></div></div><div class="bar"><i></i></div>
+<div class="stat"><div><small>Quedan  kg</small><b><span data-left>4.5</span> kg</b></div><div><small>Quedan  días</small><b data-days>9</b></div></div>
+<div class="stat" style="grid-template-columns:1fr;margin-top:-6px"><div><small>Pedir antes del</small><b data-order>—</b></div></div>
+<div class="acts"><button class="press" data-log>− Registrar comida</button><button class="press alt" data-restock>↻ Reponer</button></div>
+<p class="note">Cada comida: 250 g. Honey come unos 500 g al día.</p></div></div></div></div></section><section class="panel wid"><div class="sec"><div class="wrap center"><span class="kicker reveal">Widgets</span><h2 class="reveal">En tu pantalla de inicio. Y en tu pantalla de bloqueo.</h2><p class="lead reveal d1">Los widgets muestran lo único que importa ahora: la próxima dosis, qué comprar o que hoy ya está todo hecho. Una Live Activity cuenta atrás hasta la hora del medicamento, con un botón Dado.</p>
+<div class="home-scr reveal d2" style="margin-top:46px"><div class="w s"><b>Medicamento para Honey</b><em>en 12 min</em><img class="" src="/img/a/widget_care.webp" alt="" width="360" height="360" loading="lazy" decoding="async"></div>
+<div class="w m"><h4>Despensa</h4><div class="r"><span>Pienso</span><span class="b"><i style="width:18%;background:var(--meal)"></i></span><em>Pedir antes del jue.</em></div><div class="r"><span>Premios</span><span class="b"><i style="width:62%;background:var(--green)"></i></span><em>Quedan 20 días</em></div><div class="r"><span>Bolsas para cacas</span><span class="b"><i style="width:85%;background:var(--green)"></i></span><em>Quedan 35 días</em></div></div><div class="w s" style="background:#FFF6E6"><b>Todo listo por hoy</b><img class="" src="/img/a/widget_done.webp" alt="" width="440" height="440" loading="lazy" decoding="async"></div>
+<div class="la" id="la"><img class="" src="/img/a/medication.webp" alt="" width="192" height="192" loading="lazy" decoding="async"><div class="tx"><b>Apoquel para Honey</b><small>A las 8:00</small></div><span class="clk">12:00</span><button class="press">Dado</button></div></div>
+<p class="wnote">Widgets de pantalla de inicio en Android. Los widgets de pantalla de bloqueo y las Live Activities llegarán con la app para iPhone.</p><p><a class="pill soft" href="/es/features/pet-care-widgets.html">Más información →</a></p></div></div></section><section class="sec"><div class="wrap split">
+<div class="reveal"><span class="kicker">Paseos</span><h2>Paseos cronometrados desde la pantalla de bloqueo.</h2><p class="lead">Empieza un paseo y guarda el teléfono. Pausa y termina desde la pantalla de bloqueo: cada paseo queda en el historial de Honey.</p><p><a class="pill soft" href="/es/features/dog-walk-tracker.html">Más información →</a></p></div>
+<div class="walkart reveal d1"><img class="" src="/img/a/s_walk.webp" alt="" width="600" height="590" loading="lazy" decoding="async"><div class="live" id="walk"><div class="hd"><img src="/img/icon-192.png" alt="" width="40" height="40" loading="lazy"><div><div class="t">Paseo con Honey</div><div class="s">En curso</div></div></div>
+<div class="clock" aria-live="off">18:42</div><div class="saved">Paseo guardado. ¡Buen perro! 🐕</div><div class="b"><button class="p press">Pausar</button><button class="f press">Terminar</button><button class="n press">Nuevo paseo</button></div></div></div></div></section><section class="panel" style="background:#EEF4FF"><div class="sec"><div class="wrap split flip">
+<div class="reveal d1"><span class="kicker" style="color:#2B62C6">Salud</span><h2>La cartilla veterinaria, siempre en tu bolsillo.</h2><p class="lead">Vacunas, visitas al veterinario, medicación, alergias y peso, con fotos de los documentos. Comparte un resumen claro de cuidados con tu veterinario o cuidador con un toque.</p>
+<div class="chips"><span class="chip">Vacunas</span><span class="chip">Visitas al veterinario</span><span class="chip">Medicación</span><span class="chip">Alergias</span><span class="chip">Gráfica de peso</span><span class="chip">Resumen de cuidados</span></div><p style="margin-top:26px"><a class="pill soft" href="/es/features/pet-health-records.html">Más información →</a></p></div>
+<div class="reveal" style="position:relative"><div class="phone "><div class="scr"><img class="on" src="/img/s/records.webp" alt="La cartilla veterinaria, siempre en tu bolsillo." loading="lazy" decoding="async" width="390" height="844"></div></div></div></div></div></section><section class="sec"><div class="wrap split">
+<div class="reveal"><span class="kicker" style="color:#C2185B">Recuerdos</span><h2>Momentos que merece la pena guardar.</h2><p class="lead">El día de la adopción, los cumpleaños, el primer paseo. Convierte tus propias fotos en Tarjetas de recuerdo y compártelas con quienes también quieren a tu mascota.</p><p class="note" style="text-align:left">👆 Toca una tarjeta para traerla al frente</p></div>
+<div class="mcards reveal d1"><img class="mcard a front" src="/img/l/card_gotcha_es.webp" alt="Memory Card" loading="lazy" tabindex="0" role="button"><img class="mcard b" src="/img/l/card_daily_es.webp" alt="Memory Card" loading="lazy" tabindex="0" role="button"></div></div></section><section class="panel calm"><div class="sec"><div class="wrap center"><h2 class="reveal">Sin rachas. Sin culpas.</h2><p class="lead reveal d1">Pavurio es un compañero, no un juego. Sin rachas que proteger, sin retos, sin urgencias inventadas. Solo lo que tu mascota necesita, cuando importa.</p>
+<div class="trio reveal d2"><div class="card"><span class="e" aria-hidden="true">🌙</span><h3>Tranquilo por la noche</h3><p>Recordatorios suaves, solo cuando hay algo que hacer.</p></div><div class="card"><span class="e" aria-hidden="true">🐾</span><h3>Tu mascota, no puntos</h3><p>El progreso es tu mascota coloreándose, nada más.</p></div><div class="card"><span class="e" aria-hidden="true">☕</span><h3>Listo en segundos</h3><p>Registra un cuidado con un toque y sigue con tu día.</p></div></div></div></div></section><section class="sec"><div class="wrap center"><h2 class="reveal">Habla 30 idiomas.</h2><p class="lead reveal d1">Del Deutsch al 日本語, con las fechas y los plurales correctos en cada uno.</p></div>
+<div class="marq" aria-label="Habla 30 idiomas."><div class="tr"><span lang="en">🇬🇧 English</span><span lang="fr">🇫🇷 Français</span><span lang="es">🇪🇸 Español</span><span lang="pt">🇵🇹 Português</span><span lang="de">🇩🇪 Deutsch</span><span lang="it">🇮🇹 Italiano</span><span lang="nl">🇳🇱 Nederlands</span><span lang="pl">🇵🇱 Polski</span><span lang="ru">🇷🇺 Русский</span><span lang="uk">🇺🇦 Українська</span><span lang="tr">🇹🇷 Türkçe</span><span lang="ar">🇸🇦 العربية</span><span lang="he">🇮🇱 עברית</span><span lang="ja">🇯🇵 日本語</span><span lang="ko">🇰🇷 한국어</span><span lang="en">🇬🇧 English</span><span lang="fr">🇫🇷 Français</span><span lang="es">🇪🇸 Español</span><span lang="pt">🇵🇹 Português</span><span lang="de">🇩🇪 Deutsch</span><span lang="it">🇮🇹 Italiano</span><span lang="nl">🇳🇱 Nederlands</span><span lang="pl">🇵🇱 Polski</span><span lang="ru">🇷🇺 Русский</span><span lang="uk">🇺🇦 Українська</span><span lang="tr">🇹🇷 Türkçe</span><span lang="ar">🇸🇦 العربية</span><span lang="he">🇮🇱 עברית</span><span lang="ja">🇯🇵 日本語</span><span lang="ko">🇰🇷 한국어</span></div></div><div class="marq r" aria-hidden="true"><div class="tr"><span lang="zh-Hans">🇨🇳 简体中文</span><span lang="zh-Hant">🇹🇼 繁體中文</span><span lang="hi">🇮🇳 हिन्दी</span><span lang="id">🇮🇩 Bahasa Indonesia</span><span lang="ms">🇲🇾 Bahasa Melayu</span><span lang="vi">🇻🇳 Tiếng Việt</span><span lang="th">🇹🇭 ไทย</span><span lang="sv">🇸🇪 Svenska</span><span lang="da">🇩🇰 Dansk</span><span lang="nb">🇳🇴 Norsk</span><span lang="fi">🇫🇮 Suomi</span><span lang="cs">🇨🇿 Čeština</span><span lang="ro">🇷🇴 Română</span><span lang="el">🇬🇷 Ελληνικά</span><span lang="hu">🇭🇺 Magyar</span><span lang="zh-Hans">🇨🇳 简体中文</span><span lang="zh-Hant">🇹🇼 繁體中文</span><span lang="hi">🇮🇳 हिन्दी</span><span lang="id">🇮🇩 Bahasa Indonesia</span><span lang="ms">🇲🇾 Bahasa Melayu</span><span lang="vi">🇻🇳 Tiếng Việt</span><span lang="th">🇹🇭 ไทย</span><span lang="sv">🇸🇪 Svenska</span><span lang="da">🇩🇰 Dansk</span><span lang="nb">🇳🇴 Norsk</span><span lang="fi">🇫🇮 Suomi</span><span lang="cs">🇨🇿 Čeština</span><span lang="ro">🇷🇴 Română</span><span lang="el">🇬🇷 Ελληνικά</span><span lang="hu">🇭🇺 Magyar</span></div></div></section><section class="wrap"><div class="card ink priv reveal"><img class="" src="/img/a/shield.webp" alt="" width="202" height="211" loading="lazy" decoding="async"><div><h2>Sin anuncios. Sin juegos con tus datos.</h2><p>Los datos de tu mascota viven en tu teléfono, con una copia de seguridad privada que solo tú puedes leer. Sin SDK de anuncios, sin SDK de analítica, y nunca vendemos datos.</p></div><a class="pill" style="background:#fff;color:var(--ink)" href="/es/privacy.html">Cómo los tratamos →</a></div></section><section class="sec"><div class="wrap center"><h2 class="reveal">Gratis para empezar. Pro si quieres más.</h2>
+<div class="plans reveal d1"><div class="card"><h3>Gratis</h3><ul class="points"><li>Registro de cuidados y recordatorios</li><li>Despensa y lista de la compra</li><li>Paseos, cartilla de salud y widgets</li><li>Una mascota</li></ul></div><div class="card pro"><h3>Pavurio Pro</h3><ul class="points"><li>Todas las mascotas de tu hogar</li><li>Pelajes realistas en el Estudio</li><li>Semanas y meses de historial</li><li>Historias mensuales y más consejos de cuidado</li></ul></div></div>
+<p class="note">Pro es opcional y mantiene Pavurio sin anuncios e independiente.</p></div></section><section class="sec" id="faq" style="padding-top:20px"><div class="wrap center"><h2 class="reveal">Preguntas, respondidas.</h2><div class="reveal d1"><div class="faq"><details><summary>¿Pavurio es gratis?</summary><p>Sí. El registro de cuidados, los recordatorios, la despensa, los paseos, la cartilla de salud y los widgets son gratis para una mascota. Pavurio Pro añade todas las mascotas de tu hogar, pelajes realistas, semanas y meses de historial, historias mensuales y más consejos de cuidado.</p></details><details><summary>¿Sirve para perros y gatos?</summary><p>Sí. Cada mascota tiene su propio aspecto, plan diario, recordatorios, despensa e historial. Los gatos tienen control del arenero; los perros, el cronómetro de paseos.</p></details><details><summary>¿Cómo sabe Pavurio cuándo se acabará la comida?</summary><p>Cuando registras una comida, Pavurio descuenta esa ración de la bolsa que estás usando. Con las comidas de las dos últimas semanas calcula cuánto come tu mascota al día y muestra los días que quedan y la fecha límite para pedir. Toca «¿Por qué esta estimación?» para ver exactamente cómo se ha calculado.</p></details><details><summary>¿Necesito una cuenta?</summary><p>No. Pavurio funciona en tu teléfono desde el primer segundo. Tus datos se guardan de forma privada en tu cuenta para que puedas restaurarlos en un teléfono nuevo; puedes añadir inicio de sesión con Google, Apple o correo cuando quieras.</p></details><details><summary>¿Hay app para iPhone?</summary><p>Pavurio ya está en Google Play. La app para iPhone, con widgets de pantalla de bloqueo y Live Activities, llegará muy pronto.</p></details><details><summary>¿Qué idiomas habla Pavurio?</summary><p>30 idiomas, entre ellos English, Français, Español, Português, Deutsch, Italiano, Nederlands, Polski, Türkçe, العربية, 日本語, 한국어 y 中文.</p></details><details><summary>¿Es esto consejo veterinario?</summary><p>No. Pavurio te ayuda a llevar el control de los cuidados que das y a recordar las citas. Para cualquier cosa sobre la salud de tu mascota, habla con tu veterinario.</p></details></div></div></div></section><section class="panel cta"><div class="wrap split">
+<div class="reveal"><img class="appicon" src="/img/icon-192.png" alt="Pavurio" width="96" height="96" loading="lazy"><h2>Regala a tu mascota un día tranquilo y lleno de color.</h2><p class="lead">Descarga Pavurio y registra el primer cuidado en menos de un minuto.</p><div class="stores"><a class="store" href="https://play.google.com/store/apps/details?id=com.pavurio.app&amp;hl=es&amp;referrer=utm_source%3Dpavurio.com%26utm_medium%3Dwebsite%26utm_campaign%3Des%26utm_content%3Dfinal" rel="noopener" data-cta="final"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="m16.9 15.5-3.5-3.5 3.5-3.5 4 2.3c1.1.6 1.1 1.8 0 2.4z"/><path fill="#EA4335" d="M16.9 15.5 13.4 12l-9.8 9.7c.4.2.9.2 1.4-.1z"/><path fill="#4285F4" d="M16.9 8.5 5 1.4c-.5-.3-1-.3-1.4-.1l9.8 9.7z"/></svg><span><small>DISPONIBLE EN</small><b>Google Play</b></span><span class="free">GRATIS</span></a><span class="store soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1.1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span><small>MUY PRONTO EN</small><b>App Store</b></span></span></div>
+<p class="note" style="text-align:left">Gratis · Sin anuncios · 30 idiomas</p><div class="qr"><img src="/img/l/qr_es.svg" alt="QR code: Pavurio on Google Play" width="104" height="104" loading="lazy"><div><b>Escanea para obtener Pavurio</b><small>Apunta aquí con la cámara de tu teléfono</small></div></div></div>
+<div class="reveal d1" style="position:relative"><div class="phone sm"><div class="scr"><img class="on" src="/img/s/home.webp" alt="" loading="lazy" width="390" height="844"></div></div><img class="duo" src="/img/a/duo_hug.webp" alt="" width="560" height="564" loading="lazy" decoding="async"></div></div></section></main><footer><div class="wrap"><div class="cols">
+<div><a class="logo" href="/es/"><img src="/img/icon-192.png" alt="" width="38" height="38" loading="lazy">Pavurio</a><p class="tag">Un compañero tranquilo para cuidar de verdad a tu mascota.</p><div class="stores"><a class="store" href="https://play.google.com/store/apps/details?id=com.pavurio.app&amp;hl=es&amp;referrer=utm_source%3Dpavurio.com%26utm_medium%3Dwebsite%26utm_campaign%3Des%26utm_content%3Dfooter" rel="noopener" data-cta="footer"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="m16.9 15.5-3.5-3.5 3.5-3.5 4 2.3c1.1.6 1.1 1.8 0 2.4z"/><path fill="#EA4335" d="M16.9 15.5 13.4 12l-9.8 9.7c.4.2.9.2 1.4-.1z"/><path fill="#4285F4" d="M16.9 8.5 5 1.4c-.5-.3-1-.3-1.4-.1l9.8 9.7z"/></svg><span><small>DISPONIBLE EN</small><b>Google Play</b></span></a><span class="store soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1.1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span><small>MUY PRONTO EN</small><b>App Store</b></span></span></div></div>
+<div><h4>Funciones</h4><ul><li><a href="/es/features/pet-medication-reminder.html">Recordatorios de medicamentos</a></li><li><a href="/es/features/pet-food-tracker.html">Control de comida</a></li><li><a href="/es/features/dog-walk-tracker.html">Cronómetro de paseos</a></li><li><a href="/es/features/pet-health-records.html">Cartilla de salud</a></li><li><a href="/es/features/pet-care-widgets.html">Widgets</a></li><li><a href="/es/features/dog-care-app.html">Para perros</a></li><li><a href="/es/features/cat-care-app.html">Para gatos</a></li></ul></div>
+<div><h4>Pavurio</h4><ul><li><a href="/es/privacy.html">Privacidad</a></li><li><a href="/es/terms.html">Términos</a></li><li><a href="/es/support.html">Ayuda</a></li><li><a href="/es/delete-account.html">Eliminar cuenta</a></li><li><a href="mailto:lesepavistespro@gmail.com" data-copy="lesepavistespro@gmail.com">Contacto</a></li><li><a href="mailto:lesepavistespro@gmail.com?subject=Pavurio%20press">Prensa</a></li></ul></div>
+<div><h4>Idioma</h4><ul><li><a href="/" hreflang="en" lang="en">English</a></li><li><a href="/fr/" hreflang="fr" lang="fr">Français</a></li><li><a href="/es/" hreflang="es" lang="es">Español</a></li><li><a href="/pt/" hreflang="pt" lang="pt">Português</a></li></ul></div></div>
+<div class="legal"><span>© 2026 Pavurio. Hecho con cariño para perros, gatos y las personas que los quieren.</span><span>lesepavistespro@gmail.com</span></div></div></footer>
+<div class="toast" role="status" aria-live="polite"></div><div class="fx" aria-hidden="true"></div>
+<script type="application/json" id="pv">{"try_done": "Todo listo por hoy. ¡Honey está completamente coloreado!", "try_logged": "{n} de 5 hechos hoy", "rem_given": "Dado a las {time}. ¡Gracias! 🐾", "pan_out": "¡Sin comida!", "pan_ok": "Queda de sobra", "pan_order": "Pedir antes del {day}", "pan_today": "Hoy", "walk_pause": "Pausar", "walk_resume": "Reanudar", "walk_paused": "En pausa", "walk_saved": "Paseo guardado. ¡Buen perro! 🐕", "tabs": [["Inicio", "El plan de hoy, con tu mascota coloreándose sobre la marcha."], ["Cuidados", "Lo que toca ahora, listo con un solo deslizamiento."], ["Despensa", "Cada bolsa, caja y blíster, con los días que quedan."], ["Resumen", "Un informe semanal amable de los cuidados que diste."]], "copied": "Correo copiado"}</script><script>/* Pavurio website: every interaction is optional (the page reads fine without JS). */
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var T = {}; try { T = JSON.parse(($('#pv') || {}).textContent || '{}'); } catch (e) {}
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt = function (s, v) { return String(s || '').replace(/\{(\w+)\}/g, function (_, k) { return v[k]; }); };
+  var buzz = function () { try { navigator.vibrate && navigator.vibrate(10); } catch (e) {} };
+
+  // device classes: phones hide the QR; iPhones see "coming soon" first
+  var ua = navigator.userAgent || '';
+  var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (ios) document.body.classList.add('ios');
+  if (ios || /Android|Mobile/.test(ua)) document.body.classList.add('mobile');
+
+  // header: border on scroll, progress bar, burger, features menu, language picker
+  var top = $('.top'), prog = $('.progress'), ticking = false;
+  function onScroll() {
+    ticking = false;
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    if (prog) prog.style.transform = 'scaleX(' + (max > 0 ? h.scrollTop / max : 0) + ')';
+    if (top) top.classList.toggle('scrolled', h.scrollTop > 8);
+  }
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  onScroll();
+  var burger = $('.burger');
+  if (burger) burger.addEventListener('click', function () { var o = top.classList.toggle('open'); burger.setAttribute('aria-expanded', o); });
+  $$('.dd').forEach(function (dd) {
+    var b = $('button', dd);
+    b.addEventListener('click', function (e) { e.stopPropagation(); var o = dd.classList.toggle('open'); b.setAttribute('aria-expanded', o); });
+  });
+  document.addEventListener('click', function (e) { $$('.dd.open').forEach(function (d) { if (!d.contains(e.target)) { d.classList.remove('open'); $('button', d).setAttribute('aria-expanded', 'false'); } }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') $$('.dd.open').forEach(function (d) { d.classList.remove('open'); }); });
+  $$('.lang select').forEach(function (s) { s.addEventListener('change', function () { location.href = s.value; }); });
+  $$('.top .nav a').forEach(function (a) { a.addEventListener('click', function () { top.classList.remove('open'); }); });
+
+  // reveal on scroll
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    $$('.reveal').forEach(function (el) { io.observe(el); });
+  } else $$('.reveal').forEach(function (el) { el.classList.add('in'); });
+
+  // toast, confetti, hearts
+  var toastEl = $('.toast'), tt;
+  function toast(m) { if (!toastEl) return; toastEl.textContent = m; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { toastEl.classList.remove('on'); }, 2600); }
+  var fx = $('.fx'), COLS = ['#14B8C4', '#FFD233', '#F07AB0', '#3DB86B', '#8E6CEB', '#38B6E8', '#FF9F43'];
+  function confetti(el, n) {
+    if (reduce || !fx || !el.animate) return;
+    var r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; n = n || 46;
+    for (var i = 0; i < n; i++) {
+      var p = document.createElement('i'); p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.background = COLS[i % COLS.length]; fx.appendChild(p);
+      var a = Math.random() * Math.PI * 2, v = 120 + Math.random() * 260;
+      p.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: 'translate(' + Math.cos(a) * v + 'px,' + (Math.sin(a) * v + 300) + 'px) rotate(' + (Math.random() * 900 - 450) + 'deg)', opacity: 0 }],
+        { duration: 1300 + Math.random() * 700, easing: 'cubic-bezier(.2,.6,.4,1)' }).onfinish = (function (q) { return function () { q.remove(); }; })(p);
+    }
+  }
+  function hearts(el, ch) {
+    if (reduce || !fx || !el.animate) return;
+    var r = el.getBoundingClientRect();
+    for (var i = 0; i < 5; i++) {
+      var h = document.createElement('b'); h.textContent = ch || '❤️'; h.style.left = (r.left + r.width / 2 - 10) + 'px'; h.style.top = (r.top + r.height / 3) + 'px'; fx.appendChild(h);
+      h.animate([{ transform: 'translate(0,0) scale(.4)', opacity: 1 }, { transform: 'translate(' + (Math.random() * 140 - 70) + 'px,' + (-80 - Math.random() * 80) + 'px) scale(1.1)', opacity: 0 }],
+        { duration: 1000 + Math.random() * 500, easing: 'ease-out' }).onfinish = (function (q) { return function () { q.remove(); }; })(h);
+    }
+  }
+
+  // rolling digits (the app's RollingNumber)
+  function roll(el, text) {
+    text = String(text);
+    if (reduce) { el.textContent = text; return; }
+    if (!el.classList.contains('roll')) { el.classList.add('roll'); el.textContent = ''; }
+    var kids = el.children;
+    while (kids.length > text.length) el.removeChild(el.firstChild);
+    while (kids.length < text.length) {
+      var d = document.createElement('span'); d.className = 'd';
+      for (var k = 0; k <= 9; k++) { var s = document.createElement('span'); s.textContent = k; d.appendChild(s); }
+      el.insertBefore(d, el.firstChild);
+    }
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i], node = kids[i];
+      if (/\d/.test(c)) {
+        if (!node.classList.contains('d')) { var nd = document.createElement('span'); nd.className = 'd'; for (var j = 0; j <= 9; j++) { var q = document.createElement('span'); q.textContent = j; nd.appendChild(q); } el.replaceChild(nd, node); node = nd; }
+        node.style.transform = 'translateY(' + (-1.2 * +c) + 'em)';
+      } else {
+        if (!node.classList.contains('s')) { var ns = document.createElement('span'); ns.className = 's'; el.replaceChild(ns, node); node = ns; }
+        node.textContent = c;
+      }
+    }
+    el.setAttribute('aria-label', text);
+  }
+
+  // hero: tap cares, the pet colours in
+  var demo = $('#demo');
+  if (demo) {
+    var cares = $$('.care', demo), n = 0, cnt = $('[data-n]', demo), sub = $('[data-sub]', demo), col = $('.pet .col', demo), again = $('.again', demo), hey = $('.hey');
+    var paint = function () {
+      var p = n / cares.length;
+      col.style.clipPath = 'inset(' + (100 - p * 100) + '% 0 0 0)';
+      roll(cnt, n);
+      sub.textContent = n === cares.length ? T.try_done : fmt(T.try_logged, { n: n });
+      again.hidden = n < cares.length;
+    };
+    cares.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.classList.contains('on')) return;
+        b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); n++; paint(); hearts(b, '✨'); buzz();
+        if (hey) hey.classList.add('gone');
+        if (n === cares.length) { confetti($('.pet', demo), 70); var pet = $('.pet', demo); pet.classList.remove('jump'); void pet.offsetWidth; pet.classList.add('jump'); }
+      });
+    });
+    again.addEventListener('click', function () { n = 0; cares.forEach(function (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }); paint(); });
+    paint();
+    var duo = $('.duo');
+    if (duo) duo.addEventListener('click', function () { duo.classList.remove('jump'); void duo.offsetWidth; duo.classList.add('jump'); hearts(duo); buzz(); });
+  }
+
+  // tour: segmented control with a sliding thumb, screens cross-fade
+  var tour = $('#tour');
+  if (tour) {
+    var tabs = $$('.seg button', tour), thumb = $('.seg .thumb', tour), shots = $$('.scr img', tour), cap = $('.cap', tour), ti = 0, tauto;
+    var place = function () { var b = tabs[ti]; thumb.style.width = b.offsetWidth + 'px'; thumb.style.transform = 'translateX(' + b.offsetLeft + 'px)'; };
+    var go = function (k) {
+      ti = (k + tabs.length) % tabs.length;
+      tabs.forEach(function (b, j) { b.setAttribute('aria-selected', j === ti); b.tabIndex = j === ti ? 0 : -1; });
+      shots.forEach(function (s, j) { s.classList.toggle('on', j === ti); });
+      cap.style.opacity = 0; setTimeout(function () { cap.textContent = T.tabs[ti][1]; cap.style.opacity = 1; }, 180);
+      place();
+    };
+    var auto = function () { clearInterval(tauto); if (!reduce) tauto = setInterval(function () { go(ti + 1); }, 4200); };
+    tabs.forEach(function (b, j) {
+      b.addEventListener('click', function () { go(j); auto(); buzz(); });
+      b.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); go(ti + (e.key === 'ArrowRight' ? 1 : -1)); tabs[ti].focus(); auto(); } });
+    });
+    window.addEventListener('resize', place);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    go(0);
+    var seen = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) auto(); else clearInterval(tauto); }); });
+    seen.observe(tour);
+  }
+
+  // reminders: slide to give
+  var dose = $('#dose');
+  if (dose) {
+    var sl = $('.slide', dose), knob = $('.knob', dose), fill = $('.fill', dose), msg = $('.given span', dose), sx = null, max = 0, cur = 0;
+    var setX = function (x) { cur = Math.max(0, Math.min(max, x)); knob.style.transform = 'translateX(' + cur + 'px)'; fill.style.width = (cur + 72) + 'px'; };
+    var finish = function () {
+      sl.classList.add('done'); buzz();
+      var d = new Date(), hh = d.getHours(), mm = String(d.getMinutes()).padStart(2, '0');
+      msg.textContent = fmt(T.rem_given, { time: hh + ':' + mm });
+      setTimeout(function () { dose.classList.add('ok'); confetti(dose, 50); }, 120);
+    };
+    var reset = function () { knob.style.transition = 'transform .45s cubic-bezier(.34,1.56,.64,1)'; fill.style.transition = 'width .45s cubic-bezier(.34,1.56,.64,1)'; setX(0); };
+    knob.addEventListener('pointerdown', function (e) { max = sl.offsetWidth - 72; sx = e.clientX - cur; knob.setPointerCapture(e.pointerId); knob.style.transition = fill.style.transition = 'none'; });
+    knob.addEventListener('pointermove', function (e) { if (sx !== null) setX(e.clientX - sx); });
+    var up = function () { if (sx === null) return; sx = null; if (cur > max * 0.85) { setX(max); finish(); } else reset(); };
+    knob.addEventListener('pointerup', up); knob.addEventListener('pointercancel', up);
+    knob.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); max = sl.offsetWidth - 72; knob.style.transition = fill.style.transition = 'transform .4s, width .4s'; setX(max); finish(); } });
+    $('.given button', dose).addEventListener('click', function () { dose.classList.remove('ok'); sl.classList.remove('done'); reset(); });
+  }
+
+  // pantry: log meals, watch the forecast; restock
+  var bag = $('#bag');
+  if (bag) {
+    var FULL = 12, PER = 0.25, DAY = 0.5, LEAD = 3, kg = 4.5;
+    var left = $('[data-left]', bag), days = $('[data-days]', bag), order = $('[data-order]', bag), st = $('.status', bag), bar = $('.bar i', bag), c = $('.fillart .c', bag);
+    var lang = document.documentElement.lang || 'en';
+    var wd = function (n) { var d = new Date(); d.setDate(d.getDate() + n); try { return d.toLocaleDateString(lang, { weekday: 'short', day: 'numeric' }); } catch (e) { return d.toDateString().slice(0, 10); } };
+    var draw = function () {
+      var p = kg / FULL, dl = Math.floor(kg / DAY + 1e-9);
+      roll(left, (Math.round(kg * 100) / 100).toFixed(kg % 1 ? 2 : 0).replace(/0$/, '').replace(/\.$/, '').replace('.', lang === 'en' ? '.' : ','));
+      roll(days, dl);
+      order.textContent = dl - LEAD <= 0 ? (kg <= 0 ? '—' : T.pan_today || '!') : wd(dl - LEAD);
+      bar.style.width = (p * 100) + '%';
+      bar.style.background = kg <= 0 ? 'var(--red)' : dl <= LEAD + 7 ? 'var(--meal)' : 'var(--green)';
+      c.style.clipPath = 'inset(' + (100 - p * 100) + '% 0 0 0)';
+      st.className = 'status' + (kg <= 0 ? ' out' : dl - LEAD <= 7 ? ' soon' : '');
+      st.textContent = kg <= 0 ? T.pan_out : dl - LEAD <= 7 ? fmt(T.pan_order, { day: dl - LEAD <= 0 ? (T.pan_today || '') : wd(dl - LEAD) }) : T.pan_ok;
+    };
+    $('[data-log]', bag).addEventListener('click', function (e) { if (kg <= 0) return; kg = Math.max(0, kg - PER); draw(); buzz(); hearts(e.currentTarget, '🍖'); if (kg <= 0) toast(T.pan_out); });
+    $('[data-restock]', bag).addEventListener('click', function () { kg = FULL; draw(); confetti($('.fillart', bag), 40); buzz(); });
+    draw();
+  }
+
+  // live activity: countdown to medicine time
+  var la = $('#la');
+  if (la) {
+    var clk = $('.clk', la), end = Date.now() + 12 * 60 * 1000 + 4000, lt;
+    var tick = function () { var s = Math.max(0, Math.round((end - Date.now()) / 1000)); clk.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+    tick(); lt = setInterval(tick, 1000);
+    $('button', la).addEventListener('click', function () { if (la.classList.contains('ok')) return; la.classList.add('ok'); clearInterval(lt); clk.textContent = '✓'; confetti(la, 40); buzz(); });
+  }
+
+  // walk timer
+  var live = $('#walk');
+  if (live) {
+    var wc = $('.clock', live), ws = $('.s', live), start = Date.now() - (18 * 60 + 42) * 1000, pausedAt = 0, sub0 = ws.textContent;
+    var wt = function () { var now = pausedAt || Date.now(), s = Math.floor((now - start) / 1000); wc.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+    wt(); setInterval(function () { if (!live.classList.contains('done')) wt(); }, 1000);
+    var pb = $('.p', live);
+    pb.addEventListener('click', function () {
+      if (pausedAt) { start += Date.now() - pausedAt; pausedAt = 0; live.classList.remove('paused'); pb.textContent = T.walk_pause; ws.textContent = sub0; }
+      else { pausedAt = Date.now(); live.classList.add('paused'); pb.textContent = T.walk_resume; ws.textContent = T.walk_paused; }
+      wt(); buzz();
+    });
+    $('.f', live).addEventListener('click', function () { live.classList.add('done'); confetti(live, 50); toast(T.walk_saved); buzz(); });
+    $('.n', live).addEventListener('click', function () { live.classList.remove('done', 'paused'); start = Date.now(); pausedAt = 0; pb.textContent = T.walk_pause; ws.textContent = sub0; wt(); });
+  }
+
+  // memory cards
+  var mc = $$('.mcard');
+  mc.forEach(function (m) {
+    var act = function () { mc.forEach(function (x) { x.classList.toggle('front', x === m); }); hearts(m, '💛'); buzz(); };
+    m.addEventListener('click', act);
+    m.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
+  });
+
+  // footer: copy email
+  $$('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function (e) {
+      var m = b.getAttribute('data-copy');
+      if (navigator.clipboard) { e.preventDefault(); navigator.clipboard.writeText(m).then(function () { toast(T.copied || m); }, function () { location.href = 'mailto:' + m; }); }
+    });
+  });
+})();
+</script></body></html>

@@ -1,0 +1,33 @@
+# Pavurio
+
+> A calm pet care app for dogs and cats: medicine and meal reminders, a food tracker that tells you when to buy, walks, vet records and widgets. Free, no ads.
+
+Pavurio is a pet care app for dogs and cats (Android on Google Play; iPhone coming soon). Website: https://pavurio.com/ in English, French, Spanish and Portuguese. The app speaks 30 languages.
+
+## Features
+- [Medication reminders](https://pavurio.com/features/pet-medication-reminder.html): Never miss your dog's or cat's medicine. Pavurio reminds you at the right time, lets you mark it given from the notification and follows up if it's still open. Free.
+- [Pet food tracker](https://pavurio.com/features/pet-food-tracker.html): Pavurio tracks your pet's food, treats, litter and medicine, forecasts how many days are left and tells you when to order. Shopping list included. Free app, no ads.
+- [Dog walk timer](https://pavurio.com/features/dog-walk-tracker.html): Time your dog's walks with Pavurio. Start, pause and finish from the Lock Screen, see every walk in your dog's history, and get a gentle reminder at walk time. Free.
+- [Health records](https://pavurio.com/features/pet-health-records.html): Keep your dog's or cat's vaccines, vet visits, medication, allergies and weight in one place, with photos of the paperwork. Share a care summary with your vet. Free.
+- [Widgets](https://pavurio.com/features/pet-care-widgets.html): Pavurio's widgets show what your dog or cat needs right now: the next dose, food to buy, or that today is all done. Pantry widget included. Free for Android.
+- [For dogs](https://pavurio.com/features/dog-care-app.html): Pavurio is the calm dog care app: feeding schedule, walk timer, medicine reminders, food stock tracker and vet records, with your dog colouring in as you go. Free.
+- [For cats](https://pavurio.com/features/cat-care-app.html): The calm cat care app: feeding times, litter tracking, medicine reminders, food stock forecasts and vet records, with your cat colouring in as you go. Free.
+
+## FAQ
+- Is Pavurio free? Yes. Logging care, reminders, the pantry, walks, the health file and widgets are free for one pet. Pavurio Pro adds every pet in your home, realistic coats, weeks and months of history, monthly stories and more care tips.
+- Does it work for both dogs and cats? Yes. Each pet has its own look, daily plan, reminders, pantry and history. Cats get litter tracking; dogs get the walk timer.
+- How does Pavurio know when the food will run out? When you log a meal, Pavurio takes that portion off the bag you're using. From the last two weeks of meals it works out how much your pet eats a day, then shows the days left and the date to order by. Tap “Why this estimate?” to see exactly how it was worked out.
+- Do I need an account? No. Pavurio works on your phone from the first second. Your data is backed up privately to your account so you can restore it on a new phone; you can add Google, Apple or email sign-in whenever you like.
+- Is there an iPhone app? Pavurio is on Google Play now. The iPhone app, with Lock Screen widgets and Live Activities, is coming soon.
+- Which languages does Pavurio speak? 30 languages, including English, Français, Español, Português, Deutsch, Italiano, Nederlands, Polski, Türkçe, العربية, 日本語, 한국어 and 中文.
+- Is this veterinary advice? No. Pavurio helps you keep track of the care you give and remember appointments. For anything about your pet's health, talk to your vet.
+
+## Legal
+- [Privacy](https://pavurio.com/privacy.html)
+- [Terms](https://pavurio.com/terms.html)
+- [Support](https://pavurio.com/support.html)
+- [Delete account](https://pavurio.com/delete-account.html)
+
+## Get the app
+- Google Play: https://play.google.com/store/apps/details?id=com.pavurio.app
+- Contact: lesepavistespro@gmail.com
